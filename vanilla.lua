@@ -474,7 +474,7 @@ AddModule(function()
 		start = tick()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
-		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RatDance.anim"))
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Assumptions.anim"))
 		animator.looped = true
 		animator.map = {{15.22, 76.19}, {0, 78.944}}
 	end
