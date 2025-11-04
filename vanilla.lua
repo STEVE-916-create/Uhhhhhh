@@ -1,5 +1,5 @@
 local modules = {}
-function AddModule(m)
+local function AddModule(m)
 	table.insert(modules, m)
 end
 
