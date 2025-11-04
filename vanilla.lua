@@ -445,7 +445,7 @@ AddModule(function()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RatDance.anim"))
 		animator.looped = true
-		animator.speed = 1.15
+		animator.speed = 1.127157
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
@@ -471,6 +471,37 @@ AddModule(function()
 	local start = 0
 	m.Init = function(figure: Model)
 		SetOverrideMusic(AssetGetContentId("Assumptions.mp3"), "Sam Gellaitry - Assumptions", 1, NumberRange.new(15.22, 76.19))
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RatDance.anim"))
+		animator.looped = true
+		animator.map = {{15.22, 76.19}, {0, 78.944}}
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick()
+		animator:Step(GetOverrideMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Mesmerizer"
+	m.Description = "fall asleep fall asleep fall asleep\nwheres yellow miku\nand green miku"
+	m.Assets = {"Mesmerizer.anim", "Mesmerizer.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("Mesmerizer.mp3"), "Blue and Red Miku - Mesmerizer", 1, NumberRange.new(2.56, 67.435))
 		start = tick()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
