@@ -292,6 +292,7 @@ AddModule(function()
 	end
 	return m
 end)
+
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
@@ -311,6 +312,66 @@ AddModule(function()
 	end
 	return m
 end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "Sans Undertale"
+	m.Description = "do u wanna have a bad TOM\ntom and jerry\nQ - dodge"
+	m.Assets = {"SansMoveset1.anim"}
+
+	m.RootPartOverride = true
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "RootPart Mode Override", m.RootPartOverride).Changed:Connect(function(val)
+			m.RootPartOverride = val
+		end)
+	end
+
+	local animator = nil
+
+	local lastdodgestate = false
+	local dodgetick = 0
+	m.Init = function(figure: Model)
+		local track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SansMoveset1.anim"))
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = track
+		dodgetick = 0
+		ContextActionService:BindAction("Sans_Dodge", function(actName, state, input)
+			if state == Enum.UserInputState.Begin then
+				dodgetick = tick()
+			end
+		end, true, Enum.KeyCode.Q)
+		ContextActionService:SetTitle("Sans_Dodge", "Dodge")
+		ContextActionService:SetPosition("Sans_Dodge", UDim2.new(1, -130, 1, -130))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick()
+		local newdodgestate = false
+		if t - dodgetick < 1.2 then
+			newdodgestate = true
+			animator:Step(1.3 + (t - dodgetick))
+		else
+			animator:Step(t % 1.2)
+		end
+		if lastdodgestate ~= newdodgestate then
+			lastdodgestate = newdodgestate
+			if m.RootPartOverride then
+				if newdodgestate then
+					LimbReanimator.Mode = 0
+				else
+					LimbReanimator.Mode = 2
+				end
+			end
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+		ContextActionService:UnbindAction("Sans_Dodge")
+	end
+	return m
+end)
+
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
