@@ -435,7 +435,7 @@ AddModule(function()
 
 	m.Alternative = false
 	m.Config = function(parent: GuiBase2d)
-		Util_CreateSwitch(parent, "Alt. Version", m.Lyrics).Changed:Connect(function(val)
+		Util_CreateSwitch(parent, "Alt. Version", m.Alternative).Changed:Connect(function(val)
 			m.Alternative = val
 		end)
 	end
@@ -680,12 +680,12 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "科目三 (Subject Three)"
-	m.Description = ""
+	m.Description = "剑起江湖恩怨 拂袖罩明月\n西風葉落花謝 枕刀劍難眠\n汝为山河过客 却总长叹伤离别\n鬓如霜一杯浓烈"
 	m.Assets = {"SubjectThree.anim", "SubjectThree.mp3", "SubjectThreeDubmood.mp3"}
 
 	m.Alternative = false
 	m.Config = function(parent: GuiBase2d)
-		Util_CreateSwitch(parent, "Forsaken", m.Lyrics).Changed:Connect(function(val)
+		Util_CreateSwitch(parent, "Forsaken", m.Alternative).Changed:Connect(function(val)
 			m.Alternative = val
 		end)
 	end
