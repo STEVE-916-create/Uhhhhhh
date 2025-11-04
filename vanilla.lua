@@ -430,7 +430,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Rat Dance"
-	m.Description = "how did this even become a meme\ngoogle ai says this is a tiktok trend\ncant be sure"
+	m.Description = "sourced from a tiktok trend"
 	m.Assets = {"RatDance.anim", "RatDance.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
@@ -439,7 +439,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("RatDance.mp3"), "Chess Type Beat Slowed")
+		SetOverrideMusic(AssetGetContentId("RatDance.mp3"), "Chess Type Beat Slowed", 1, NumberRange.new(2.13, 87.3))
 		start = tick()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
@@ -450,6 +450,37 @@ AddModule(function()
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
 		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Assumptions"
+	m.Description = "if its the love that you want\nill give my everything\nand if i made the right assumption\ndo you feel the same"
+	m.Assets = {"Assumptions.anim", "Assumptions.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("Assumptions.mp3"), "Sam Gellaitry - Assumptions", 1, NumberRange.new(15.22, 76.19))
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RatDance.anim"))
+		animator.looped = true
+		animator.map = {{15.22, 76.19}, {0, 78.944}}
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick()
+		animator:Step(GetOverrideMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
