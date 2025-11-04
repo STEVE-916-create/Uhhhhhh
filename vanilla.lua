@@ -431,9 +431,21 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Rat Dance"
 	m.Description = "sourced from a tiktok trend"
-	m.Assets = {"RatDance.anim", "RatDance.mp3"}
+	m.Assets = {"RatDance.anim", "RatDance2.anim", "RatDance.mp3"}
 
+	m.Alternative = false
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Alt. Version", m.Lyrics).Changed:Connect(function(val)
+			m.Alternative = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Alternative = not not save.Alternative
+	end
+	m.SaveConfig = function()
+		return {
+			Alternative = m.Alternative
+		}
 	end
 
 	local animator = nil
@@ -443,9 +455,13 @@ AddModule(function()
 		start = tick()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
-		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RatDance.anim"))
 		animator.looped = true
 		animator.speed = 1.127157
+		if m.Alternative then
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RatDance2.anim"))
+		else
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RatDance.anim"))
+		end
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
@@ -622,6 +638,37 @@ AddModule(function()
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "California Girls"
+	m.Description = "this was everywhere back in my day (2021)"
+	m.Assets = {"CaliforniaGirls.anim", "CaliforniaGirls.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("CaliforniaGirls.mp3"), "Katy Perry - California Girls", 1)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.speed = 1.010493
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("CaliforniaGirls.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick()
+		animator:Step(t - start)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
