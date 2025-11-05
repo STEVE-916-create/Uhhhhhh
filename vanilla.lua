@@ -926,7 +926,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Static"
-	m.Description = "new obsession found\n\nbasically tenna"
+	m.Description = "new obsession found\nbasically tenna"
 	m.Assets = {"StaticV1.anim", "Static.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
@@ -934,7 +934,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Static.mp3"), "Sam Gellaitry - Assumptions", 1)
+		SetOverrideMusic(AssetGetContentId("Static.mp3"), "FLAVOR FOLEY - Static", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("StaticV1.anim"))
