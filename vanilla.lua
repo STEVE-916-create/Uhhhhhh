@@ -937,7 +937,7 @@ AddModule(function()
 		SetOverrideMusic(AssetGetContentId("Static.mp3"), "Sam Gellaitry - Assumptions", 1, NumberRange.new(15.22, 76.19))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
-		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Assumptions.anim"))
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("StaticV1.anim"))
 		animator.looped = true
 		animator.map = {{15.22, 76.19}, {0, 78.944}}
 	end
