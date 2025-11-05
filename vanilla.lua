@@ -786,4 +786,63 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Mio Honda - Step!"
+	m.Description = "yeah lets dash towards tomorrow\nwhat a nice intro i sure hope this doesnt have suicide\nYour opinion is not OK so please just shut up and never speak again!"
+	m.Assets = {"MioHonda.anim", "MioHondaStep.anim", "MioHonda.mp3"}
+
+	m.Alternative = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Walk Only", m.Alternative).Changed:Connect(function(val)
+			m.Alternative = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Alternative = not not save.Alternative
+	end
+	m.SaveConfig = function()
+		return {
+			Alternative = m.Alternative
+		}
+	end
+
+	local choruses = {0, 74.734, 141.702}
+	local animator1 = nil
+	local animator2 = nil
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("MioHonda.mp3"), "Mio Honda - Step!", 1, NumberRange.new(45.311, 196.964))
+		animator1 = AnimLib.Animator.new()
+		animator1.rig = figure
+		animator1.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("MioHonda.anim"))
+		animator1.looped = false
+		animator1.map = {{0, 36.253}, {0, 36}}
+		animator2 = AnimLib.Animator.new()
+		animator2.rig = figure
+		animator2.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("MioHondaStep.anim"))
+		animator2.looped = true
+		animator2.map = {{0, 196.964}, {0, 197.142}}
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = GetOverrideMusicTime()
+		local t2 = t
+		if t2 >= 141.702 then
+			t2 -= 141.702
+		elseif t2 >= 74.734 then
+			t2 -= 74.734
+		end
+		if t2 < 36.253 and not m.Alternative then
+			animator1:Step(t2)
+		else
+			animator2:Step(t)
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		animator1 = nil
+		animator2 = nil
+	end
+	return m
+end)
+
 return modules
