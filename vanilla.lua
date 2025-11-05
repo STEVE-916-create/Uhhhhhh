@@ -711,8 +711,9 @@ AddModule(function()
 		animator.map = {{0, 73.845}, {0, 75.6}}
 		instances = {}
 		if m.Effects then
+			local root = figure:FindFirstChild("HumanoidRootPart")
 			local SmokeLight = Instance.new("ParticleEmitter")
-			SmokeLight.Parent = script.Parent
+			SmokeLight.Parent = root
 			SmokeLight.LightInfluence = 0
 			SmokeLight.LightEmission = 1
 			SmokeLight.Brightness = 1
@@ -720,7 +721,7 @@ AddModule(function()
 			SmokeLight.Color = ColorSequence.new(Color3.fromRGB(67, 255, 167))
 			SmokeLight.Orientation = Enum.ParticleOrientation.FacingCamera
 			SmokeLight.Size = NumberSequence.new(0.625, 8.5)
-			SmokeLight.Squash = 0
+			SmokeLight.Squash = NumberSequence.new(0)
 			SmokeLight.Transparency = NumberSequence.new({
 				NumberSequenceKeypoint.new(0, 1),
 				NumberSequenceKeypoint.new(0.4, 0.0625),
@@ -743,7 +744,7 @@ AddModule(function()
 			SmokeLight.Speed = NumberRange.new(0)
 			SmokeLight.Enabled = true
 			local SmokeThick = Instance.new("ParticleEmitter")
-			SmokeThick.Parent = script.Parent
+			SmokeThick.Parent = root
 			SmokeThick.LightInfluence = 0
 			SmokeThick.LightEmission = 1
 			SmokeThick.Brightness = 1
@@ -755,7 +756,7 @@ AddModule(function()
 				NumberSequenceKeypoint.new(0.36, 0.437, 0.437),
 				NumberSequenceKeypoint.new(1, 8.65, 0.0625),
 			})
-			SmokeThick.Squash = 0
+			SmokeThick.Squash = NumberSequence.new(0)
 			SmokeThick.Transparency = NumberSequence.new(0)
 			SmokeThick.Texture = "rbxassetid://13681590856"
 			SmokeThick.FlipbookLayout = Enum.ParticleFlipbookLayout.Grid4x4
