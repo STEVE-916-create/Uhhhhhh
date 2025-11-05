@@ -1,3 +1,37 @@
+local function CreateInstanceFromTable(item, parent, awaitRef, partsWithId)
+	awaitRef = awaitRef or {}
+	partsWithId = partsWithId or {}
+	local obj = Instance.new(item.Type)
+	if item.ID then
+		local awaiting = awaitRef[item.ID]
+		if awaiting then
+			awaiting[1][awaiting[2]] = obj
+			awaitRef[item.ID] = nil
+		else
+			partsWithId[item.ID] = obj
+		end
+	end
+	for p,v in item.Properties do
+		if type(v) == "string" then
+			local id = tonumber(v:match("^_R:(%w+)_$"))
+			if id then
+				if partsWithId[id] then
+					v = partsWithId[id]
+				else
+					awaitRef[id] = {obj, p}
+					v = nil
+				end
+			end
+		end
+		obj[p] = v
+	end
+	for _,c in item.Children do
+		CreateInstanceFromTable(c, obj, awaitRef, partsWithId)
+	end
+	obj.Parent = parent
+	return obj
+end
+
 local modules = {}
 local function AddModule(m)
 	table.insert(modules, m)
@@ -685,10 +719,23 @@ AddModule(function()
 	m.Description = "jujutsu shenanigans"
 	m.Assets = {"Hakari.anim", "Hakari.mp3"}
 
+	m.Effects = false
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Effects", m.Effects).Changed:Connect(function(val)
+			m.Effects = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Effects = not not save.Effects
+	end
+	m.SaveConfig = function()
+		return {
+			Effects = m.Effects
+		}
 	end
 
 	local animator = nil
+	local instances = {}
 	m.Init = function(figure: Model)
 		SetOverrideMusic(AssetGetContentId("Hakari.mp3"), "TUCA DONKA", 1)
 		animator = AnimLib.Animator.new()
@@ -696,12 +743,187 @@ AddModule(function()
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Hakari.anim"))
 		animator.looped = true
 		animator.map = {{0, 73.845}, {0, 75.6}}
+		instances = {}
+		local instancestable = {
+			{
+				ID = 1;
+				Type = "ParticleEmitter";
+				Properties = {
+					VelocitySpread = 360;
+					Texture = "rbxassetid://12524470529";
+					LightEmission = 1;
+					Color = ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(148/255,0,0)),ColorSequenceKeypoint.new(1,Color3.new(148/255,0,0))});
+					Drag = 2.5;
+					ZOffset = -2;
+					SpreadAngle = Vector2.new(360,-360);
+					Rotation = NumberRange.new(-306,360);
+					Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(0.4951321482658386,0.8360655903816223,0),NumberSequenceKeypoint.new(1,1,0)});
+					Name = "Smoke2";
+					Lifetime = NumberRange.new(0.5,1);
+					Speed = NumberRange.new(5,7);
+					Rate = 5;
+					LockedToPart = true;
+					Size = NumberSequence.new({NumberSequenceKeypoint.new(0,0.3278690576553345,0),NumberSequenceKeypoint.new(0.48689958453178406,1.803278923034668,0),NumberSequenceKeypoint.new(1,3.551912784576416,0)});
+				};
+				Children = {};
+			};
+			{
+				ID = 2;
+				Type = "ParticleEmitter";
+				Properties = {
+					VelocitySpread = 360;
+					Texture = "rbxassetid://12524470529";
+					LightEmission = 1;
+					Color = ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(62/85,0,0)),ColorSequenceKeypoint.new(1,Color3.new(62/85,0,0))});
+					Drag = 2.5;
+					ZOffset = -2;
+					SpreadAngle = Vector2.new(360,-360);
+					Rotation = NumberRange.new(-306,360);
+					Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(0.4951321482658386,0.8360655903816223,0),NumberSequenceKeypoint.new(1,1,0)});
+					Name = "Smoke3";
+					Lifetime = NumberRange.new(0.5,1);
+					Speed = NumberRange.new(5,7);
+					Rate = 5;
+					LockedToPart = true;
+					Size = NumberSequence.new({NumberSequenceKeypoint.new(0,0.3278690576553345,0),NumberSequenceKeypoint.new(0.48689958453178406,1.803278923034668,0),NumberSequenceKeypoint.new(1,3.551912784576416,0)});
+				};
+				Children = {};
+			};
+			{
+				ID = 3;
+				Type = "ParticleEmitter";
+				Properties = {
+					Texture = "rbxassetid://15292043166";
+					Color = ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(61/255,1,152/255)),ColorSequenceKeypoint.new(1,Color3.new(61/255,1,152/255))});
+					Drag = 4.25;
+					ZOffset = -2;
+					LightEmission = 1;
+					Rotation = NumberRange.new(90);
+					Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.46580401062965393,0.6499999761581421,0),NumberSequenceKeypoint.new(1,1,0)});
+					Name = "Lines";
+					Lifetime = NumberRange.new(0.5);
+					Speed = NumberRange.new(5,45);
+					Rate = 45;
+					LockedToPart = true;
+					Size = NumberSequence.new({NumberSequenceKeypoint.new(0,2,0),NumberSequenceKeypoint.new(1,0.7266666889190674,0)});
+				};
+				Children = {};
+			};
+			{
+				ID = 4;
+				Type = "ParticleEmitter";
+				Properties = {
+					Color = ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1/5,1,2/3)),ColorSequenceKeypoint.new(1,Color3.new(1/5,1,2/3))});
+					Drag = 1.5;
+					ZOffset = -2;
+					Texture = "rbxassetid://15350639550";
+					LightEmission = 1;
+					Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(0.493804007768631,0.8733333349227905,0.10000000149011612),NumberSequenceKeypoint.new(1,1,0)});
+					Name = "Smoke1";
+					Lifetime = NumberRange.new(0.44999998807907104,1.25);
+					Speed = NumberRange.new(15);
+					Rate = 15;
+					LockedToPart = true;
+					Size = NumberSequence.new({NumberSequenceKeypoint.new(0,4.1219329833984375,0),NumberSequenceKeypoint.new(1,3.2151076793670654,0)});
+				};
+				Children = {};
+			};
+			{
+				ID = 5;
+				Type = "ParticleEmitter";
+				Properties = {
+					RotSpeed = NumberRange.new(-15,15);
+					Texture = "rbxassetid://15350666375";
+					Color = ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(28/255,1,149/255)),ColorSequenceKeypoint.new(1,Color3.new(28/255,1,149/255))});
+					Drag = 4.25;
+					ZOffset = -2;
+					LightEmission = 1;
+					Rotation = NumberRange.new(-360,360);
+					Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.46580401062965393,0.6499999761581421,0),NumberSequenceKeypoint.new(1,1,0)});
+					Name = "Stars";
+					Lifetime = NumberRange.new(0.25,1.75);
+					Speed = NumberRange.new(5,45);
+					Rate = 15;
+					LockedToPart = true;
+					Size = NumberSequence.new({NumberSequenceKeypoint.new(0,2,0),NumberSequenceKeypoint.new(1,0.7266666889190674,0)});
+				};
+				Children = {};
+			};
+			{
+				ID = 6;
+				Type = "ParticleEmitter";
+				Properties = {
+					VelocitySpread = -360;
+					Texture = "rbxassetid://12585595946";
+					RotSpeed = NumberRange.new(-20,20);
+					LightEmission = 1;
+					Color = ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(67/255,1,167/255)),ColorSequenceKeypoint.new(1,Color3.new(67/255,1,167/255))});
+					Drag = 6;
+					ZOffset = -2;
+					SpreadAngle = Vector2.new(-360,360);
+					Rotation = NumberRange.new(-360,360);
+					Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(0.3937632143497467,0.0625,0),NumberSequenceKeypoint.new(0.5,0,0),NumberSequenceKeypoint.new(0.6247357130050659,0.09375,0),NumberSequenceKeypoint.new(0.7616279125213623,0.19999998807907104,0),NumberSequenceKeypoint.new(0.8683932423591614,0.38124996423721313,0),NumberSequenceKeypoint.new(0.9460887908935547,0.6625000238418579,0),NumberSequenceKeypoint.new(1,1,0)});
+					Name = "LightSmoke";
+					Lifetime = NumberRange.new(0.4000000059604645,0.699999988079071);
+					Speed = NumberRange.new(0);
+					Rate = 25;
+					LockedToPart = true;
+					Size = NumberSequence.new({NumberSequenceKeypoint.new(0,0.625,0),NumberSequenceKeypoint.new(1,8.5625,0)});
+				};
+				Children = {};
+			};
+			{
+				ID = 7;
+				Type = "ParticleEmitter";
+				Properties = {
+					Color = ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(37/255,1,164/255)),ColorSequenceKeypoint.new(1,Color3.new(37/255,1,164/255))});
+					Drag = 7;
+					ZOffset = -2;
+					Rotation = NumberRange.new(-360,360);
+					Texture = "rbxassetid://13681590856";
+					Name = "ThickSmoke";
+					Lifetime = NumberRange.new(0.4000000059604645,0.800000011920929);
+					Speed = NumberRange.new(0.0010000000474974513);
+					LightEmission = 1;
+					Rate = 50;
+					Size = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.3588283061981201,0.43749988079071045,0.43749988079071045),NumberSequenceKeypoint.new(1,8.6875,0.625)});
+				};
+				Children = {};
+			};
+			{
+				ID = 8;
+				Type = "ParticleEmitter";
+				Properties = {
+					Acceleration = Vector3.new(0,-50,0);
+					Color = ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(62/255,1,62/255)),ColorSequenceKeypoint.new(1,Color3.new(62/255,1,62/255))});
+					Drag = 2;
+					ZOffset = -2;
+					Texture = "rbxassetid://8030760338";
+					Rotation = NumberRange.new(90);
+					Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(0.2786516845226288,1,0),NumberSequenceKeypoint.new(0.40224719047546387,0.26875001192092896,0),NumberSequenceKeypoint.new(0.6651685237884521,0.25624996423721313,0),NumberSequenceKeypoint.new(1,1,0)});
+					Name = "Drip";
+					Lifetime = NumberRange.new(0.4000000059604645);
+					Speed = NumberRange.new(10,20);
+					LightEmission = 1;
+					Rate = 50;
+					Size = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.2988298833370209,1.038251519203186,0),NumberSequenceKeypoint.new(1,0,0)});
+				};
+				Children = {};
+			};
+		};
+		if m.Effects then
+			for _,v in instancestable do
+				table.insert(instances, CreateInstanceFromTable(v, figure:FindFirstChild("HumanoidRootPart")))
+			end
+		end
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
+		for _,v in instances do v:Destroy() end
+		instances = {}
 	end
 	return m
 end)
