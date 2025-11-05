@@ -808,7 +808,6 @@ AddModule(function()
 		}
 	end
 
-	local choruses = {0, 74.734, 141.702}
 	local animator1 = nil
 	local animator2 = nil
 	m.Init = function(figure: Model)
@@ -827,8 +826,8 @@ AddModule(function()
 	m.Update = function(dt: number, figure: Model)
 		local t = GetOverrideMusicTime()
 		local t2 = t
-		if t2 >= 141.702 then
-			t2 -= 141.702
+		if t2 >= 151.702 then
+			t2 -= 151.702
 		elseif t2 >= 74.734 then
 			t2 -= 74.734
 		end
