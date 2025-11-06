@@ -926,7 +926,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Static"
-	m.Description = "new obsession found\nbasically tenna"
+	m.Description = "new obsession found\nbasically tenna\n\nthe world you know always changing so fast\nthis song has a point\ndont touch that dial cuz its tv time"
 	m.Assets = {"StaticV1.anim", "Static.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
@@ -939,7 +939,6 @@ AddModule(function()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("StaticV1.anim"))
 		animator.looped = false
-		--animator.map = {{0, 20.251}, {0, 20.251}}
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideMusicTime())
