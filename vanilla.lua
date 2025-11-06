@@ -26,6 +26,60 @@ AddModule(function()
 	rcp.RespectCanCollide = true
 	rcp.IgnoreWater = true
 
+	-- https://raw.githubusercontent.com/MaximumADHD/Super-Nostalgia-Zone/refs/heads/main/Player/RetroClimbing.client.lua
+	local searchDepth = 0.7
+	local maxClimbDist = 2.45
+	local sampleSpacing = 1 / 7
+	local lowLadderSearch = 2.7
+	local ladderSearchDist = 2.0
+	local function findPartInLadderZone(figure, root, hum)
+		local cf = root.CFrame
+		local top = -hum.HipHeight
+		local bottom = -lowLadderSearch + top
+		local radius = 0.5 * ladderSearchDist
+		local center = cf.Position + (cf.LookVector * ladderSearchDist * 0.5)
+		local min = Vector3.new(-radius, bottom, -radius)
+		local max = Vector3.new(radius, top, radius)
+		local extents = Region3.new(center + min, center + max)
+		return #workspace:FindPartsInRegion3(extents, figure) > 0
+	end
+	local function findLadder(figure, root, hum)
+		if not findPartInLadderZone(figure, root, hum) then
+			return false
+		end
+		local torsoCoord = root.CFrame
+		local torsoLook = torsoCoord.LookVector
+		local firstSpace = 0
+		local firstStep = 0
+		local lookForSpace = true
+		local lookForStep = false
+		local topRay = math.floor(lowLadderSearch / sampleSpacing)
+		for i = 1, topRay do
+			local distFromBottom = i * sampleSpacing
+			local originOnTorso = Vector3.new(0, -lowLadderSearch + distFromBottom, 0)
+			local casterOrigin = torsoCoord.Position + originOnTorso
+			local casterDirection = torsoLook * ladderSearchDist
+			local ray = Ray.new(casterOrigin, casterDirection)
+			local hitPrim, hitLoc = workspace:FindPartOnRay(ray, figure)
+			-- make trusses climbable.
+			if hitPrim and hitPrim:IsA("TrussPart") then
+				return true
+			end
+			local mag = (hitLoc - casterOrigin).Magnitude
+			if mag < searchDepth then
+				if lookForSpace then
+					firstSpace = distFromBottom
+					lookForSpace = false
+					lookForStep = true
+				end
+			elseif lookForStep then
+				firstStep = distFromBottom - firstSpace
+				lookForStep = false
+			end
+		end
+		return firstSpace < maxClimbDist and firstStep > 0 and firstStep < maxClimbDist
+	end
+
 	local hstatechange, hrun = nil
 
 	local lastpose = ""
@@ -34,7 +88,8 @@ AddModule(function()
 	local toolAnimTime = 0
 
 	local rng = Random.new(math.random(-65536, 65536))
-	local sndpoint = nil
+	
+	local sndpoint, climbforce = nil, nil
 
 	local lastupdate = 0
 	local rs, ls, rh, lh = {V = 0, D = 0, C = 0}, {V = 0, D = 0, C = 0}, {V = 0, D = 0, C = 0}, {V = 0, D = 0, C = 0}
@@ -44,6 +99,7 @@ AddModule(function()
 		hum.AutoRotate = true
 		hum.WalkSpeed = 16
 		hum.JumpPower = 50
+		hum:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
 		sndpoint = Instance.new("Attachment")
 		sndpoint.Name = "oldrobloxsound"
 		sndpoint.Parent = hum.Torso
@@ -98,8 +154,6 @@ AddModule(function()
 				hum.AutoRotate = false
 				hum.HipHeight = -1
 				f:Play()
-			elseif state == "Climbing" then
-				pose = "Climbing"
 			elseif state == "Seated" then
 				pose = "Seated"
 			elseif state == "Swimming" then
@@ -120,6 +174,9 @@ AddModule(function()
 				pose = "Standing"
 			end
 		end)
+		climbforce = Instance.new("BodyVelocity")
+		climbforce.Name = "ClimbForce"
+		climbforce.Parent = nil
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
@@ -166,7 +223,20 @@ AddModule(function()
 		end
 
 		local jumping = pose == "Jumping" or pose == "Freefall"
-		local climbing = pose == "Climbing" or workspace:Blockcast(root.CFrame * CFrame.new(0, -0.5, 0), Vector3.new(2, 4.95, 0.5), root.CFrame.LookVector * 0.3, rcp) ~= nil
+		local climbing = findLadder(figure, root, hum)
+
+		if climbing then
+			local climbspeed = hum.WalkSpeed * 0.7
+			if hum.MoveDirection.Magnitude > 0 then
+				climbforce.Velocity = Vector3.new(0, climbSpeed, 0)
+			else
+				climbforce.Velocity = Vector3.new(0, -climbSpeed, 0)
+			end
+			climbforce.MaxForce = Vector3.new(climbSpeed * 100, 10e6, climbSpeed * 100)
+			climbforce.Parent = root
+		else
+			climbforce.Parent = nil
+		end
 
 		if jumping or hum.HipHeight < -0.01 then
 			if not jumping then
@@ -298,6 +368,7 @@ AddModule(function()
 		hstatechange:Disconnect()
 		hrun:Disconnect()
 		sndpoint:Destroy()
+		climbforce:Destroy()
 	end
 	return m
 end)
