@@ -1029,4 +1029,31 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Lag Train"
+	m.Description = "bro i cant play dead rails im lagging\nwhen im in a train and i sleep because its raining\nand then the train stop and i wake up"
+	m.Assets = {"Lagtrain.anim", "Lagtrain.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("Lagtrain.mp3"), "inabakumori - Lag Train", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Lagtrain.anim"))
+		animator.looped = false
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
