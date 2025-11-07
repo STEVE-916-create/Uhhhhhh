@@ -6,6 +6,26 @@ end
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
+	m.Name = "Nothing"
+	m.Description = "no anims? no problem\nJust a blank moveset I guess..."
+	m.Assets = {}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	m.Init = function(figure: Model)
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick()
+	end
+	m.Destroy = function(figure: Model?)
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
 	m.Name = "2007 Roblox"
 	m.Description = "old roblox is retroslop.\nReject Motor6Ds, and return to Motors!"
 	m.Assets = {}
@@ -228,11 +248,11 @@ AddModule(function()
 		if climbing then
 			local climbspeed = hum.WalkSpeed * 0.7
 			if hum.MoveDirection.Magnitude > 0 then
-				climbforce.Velocity = Vector3.new(0, climbSpeed, 0)
+				climbforce.Velocity = Vector3.new(0, climbspeed, 0)
 			else
-				climbforce.Velocity = Vector3.new(0, -climbSpeed, 0)
+				climbforce.Velocity = Vector3.new(0, -climbspeed, 0)
 			end
-			climbforce.MaxForce = Vector3.new(climbSpeed * 100, 10e6, climbSpeed * 100)
+			climbforce.MaxForce = Vector3.new(climbspeed * 100, 10e6, climbspeed * 100)
 			climbforce.Parent = root
 		else
 			climbforce.Parent = nil
@@ -376,26 +396,6 @@ end)
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
-	m.Name = "Nothing"
-	m.Description = "no anims? no problem\nJust a blank moveset I guess..."
-	m.Assets = {}
-
-	m.Config = function(parent: GuiBase2d)
-	end
-
-	m.Init = function(figure: Model)
-	end
-	m.Update = function(dt: number, figure: Model)
-		local t = tick()
-	end
-	m.Destroy = function(figure: Model?)
-	end
-	return m
-end)
-
-AddModule(function()
-	local m = {}
-	m.ModuleType = "MOVESET"
 	m.Name = "Sans Undertale"
 	m.Description = "do u wanna have a bad TOM\ntom and jerry\nQ - dodge"
 	m.Assets = {"SansMoveset1.anim"}
@@ -417,13 +417,13 @@ AddModule(function()
 		animator.rig = figure
 		animator.track = track
 		dodgetick = 0
-		ContextActionService:BindAction("Sans_Dodge", function(actName, state, input)
+		ContextActionService:BindAction("Uhhhhhh_SansDodge", function(actName, state, input)
 			if state == Enum.UserInputState.Begin then
 				dodgetick = tick()
 			end
 		end, true, Enum.KeyCode.Q)
-		ContextActionService:SetTitle("Sans_Dodge", "Dodge")
-		ContextActionService:SetPosition("Sans_Dodge", UDim2.new(1, -130, 1, -130))
+		ContextActionService:SetTitle("Uhhhhhh_SansDodge", "Dodge")
+		ContextActionService:SetPosition("Uhhhhhh_SansDodge", UDim2.new(1, -130, 1, -130))
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
@@ -447,7 +447,7 @@ AddModule(function()
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
-		ContextActionService:UnbindAction("Sans_Dodge")
+		ContextActionService:UnbindAction("Uhhhhhh_SansDodge")
 	end
 	return m
 end)
@@ -455,114 +455,29 @@ end)
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
-	m.Name = "Uhhhhhh"
-	--m.Description = "ik technologia\nMoveset with REAL IK Procedural animation. That means no keyframes!"
-	m.Description = "unfinished thing"
+	m.Name = "Ragdoll"
+	m.Description = "ow\nR - toggle ragdoll"
 	m.Assets = {}
 
 	m.Config = function(parent: GuiBase2d)
 	end
 
-	local cassprint = RandomString(32)
-
-	local function SetMotor6DOffset(motor, offset, dt)
-		motor.Transform = (motor.C0:Inverse() * offset * motor.C1):Lerp(motor.Transform, math.exp(-32 * dt))
-	end
-
-	local function IKTarget(a, z)
-		local r = 1.02
-		local d = r * 2
-		local q = r / 2
-		local b = Vector3.zero
-		local v = b - a
-		local l = v.Magnitude
-		local m = a + v.Unit * r
-		if l < d then
-			local h = math.sqrt(r * r - (l * l) / 4)
-			local g = v / 2
-			m = a + g + z.Unit * h
-		end
-		m = a + (m - a).Unit * r
-		return CFrame.lookAt(m, a, z) * CFrame.Angles(math.pi * 0.5, 0, 0)
-	end
-
-	local function sigmoid(x)
-		return 1 / (1 + math.exp(-x))
-	end
-	local function Path_w(t)
-		t = t % 1
-		local g = t + ((math.pow(2 * t - 1, 3) + 1) / 2 - t) * 0.5
-		local x = 2 * math.pi * g
-		return Vector2.new(math.sin(x), math.max(0, (math.exp(2 * math.cos(x)) - 0.8) / 4))
-	end
-	local function Path_r(t)
-		t = t % 1
-		local x = 2 * math.pi * t
-		return Vector2.new(math.sin(x), math.max(0, (math.exp(2 * math.cos(x)) - 0.4) / 2))
-	end
-
-	local running = false
-	local animtime = 0
-
+	local ragdoll = false
 	m.Init = function(figure: Model)
-		running = false
-		ContextActionService:BindAction(cassprint, function(_, state, input)
+		ragdoll = false
+		ContextActionService:BindAction("Uhhhhhh_Ragdoll", function(actName, state, input)
 			if state == Enum.UserInputState.Begin then
-				running = not running
+				ragdoll = not ragdoll
 			end
-		end, true, Enum.KeyCode.LeftShift)
-		ContextActionService:SetTitle(cassprint, "Run")
+		end, true, Enum.KeyCode.Q)
+		ContextActionService:SetTitle("Uhhhhhh_Ragdoll", "Ragdoll")
+		ContextActionService:SetPosition("Uhhhhhh_Ragdoll", UDim2.new(1, -130, 1, -130))
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
-		local hum = figure:FindFirstChild("Humanoid")
-		if not hum then return end
-		local root = figure:FindFirstChild("HumanoidRootPart")
-		if not root then return end
-		local torso = figure:FindFirstChild("Torso")
-		if not torso then return end
-		local rsj = torso:FindFirstChild("Right Shoulder")
-		local lsj = torso:FindFirstChild("Left Shoulder")
-		local rhj = torso:FindFirstChild("Right Hip")
-		local lhj = torso:FindFirstChild("Left Hip")
-		if not (rsj and lsj and rhj and lhj) then return end
-		local tspeed = 6.67
-		if running then tspeed = 25 end
-		hum.WalkSpeed = tspeed + (hum.WalkSpeed - tspeed) * math.exp(-0.5 * dt)
-		local persp = root.CFrame:VectorToObjectSpace(root.Velocity)
-		local speed = (persp * Vector3.new(1, 0, 1)).Magnitude
-		animtime = (animtime + (speed / 13.33) * dt) % 1
-		local runwalk = sigmoid((speed - 16) / 8)
-		local legl = Path_w(animtime):Lerp(Path_r(animtime), runwalk)
-		local legr = Path_w(animtime + 0.5):Lerp(Path_r(animtime + 0.5), runwalk)
-		legl *= Vector2.new(1, sigmoid(speed))
-		legr *= Vector2.new(1, sigmoid(speed))
-		local arms = math.sin(2 * math.pi * animtime)
-		local breathe = math.sin(math.pi * animtime * 0.125) * 0.05
-		local cf = CFrame.Angles(arms * math.pi * speed / 50, 0, 0)
-		cf += Vector3.new(-1.5, 0.5, 0)
-		cf *= CFrame.new(0, -1, 0)
-		cf *= CFrame.Angles(math.pi * speed / 50, 0, breathe - 0.05)
-		cf *= CFrame.new(0, 0.5, 0)
-		SetMotor6DOffset(lsj, cf, dt)
-		arms *= -1
-		cf = CFrame.Angles(arms * math.pi * speed / 50, 0, 0)
-		cf += Vector3.new(1.5, 0.5, 0)
-		cf *= CFrame.new(0, -1, 0)
-		cf *= CFrame.Angles(math.pi * speed / 50, 0, breathe + 0.05)
-		cf *= CFrame.new(0, 0.5, 0)
-		SetMotor6DOffset(rsj, cf, dt)
-		local lz = Vector3.new(0, 0, -1)
-		local e = 13.33
-		cf = IKTarget(Vector3.new(legl.X * persp.X / e, legl.Y - 2, legl.X * persp.Z / e), lz)
-		cf += Vector3.new(-0.5, -1, 0)
-		SetMotor6DOffset(lhj, cf, dt)
-		cf = IKTarget(Vector3.new(legr.X * persp.X / e, legr.Y - 2, legr.X * persp.Z / e), lz)
-		cf += Vector3.new(0.5, -1, 0)
-		SetMotor6DOffset(rhj, cf, dt)
 	end
 	m.Destroy = function(figure: Model?)
-		ContextActionService:UnbindAction(cassprint)
+		ContextActionService:UnbindAction("Uhhhhhh_Ragdoll")
 	end
 	--return m
 end)
