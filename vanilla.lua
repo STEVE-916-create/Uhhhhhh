@@ -961,6 +961,7 @@ AddModule(function()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Lagtrain.anim"))
 		animator.looped = false
+		animator.map = {{0, 26.117}, {0, 25.53}}
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideMusicTime())
@@ -1090,6 +1091,51 @@ AddModule(function()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("ItBurns.anim"))
 		animator.looped = false
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Kasane Teto - Igaku"
+	m.Description = "red miku is pear"
+	m.Assets = {"Igaku.anim", "IgakuSutibu.anim", "Igaku.mp3"}
+
+	m.VeryOriginal = true
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "STEVE's Version", m.VeryOriginal).Changed:Connect(function(val)
+			m.VeryOriginal = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.VeryOriginal = not not save.VeryOriginal
+	end
+	m.SaveConfig = function()
+		return {
+			VeryOriginal = m.VeryOriginal
+		}
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("Igaku.mp3"), "Kasane Teto - Igaku", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		if m.VeryOriginal then
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("IgakuSutibu.anim"))
+			animator.map = {{0, 22.572}, {0, 19.2}}
+		else
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Igaku.anim"))
+			animator.map = {{0, 22.572}, {0, 22.4}}
+		end
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideMusicTime())
