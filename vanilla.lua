@@ -1106,7 +1106,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Kasane Teto - Igaku"
 	m.Description = "red miku is pear"
-	m.Assets = {"Igaku.anim", "IgakuSutibu.anim", "Distraction.mp3"}
+	m.Assets = {"Igaku.anim", "IgakuSutibu.anim", "Igaku.mp3"}
 
 	m.VeryOriginal = true
 	m.Config = function(parent: GuiBase2d)
