@@ -260,13 +260,18 @@ AddModule(function()
 		local jumping = pose == "Jumping" or pose == "Freefall"
 		local climbing = canClimb and findLadder(figure, root, hum)
 
+		local climbforced = false
+		local climbspeed = hum.WalkSpeed * 0.7
 		if climbing then
-			local climbspeed = hum.WalkSpeed * 0.7
 			if hum.MoveDirection.Magnitude > 0 then
 				climbforce.Velocity = Vector3.new(0, climbspeed, 0)
-			else
+				climbforced = true
+			elseif jumping then
 				climbforce.Velocity = Vector3.new(0, -climbspeed, 0)
+				climbforced = true
 			end
+		end
+		if climbforced then
 			climbforce.MaxForce = Vector3.new(climbspeed * 100, 10e6, climbspeed * 100)
 			climbforce.Parent = root
 		else
