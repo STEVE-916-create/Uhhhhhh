@@ -27,7 +27,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
 	m.Name = "2007 Roblox"
-	m.Description = "old roblox is retroslop.\nReject Motor6Ds, and return to Motors!"
+	m.Description = "old roblox is retroslop.\nVery accurate recreation of the old Roblox physics!\nReject Motor6Ds, and return to Motors!"
 	m.Assets = {}
 
 	m.FPS30 = true
