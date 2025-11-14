@@ -23,7 +23,7 @@ Executor's workspace/
 ## Modules
 Modules are returned by a function from a luau script.
 honestly idk how to document this in an understandable way so
-heres an example, with code comments
+heres an example, with code comments:
 ```lua
 -- UhhhhhhReanim/Modules/lazy.lua
 
@@ -89,6 +89,30 @@ table.insert(modules, function() -- put into modules table
 end)
 
 return modules -- return modules
+```
+
+## STEVE's KeyframeSequence file format
+It's all pretty simple, really.
+The byteorder is in little endian.
+
+string structure
+```
+<2 bytes short n> <n bytes string>
+```
+
+pose structure
+```
+<string pose_name> <4 bytes float weight> <string pose_easing_style> <string pose_easing_direction> <4 bytes float cframe component, times 12>
+```
+
+keyframe structure
+```
+<4 bytes float time> <2 bytes short n> <pose poses, times n>
+```
+
+main file structure
+```
+<string animation_name> <2 bytes short n> <keyframe keyframes, times n>
 ```
 
 ]]
