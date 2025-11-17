@@ -32,7 +32,7 @@ local modules = {} -- table to contain all modules
 -- function called to create the module
 -- this allows for local variables
 table.insert(modules, function() -- put into modules table
-	local m = {}
+	local m = {} -- module object
 	
 	-- can be "MOVESET" or "DANCE"
 	m.ModuleType = "DANCE"
