@@ -384,8 +384,8 @@ AddModule(function()
 			return nil
 		end
 
-		local jumping = pose == "Jumping" or pose == "Freefall"
 		local climbing = canClimb and findLadder(figure, root, hum)
+		local jumping = not climbing and (pose == "Jumping" or pose == "Freefall")
 
 		local climbforced = false
 		local climbspeed = hum.WalkSpeed * 0.7
