@@ -833,7 +833,7 @@ AddModule(function()
 		animator.map = {{15.22, 76.19}, {0, 78.944}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetDanceMusicTime())
+		animator:Step(GetOverrideDanceMusic())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -861,7 +861,7 @@ AddModule(function()
 		animator.map = {{44.113, 54.456}, {0, 10.367}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetDanceMusicTime())
+		animator:Step(GetOverrideDanceMusic())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -940,7 +940,7 @@ AddModule(function()
 		lastlyricsindex = 0
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = GetDanceMusicTime()
+		local t = GetOverrideDanceMusic()
 		animator:Step(t)
 		local curlyricsindex = (t // lyricsdelay) + 1
 		if lastlyricsindex ~= curlyricsindex then
@@ -1053,7 +1053,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetDanceMusicTime())
+		animator:Step(GetOverrideDanceMusic())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1181,7 +1181,7 @@ AddModule(function()
 		animator2.map = {{0, 196.964}, {0, 197.142}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = GetDanceMusicTime()
+		local t = GetOverrideDanceMusic()
 		local t2 = t
 		if t2 >= 151.702 then
 			t2 -= 151.702
@@ -1220,7 +1220,7 @@ AddModule(function()
 		animator.looped = false
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetDanceMusicTime())
+		animator:Step(GetOverrideDanceMusic())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1248,7 +1248,7 @@ AddModule(function()
 		animator.map = {{0, 26.117}, {0, 25.53}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetDanceMusicTime())
+		animator:Step(GetOverrideDanceMusic())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1322,7 +1322,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetDanceMusicTime() + 0.67)
+		animator:Step(GetOverrideDanceMusic() + 0.67)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1350,7 +1350,7 @@ AddModule(function()
 		animator.map = {{0.492, 29.169}, {0, 28.63}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetDanceMusicTime())
+		animator:Step(GetOverrideDanceMusic())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1377,7 +1377,7 @@ AddModule(function()
 		animator.looped = false
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetDanceMusicTime())
+		animator:Step(GetOverrideDanceMusic())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1422,7 +1422,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetDanceMusicTime())
+		animator:Step(GetOverrideDanceMusic())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1470,7 +1470,7 @@ AddModule(function()
 		animator.map = {{0, 22.572}, {0, 22.4}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = GetDanceMusicTime()
+		local t = GetOverrideDanceMusic()
 		if lasttime > t then
 			setmusic()
 			SetOverrideDanceMusicTime(t)
