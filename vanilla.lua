@@ -765,6 +765,10 @@ AddModule(function()
 			snaptime = 7
 		end
 		
+		if figure:GetAttribute("IsDancing") then
+			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(7))
+		end
+		
 		-- apply scaling
 		local scale = figure:GetScale() - 1
 		rt += rt.Position * scale
