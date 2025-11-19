@@ -684,6 +684,8 @@ AddModule(function()
 	local necksnap = 0
 	local necksnapcf = CFrame.identity
 	local attack = -999
+	local attackcount = 0
+	local attackdegrees = 90
 	local joints = {
 		r = CFrame.identity,
 		n = CFrame.identity,
@@ -738,13 +740,47 @@ AddModule(function()
 		ContextActionService:BindAction("Uhhhhhh_ILFlight", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
 				flight = not flight
+				if math.random(60) == 1 then
+					if flight then
+						notify("im a bird")
+						task.delay(3, notify, "GOVERNMENT DRONE")
+					else
+						notify("this does NOT mean im TIRED of flying")
+					end
+				end
 			end
 		end, true, Enum.KeyCode.F)
 		ContextActionService:SetTitle("Uhhhhhh_ILFlight", "F")
 		ContextActionService:SetPosition("Uhhhhhh_ILFlight", UDim2.new(1, -130, 1, -130))
 		ContextActionService:BindAction("Uhhhhhh_ILAttack", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
-				attack = tick() - start
+				attackcount += 1
+				local t = tick() - start
+				if t - attack >= 0.75 then
+					attackcount = 0
+					if math.random(60) == 1 then
+						notify("my blade CUTS through AIR")
+					elseif math.random(60) == 1 then
+						notify("RAAHH im MINING this part")
+					end
+				end
+				if attackcount == 15 then
+					if math.random(15) == 1 then
+						notify("im FAST as FRICK, boii")
+					end
+				end
+				attack = t
+				if flying then
+					attackdegrees = 80
+				else
+					local camcf = CFrame.identity
+					if workspace.CurrentCamera then
+						camcf = workspace.CurrentCamera.CFrame
+					end
+					local angle,_,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
+					angle += math.pi * 0.5
+					attackdegrees = math.abs(math.deg(angle))
+				end
 			end
 		end, true, Enum.KeyCode.Z)
 		ContextActionService:SetTitle("Uhhhhhh_ILAttack", "Z")
@@ -827,13 +863,13 @@ AddModule(function()
 		local attackdur = t - attack
 		if attackdur < 0.5 then
 			altnecksnap = true
-			if attackdur < 0.25 then
+			if (attackdur < 0.25) == (attackcount % 2 == 0) then
 				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(-20))
-				rst = CFrame.Angles(0, math.rad(-50), math.rad(80))
+				rst = CFrame.Angles(0, math.rad(-50), math.rad(attackdegrees))
 				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			else
 				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(20))
-				rst = CFrame.Angles(0, math.rad(50), math.rad(80))
+				rst = CFrame.Angles(0, math.rad(50), math.rad(attackdegrees))
 				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			end
 		end
