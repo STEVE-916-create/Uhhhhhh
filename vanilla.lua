@@ -609,7 +609,7 @@ AddModule(function()
 	m.Bee = false
 	m.NeckSnap = true
 	m.FixNeckSnapReplicate = true
-	m.Notifications = false
+	m.Notifications = true
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Neck Snapping", m.NeckSnap).Changed:Connect(function(val)
 			m.NeckSnap = val
@@ -628,16 +628,19 @@ AddModule(function()
 		m.Bee = not not save.Bee
 		m.NeckSnap = not save.NoNeckSnap
 		m.FixNeckSnapReplicate = not save.DontFixNeckSnapReplicate
+		m.Notifications = not save.NoTextType
 	end
 	m.SaveConfig = function()
 		return {
 			Bee = m.Bee,
 			NoNeckSnap = not m.NeckSnap,
-			DontFixNeckSnapReplicate = not m.FixNeckSnapReplicate
+			DontFixNeckSnapReplicate = not m.FixNeckSnapReplicate,
+			NoTextType = not m.Notifications
 		}
 	end
 
 	local function notify(message)
+		if not m.Notifications then return end
 		local prefix = "[Immortality Lord]: "
 		local text = Instance.new("TextLabel")
 		text.Name = RandomString()
@@ -661,7 +664,7 @@ AddModule(function()
 				if l > ll then
 					ll = l
 					local snd = Instance.new("Sound")
-					snd.Volume = 10
+					snd.Volume = 1
 					snd.SoundId = "rbxassetid://4681278859"
 					snd.TimePosition = 0.07
 					snd.Playing = true
@@ -746,7 +749,21 @@ AddModule(function()
 		end, true, Enum.KeyCode.Z)
 		ContextActionService:SetTitle("Uhhhhhh_ILAttack", "Z")
 		ContextActionService:SetPosition("Uhhhhhh_ILAttack", UDim2.new(1, -180, 1, -130))
-		notify("im bored")
+		ContextActionService:BindAction("Uhhhhhh_ILTeleport", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				notify("i'd rather WALK.")
+			end
+		end, false, Enum.KeyCode.X)
+		task.delay(0, notify, "im BORED!!")
+		local lines = {
+			"theres NOTHING really FUN for me to do since 2022",
+			"i can kill ANYTHING, whats the FUN in THAT?",
+			"lightning cannon is an IDIOT! cant he READ my NAME??",
+			"the wiki says i cant SPEAK. NOT FUN.",
+			"PLEASE turn ME into a moveset",
+			"MORE BORED than viewport Immortality Lord",
+		}
+		task.delay(3, notify, lines[math.random(1, #lines)])
 		if chatconn then
 			chatconn:Disconnect()
 		end
@@ -812,11 +829,11 @@ AddModule(function()
 			altnecksnap = true
 			if attackdur < 0.25 then
 				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(-20))
-				rst = CFrame.Angles(0, math.rad(50), math.rad(80))
+				rst = CFrame.Angles(0, math.rad(-50), math.rad(80))
 				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			else
 				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(20))
-				rst = CFrame.Angles(0, math.rad(-50), math.rad(80))
+				rst = CFrame.Angles(0, math.rad(50), math.rad(80))
 				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			end
 		end
@@ -912,6 +929,8 @@ AddModule(function()
 	end
 	m.Destroy = function(figure: Model?)
 		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
+		ContextActionService:UnbindAction("Uhhhhhh_ILAttack")
+		ContextActionService:UnbindAction("Uhhhhhh_ILTeleport")
 		flyv:Destroy()
 		flyg:Destroy()
 		if chatconn then
