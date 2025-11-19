@@ -667,7 +667,7 @@ AddModule(function()
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		rt = CFrame.new(0, 0, -2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
-		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)))
+		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), 0, math.rad(-20))
 		--rht = CFrame.Angles(rad(-20),rad(80),rad(10+10*cos(TimingSine/25)))
 		--lht = CFrame.Angles(rad(-10),rad(-80),rad(-10-10*cos(TimingSine/25)))
 		if hum.MoveDirection.Magnitude > 0 then
