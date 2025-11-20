@@ -1013,22 +1013,28 @@ AddModule(function()
 		
 		local function createNoCollide(p0, p1)
 			local nocoll = Instance.new("NoCollisionConstraint")
+			nocoll.Name = p0.Name .. " To " .. p1.Name
 			nocoll.Part0, nocoll.Part1 = p0, p1
-			nocoll.Parent = p0.Parent
+			nocoll.Parent = p0
 			table.insert(joints, nocoll)
 		end
 		local function createJoint(motor, offset)
 			offset = offset or Vector3.zero
 			motor.Enabled = false
 			local att0 = Instance.new("Attachment")
+			att0.Name = motor.Part0.Name .. "C0"
 			att0.CFrame = motor.C0 + offset
 			att0.Parent = motor.Part0
 			local att1 = Instance.new("Attachment")
+			att1.Name = motor.Part1.Name .. "C1"
 			att1.CFrame = motor.C1 + offset
 			att1.Parent = motor.Part1
 			local joint = Instance.new("BallSocketConstraint")
+			joint.Name = motor.Name
 			joint.Attachment0, joint.Attachment1 = att0, att1
 			joint.Parent = motor.Parent
+			joint.LimitsEnabled = true
+			joint.TwistLimitsEnabled = true
 			createNoCollide(motor.Part0, motor.Part1)
 			table.insert(motors, motor)
 			table.insert(joints, att0)
@@ -1055,6 +1061,11 @@ AddModule(function()
 		createNoCollide(rsj.Part1, rhj.Part1)
 		createNoCollide(lsj.Part1, lhj.Part1)
 		createNoCollide(lhj.Part1, rhj.Part1)
+		createNoCollide(root, nj.Part1)
+		createNoCollide(root, rsj.Part1)
+		createNoCollide(root, lsj.Part1)
+		createNoCollide(root, rhj.Part1)
+		createNoCollide(root, lhj.Part1)
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
@@ -1063,7 +1074,6 @@ AddModule(function()
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
 		hum.PlatformStand = true
-		root.CanCollide = false
 	end
 	m.Destroy = function(figure: Model?)
 		for _,v in motors do
