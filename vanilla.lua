@@ -1771,6 +1771,93 @@ end)
 AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
+	m.Name = "Kai Cenat and Speed jumping"
+	m.Description = "adventures of luigi and mario\nW SPEED\n\nthis uses no keyframes"
+	m.Assets = {"SpeedJumping.mp3"}
+
+	m.Intro = true
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Intro", m.Intro).Changed:Connect(function(val)
+			m.Intro = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Intro = not not save.Intro
+	end
+	m.SaveConfig = function()
+		return {
+			Intro = m.Intro
+		}
+	end
+
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("SpeedJumping.mp3"), "BABY LAUGH JERSEY FUNK", 1, NumberRange.new(5.516, 19.726))
+		if not m.Intro then
+			SetOverrideDanceMusicTime(5.516)
+		end
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = GetOverrideDanceMusicTime()
+
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
+		local torso = figure:FindFirstChild("Torso")
+		if not torso then return end
+
+		local scale = figure:GetScale()
+
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+
+		if t < 5.516 then
+			local dur = 0.5
+			if t > 2.695 then
+				dur = 5
+			end
+			if t > 3.593 then
+				dur = 0.25
+			end
+			if t > 4.333 then
+				dur = 0.05
+			end
+			local sine = math.sin((t / dur) * math.pi * 2)
+			rj.Transform = CFrame.new(0, 0, -2 * scale) * CFrame.Angles(math.rad(90), 0, math.rad(sine * 10))
+			nj.Transform = CFrame.identity
+			rsj.Transform = CFrame.Angles(0, 0, sine)
+			lsj.Transform = CFrame.Angles(0, 0, sine)
+			rhj.Transform = CFrame.Angles(0, 0, -sine)
+			lhj.Transform = CFrame.Angles(0, 0, -sine)
+		else
+			local animt = ((t - 5.516) / 7.105) % 1
+			local beat = animt * 16 -- 16 jumps
+			local height = 1 - math.pow(1 - math.abs(math.sin(beat * math.pi)), 2)
+			local yspint, zspint = beat % 8, (beat + 4) % 8
+			local yspin, zspin = math.pow(1 - math.min(yspint, 1), 2) * math.pi * 2, math.pow(1 - math.min(zspint, 1), 4) * math.pi * 2
+			local armssine = 1 - math.pow(1 - math.abs(math.sin(math.pow(beat % 1, 3) * math.pi)), 2)
+			local arms = math.rad(-75 * armssine)
+			local legs = math.rad(-30 * math.abs(math.sin(beat * math.pi)))
+			rj.Transform = CFrame.new(math.sin(animt * math.pi * 4) * 5 * scale, 0, height * 6.7 * scale) * CFrame.Angles(0, zspin, yspin)
+			nj.Transform = CFrame.identity
+			rsj.Transform = CFrame.Angles(arms, 0, 0)
+			lsj.Transform = CFrame.Angles(arms, 0, 0)
+			rhj.Transform = CFrame.Angles(legs, 0, 0)
+			lhj.Transform = CFrame.Angles(legs, 0, 0)
+		end
+	end
+	m.Destroy = function(figure: Model?)
+	end
+	--return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
 	m.Name = "Smug Dance"
 	m.Description = "Portal music seems to fit"
 	m.Assets = {"Smug.anim", "Smug.mp3", "Smug2.mp3"}
