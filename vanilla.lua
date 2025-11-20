@@ -1011,6 +1011,12 @@ AddModule(function()
 		local rhj = torso:FindFirstChild("Right Hip")
 		local lhj = torso:FindFirstChild("Left Hip")
 		
+		local function createNoCollide(p0, p1)
+			local nocoll = Instance.new("NoCollisionConstraint")
+			nocoll.Part0, nocoll.Part1 = p0, p1
+			nocoll.Parent = motor.Parent
+			table.insert(joints, nocoll)
+		end
 		local function createJoint(motor, offset)
 			offset = offset or Vector3.zero
 			motor.Enabled = false
@@ -1023,14 +1029,11 @@ AddModule(function()
 			local joint = Instance.new("BallSocketConstraint")
 			joint.Attachment0, joint.Attachment1 = att0, att1
 			joint.Parent = motor.Parent
-			local nocoll = Instance.new("NoCollisionConstraint")
-			nocoll.Part0, nocoll.Part1 = motor.Part0, motor.Part1
-			nocoll.Parent = motor.Parent
+			createNoCollide(motor.Part0, motor.Part1)
 			table.insert(motors, motor)
 			table.insert(joints, att0)
 			table.insert(joints, att1)
 			table.insert(joints, joint)
-			table.insert(joints, nocoll)
 		end
 		root.CFrame = torso.CFrame
 		rj.Enabled = false
@@ -1047,6 +1050,11 @@ AddModule(function()
 		createJoint(lsj, Vector3.new(-0.5, 0, 0))
 		createJoint(rhj, Vector3.new(-0.5, 0, 0))
 		createJoint(lhj, Vector3.new(0.5, 0, 0))
+		createNoCollide(rsj.Part1, nj.Part1)
+		createNoCollide(lsj.Part1, nj.Part1)
+		createNoCollide(rsj.Part1, rhj.Part1)
+		createNoCollide(lsj.Part1, lhj.Part1)
+		createNoCollide(lhj.Part1, rhj.Part1)
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
