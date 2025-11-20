@@ -1004,6 +1004,8 @@ AddModule(function()
 		local torso = figure:FindFirstChild("Torso")
 		if not torso then return end
 		
+		local scale = figure:GetScale()
+		
 		local rj = root:FindFirstChild("RootJoint")
 		local nj = torso:FindFirstChild("Neck")
 		local rsj = torso:FindFirstChild("Right Shoulder")
@@ -1022,11 +1024,11 @@ AddModule(function()
 			motor.Enabled = false
 			local att0 = Instance.new("Attachment")
 			att0.Name = motor.Part0.Name .. "C0"
-			att0.CFrame = c0
+			att0.CFrame = c0 + c0.Position * (scale - 1)
 			att0.Parent = motor.Part0
 			local att1 = Instance.new("Attachment")
 			att1.Name = motor.Part1.Name .. "C1"
-			att1.CFrame = c1
+			att1.CFrame = c1 + c1.Position * (scale - 1)
 			att1.Parent = motor.Part1
 			local joint = Instance.new("BallSocketConstraint")
 			joint.Name = motor.Name
