@@ -1011,24 +1011,28 @@ AddModule(function()
 		local rhj = torso:FindFirstChild("Right Hip")
 		local lhj = torso:FindFirstChild("Left Hip")
 		
-		local function createJoint(motor)
+		local function createJoint(motor, offset)
+			offset = offset or Vector3.zero
 			motor.Enabled = false
 			local att0 = Instance.new("Attachment")
-			att0.CFrame = motor.C0
+			att0.CFrame = motor.C0 + offset
 			att0.Parent = motor.Part0
 			local att1 = Instance.new("Attachment")
-			att1.CFrame = motor.C1
+			att1.CFrame = motor.C1 + offset
 			att1.Parent = motor.Part1
 			local joint = Instance.new("BallSocketConstraint")
 			joint.Attachment0, joint.Attachment1 = att0, att1
 			joint.Parent = motor.Parent
-			joint.LimitsEnabled = true
-			joint.TwistLimitsEnabled = true
+			local nocoll = Instance.new("NoCollisionConstraint")
+			nocoll.Part0, joint.Part1 = motot.Part0, motor.Part1
+			nocoll.Parent = motor.Parent
 			table.insert(motors, motor)
 			table.insert(joints, att0)
 			table.insert(joints, att1)
 			table.insert(joints, joint)
+			table.insert(joints, nocoll)
 		end
+		root.CFrame = torso.CFrame
 		rj.Enabled = false
 		table.insert(motors, rj)
 		local weld = Instance.new("Weld")
@@ -1039,16 +1043,19 @@ AddModule(function()
 		weld.Parent = rj.Parent
 		table.insert(joints, weld)
 		createJoint(nj)
-		createJoint(rsj)
-		createJoint(lsj)
-		createJoint(rhj)
-		createJoint(lhj)
+		createJoint(rsj, Vector3.new(0.5, 0, 0))
+		createJoint(lsj, Vector3.new(-0.5, 0, 0))
+		createJoint(rhj, Vector3.new(-0.5, 0, 0))
+		createJoint(lhj, Vector3.new(0.5, 0, 0))
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
 		hum.PlatformStand = true
+		root.CanCollide = false
 	end
 	m.Destroy = function(figure: Model?)
 		for _,v in motors do
