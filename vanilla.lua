@@ -1014,7 +1014,7 @@ AddModule(function()
 		local function createNoCollide(p0, p1)
 			local nocoll = Instance.new("NoCollisionConstraint")
 			nocoll.Part0, nocoll.Part1 = p0, p1
-			nocoll.Parent = motor.Parent
+			nocoll.Parent = p0.Parent
 			table.insert(joints, nocoll)
 		end
 		local function createJoint(motor, offset)
