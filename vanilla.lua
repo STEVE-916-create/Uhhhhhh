@@ -713,10 +713,7 @@ AddModule(function()
 	}
 	local leftwing = {}
 	local rightwing = {}
-	local sword1 = {}
-	local sword1off = CFrame.new(-0.0023765564, 2.14191723, 3.825109, -1, 0, 0, 0, -0.519688249, -0.85435611, 0, -0.854355931, 0.519688308)
-	local sword2 = {}
-	local sword2off = CFrame.new(-0.00237464905, -1.31204176, -3.18902349, -1, 0, 0, 0, -0.519688249, -0.85435611, 0, -0.854355931, 0.519688308)
+	local sword = {}
 	local flyv, flyg = nil, nil
 	local chatconn = nil
 	local dancereact = {}
@@ -735,18 +732,13 @@ AddModule(function()
 			MeshId = "17269824947", TextureId = "",
 			Limb = "Torso", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
 		}
-		sword1 = {
-			MeshId = "17326555172", TextureId = "",
-			Limb = "Right Arm", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
-		}
-		sword2 = {
-			MeshId = "17326476901", TextureId = "",
+		sword = {
+			Group = "Sword",
 			Limb = "Right Arm", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
 		}
 		table.insert(HatReanimator.HatCFrameOverride, leftwing)
 		table.insert(HatReanimator.HatCFrameOverride, rightwing)
-		table.insert(HatReanimator.HatCFrameOverride, sword1)
-		table.insert(HatReanimator.HatCFrameOverride, sword2)
+		table.insert(HatReanimator.HatCFrameOverride, sword)
 		flyv = Instance.new("BodyVelocity")
 		flyv.Name = "FlightBodyMover"
 		flyv.P = 90000
@@ -885,6 +877,7 @@ AddModule(function()
 		local torso = figure:FindFirstChild("Torso")
 		if not torso then return end
 		
+		-- fly
 		if flight then
 			hum.PlatformStand = true
 			flyv.Parent = root
@@ -903,6 +896,18 @@ AddModule(function()
 			flyg.Parent = nil
 		end
 		
+		-- jump fly
+		if hum.Jump then
+			hum:ChangeState(Enum.HumanoidStateType.Jumping)
+		end
+		
+		-- float if not dancing
+		if figure:GetAttribute("IsDancing") then
+			hum.HipHeight = 0
+		else
+			hum.HipHeight = 2.5
+		end
+		
 		-- joints
 		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
 		local swordoff = CFrame.identity
@@ -911,7 +916,7 @@ AddModule(function()
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		-- animations
-		rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
+		rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
 		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), 0, math.rad(-20))
 		rht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(-20))
 		lht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(-10))
@@ -930,11 +935,11 @@ AddModule(function()
 		if attackdur < 0.5 then
 			altnecksnap = true
 			if (attackdur < 0.25) == (attackcount % 2 == 0) then
-				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(-20))
+				rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(-20))
 				rst = CFrame.Angles(0, math.rad(-50), math.rad(attackdegrees))
 				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			else
-				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(20))
+				rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(20))
 				rst = CFrame.Angles(0, math.rad(50), math.rad(attackdegrees))
 				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			end
@@ -970,7 +975,7 @@ AddModule(function()
 		if figure:GetAttribute("IsDancing") then
 			sword1.Limb = "Torso"
 			sword2.Limb = "Torso"
-			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(115)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -3.15, 0)
+			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(115)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -3, 0)
 		else
 			sword1.Limb = "Right Arm"
 			sword2.Limb = "Right Arm"
@@ -1031,8 +1036,7 @@ AddModule(function()
 		end
 		
 		-- sword
-		sword1.Offset = joints.sw * CFrame.new(0, 6.3, 0) * sword1off:Inverse()
-		sword2.Offset = joints.sw * CFrame.new(0, 6.3, 0) * sword2off:Inverse()
+		sword.Offset = joints.sw
 		
 		-- dance reactions
 		if figure:GetAttribute("IsDancing") then
