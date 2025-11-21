@@ -1945,20 +1945,21 @@ AddModule(function()
 		else
 			local animt = ((t - 5.516) / 7.105) % 1
 			local beat = animt * 16 -- 16 jumps
+			local beat2 = beat
 			local xaxis = animt * 4
 			if m.DifferentTiming then
-				beat -= 0.5
+				beat2 -= 0.5
 				xaxis += 0.67
 			end
-			local height = 1 - math.pow(1 - math.abs(math.sin(beat * math.pi)), 2)
-			local yspint, zspint = beat % 8, (beat + 4) % 8
+			local height = 1 - math.pow(1 - math.abs(math.sin(beat2 * math.pi)), 2)
+			local yspint, zspint = beat2 % 8, (beat2 + 4) % 8
 			local yspin, zspin = math.pow(1 - math.min(yspint, 1), 2) * math.pi * 2, math.pow(1 - math.min(zspint, 1), 4) * math.pi * 2
 			if beat >= 8 then
 				yspin, zspin = -yspin, -zspin
 			end
-			local armssine = 1 - math.pow(1 - math.abs(math.sin(math.pow(beat % 1, 3) * math.pi)), 2)
+			local armssine = 1 - math.pow(1 - math.abs(math.sin(math.pow(beat2 % 1, 3) * math.pi)), 2)
 			local arms = math.rad(-75 * armssine)
-			local legs = math.rad(-30 * math.abs(math.sin(beat * math.pi)))
+			local legs = math.rad(-30 * math.abs(math.sin(beat2 * math.pi)))
 			rj.Transform = CFrame.new(math.sin(xaxis * math.pi) * 6.7 * scale, 0, height * 4.1 * scale) * CFrame.Angles(0, zspin, yspin)
 			nj.Transform = CFrame.identity
 			rsj.Transform = CFrame.Angles(arms, 0, 0)
@@ -1969,13 +1970,13 @@ AddModule(function()
 				local a = math.sin((beat - 15) * math.pi)
 				local b = 1 - a
 				if m.DifferentTiming then
-					rj.Transform = rj.Transform:Lerp(CFrame.new(-2.25, -5, 3) * CFrame.Angles(math.rad(-10), math.rad(-10), 0), a)
+					rj.Transform = rj.Transform:Lerp(CFrame.new(-2.25 * scale, -3 * scale, 3 * scale) * CFrame.Angles(math.rad(-10), math.rad(-10), 0), a)
 					rsj.Transform = CFrame.Angles(arms * b, 0, 3.14 * a)
 					lsj.Transform = CFrame.Angles(arms * b, 0, -3.14 * a)
 					rhj.Transform = CFrame.Angles(legs * b, 0, 0)
 					lhj.Transform = CFrame.Angles(legs * b, 0, 0)
 				else
-					rj.Transform = rj.Transform:Lerp(CFrame.new(2.25, -3, 2) * CFrame.Angles(math.rad(-10), math.rad(10), 0), a)
+					rj.Transform = rj.Transform:Lerp(CFrame.new(2.25 * scale, -5 * scale, 2 * scale) * CFrame.Angles(math.rad(-10), math.rad(10), 0), a)
 					rsj.Transform = CFrame.Angles(arms * b, 0, 1.57 * a)
 					lsj.Transform = CFrame.Angles(arms * b, 0, 1 * a)
 					rhj.Transform = CFrame.Angles(legs * b, 0, 1 * a)
