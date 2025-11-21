@@ -895,7 +895,7 @@ AddModule(function()
 			end
 			local _,angle,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
 			local movedir = CFrame.Angles(0, angle, 0):VectorToObjectSpace(hum.MoveDirection)
-			flyv.Velocity = camcf:VectorToWorldSpace(movedir) * hum.WalkSpeed * 2
+			flyv.Velocity = camcf:VectorToWorldSpace(movedir) * hum.WalkSpeed * m.FlySpeed
 			flyg.CFrame = camcf.Rotation
 		else
 			hum.PlatformStand = false
