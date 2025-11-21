@@ -1970,7 +1970,7 @@ AddModule(function()
 			local beat2 = beat
 			local xaxis = animt * 4
 			if m.DifferentTiming then
-				beat2 -= 0.2
+				beat2 -= 0.2 + math.sin(((beat + 1) / 4) * math.pi * 2) * 0.2
 				xaxis += 0.67
 			end
 			local height = 1 - math.pow(1 - math.abs(math.sin(beat2 * math.pi)), 2)
