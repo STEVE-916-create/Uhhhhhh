@@ -618,6 +618,7 @@ AddModule(function()
 	m.NeckSnap = true
 	m.FixNeckSnapReplicate = true
 	m.Notifications = true
+	m.FlySpeed = 2
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Neck Snapping", m.NeckSnap).Changed:Connect(function(val)
 			m.NeckSnap = val
@@ -631,19 +632,26 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
 		end)
+		Util_CreateDropdown(parent, "Fly Speed", {
+			"1x", "2x", "3x", "4x", "5x", "6.1x", "6.7x"
+		}, m.FlySpeed).Changed:Connect(function(val)
+			m.FlySpeed = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Bee = not not save.Bee
 		m.NeckSnap = not save.NoNeckSnap
 		m.FixNeckSnapReplicate = not save.DontFixNeckSnapReplicate
 		m.Notifications = not save.NoTextType
+		m.FlySpeed = save.FlySpeed or m.FlySpeed
 	end
 	m.SaveConfig = function()
 		return {
 			Bee = m.Bee,
 			NoNeckSnap = not m.NeckSnap,
 			DontFixNeckSnapReplicate = not m.FixNeckSnapReplicate,
-			NoTextType = not m.Notifications
+			NoTextType = not m.Notifications,
+			FlySpeed = m.FlySpeed,
 		}
 	end
 
@@ -715,6 +723,9 @@ AddModule(function()
 	m.Init = function(figure: Model)
 		start = tick()
 		flight = false
+		dancereact = {}
+		attack = -999
+		necksnap = 0
 		SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1)
 		leftwing = {
 			MeshId = "17269814619", TextureId = "",
@@ -749,20 +760,40 @@ AddModule(function()
 		ContextActionService:BindAction("Uhhhhhh_ILFlight", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
 				flight = not flight
-				if math.random(30) == 1 then
+				if math.random(15) == 1 then
 					if figure:GetAttribute("IsDancing") then
-						if flight then
-							notify("im a bird")
-							task.delay(3, notify, "GOVERNMENT DRONE")
+						local name = figure:GetAttribute("DanceInternalName")
+						if name == "RAGDOLL" then
+							if flight then
+								if math.random(2) == 1 then
+									notify("PUT ME DOWN PUT ME DOWN")
+								else
+									notify("DONT YOU DARE DONT YOU DARE DONT YOU DARE")
+								end
+							else
+								if math.random(2) == 1 then
+									notify("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+								else
+									notify("OOOHHH GOOOOOODDDDD")
+								end
+							end
 						else
-							notify("dancing is BETTER on the GROUND")
+							if not flight then
+								notify("dancing is BETTER on the GROUND")
+							end
 						end
 					else
-						if flight then
-							notify("im a bird")
-							task.delay(3, notify, "GOVERNMENT DRONE")
+						if m.FlySpeed >= 3 and math.random(2) == 1 then
+							if flight then
+								task.delay(1, notify, "this view is BORING")
+							end
 						else
-							notify("this does NOT mean im TIRED of flying")
+							if flight then
+								notify("im a bird")
+								task.delay(3, notify, "GOVERNMENT DRONE")
+							else
+								notify("this does NOT mean im TIRED of flying")
+							end
 						end
 					end
 				end
@@ -772,37 +803,39 @@ AddModule(function()
 		ContextActionService:SetPosition("Uhhhhhh_ILFlight", UDim2.new(1, -130, 1, -130))
 		ContextActionService:BindAction("Uhhhhhh_ILAttack", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
-				attackcount += 1
-				local t = tick() - start
-				if t - attack >= 0.75 then
-					attackcount = 0
-					if math.random(30) == 1 then
-						notify("my blade CUTS through AIR")
-					elseif math.random(29) == 1 then
-						notify("RAAHH im MINING this part")
+				if not figure:GetAttribute("IsDancing") then
+					attackcount += 1
+					local t = tick() - start
+					if t - attack >= 0.75 then
+						attackcount = 0
+						if math.random(30) == 1 then
+							notify("my blade CUTS through AIR")
+						elseif math.random(29) == 1 then
+							notify("RAAHH im MINING this part")
+						end
 					end
-				end
-				if attackcount == 10 then
-					if math.random(10) == 1 then
-						notify("im FAST as FRICK, boii")
-					elseif math.random(9) == 1 then
-						notify("i play Minecraft BEDROCK edition")
+					if attackcount == 10 then
+						if math.random(10) == 1 then
+							notify("im FAST as FRICK, boii")
+						elseif math.random(9) == 1 then
+							notify("i play Minecraft BEDROCK edition")
+						end
 					end
-				end
-				if attackcount == 50 then
-					notify("STOP RIGHT THIS INSTANT " .. game.Players.LocalPlayer.Name:upper())
-				end
-				attack = t
-				if flight then
-					attackdegrees = 80
-				else
-					local camcf = CFrame.identity
-					if workspace.CurrentCamera then
-						camcf = workspace.CurrentCamera.CFrame
+					if attackcount == 50 then
+						notify("STOP RIGHT THIS INSTANT " .. game.Players.LocalPlayer.Name:upper())
 					end
-					local angle,_,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
-					angle += math.pi * 0.5
-					attackdegrees = math.abs(math.deg(angle))
+					attack = t
+					if flight then
+						attackdegrees = 80
+					else
+						local camcf = CFrame.identity
+						if workspace.CurrentCamera then
+							camcf = workspace.CurrentCamera.CFrame
+						end
+						local angle,_,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
+						angle += math.pi * 0.5
+						attackdegrees = math.abs(math.deg(angle))
+					end
 				end
 			end
 		end, true, Enum.KeyCode.Z)
@@ -1024,7 +1057,7 @@ AddModule(function()
 			if name == "KEMUSAN" then
 				dancereact.Kemusan = dancereact.Kemusan or 0
 				if t - dancereact.Kemusan > 60 then
-					notify("how many SOCIAL CREDITS do i get?")
+					task.delay(2, notify, "how many SOCIAL CREDITS do i get?")
 				end
 				dancereact.Kemusan = t
 			end
