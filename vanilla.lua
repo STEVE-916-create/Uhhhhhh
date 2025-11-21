@@ -1998,7 +1998,7 @@ AddModule(function()
 			lsj.Transform = CFrame.Angles(arms, 0, 0)
 			rhj.Transform = CFrame.Angles(legs, 0, 0)
 			lhj.Transform = CFrame.Angles(legs, 0, 0)
-			if beat >= 15 then
+			if m.PoseToTheFans and beat >= 15 then
 				local a = math.sin((beat - 15) * math.pi)
 				local b = 1 - a
 				if m.DifferentTiming then
