@@ -734,7 +734,7 @@ AddModule(function()
 		}
 		sword = {
 			Group = "Sword",
-			Limb = "Right Arm", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
+			Limb = "Right Arm", Offset = CFrame.identity
 		}
 		table.insert(HatReanimator.HatCFrameOverride, leftwing)
 		table.insert(HatReanimator.HatCFrameOverride, rightwing)
