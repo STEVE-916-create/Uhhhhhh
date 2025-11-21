@@ -1894,7 +1894,7 @@ AddModule(function()
 		Util_CreateDropdown(parent, "Variant", {"Speed", "Kai Cenat"}, m.DifferentTiming and 2 or 1).Changed:Connect(function(val)
 			m.DifferentTiming = val == 2
 		end)
-		Util_CreateSwitch(parent, "Legs Outward on Land", m.LegFix).Changed:Connect(function(val)
+		Util_CreateSwitch(parent, "Correct Jumping", m.LegFix).Changed:Connect(function(val)
 			m.LegFix = val
 		end)
 		Util_CreateSwitch(parent, "Correct Flipping", m.CorrectFlipping).Changed:Connect(function(val)
@@ -1994,7 +1994,9 @@ AddModule(function()
 			local arms = math.rad(-75 * armssine)
 			local legs = math.rad(-30 * math.abs(math.sin(beat2 * math.pi)))
 			if m.LegFix then
-				legs = math.rad(-30 * math.abs(math.cos(beat2 * math.pi)))
+				local alpha = math.pow(1 - height, 3)
+				arms = math.rad(-75 * alpha)
+				legs = math.rad(-30 * alpha)
 			end
 			rj.Transform = CFrame.new(math.sin(xaxis * math.pi) * 6.7 * scale, 0, height * 4.1 * scale) * CFrame.Angles(0, zspin, yspin)
 			nj.Transform = CFrame.identity
