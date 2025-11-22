@@ -1164,6 +1164,14 @@ AddModule(function()
 				end
 				dancereact.Kemusan = t
 			end
+			if name == "TUKATUKADONKDONK" then
+				dancereact.TUKATUKADONKDONK = dancereact.TUKATUKADONKDONK or 0
+				if t - dancereact.TUKATUKADONKDONK > 60 then
+					task.delay(1, notify, "i have no idea what this is")
+					task.delay(4, notify, "the green aura looking thing looks cool")
+				end
+				dancereact.TUKATUKADONKDONK = t
+			end
 			if name == "ClassC14" then
 				dancereact.ClassC14 = dancereact.ClassC14 or 0
 				if t - dancereact.ClassC14 > 60 then
@@ -1193,6 +1201,428 @@ AddModule(function()
 		end
 	end
 	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "Lightning Cannon"
+	m.Description = "lc if he locked in\nF - Toggle flight\nClick/Tap - \"Shoot\"\nZ - Dash (yes it kills)\nX then Click/Tap - Beam Shot\n(you can X again to cancel charge)\nC then Click/Tap - Barrage Shot\nV - GRENADE\nB -\"Special Attack\""
+	m.InternalName = "LightningFanon"
+	m.Assets = {}
+
+	m.Bee = false
+	m.Notifications = true
+	m.FlySpeed = 2
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Bee Wings", m.Bee).Changed:Connect(function(val)
+			m.Bee = val
+		end)
+		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
+			m.Notifications = val
+		end)
+		Util_CreateDropdown(parent, "Fly Speed", {
+			"1x", "2x", "3x", "4x", "5x", "6.1x", "6.7x"
+		}, m.FlySpeed).Changed:Connect(function(val)
+			m.FlySpeed = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Bee = not not save.Bee
+		m.Notifications = not save.NoTextType
+		m.FlySpeed = save.FlySpeed or m.FlySpeed
+	end
+	m.SaveConfig = function()
+		return {
+			Bee = m.Bee,
+			NoTextType = not m.Notifications,
+			FlySpeed = m.FlySpeed,
+		}
+	end
+
+	local function notify(message)
+		if not m.Notifications then return end
+		local prefix = "[Immortality Lord]: "
+		local text = Instance.new("TextLabel")
+		text.Name = RandomString()
+		text.Position = UDim2.new(0, 0, 0.95, 0)
+		text.Size = UDim2.new(1, 0, 0.05, 0)
+		text.BackgroundTransparency = 1
+		text.Text = prefix
+		text.Font = Enum.Font.SpecialElite
+		text.TextScaled = true
+		text.TextColor3 = Color3.new(1,1,1)
+		text.TextStrokeTransparency = 0
+		text.TextXAlignment = Enum.TextXAlignment.Left
+		text.Parent = HiddenGui
+		task.spawn(function()
+			local cps = 30
+			local t = tick()
+			local ll = 0
+			repeat
+				task.wait()
+				local l = math.floor((tick() - t) * cps)
+				if l > ll then
+					ll = l
+					local snd = Instance.new("Sound")
+					snd.Volume = 1
+					snd.SoundId = "rbxassetid://4681278859"
+					snd.TimePosition = 0.07
+					snd.Playing = true
+					snd.Parent = text
+				end
+				text.Text = prefix .. string.sub(message, 1, l)
+			until ll >= #message
+			text.Text = prefix .. message
+			task.wait(1)
+			game:GetService("TweenService"):Create(text, TweenInfo.new(1, Enum.EasingStyle.Linear),{TextTransparency = 1, TextStrokeTransparency = 1}):Play()
+			task.wait(1)
+			text:Destroy()
+		end)
+	end
+
+	local flight = false
+	local start = 0
+	local attack = -999
+	local attackname = ""
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+		sw = CFrame.identity,
+	}
+	local leftwing = {}
+	local rightwing = {}
+	local gun = {}
+	local flyv, flyg = nil, nil
+	local chatconn = nil
+	local function Attack(position, radius)
+		local hitvis = Instance.new("Part")
+		hitvis.Name = RandomString() -- built into Uhhhhhh
+		hitvis.CastShadow = false
+		hitvis.Material = Enum.Material.ForceField
+		hitvis.Anchored = true
+		hitvis.CanCollide = false
+		hitvis.Shape = Enum.PartType.Ball
+		hitvis.Color = Color3.new(1, 1, 1)
+		hitvis.Size = Vector3.one * radius * 2
+		hitvis.CFrame = CFrame.new(position)
+		hitvis.Parent = workspace
+		game.Debris:AddItem(hitvis, 1)
+		local parts = workspace:GetPartBoundsInRadius(position, radius)
+		for _,part in parts do
+			if part.Parent then
+				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
+				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+					ReanimateFling(part.Parent)
+				end
+			end
+		end
+	end
+	m.Init = function(figure: Model)
+		start = tick()
+		flight = false
+		attack = -999
+		--SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1)
+		leftwing = {
+			MeshId = "17269814619", TextureId = "",
+			Limb = "Torso", Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, 1.5)
+		}
+		rightwing = {
+			MeshId = "17269824947", TextureId = "",
+			Limb = "Torso", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
+		}
+		sword = {
+			Group = "Gun",
+			Limb = "Right Arm",
+			Offset = CFrame.identity
+		}
+		table.insert(HatReanimator.HatCFrameOverride, leftwing)
+		table.insert(HatReanimator.HatCFrameOverride, rightwing)
+		table.insert(HatReanimator.HatCFrameOverride, sword)
+		flyv = Instance.new("BodyVelocity")
+		flyv.Name = "FlightBodyMover"
+		flyv.P = 90000
+		flyv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+		flyv.Parent = nil
+		flyg = Instance.new("BodyGyro")
+		flyg.Name = "FlightBodyMover"
+		flyg.P = 3000
+		flyg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+		flyg.Parent = nil
+		ContextActionService:BindAction("Uhhhhhh_LCFlight", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				flight = not flight
+			end
+		end, true, Enum.KeyCode.F)
+		ContextActionService:SetTitle("Uhhhhhh_LCFlight", "F")
+		ContextActionService:SetPosition("Uhhhhhh_LCFlight", UDim2.new(1, -130, 1, -130))
+		local lines = {
+			"theres NOTHING really FUN for me to do since 2022",
+			"i can kill ANYTHING, whats the FUN in THAT?",
+			"lightning cannon is an IDIOT! cant he READ my NAME??",
+			"the wiki says i cant SPEAK. NOT FUN.",
+			"PLEASE turn ME into a moveset",
+			"MORE BORED than viewport Immortality Lord",
+			string.reverse("so bored, i would talk in reverse"),
+			"im POWERFUL, how is that FUN?",
+			"you know what they say, OVERPOWERED is ABSOLUTELY LAME",
+			"NOT because im no longer IMMORTAL for real",
+			"SO BORED, i would LOVE to use a NOOB skin",
+			"lets hope " .. game.Players.LocalPlayer.Name:lower() .. " is NOT BORING",
+			"last time things were FUN for me was FIGHTING LIGHTNING CANNON",
+		}
+		task.delay(3, notify, lines[math.random(1, #lines)])
+		if chatconn then
+			chatconn:Disconnect()
+		end
+		chatconn = OnPlayerChatted.Event:Connect(function(plr, msg)
+			if plr == game.Players.LocalPlayer then
+				notify(msg)
+			end
+		end)
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick() - start
+		local scale = figure:GetScale()
+		
+		-- get vii
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
+		local torso = figure:FindFirstChild("Torso")
+		if not torso then return end
+		
+		-- fly
+		if flight then
+			hum.PlatformStand = true
+			flyv.Parent = root
+			flyg.Parent = root
+			local camcf = CFrame.identity
+			if workspace.CurrentCamera then
+				camcf = workspace.CurrentCamera.CFrame
+			end
+			local _,angle,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
+			local movedir = CFrame.Angles(0, angle, 0):VectorToObjectSpace(hum.MoveDirection)
+			flyv.Velocity = camcf:VectorToWorldSpace(movedir) * hum.WalkSpeed * m.FlySpeed
+			flyg.CFrame = camcf.Rotation
+		else
+			hum.PlatformStand = false
+			flyv.Parent = nil
+			flyg.Parent = nil
+		end
+		
+		-- jump fly
+		if hum.Jump then
+			hum:ChangeState(Enum.HumanoidStateType.Jumping)
+		end
+		
+		-- float if not dancing
+		if figure:GetAttribute("IsDancing") then
+			hum.HipHeight = 0
+		else
+			hum.HipHeight = 2.5
+		end
+		
+		-- joints
+		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		local swordoff = CFrame.identity
+		
+		local timingsine = t * 60 -- timing from patchma's il
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
+		-- animations
+		rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
+		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), 0, math.rad(-20))
+		rht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(-20))
+		lht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(-10))
+		if onground and not flight then
+			rst = CFrame.Angles(0, 0, math.rad(-10))
+			swordoff = CFrame.new(0, -1, 0) * CFrame.Angles(math.rad(154.35 - 5.65 * math.sin(timingsine / 25)), 0, 0)
+		else
+			rst = CFrame.Angles(math.rad(45), 0, math.rad(80 - 5 * math.cos(timingsine / 25)))
+			swordoff = CFrame.new(0, 0, -0.5) * CFrame.Angles(0, math.rad(170), math.rad(-10))
+		end
+		local altnecksnap = hum.MoveDirection.Magnitude > 0
+		if not altnecksnap then
+			nt = CFrame.Angles(math.rad(20), math.rad(10 * math.sin(timingsine / 50)), 0)
+		end
+		local attackdur = t - attack
+		if attackdur < 0.5 then
+			altnecksnap = true
+			local attackside = (attackdur < 0.25) == (attackcount % 2 == 0)
+			if lastattackside ~= attackside then
+				Attack((root.CFrame * CFrame.new(0, -math.cos(math.rad(attackdegrees + 10)) * 4.5 * scale, -4.5 * scale * m.HitboxScale)).Position, 4.5 * scale * m.HitboxScale)
+			end
+			lastattackside = attackside
+			if attackside then
+				rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(-20))
+				rst = CFrame.Angles(0, math.rad(-50), math.rad(attackdegrees))
+				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
+			else
+				rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(20))
+				rst = CFrame.Angles(0, math.rad(50), math.rad(attackdegrees))
+				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
+			end
+		end
+		if altnecksnap then
+			if math.random(15) == 1 then
+				necksnap = timingsine
+				necksnapcf = CFrame.Angles(
+					math.rad(math.random(-20, 20)),
+					math.rad(math.random(-20, 20)),
+					math.rad(math.random(-20, 20))
+				)
+			end
+		else
+			if math.random(15) == 1 then
+				necksnap = timingsine
+				necksnapcf = CFrame.Angles(
+					math.rad(20 + math.random(-20, 20)),
+					math.rad((10 * math.sin(timingsine / 50)) + math.random(-20, 20)),
+					math.rad(math.random(-20, 20))
+				)
+			end
+		end
+		
+		-- fix neck snap replicate
+		local snaptime = 1
+		if m.FixNeckSnapReplicate then
+			snaptime = 7
+		end
+		
+		-- store the sword when dancing
+		if figure:GetAttribute("IsDancing") then
+			sword.Limb = "Torso"
+			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(115)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1.5, 0)
+		else
+			sword.Limb = "Right Arm"
+		end
+		
+		-- apply scaling
+		scale = scale - 1
+		rt += rt.Position * scale
+		nt += nt.Position * scale
+		rst += rst.Position * scale
+		lst += lst.Position * scale
+		rht += rht.Position * scale
+		lht += lht.Position * scale
+		
+		-- joints
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		-- interpolation
+		local alpha = math.exp(-17.25 * dt)
+		joints.r = rt:Lerp(joints.r, alpha)
+		joints.n = nt:Lerp(joints.n, alpha)
+		joints.rs = rst:Lerp(joints.rs, alpha)
+		joints.ls = lst:Lerp(joints.ls, alpha)
+		joints.rh = rht:Lerp(joints.rh, alpha)
+		joints.lh = lht:Lerp(joints.lh, alpha)
+		joints.sw = swordoff:Lerp(joints.sw, alpha)
+		
+		-- apply transforms
+		rj.Transform = joints.r
+		rsj.Transform = joints.rs
+		lsj.Transform = joints.ls
+		rhj.Transform = joints.rh
+		lhj.Transform = joints.lh
+		if m.NeckSnap and timingsine - necksnap < snaptime then
+			nj.Transform = necksnapcf
+		else
+			nj.Transform = joints.n
+		end
+		
+		-- wings
+		if figure:GetAttribute("IsDancing") then
+			leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105), 0) * CFrame.new(2.2, -2, 1.5)
+			rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75), 0) * CFrame.new(2.2, -2, -1.5)
+		else
+			if m.Bee then
+				leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine)), 0) * CFrame.new(2.2, -2, 1.5)
+				rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine)), 0) * CFrame.new(2.2, -2, -1.5)
+			else
+				leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, 1.5)
+				rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, -1.5)
+			end
+		end
+		
+		-- sword
+		sword.Offset = joints.sw
+		
+		-- dance reactions
+		if figure:GetAttribute("IsDancing") then
+			local name = figure:GetAttribute("DanceInternalName")
+			if name == "RAGDOLL" then
+				dancereact.Ragdoll = dancereact.Ragdoll or 0
+				if t - dancereact.Ragdoll > 15 then
+					if math.random(5) == 1 then
+						notify("OW OW OW OW OW OW")
+					elseif math.random(4) == 1 then
+						notify("OH GOD NOT THE RAGDOLL NOT THE RAGDOLL")
+					elseif math.random(3) == 1 then
+						notify("NO NO NOT AGAIN NOT AGAIN NOT AGAIN")
+					elseif math.random(2) == 1 then
+						notify("OH NO NO NO NO WAIT WAIT WAIT WAIT WAIT")
+					else
+						notify("NO THIS IS NOT CANON I AM IMMORTAL")
+					end
+				end
+				dancereact.Ragdoll = t
+			end
+			if name == "KEMUSAN" then
+				dancereact.Kemusan = dancereact.Kemusan or 0
+				if t - dancereact.Kemusan > 60 then
+					task.delay(2, notify, "how many SOCIAL CREDITS do i get?")
+				end
+				dancereact.Kemusan = t
+			end
+			if name == "TUKATUKADONKDONK" then
+				dancereact.TUKATUKADONKDONK = dancereact.TUKATUKADONKDONK or 0
+				if t - dancereact.TUKATUKADONKDONK > 60 then
+					task.delay(1, notify, "i have no idea what this is")
+					task.delay(4, notify, "the green aura looking thing looks cool")
+				end
+				dancereact.TUKATUKADONKDONK = t
+			end
+			if name == "ClassC14" then
+				dancereact.ClassC14 = dancereact.ClassC14 or 0
+				if t - dancereact.ClassC14 > 60 then
+					task.delay(2, notify, "this song is INTERESTING...")
+				end
+				dancereact.ClassC14 = t
+			end
+			if name == "SpeedAndKaiCenat" then
+				if not dancereact.AlightMotion then
+					task.delay(1, notify, "i have an idea " .. game.Players.LocalPlayer.Name:lower())
+					task.delay(4, notify, "what if lightning cannon is the other guy")
+				end
+				dancereact.AlightMotion = true
+			end
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
+		ContextActionService:UnbindAction("Uhhhhhh_ILAttack")
+		ContextActionService:UnbindAction("Uhhhhhh_ILTeleport")
+		ContextActionService:UnbindAction("Uhhhhhh_ILDestroy")
+		flyv:Destroy()
+		flyg:Destroy()
+		if chatconn then
+			chatconn:Disconnect()
+			chatconn = nil
+		end
+	end
+	--return m
 end)
 
 AddModule(function()
