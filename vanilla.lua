@@ -721,8 +721,11 @@ AddModule(function()
 		game.Debris:AddItem(hitvis, 1)
 		local parts = workspace:GetPartBoundsInRadius(position, radius)
 		for _,part in parts do
-			if part.Parent and part.Parent:FindFirstChildOfClass("Humanoid") then
-				ReanimateFling(part.Parent)
+			if part.Parent then
+				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
+				if hum and hum.RootPart then
+					ReanimateFling(part.Parent)
+				end
 			end
 		end
 	end
@@ -971,7 +974,7 @@ AddModule(function()
 			altnecksnap = true
 			local attackside = (attackdur < 0.25) == (attackcount % 2 == 0)
 			if lastattackside ~= attackside then
-				Attack((root.CFrame * CFrame.new(0, -math.cos(math.rad(attackdegrees + 10)) * 4.5 * scale, -4.5 * scale)).Position, 4.5 * scale)
+				Attack((root.CFrame * CFrame.new(0, -math.cos(math.rad(attackdegrees + 10)) * 4.5 * scale, -4.5 * scale * m.HitboxScale)).Position, 4.5 * scale * m.HitboxScale)
 			end
 			lastattackside = attackside
 			if attackside then
