@@ -893,6 +893,8 @@ AddModule(function()
 			"im POWERFUL, how is that FUN?",
 			"you know what they say, OVERPOWERED is ABSOLUTELY LAME",
 			"NOT because im no longer IMMORTAL for real",
+			"SO BORED, i would LOVE to use a NOOB skin",
+			"lets hope " .. game.Players.LocalPlayer.Name:lower() .. " is NOT BORING",
 		}
 		task.delay(3, notify, lines[math.random(1, #lines)])
 		if chatconn then
@@ -1552,7 +1554,7 @@ AddModule(function()
 		animator:Step(t)
 		local t2 = t / 0.461
 		for _,v in instances do
-			v.TimeScale = 0.5 + 0.5 * math.cos(t2 * math.pi * 2)
+			v.TimeScale = 0.7 + 0.3 * math.cos(t2 * math.pi * 2)
 		end
 	end
 	m.Destroy = function(figure: Model?)
