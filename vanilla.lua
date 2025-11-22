@@ -706,29 +706,6 @@ AddModule(function()
 			text:Destroy()
 		end)
 	end
-	local function Attack(position, radius)
-		local hitvis = Instance.new("Part")
-		hitvis.Name = RandomString() -- built into Uhhhhhh
-		hitvis.CastShadow = false
-		hitvis.Material = Enum.Material.ForceField
-		hitvis.Anchored = true
-		hitvis.CanCollide = false
-		hitvis.Shape = Enum.PartType.Ball
-		hitvis.Color = Color3.new(0, 0, 0)
-		hitvis.Size = Vector3.one * radius * 2
-		hitvis.CFrame = CFrame.new(position)
-		hitvis.Parent = workspace
-		game.Debris:AddItem(hitvis, 1)
-		local parts = workspace:GetPartBoundsInRadius(position, radius)
-		for _,part in parts do
-			if part.Parent then
-				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
-				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
-					ReanimateFling(part.Parent)
-				end
-			end
-		end
-	end
 
 	local flight = false
 	local start = 0
@@ -753,6 +730,85 @@ AddModule(function()
 	local flyv, flyg = nil, nil
 	local chatconn = nil
 	local dancereact = {}
+	local hitboxhits = 0
+	local lasthitreact = -99999
+	local function Attack(position, radius)
+		local hitvis = Instance.new("Part")
+		hitvis.Name = RandomString() -- built into Uhhhhhh
+		hitvis.CastShadow = false
+		hitvis.Material = Enum.Material.ForceField
+		hitvis.Anchored = true
+		hitvis.CanCollide = false
+		hitvis.Shape = Enum.PartType.Ball
+		hitvis.Color = Color3.new(0, 0, 0)
+		hitvis.Size = Vector3.one * radius * 2
+		hitvis.CFrame = CFrame.new(position)
+		hitvis.Parent = workspace
+		game.Debris:AddItem(hitvis, 1)
+		local hitamount = 0
+		local parts = workspace:GetPartBoundsInRadius(position, radius)
+		for _,part in parts do
+			if part.Parent then
+				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
+				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+					if ReanimateFling(part.Parent) then
+						hitboxhits += 1
+						hitamount += 1
+						task.delay(5, function()
+							hitboxhits -= 1
+						end)
+					end
+				end
+			end
+		end
+		local t = tick()
+		if t > lasthitreact then
+			lasthitreact = t + 20
+			if not HatReanimator.HatCollide then
+				if math.random(2) == 1 then
+					notify("all it takes to KILL ONE is to RESPAWN")
+					task.delay(4, notify, "(why didnt you turn on 'hat collide')")
+				else
+					notify("now lets FLING them after TWO DAYS")
+				end
+			elseif hitamount >= 8 then
+				if math.random(2) == 1 then
+					notify("that is so SATISFYING, and YOU know it")
+				else
+					notify("take THAT, lightning cannon! " .. hitamount .. " in ONE MELEE SWING")
+					task.delay(5, notify, "bet you CANNOT do THAT cuz you are STUCK in RANGED")
+				end
+			elseif hitboxhits >= 8 then
+				if math.random(2) == 1 then
+					notify("this is a KILLHOUSE")
+				else
+					notify("YES!! KILL SPREE KILL SPREE")
+				end
+			elseif hitamount == 2 and hitboxhits == 2 then
+				if math.random(3) == 1 then
+					notify("BOTH SCREAMED YET UNHEARD.")
+				elseif math.random(2) == 1 then
+					notify("NEVER SEEN AGAIN.")
+				else
+					notify("NOBODY NEEDED THEM.")
+				end
+			elseif hitamount == 1 and hitboxhits == 1 then
+				if math.random(5) == 1 then
+					notify("ANOTHER ONE BITES THE DUST.")
+				elseif math.random(4) == 1 then
+					notify("HES GONE NOW.")
+				elseif math.random(3) == 1 then
+					notify("POOR GUY.")
+				elseif math.random(2) == 1 then
+					notify("NEVER SEEN AGAIN.")
+				else
+					notify("HE HAD NO LAST WORDS.")
+				end
+			else
+				lasthitreact = t
+			end
+		end
+	end
 	m.Init = function(figure: Model)
 		start = tick()
 		flight = false
@@ -895,6 +951,7 @@ AddModule(function()
 			"NOT because im no longer IMMORTAL for real",
 			"SO BORED, i would LOVE to use a NOOB skin",
 			"lets hope " .. game.Players.LocalPlayer.Name:lower() .. " is NOT BORING",
+			"last time things were FUN for me was FIGHTING LIGHTNING CANNON",
 		}
 		task.delay(3, notify, lines[math.random(1, #lines)])
 		if chatconn then
