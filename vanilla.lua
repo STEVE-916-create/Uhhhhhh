@@ -1240,27 +1240,58 @@ AddModule(function()
 		}
 	end
 
-	local function notify(message)
+	local torso = nil
+	local function notify(message, glitchy)
 		if not m.Notifications then return end
-		local prefix = "[Immortality Lord]: "
-		local text = Instance.new("TextLabel")
-		text.Name = RandomString()
-		text.Position = UDim2.new(0, 0, 0.95, 0)
-		text.Size = UDim2.new(1, 0, 0.05, 0)
-		text.BackgroundTransparency = 1
-		text.Text = prefix
-		text.Font = Enum.Font.SpecialElite
-		text.TextScaled = true
-		text.TextColor3 = Color3.new(1,1,1)
-		text.TextStrokeTransparency = 0
-		text.TextXAlignment = Enum.TextXAlignment.Left
-		text.Parent = HiddenGui
+		if not notifyhead then return end
+		local dialog = notifyhead:FindFirstChild("NOTIFICATION")
+		if dialog then
+			dialog:Destroy()
+		end
+		dialog = Instance.new("BillboardGui", torso)
+		dialog.Size = UDim2.new(0, 2000, 2, 0)
+		dialog.StudsOffset = Vector3.new(0, 5, 0)
+		dialog.Adornee = torso
+		dialog.Name = "NOTIFICATION"
+		local text1 = Instance.new("TextLabel", dialog)
+		text1.BackgroundTransparency = 1
+		text1.BorderSizePixel = 0
+		text1.Text = ""
+		text1.Font = "Code"
+		text1.TextScaled = true
+		text1.TextStrokeTransparency = 0
+		text1.TextStrokeColor3 = Color3.new(1, 1, 1)
+		text1.Size = UDim2.new(1, 0, 1, 0)
+		text1.ZIndex = 0
+		local text2 = text1:Clone()
+		text1.ZIndex = 1
+		text1.TextColor3 = Color3.new
+		swait(120)
+		for i = 1,50 do
+			swait()
+			sayingstuff2.Position = sayingstuff2.Position - UDim2.new(0,math.random(-3,3),0,math.random(-3,3))
+			sayingstuff3.Position = sayingstuff2.Position - UDim2.new(0,math.random(-3,3),0,math.random(-3,3)) 
+			sayingstuff2.Rotation = sayingstuff2.Rotation + math.random(-2,2)
+			sayingstuff3.Rotation = sayingstuff3.Rotation + math.random(-2,2)
+			sayingstuff2.TextStrokeTransparency = i/50
+			sayingstuff2.TextTransparency = sayingstuff2.TextStrokeTransparency
+			sayingstuff3.TextStrokeTransparency = sayingstuff2.TextStrokeTransparency
+			sayingstuff3.TextTransparency = sayingstuff2.TextStrokeTransparency
+		end
 		task.spawn(function()
 			local cps = 30
 			local t = tick()
 			local ll = 0
 			repeat
 				task.wait()
+				if glitchy then
+					local fonts = {"Antique", "Arcade", "Arial", "ArialBold", "Bodoni", "Cartoon", "Code", "Fantasy", "Garamond", "Gotham", "GothamBlack", "GothamBold", "GothamSemibold", "Highway", "SciFi", "SourceSans", "SourceSansBold", "SourceSansItalic", "SourceSansLight", "SourceSansSemibold"}
+					local randomfont = fonts[math.random(1, #fonts)]
+					text1.Font = randomfont
+					text2.Font = randomfont
+				end
+				text1.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
+				text2.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
 				local l = math.floor((tick() - t) * cps)
 				if l > ll then
 					ll = l
@@ -1274,10 +1305,7 @@ AddModule(function()
 				text.Text = prefix .. string.sub(message, 1, l)
 			until ll >= #message
 			text.Text = prefix .. message
-			task.wait(1)
-			game:GetService("TweenService"):Create(text, TweenInfo.new(1, Enum.EasingStyle.Linear),{TextTransparency = 1, TextStrokeTransparency = 1}):Play()
-			task.wait(1)
-			text:Destroy()
+			dia:Destroy()
 		end)
 	end
 
@@ -1353,6 +1381,7 @@ AddModule(function()
 		flyg.P = 3000
 		flyg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 		flyg.Parent = nil
+		torso = figure:FindFirstChild("Torso")
 		ContextActionService:BindAction("Uhhhhhh_LCFlight", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
 				flight = not flight
@@ -1394,7 +1423,7 @@ AddModule(function()
 		if not hum then return end
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
-		local torso = figure:FindFirstChild("Torso")
+		torso = figure:FindFirstChild("Torso")
 		if not torso then return end
 		
 		-- fly
