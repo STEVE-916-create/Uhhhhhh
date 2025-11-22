@@ -723,7 +723,7 @@ AddModule(function()
 		for _,part in parts do
 			if part.Parent then
 				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
-				if hum and hum.RootPart then
+				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
 					ReanimateFling(part.Parent)
 				end
 			end
@@ -770,7 +770,8 @@ AddModule(function()
 		}
 		sword = {
 			Group = "Sword",
-			Limb = "Right Arm", Offset = CFrame.identity
+			Limb = "Right Arm",
+			Offset = CFrame.identity
 		}
 		table.insert(HatReanimator.HatCFrameOverride, leftwing)
 		table.insert(HatReanimator.HatCFrameOverride, rightwing)
