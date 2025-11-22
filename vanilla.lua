@@ -707,7 +707,7 @@ AddModule(function()
 		hitvis.CanCollide = false
 		hitvis.Shape = Enum.PartType.Ball
 		hitvis.Color = Color3.new(0, 0, 0)
-		hitvis.Size = Vector3.one * radius
+		hitvis.Size = Vector3.one * radius * 2
 		hitvis.CFrame = CFrame.new(position)
 		hitvis.Parent = workspace
 		game.Debris:AddItem(hitvis, 1)
@@ -963,7 +963,7 @@ AddModule(function()
 			altnecksnap = true
 			local attackside = (attackdur < 0.25) == (attackcount % 2 == 0)
 			if lastattackside ~= attackside then
-				Attack((root.CFrame * CFrame.new(0, -math.cos(math.rad(attackdegrees + 10)) * 4.5 * scale, -4.5 * scale)).Position, 9 * scale)
+				Attack((root.CFrame * CFrame.new(0, -math.cos(math.rad(attackdegrees + 10)) * 4.5 * scale, -4.5 * scale)).Position, 4.5 * scale)
 			end
 			lastattackside = attackside
 			if attackside then
