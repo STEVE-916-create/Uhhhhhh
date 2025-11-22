@@ -622,6 +622,7 @@ AddModule(function()
 	m.FixNeckSnapReplicate = true
 	m.Notifications = true
 	m.FlySpeed = 2
+	m.HitboxScale = 1
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Neck Snapping", m.NeckSnap).Changed:Connect(function(val)
 			m.NeckSnap = val
@@ -640,6 +641,11 @@ AddModule(function()
 		}, m.FlySpeed).Changed:Connect(function(val)
 			m.FlySpeed = val
 		end)
+		Util_CreateDropdown(parent, "Hitbox Scale", {
+			"1x", "2x", "3x", "4x"
+		}, m.HitboxScale).Changed:Connect(function(val)
+			m.HitboxScale = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Bee = not not save.Bee
@@ -647,6 +653,7 @@ AddModule(function()
 		m.FixNeckSnapReplicate = not save.DontFixNeckSnapReplicate
 		m.Notifications = not save.NoTextType
 		m.FlySpeed = save.FlySpeed or m.FlySpeed
+		m.HitboxScale = save.HitboxScale or m.HitboxScale
 	end
 	m.SaveConfig = function()
 		return {
@@ -655,6 +662,7 @@ AddModule(function()
 			DontFixNeckSnapReplicate = not m.FixNeckSnapReplicate,
 			NoTextType = not m.Notifications,
 			FlySpeed = m.FlySpeed,
+			HitboxScale = m.HitboxScale,
 		}
 	end
 
