@@ -1275,6 +1275,7 @@ AddModule(function()
 		text1.ZIndex = 0
 		text1.TextColor3 = Color3.new(1, 0, 0)
 		local text2 = text1:Clone()
+		text2.Parent = dialog
 		text2.ZIndex = 1
 		task.spawn(function()
 			local cps = 30
@@ -1343,7 +1344,7 @@ AddModule(function()
 		end)
 	end
 	local function randomdialog(arr, glitchy)
-		notify(arr[math.random(1, arr)], glitchy)
+		notify(arr[math.random(1, #arr)], glitchy)
 	end
 	local function Effect(params)
 		if not torso then return end
