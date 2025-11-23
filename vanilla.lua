@@ -1213,6 +1213,7 @@ AddModule(function()
 
 	m.Bee = false
 	m.Notifications = true
+	m.Sounds = true
 	m.FlySpeed = 2
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Bee Wings", m.Bee).Changed:Connect(function(val)
@@ -1220,6 +1221,9 @@ AddModule(function()
 		end)
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
+		end)
+		Util_CreateSwitch(parent, "Sounds", m.Sounds).Changed:Connect(function(val)
+			m.Sounds = val
 		end)
 		Util_CreateDropdown(parent, "Fly Speed", {
 			"1x", "2x", "3x", "4x", "5x", "6.1x", "6.7x"
@@ -1230,21 +1234,26 @@ AddModule(function()
 	m.LoadConfig = function(save: any)
 		m.Bee = not not save.Bee
 		m.Notifications = not save.NoTextType
+		m.Sounds = not save.Muted
 		m.FlySpeed = save.FlySpeed or m.FlySpeed
 	end
 	m.SaveConfig = function()
 		return {
 			Bee = m.Bee,
 			NoTextType = not m.Notifications,
+			Muted = not m.Sounds,
 			FlySpeed = m.FlySpeed,
 		}
 	end
 
+	local hum = nil
+	local root = nil
 	local torso = nil
 	local function notify(message, glitchy)
+		glitchy = not not glitchy
 		if not m.Notifications then return end
-		if not notifyhead then return end
-		local dialog = notifyhead:FindFirstChild("NOTIFICATION")
+		if not torso then return end
+		local dialog = torso:FindFirstChild("NOTIFICATION")
 		if dialog then
 			dialog:Destroy()
 		end
@@ -1263,21 +1272,9 @@ AddModule(function()
 		text1.TextStrokeColor3 = Color3.new(1, 1, 1)
 		text1.Size = UDim2.new(1, 0, 1, 0)
 		text1.ZIndex = 0
+		text1.TextColor3 = Color3.new(1, 0, 0)
 		local text2 = text1:Clone()
-		text1.ZIndex = 1
-		text1.TextColor3 = Color3.new
-		swait(120)
-		for i = 1,50 do
-			swait()
-			sayingstuff2.Position = sayingstuff2.Position - UDim2.new(0,math.random(-3,3),0,math.random(-3,3))
-			sayingstuff3.Position = sayingstuff2.Position - UDim2.new(0,math.random(-3,3),0,math.random(-3,3)) 
-			sayingstuff2.Rotation = sayingstuff2.Rotation + math.random(-2,2)
-			sayingstuff3.Rotation = sayingstuff3.Rotation + math.random(-2,2)
-			sayingstuff2.TextStrokeTransparency = i/50
-			sayingstuff2.TextTransparency = sayingstuff2.TextStrokeTransparency
-			sayingstuff3.TextStrokeTransparency = sayingstuff2.TextStrokeTransparency
-			sayingstuff3.TextTransparency = sayingstuff2.TextStrokeTransparency
-		end
+		text2.ZIndex = 1
 		task.spawn(function()
 			local cps = 30
 			local t = tick()
@@ -1290,46 +1287,228 @@ AddModule(function()
 					text1.Font = randomfont
 					text2.Font = randomfont
 				end
+				local color = Color3.fromHSV(tick() % 1, 1, 1)
+				text1.TextColor3 = Color3.new(0, 0, 0):Lerp(color, 0.5)
+				text2.TextColor3 = color
 				text1.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
 				text2.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
 				local l = math.floor((tick() - t) * cps)
 				if l > ll then
 					ll = l
-					local snd = Instance.new("Sound")
-					snd.Volume = 1
-					snd.SoundId = "rbxassetid://4681278859"
-					snd.TimePosition = 0.07
-					snd.Playing = true
-					snd.Parent = text
 				end
-				text.Text = prefix .. string.sub(message, 1, l)
+				text.Text = string.sub(message, 1, l)
 			until ll >= #message
-			text.Text = prefix .. message
-			dia:Destroy()
+			text.Text = message
+			t = tick()
+			repeat
+				task.wait()
+				if glitchy then
+					local fonts = {"Antique", "Arcade", "Arial", "ArialBold", "Bodoni", "Cartoon", "Code", "Fantasy", "Garamond", "Gotham", "GothamBlack", "GothamBold", "GothamSemibold", "Highway", "SciFi", "SourceSans", "SourceSansBold", "SourceSansItalic", "SourceSansLight", "SourceSansSemibold"}
+					local randomfont = fonts[math.random(1, #fonts)]
+					text1.Font = randomfont
+					text2.Font = randomfont
+				end
+				local a = tick() - t
+				local color = Color3.fromHSV(tick() % 1, 1, 1)
+				text1.TextColor3 = Color3.new(0, 0, 0):Lerp(color, 0.5)
+				text2.TextColor3 = color
+				text1.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
+				text2.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
+				text1.Rotation = a * math.random() * -20
+				text2.Rotation = a * math.random() * 20
+				text1.TextTransparency = a
+				text2.TextTransparency = a
+				text1.TextStrokeTransparency = a
+				text2.TextStrokeTransparency = a
+			until tick() - t > 1
+			dialog:Destroy()
 		end)
 	end
-
-	local flight = false
-	local start = 0
-	local attack = -999
-	local attackname = ""
-	local joints = {
-		r = CFrame.identity,
-		n = CFrame.identity,
-		rs = CFrame.identity,
-		ls = CFrame.identity,
-		rh = CFrame.identity,
-		lh = CFrame.identity,
-		sw = CFrame.identity,
-	}
-	local leftwing = {}
-	local rightwing = {}
-	local gun = {}
-	local flyv, flyg = nil, nil
-	local chatconn = nil
+	local function Effect(params)
+		if not torso then return end
+		local shapetype = params.EffectType or "Sphere"
+		local size = params.Size or Vector3.new(1, 1, 1)
+		local endsize = params.SizeEnd or Vector3.new(0, 0, 0)
+		local transparency = params.Transparency or 0
+		local endtransparency = params.TransparencyEnd or 1
+		local cfr = params.CFrame or torso.CFrame
+		local movedir = params.MoveToPos
+		local rotx = params.RotationX or 0
+		local roty = params.RotationY or 0
+		local rotz = params.RotationZ or 0
+		local material = params.Material or "Neon"
+		local color = params.Color or Color3.new(1, 1, 1)
+		local hOK,sOK,vOK = color:ToHSV()
+		local rainbow = false
+		if sOK > .1 then
+			rainbow = true
+		end
+		local ticks = params.Time or 45
+		local start = tick()
+		local boomerang = params.Boomerang
+		local boomerangsize = params.BoomerangSize
+		task.spawn(function()
+			local effect = Instance.new("Part")
+			effect.Massless = true
+			effect.Transparency = transparency
+			effect.CanCollide = false
+			effect.CanTouch = false
+			effect.Anchored = true
+			effect.Color = color
+			effect.Name = RandomString()
+			effect.Size = size
+			effect.Material = material
+			effect.Parent = workspace
+			local mesh = nil
+			if shapetype == "Sphere" then
+				mesh = Instance.new("SpecialMesh", effect)
+				mesh.MeshType = "Sphere"
+				mesh.Scale = size
+			elseif shapetype == "Block" or shapetype == "Box" then
+				mesh = Instance.new("BlockMesh", effect)
+				mesh.Scale = size
+			end
+			if mesh ~= nil then
+				local movespeed = nil
+				local growth = nil
+				if shapetype == "Block" then
+					effect.CFrame = cfr * CFrame.Angles(
+						math.random() * math.pi * 2,
+						math.random() * math.pi * 2,
+						math.random() * math.pi * 2
+					)
+				else
+					effect.CFrame = cfr
+				end
+				if boomerang and boomerangsize then
+					local bmr1 = 1 + boomerang / 50
+					local bmr2 = 1 + boomerangsize / 50
+					if movedir ~= nil then
+						movespeed = ((cfr.Position - movedir).Magnitude / ticks) * bmr1
+					end
+					growth = (size - endsize) * (bmr2 + 1)
+					local t = 0
+					repeat
+						local dt = task.wait()
+						t = tick() - start
+						if rainbow then
+							effect.Color = Color3.fromHSV(tick() % 1, sOK, vOK)
+						end
+						local loop = t * 60
+						mesh.Scale = size - growth * (1 - (loop / ticks) * bmr2) * bmr2
+						effect.Transparency = transparency + (endtransparency - transparency) * (loop / ticks)
+						if shapetype == "Block" then
+							effect.CFrame = cfr * CFrame.Angles(
+								math.random() * math.pi * 2,
+								math.random() * math.pi * 2,
+								math.random() * math.pi * 2
+							)
+						else
+							effect.CFrame = cfr * CFrame.Angles(
+								math.rad(rotx * loop),
+								math.rad(roty * loop),
+								math.rad(rotz * loop)
+							)
+						end
+						if movedir ~= nil then
+							effect.Position += CFrame.new(effect.Position, movedir).LookVector * movespeed * (1 - (loop / ticks) * bmr1)
+						end
+					until t > ticks / 60
+				else
+					if movedir ~= nil then
+						movespeed = (cfr.Position - movedir).Magnitude / ticks
+					end
+					growth = size - endsize
+					local t = 0
+					repeat
+						local dt = task.wait()
+						t = tick() - start
+						if rainbow then
+							effect.Color = Color3.fromHSV(tick() % 1, sOK, vOK)
+						end
+						local loop = t * 60
+						mesh.Scale = size - growth * (loop / ticks)
+						effect.Transparency = transparency + (endtransparency - transparency) * (loop / ticks)
+						if shapetype == "Block" then
+							effect.CFrame = cfr * CFrame.Angles(
+								math.random() * math.pi * 2,
+								math.random() * math.pi * 2,
+								math.random() * math.pi * 2
+							)
+						else
+							effect.CFrame = cfr * CFrame.Angles(
+								math.rad(rotx * loop),
+								math.rad(roty * loop),
+								math.rad(rotz * loop)
+							)
+						end
+						if movedir ~= nil then
+							effect.Position += CFrame.new(effect.Position, movedir).LookVector * movespeed
+						end
+					until t > ticks / 60
+				end
+			end
+			effect:Destroy()
+		end)
+	end
+	local function Lightning(params)
+		local start = params.Start or Vector3.new(0, 0, 0)
+		local finish = params.Finish or Vector3.new(0, 512, 0)
+		local offset = params.Offset or 0
+		local color = params.color or Color3.new(1, 0, 0)
+		local ticks = params.Time or 15
+		local sizestart = params.SizeStart or 0
+		local sizeend = params.SizeEnd or 1
+		local transparency = params.Transparency or 0
+		local endtransparency = params.TransparencyEnd or 1
+		local boomerangsize = params.BoomerangSize
+		local dist = (finish - start).Magnitude
+		local segs = math.clamp(dist // 10, 1, 20)
+		local curpos = start
+		local progression = (1 / segs) * dist
+		for i=1, segs do
+			local alpha = i / segs
+			local zig = Vector3.new(
+				offset * (-1 + math.random(0, 1) * 2),
+				offset * (-1 + math.random(0, 1) * 2),
+				offset * (-1 + math.random(0, 1) * 2)
+			)
+			local uwu = (CFrame.new(curpos, finish) * Vector3.new(0, 0, -progression)) + zig
+			local length = progression
+			if segs == i then
+				length = (curpos - finish).Magnitude
+				uwu = finish
+			end
+			curpos = CFrame.new(curpos, uwu) * Vector3.new(0, 0, -length)
+			Effect({
+				Time = ticks,
+				EffectType = "Box",
+				Size = Vector3.new(sizestart, sizestart, length),
+				SizeEnd = Vector3.new(sizeend, sizeend, length),
+				Transparency = transparency,
+				TransparencyEnd = endtransparency,
+				CFrame = CFrame.new(curpos, uwu) * CFrame.new(0, 0, -length / 2),
+				Material = "Neon",
+				Color = color,
+				Boomerang = 0,
+				SizeBoomerang = boomerangsize
+			})
+		end
+	end
+	local function CreateSound(id, pitch)
+		pitch = pitch or 1
+		if not m.Sounds then return end
+		if not torso then return end
+		local sound = Instance.new("Sound")
+		sound.Name = tostring(id)
+		sound.SoundId = "rbxassetid://" .. id
+		sound.Volume = 1
+		sound.Pitch = pitch
+		sound.Parent = torso
+	end
 	local function Attack(position, radius)
 		local hitvis = Instance.new("Part")
-		hitvis.Name = RandomString() -- built into Uhhhhhh
+		hitvis.Name = RandomString()
 		hitvis.CastShadow = false
 		hitvis.Material = Enum.Material.ForceField
 		hitvis.Anchored = true
@@ -1350,10 +1529,44 @@ AddModule(function()
 			end
 		end
 	end
+	local flight = false
+	local start = 0
+	local attacking = false
+	local animationOverride = nil
+	local function KaBoom()
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 0
+		notify("die... Die... DIE!!!")
+		CreateSound(1566051529)
+		task.spawn(function()
+			--CreateSound(642890855, 0.45)
+			attacking = false
+			hum.WalkSpeed = 16 * root.Size.Z
+		end)
+	end
+
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+		sw = CFrame.identity,
+	}
+	local leftwing = {}
+	local rightwing = {}
+	local gun = {}
+	local flyv, flyg = nil, nil
+	local chatconn = nil
+	local dancereact = {}
 	m.Init = function(figure: Model)
 		start = tick()
 		flight = false
-		attack = -999
+		attacking = false
+		animationOverride = nil
 		--SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1)
 		leftwing = {
 			MeshId = "17269814619", TextureId = "",
@@ -1385,26 +1598,43 @@ AddModule(function()
 		ContextActionService:BindAction("Uhhhhhh_LCFlight", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
 				flight = not flight
+				if math.random(4) == 1 then
+					if flight then
+						if math.random(4) == 1 then
+							notify("i PIERCE through the HEAVENS", true)
+						elseif math.random(3) == 1 then
+							notify("my FLYING ANIMATION is NOT JUST for SHOW", true)
+						elseif math.random(2) == 1 then
+							notify("im a birb")
+							task.delay(1.7, notify, "GOVERNMENT DRONE", true)
+						else
+							notify("PEASANTS.", true)
+						end
+					else
+						if math.random(2) == 1 then
+							task.delay(1, notify, "sometimes i wonder why i stay near ground")
+						else
+							notify("watch me not crash on the ground as i descend")
+						end
+					end
+				end
 			end
 		end, true, Enum.KeyCode.F)
 		ContextActionService:SetTitle("Uhhhhhh_LCFlight", "F")
 		ContextActionService:SetPosition("Uhhhhhh_LCFlight", UDim2.new(1, -130, 1, -130))
+		task.delay(0, notify, "Lightning Cannon, by LuaQuack")
 		local lines = {
-			"theres NOTHING really FUN for me to do since 2022",
-			"i can kill ANYTHING, whats the FUN in THAT?",
-			"lightning cannon is an IDIOT! cant he READ my NAME??",
-			"the wiki says i cant SPEAK. NOT FUN.",
-			"PLEASE turn ME into a moveset",
-			"MORE BORED than viewport Immortality Lord",
-			string.reverse("so bored, i would talk in reverse"),
-			"im POWERFUL, how is that FUN?",
-			"you know what they say, OVERPOWERED is ABSOLUTELY LAME",
-			"NOT because im no longer IMMORTAL for real",
-			"SO BORED, i would LOVE to use a NOOB skin",
-			"lets hope " .. game.Players.LocalPlayer.Name:lower() .. " is NOT BORING",
-			"last time things were FUN for me was FIGHTING LIGHTNING CANNON",
+			"Immortality Lord did not have to say that...",
+			"that intro sucked",
+			"I THINK THE USER KNOWS WHO I AM",
+			"blah blah blah blah BLAHH!!",
+			"die... Die... DIE!!!",
+			"now WHERE IS THE MELEE USER",
+			"its been years since the good times for me",
+			"WHO ARE WE GOING TO BLAST TO STARDUST TODAY?",
+			"ready or not, MY LIGHTNING CANNON IS READY",
 		}
-		task.delay(3, notify, lines[math.random(1, #lines)])
+		task.delay(1, notify, lines[math.random(1, #lines)], true)
 		if chatconn then
 			chatconn:Disconnect()
 		end
@@ -1419,11 +1649,11 @@ AddModule(function()
 		local scale = figure:GetScale()
 		
 		-- get vii
-		local hum = figure:FindFirstChild("Humanoid")
-		if not hum then return end
-		local root = figure:FindFirstChild("HumanoidRootPart")
-		if not root then return end
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
 		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
 		if not torso then return end
 		
 		-- fly
@@ -1454,82 +1684,35 @@ AddModule(function()
 		if figure:GetAttribute("IsDancing") then
 			hum.HipHeight = 0
 		else
-			hum.HipHeight = 2.5
+			hum.HipHeight = 3
 		end
 		
 		-- joints
 		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
-		local swordoff = CFrame.identity
+		local gunoff = CFrame.identity
 		
-		local timingsine = t * 60 -- timing from patchma's il
+		local timingsine = t * 60 -- timing from original
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		-- animations
-		rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
-		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), 0, math.rad(-20))
-		rht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(-20))
-		lht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(-10))
-		if onground and not flight then
-			rst = CFrame.Angles(0, 0, math.rad(-10))
-			swordoff = CFrame.new(0, -1, 0) * CFrame.Angles(math.rad(154.35 - 5.65 * math.sin(timingsine / 25)), 0, 0)
+		gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(math.rad(-90), 0, 0)
+		if root.Velocity < 8 * scale then
+			rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50))
+			nt = CFrame.Angles(math.rad(20), 0, 0)
+			rst = CFrame.Angles(math.rad(135 + 8.5 * math.cos(timingsine / 50)), 0, math.rad(25))
+			lst = CFrame.Angles(math.rad(25 + 8.5 * math.cos(timingsine / 50)), 0, math.rad(-25 - 5 * math.cos(timingsine / 25)))
+			rht = CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
+			lht = CFrame.Angles(0, math.rad(10), 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54) - 5 * math.cos(timingsine / 41)), 0, 0)
 		else
-			rst = CFrame.Angles(math.rad(45), 0, math.rad(80 - 5 * math.cos(timingsine / 25)))
-			swordoff = CFrame.new(0, 0, -0.5) * CFrame.Angles(0, math.rad(170), math.rad(-10))
+			rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(math.rad(40), 0, 0)
+			nt = CFrame.new(0, -0.25, 0) * CFrame.Angles(math.rad(-20), 0, 0)
+			rst = CFrame.Angles(math.rad(-45), 0, math.rad(5 + 2 * math.cos(timingsine / 19)))
+			lst = CFrame.Angles(math.rad(-45), 0, math.rad(-5 - 2 * math.cos(timingsine / 19)))
+			rht = CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-20 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
+			lht = CFrame.Angles(0, math.rad(10), 0) * CFrame.Angles(math.rad(-20 - 9 * math.cos(timingsine / 54) - 5 * math.cos(timingsine / 41)), 0, 0)
 		end
-		local altnecksnap = hum.MoveDirection.Magnitude > 0
-		if not altnecksnap then
-			nt = CFrame.Angles(math.rad(20), math.rad(10 * math.sin(timingsine / 50)), 0)
-		end
-		local attackdur = t - attack
-		if attackdur < 0.5 then
-			altnecksnap = true
-			local attackside = (attackdur < 0.25) == (attackcount % 2 == 0)
-			if lastattackside ~= attackside then
-				Attack((root.CFrame * CFrame.new(0, -math.cos(math.rad(attackdegrees + 10)) * 4.5 * scale, -4.5 * scale * m.HitboxScale)).Position, 4.5 * scale * m.HitboxScale)
-			end
-			lastattackside = attackside
-			if attackside then
-				rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(-20))
-				rst = CFrame.Angles(0, math.rad(-50), math.rad(attackdegrees))
-				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
-			else
-				rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(20))
-				rst = CFrame.Angles(0, math.rad(50), math.rad(attackdegrees))
-				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
-			end
-		end
-		if altnecksnap then
-			if math.random(15) == 1 then
-				necksnap = timingsine
-				necksnapcf = CFrame.Angles(
-					math.rad(math.random(-20, 20)),
-					math.rad(math.random(-20, 20)),
-					math.rad(math.random(-20, 20))
-				)
-			end
-		else
-			if math.random(15) == 1 then
-				necksnap = timingsine
-				necksnapcf = CFrame.Angles(
-					math.rad(20 + math.random(-20, 20)),
-					math.rad((10 * math.sin(timingsine / 50)) + math.random(-20, 20)),
-					math.rad(math.random(-20, 20))
-				)
-			end
-		end
-		
-		-- fix neck snap replicate
-		local snaptime = 1
-		if m.FixNeckSnapReplicate then
-			snaptime = 7
-		end
-		
-		-- store the sword when dancing
-		if figure:GetAttribute("IsDancing") then
-			sword.Limb = "Torso"
-			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(115)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1.5, 0)
-		else
-			sword.Limb = "Right Arm"
+		if animationOverride then
+			rt, nt, rst, lst, rht, lht, gunoff = animationOverride(rt, nt, rst, lst, rht, lht, gunoff)
 		end
 		
 		-- apply scaling
@@ -1550,14 +1733,14 @@ AddModule(function()
 		local lhj = torso:FindFirstChild("Left Hip")
 		
 		-- interpolation
-		local alpha = math.exp(-17.25 * dt)
+		local alpha = math.exp(-18.6 * dt)
 		joints.r = rt:Lerp(joints.r, alpha)
 		joints.n = nt:Lerp(joints.n, alpha)
 		joints.rs = rst:Lerp(joints.rs, alpha)
 		joints.ls = lst:Lerp(joints.ls, alpha)
 		joints.rh = rht:Lerp(joints.rh, alpha)
 		joints.lh = lht:Lerp(joints.lh, alpha)
-		joints.sw = swordoff:Lerp(joints.sw, alpha)
+		joints.sw = gunoff:Lerp(joints.sw, alpha)
 		
 		-- apply transforms
 		rj.Transform = joints.r
@@ -1593,47 +1776,15 @@ AddModule(function()
 			local name = figure:GetAttribute("DanceInternalName")
 			if name == "RAGDOLL" then
 				dancereact.Ragdoll = dancereact.Ragdoll or 0
-				if t - dancereact.Ragdoll > 15 then
-					if math.random(5) == 1 then
-						notify("OW OW OW OW OW OW")
-					elseif math.random(4) == 1 then
-						notify("OH GOD NOT THE RAGDOLL NOT THE RAGDOLL")
-					elseif math.random(3) == 1 then
-						notify("NO NO NOT AGAIN NOT AGAIN NOT AGAIN")
-					elseif math.random(2) == 1 then
-						notify("OH NO NO NO NO WAIT WAIT WAIT WAIT WAIT")
-					else
-						notify("NO THIS IS NOT CANON I AM IMMORTAL")
-					end
+				if t - dancereact.Ragdoll > 1 then
+					notify("ow my leg")
 				end
 				dancereact.Ragdoll = t
-			end
-			if name == "KEMUSAN" then
-				dancereact.Kemusan = dancereact.Kemusan or 0
-				if t - dancereact.Kemusan > 60 then
-					task.delay(2, notify, "how many SOCIAL CREDITS do i get?")
-				end
-				dancereact.Kemusan = t
-			end
-			if name == "TUKATUKADONKDONK" then
-				dancereact.TUKATUKADONKDONK = dancereact.TUKATUKADONKDONK or 0
-				if t - dancereact.TUKATUKADONKDONK > 60 then
-					task.delay(1, notify, "i have no idea what this is")
-					task.delay(4, notify, "the green aura looking thing looks cool")
-				end
-				dancereact.TUKATUKADONKDONK = t
-			end
-			if name == "ClassC14" then
-				dancereact.ClassC14 = dancereact.ClassC14 or 0
-				if t - dancereact.ClassC14 > 60 then
-					task.delay(2, notify, "this song is INTERESTING...")
-				end
-				dancereact.ClassC14 = t
 			end
 			if name == "SpeedAndKaiCenat" then
 				if not dancereact.AlightMotion then
 					task.delay(1, notify, "i have an idea " .. game.Players.LocalPlayer.Name:lower())
-					task.delay(4, notify, "what if lightning cannon is the other guy")
+					task.delay(4, notify, "what if immortality lord is the other guy")
 				end
 				dancereact.AlightMotion = true
 			end
@@ -1651,7 +1802,8 @@ AddModule(function()
 			chatconn = nil
 		end
 	end
-	--return m
+	if game.Players.LocalPlayer.UserId ~= 1949002397 then return end
+	return m
 end)
 
 AddModule(function()
