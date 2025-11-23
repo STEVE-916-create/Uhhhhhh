@@ -1297,9 +1297,11 @@ AddModule(function()
 				if l > ll then
 					ll = l
 				end
-				text.Text = string.sub(message, 1, l)
+				text1.Text = string.sub(message, 1, l)
+				text2.Text = string.sub(message, 1, l)
 			until ll >= #message
-			text.Text = message
+			text1.Text = message
+			text2.Text = message
 			t = tick()
 			repeat
 				task.wait()
