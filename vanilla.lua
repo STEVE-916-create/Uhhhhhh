@@ -199,6 +199,19 @@ HiddenGui -- the reference to the ScreenGui Uhhhhhh uses
 
 ]]
 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
+local UserInputService = game:GetService("UserInputService")
+local TextService = game:GetService("TextService")
+local TextChatService = game:GetService("TextChatService")
+local ContextActionService = game:GetService("ContextActionService")
+local Debris = game:GetService("Debris")
+
+local Player = Players.LocalPlayer
+
 local modules = {}
 local function AddModule(m)
 	table.insert(modules, m)
@@ -787,7 +800,7 @@ AddModule(function()
 			until ll >= #message
 			text.Text = prefix .. message
 			task.wait(1)
-			game:GetService("TweenService"):Create(text, TweenInfo.new(1, Enum.EasingStyle.Linear),{TextTransparency = 1, TextStrokeTransparency = 1}):Play()
+			TweenService:Create(text, TweenInfo.new(1, Enum.EasingStyle.Linear),{TextTransparency = 1, TextStrokeTransparency = 1}):Play()
 			task.wait(1)
 			text:Destroy()
 		end)
@@ -831,7 +844,7 @@ AddModule(function()
 			hitvis.Size = Vector3.one * radius * 2
 			hitvis.CFrame = CFrame.new(position)
 			hitvis.Parent = workspace
-			game.Debris:AddItem(hitvis, 1)
+			Debris:AddItem(hitvis, 1)
 		end
 		local hitamount = 0
 		local parts = workspace:GetPartBoundsInRadius(position, radius)
@@ -1004,7 +1017,7 @@ AddModule(function()
 						end
 					end
 					if attackcount == 50 then
-						notify("STOP RIGHT THIS INSTANT " .. game.Players.LocalPlayer.Name:upper())
+						notify("STOP RIGHT THIS INSTANT " .. Player.Name:upper())
 					end
 					attack = t
 					if flight then
@@ -1046,7 +1059,7 @@ AddModule(function()
 			"you know what they say, OVERPOWERED is ABSOLUTELY LAME",
 			"NOT because im no longer IMMORTAL for real",
 			"SO BORED, i would LOVE to use a NOOB skin",
-			"lets hope " .. game.Players.LocalPlayer.Name:lower() .. " is NOT BORING",
+			"lets hope " .. Player.Name:lower() .. " is NOT BORING",
 			"last time things were FUN for me was FIGHTING LIGHTNING CANNON",
 			"server, tune up Lightning Cannon's powerup theme...",
 		}
@@ -1055,7 +1068,7 @@ AddModule(function()
 			chatconn:Disconnect()
 		end
 		chatconn = OnPlayerChatted.Event:Connect(function(plr, msg)
-			if plr == game.Players.LocalPlayer then
+			if plr == Player then
 				notify(msg)
 			end
 		end)
@@ -1278,7 +1291,7 @@ AddModule(function()
 			end
 			if name == "SpeedAndKaiCenat" then
 				if not dancereact.AlightMotion then
-					task.delay(1, notify, "i have an idea " .. game.Players.LocalPlayer.Name:lower())
+					task.delay(1, notify, "i have an idea " .. Player.Name:lower())
 					task.delay(4, notify, "what if lightning cannon is the other guy")
 				end
 				dancereact.AlightMotion = true
@@ -1604,7 +1617,6 @@ AddModule(function()
 				length = (curpos - finish).Magnitude
 				uwu = finish
 			end
-			curpos = CFrame.new(curpos, uwu) * Vector3.new(0, 0, -length)
 			Effect({
 				Time = ticks,
 				EffectType = "Box",
@@ -1618,6 +1630,7 @@ AddModule(function()
 				Boomerang = 0,
 				SizeBoomerang = boomerangsize
 			})
+			curpos = CFrame.new(curpos, uwu) * Vector3.new(0, 0, -length)
 		end
 	end
 	local function CreateSound(id, pitch)
@@ -1643,7 +1656,7 @@ AddModule(function()
 		hitvis.Size = Vector3.one * radius * 2
 		hitvis.CFrame = CFrame.new(position)
 		hitvis.Parent = workspace
-		game.Debris:AddItem(hitvis, 1)
+		Debris:AddItem(hitvis, 1)
 		local parts = workspace:GetPartBoundsInRadius(position, radius)
 		for _,part in parts do
 			if part.Parent then
@@ -1732,19 +1745,9 @@ AddModule(function()
 				SizeBoomerang = 45
 			})
 			Attack(root.Position, 14)
-			for _=1,4 do
+			for _=1, 4 do
 				root.CFrame = root.CFrame * CFrame.new(0, 0, -25)
 				Attack(root.Position, 14)
-				Lightning({
-					Start = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
-					Finish = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
-					Offset = 25,
-					Color = Color3.new(1, 1, 1),
-					Time = math.random(30, 45),
-					SizeStart = 0.5,
-					SizeEnd = 1.5,
-					BoomerangSize = 60
-				})
 				Lightning({
 					Start = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
 					Finish = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
@@ -1756,6 +1759,16 @@ AddModule(function()
 					BoomerangSize = 60
 				})
 			end
+			Lightning({
+				Start = root.CFrame * Vector3.new(0, 0, 100),
+				Finish = root.Position,
+				Offset = 25,
+				Color = Color3.new(1, 0, 0),
+				Time = math.random(30, 45),
+				SizeStart = 0.5,
+				SizeEnd = 1.5,
+				BoomerangSize = 60
+			})
 			Effect2({
 				Time = 25,
 				EffectType = "Box",
@@ -1902,7 +1915,7 @@ AddModule(function()
 			chatconn:Disconnect()
 		end
 		chatconn = OnPlayerChatted.Event:Connect(function(plr, msg)
-			if plr == game.Players.LocalPlayer then
+			if plr == Player then
 				notify(msg)
 			end
 		end)
@@ -2046,7 +2059,7 @@ AddModule(function()
 			end
 			if name == "SpeedAndKaiCenat" then
 				if not dancereact.AlightMotion then
-					task.delay(1, notify, "i have an idea " .. game.Players.LocalPlayer.Name:lower())
+					task.delay(1, notify, "i have an idea " .. Player.Name:lower())
 					task.delay(4, notify, "what if immortality lord is the other guy")
 				end
 				dancereact.AlightMotion = true
@@ -2063,7 +2076,7 @@ AddModule(function()
 			chatconn = nil
 		end
 	end
-	if game.Players.LocalPlayer.UserId ~= 1949002397 then return end
+	if Player.UserId ~= 1949002397 then return end
 	return m
 end)
 
