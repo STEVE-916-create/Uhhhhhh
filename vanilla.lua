@@ -3160,9 +3160,11 @@ AddModule(function()
 		frame.BorderColor3 = Color3.new(1, 0.5, 0)
 		frame.BorderSizePixel = 1
 		frame.BorderMode = Enum.BorderMode.Inset
+		frame.ClipsDescendants = true
 		local text = Instance.new("TextLabel")
-		text.Position = UDim2.new(0, 2, 0, 2)
-		text.Size = UDim2.new(1, -4, 1, -4)
+		text.AnchorPoint = Vector2.new(0, 1)
+		text.Position = UDim2.new(0, 2, 1, -2)
+		text.Size = UDim2.new(1, -4, 3, 0)
 		text.BackgroundTransparency = 1
 		text.ClipsDescendants = true
 		text.FontFace = Font.fromId(12187371840)
@@ -3207,7 +3209,7 @@ AddModule(function()
 			local arr = consolelogs[darkmode]
 			for i=1, #arr do
 				if arr[i][1] <= t then
-					str ..= arr[i][2] .. "\n"
+					str ..= "\n" .. arr[i][2]
 				end
 			end
 			text.Text = str
@@ -3297,8 +3299,8 @@ AddModule(function()
 			sgui.Name = "UI"
 			sgui.Parent = textsandstuff
 			local id = 0
-			local function addtext(text, x, y, sx, sy, align)
-				local text = Instance.new("TextLabel")
+			local function addtext(t, x, y, sx, sy, align)
+				local t = Instance.new("TextLabel")
 				text.Position = UDim2.new(0, x, 0, y)
 				text.Size = UDim2.new(0, sx, 0, sy)
 				text.BackgroundTransparency = 1
@@ -3308,7 +3310,7 @@ AddModule(function()
 				text.TextXAlignment = align
 				text.TextYAlignment = Enum.TextYAlignment.Center
 				text.TextScaled = true
-				text.Text = text
+				text.Text = t
 				text.Name = tostring(id)
 				text.Parent = sgui
 				id += 1
