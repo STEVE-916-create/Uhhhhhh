@@ -7,6 +7,7 @@ execute functions from user strings.
 
 ## Filesystem structure
 Uhhhhhh's filesystem is like this
+```txt
 Executor's workspace/
 | UhhhhhhReanim/
 | | Assets/ - Contains UI Music
@@ -19,6 +20,7 @@ Executor's workspace/
 | | | Unknown/ - Ungrouped assets
 | | tree.ehehetilde - All save data in JSON
 | | .nomedia - Created for android users
+```
 
 ## Modules
 Modules are returned by a function from a luau script.
@@ -104,28 +106,28 @@ It's all pretty simple, really.
 The byteorder is in little endian.
 
 string structure
-```
+```txt
 <2 bytes short n> <n bytes string>
 ```
 
 pose structure
-```
+```txt
 <string pose_name> <4 bytes float weight> <string pose_easing_style> <string pose_easing_direction> <4 bytes float cframe component, times 12>
 ```
 
 keyframe structure
-```
+```txt
 <4 bytes float time> <2 bytes short n> <pose poses, times n>
 ```
 
 main file structure
-```
+```txt
 <string animation_name> <2 bytes short n> <keyframe keyframes, times n>
 ```
 
 ## Uhhhhhh's env
 Uhhhhhh gives modules whatever it can. Here are all of it!
-```
+```lua
 -- whatever = whatever
 
 RandomString(length) -- Random String function
@@ -541,14 +543,14 @@ AddModule(function()
 			if climbing then
 				rs.V = 0.5
 				ls.V = 0.5
-				rh.V = 0.5
-				lh.V = 0.5
+				rh.V = 0.1
+				lh.V = 0.1
 				climbFudge = 3.14
 			elseif pose == "Running" then
 				rs.V = 0.15
 				ls.V = 0.15
-				rh.V = 0.15
-				lh.V = 0.15
+				rh.V = 0.1
+				lh.V = 0.1
 			else
 				amplitude = 0.1
 				frequency = 1
@@ -1480,6 +1482,11 @@ AddModule(function()
 			elseif shapetype == "Block" or shapetype == "Box" then
 				mesh = Instance.new("BlockMesh", effect)
 				mesh.Scale = size
+			elseif shapetype == "Slash" then
+				mesh = Instance.new("SpecialMesh", effect)
+				mesh.MeshType = "FileMesh"
+				mesh.MeshId = "rbxassetid://662585058"
+				mesh.Scale = size
 			end
 			if mesh ~= nil then
 				local movespeed = nil
@@ -1564,13 +1571,6 @@ AddModule(function()
 			effect:Destroy()
 		end)
 	end
-	local function Effect2(params)
-		local params2 = table.clone(params)
-		local params3 = table.clone(params)
-		params2.Color = Color3.new(1, 0, 0)
-		params3.Color = Color3.new(1, 1, 1)
-		Effect(params2) Effect(params3)
-	end
 	local function Lightning(params)
 		local start = params.Start or Vector3.new(0, 0, 0)
 		local finish = params.Finish or Vector3.new(0, 512, 0)
@@ -1611,7 +1611,7 @@ AddModule(function()
 				Material = "Neon",
 				Color = color,
 				Boomerang = 0,
-				SizeBoomerang = boomerangsize
+				BoomerangSize = boomerangsize
 			})
 			curpos = CFrame.new(curpos, uwu) * Vector3.new(0, 0, -length)
 		end
@@ -1660,29 +1660,17 @@ AddModule(function()
 	local animationOverride = nil
 	local currentmode = 0
 	local function Dash()
+		if attacking then return end
 		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
 		hum.WalkSpeed = 16 * root.Size.Z -- figure:GetScale() hack
-		if math.random(3) == 1 then
-			randomdialog({
-				"SURPRISE",
-				"got you",
-				"Immortality Lord, YOU CANNOT DO THIS",
-				"my mobility is far better",
-				"LIGHTNING FAST",
-				"KEEP UP",
-				"EAT MY STARDUST",
-			}, true)
-		end
 		CreateSound(235097614, 1.5)
 		animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 			rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(-60))
 			nt = CFrame.Angles(0, 0, math.rad(60))
 			rst = CFrame.new(-0.25, 0, 0.25) * CFrame.Angles(math.rad(-60), 0, math.rad(-90)) * CFrame.new(0, 0, 0.5)
-			lst = CFrame.new(0.25, 0, 0.25) * CFrame.Angles(math.rad(10), 0, math.rad(95)) * CFrame.new(0, 0, 0.5)
-			rht = CFrame.new(0, 0.5, 0) * CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
-			lht = CFrame.Angles(0, math.rad(10), 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54) - 5 * math.cos(timingsine / 41)), 0, 0)
+			lst = CFrame.new(0.25, 0, 0.25) * CFrame.Angles(math.rad(-10), 0, math.rad(95)) * CFrame.new(0, 0, 0.5)
 			gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, 0)
 			return rt, nt, rst, lst, rht, lht, gunoff
 		end
@@ -1690,86 +1678,37 @@ AddModule(function()
 			task.wait(0.15)
 			if not rootu:IsDescendantOf(workspace) then return end
 			CreateSound(642890855, 0.45)
-			Effect2({
-				Time = 25,
-				EffectType = "Box",
-				Size = Vector3.new(2, 2, 2),
-				SizeEnd = Vector3.new(5, 5, 5),
-				Transparency = 0,
-				TransparencyEnd = 1,
-				CFrame = root.CFrame,
-				RotationX = math.random(-1, 1),
-				RotationY = math.random(-1, 1),
-				RotationZ = math.random(-1, 1),
-				Material = "Neon",
-				Boomerang = 0,
-				SizeBoomerang = 50
-			})
-			Effect({
-				Time = math.random(25, 45),
-				EffectType = "Sphere",
-				Size = Vector3.new(2, 100, 2),
-				SizeEnd = Vector3.new(6, 100, 6),
-				Transparency = 0,
-				TransparencyEnd = 1,
-				CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))),
-				Material = "Neon",
-				Color = Color3.new(1, 0, 0),
-				Boomerang = 0,
-				SizeBoomerang = 45
-			})
-			Effect({
-				Time = math.random(25, 45),
-				EffectType = "Sphere",
-				Size = Vector3.new(3, 100, 3),
-				SizeEnd = Vector3.new(9, 100, 9),
-				Transparency = 0,
-				TransparencyEnd = 1,
-				CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))),
-				Material = "Neon",
-				Color = Color3.new(1, 1, 1),
-				Boomerang = 0,
-				SizeBoomerang = 45
-			})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = math.random(25, 45), EffectType = "Sphere", Size = Vector3.new(2, 100, 2), SizeEnd = Vector3.new(6, 100, 6), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 45})
+			Effect({Time = math.random(25, 45), EffectType = "Sphere", Size = Vector3.new(3, 100, 3), SizeEnd = Vector3.new(9, 100, 9), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 45})
 			Attack(root.Position, 14)
 			for _=1, 4 do
 				root.CFrame = root.CFrame * CFrame.new(0, 0, -25)
 				Attack(root.Position, 14)
-				Lightning({
-					Start = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
-					Finish = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
-					Offset = 25,
-					Color = Color3.new(1, 0, 0),
-					Time = math.random(30, 45),
-					SizeStart = 0.5,
-					SizeEnd = 1.5,
-					BoomerangSize = 60
-				})
+				Lightning({Start = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)), Finish = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)), Offset = 25, Color = Color3.new(1, 0, 0), Time = math.random(30, 45), SizeStart = 0.5, SizeEnd = 1.5, BoomerangSize = 60})
 			end
-			Effect2({
-				Time = 25,
-				EffectType = "Box",
-				Size = Vector3.new(2, 2, 2),
-				SizeEnd = Vector3.new(5, 5, 5),
-				Transparency = 0,
-				TransparencyEnd = 1,
-				CFrame = root.CFrame,
-				RotationX = math.random(-1, 1),
-				RotationY = math.random(-1, 1),
-				RotationZ = math.random(-1, 1),
-				Material = "Neon",
-				Boomerang = 0,
-				SizeBoomerang = 50
-			})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(90))
 				nt = CFrame.Angles(0, 0, math.rad(-90))
 				rst = CFrame.Angles(math.rad(90), 0, math.rad(-90)) * CFrame.new(0, 0, 0.5)
-				lst = CFrame.Angles(math.rad(5), math.rad(5), math.rad(40)) * CFrame.new(0, 0, 0.5)
-				rht = CFrame.new(0, 0.5, 0) * CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
-				lht = CFrame.Angles(0, math.rad(10), 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54) - 5 * math.cos(timingsine / 41)), 0, 0)
-				gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(math.rad(-90), 0, 0)
+				lst = CFrame.Angles(math.rad(-5), math.rad(5), math.rad(40)) * CFrame.new(0, 0, 0.5)
 				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			if math.random(2) == 1 then
+				randomdialog({
+					"SURPRISE",
+					"got you",
+					"Immortality Lord, YOU CANNOT DO THIS",
+					"my mobility is far better",
+					"LIGHTNING FAST",
+					"KEEP UP",
+					"EAT MY STARDUST",
+					"YOU CANNOT BOLT AWAY",
+					"READ MY NAME, I AM LIGHTNING CANNON.",
+				}, true)
 			end
 			task.wait(0.08)
 			if not rootu:IsDescendantOf(workspace) then return end
@@ -1779,6 +1718,7 @@ AddModule(function()
 		end)
 	end
 	local function KaBoom()
+		if attacking then return end
 		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
@@ -1789,6 +1729,71 @@ AddModule(function()
 			--CreateSound(642890855, 0.45)
 			attacking = false
 			hum.WalkSpeed = 50 * root.Size.Z
+		end)
+	end
+	local function AttackOne()
+		if attacking then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		local mouse = Player:GetMouse()
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(30))
+				nt = CFrame.Angles(math.rad(15), 0, math.rad(-30))
+				rst = CFrame.Angles(math.rad(30), 0, math.rad(-90))
+				lst = CFrame.Angles(math.rad(0), math.rad(0), math.rad(30))
+				local tcf = CFrame.lookAt(root.Position, mouse.Hit.Position)
+				local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
+				root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 15
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			task.wait(0.15)
+			if not rootu:IsDescendantOf(workspace) then return end
+			local target = mouse.Hit.Position
+			local hole = root.CFrame * CFrame.new(Vector3.new(1, 0.5, -5) * root.Size.Z)
+			local dist = (hole.Position - target).Magnitude
+			CreateSound(642890855, 0.45)
+			CreateSound(192410089, 0.55)
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = 25, EffectType = "Cylinder", Size = Vector3.new(1, dist, 1), SizeEnd = Vector3.new(1, dist, 1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.lookAt((hole.Position + target) / 2, target), Material = "Neon", Color = Color3.new(1, 1, 1)})
+			for _=1,5 do
+				Lightning({Start = hole.Position, Finish = target, Offset = 3.5, Color = Color3.new(1, 0, 0), Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+			end
+			for _=0,2 do
+				Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+			end
+			for _=0,2 do
+				Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+			end
+			if math.random(2) == 1 then
+				randomdialog({
+					"BOOM",
+					"THAT ANT IS DEAD",
+					"Immortality Lord, YOU CANNOT DO THIS",
+					"LIGHTNING FAST",
+					"WHO THE HELL DO YOU THINK I AM???", -- gurren lagann referencs
+					"EAT THIS",
+					"READ MY NAME, I AM LIGHTNING CANNON.",
+				}, true)
+			end
+			Attack(target, 10)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(30))
+				nt = CFrame.Angles(math.rad(10), 0, math.rad(-60))
+				rst = CFrame.Angles(math.rad(60), math.rad(-20), math.rad(-160))
+				lst = CFrame.Angles(math.rad(-5), math.rad(5), math.rad(40))
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			task.wait(0.1)
+			if not rootu:IsDescendantOf(workspace) then return end
+			animationOverride = nil
+			attacking = false
 		end)
 	end
 
@@ -1806,6 +1811,7 @@ AddModule(function()
 	local gun = {}
 	local flyv, flyg = nil, nil
 	local chatconn = nil
+	local uisbegin, uisend = nil, nil
 	local dancereact = {}
 	m.Init = function(figure: Model)
 		start = tick()
@@ -1873,7 +1879,7 @@ AddModule(function()
 		ContextActionService:SetPosition("Uhhhhhh_LCFlight", UDim2.new(1, -130, 1, -130))
 		ContextActionService:BindAction("Uhhhhhh_LCDash", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
-				if not attacking then Dash() end
+				Dash()
 			end
 		end, true, Enum.KeyCode.Z)
 		ContextActionService:SetTitle("Uhhhhhh_LCDash", "Z")
@@ -1889,7 +1895,33 @@ AddModule(function()
 			"its been years since the good times for me",
 			"WHO ARE WE GOING TO BLAST TO STARDUST TODAY?",
 			"ready or not, MY LIGHTNING CANNON IS READY",
+			"LETS BLAST SOMEONE WITH INFINITE VOLTS",g
 		}, true)
+		if uisbegin then
+			uisbegin:Disconnect()
+		end
+		if uisend then
+			uisend:Disconnect()
+		end
+		local clickpos = nil
+		local clicktime = 0
+		uisbegin = UserInputService.InputBegan:Connect(function(input, gpe)
+			if gpe then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				clickpos = input.Position
+				clicktime = tick()
+			end
+		end)
+		uisend = UserInputService.InputEnded:Connect(function(input, gpe)
+			if gpe then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				if (input.Position - clickpos).Magnitude < 5 then
+					if tick() - clicktime < 0.5 then
+						AttackOne()
+					end
+				end
+			end
+		end)
 		if chatconn then
 			chatconn:Disconnect()
 		end
@@ -1950,16 +1982,16 @@ AddModule(function()
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		-- animations
+		rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, 10 * math.clamp(math.pow(1 - t, 3), 0, 1) - 0.5 * math.sin(timingsine / 50))
 		gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(math.rad(-90), 0, 0)
 		if root.Velocity.Magnitude < 8 * scale then
-			rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50))
 			nt = CFrame.Angles(math.rad(20), 0, 0)
 			rst = CFrame.Angles(math.rad(25), 0, math.rad(135 + 8.5 * math.cos(timingsine / 50)))
 			lst = CFrame.Angles(math.rad(-25 - 5 * math.cos(timingsine / 25)), 0, math.rad(-25 - 8.5 * math.cos(timingsine / 50)))
 			rht = CFrame.new(0, 0.5, 0) * CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
 			lht = CFrame.Angles(0, math.rad(10), 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54) - 5 * math.cos(timingsine / 41)), 0, 0)
 		else
-			rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(math.rad(40), 0, 0)
+			rt *= CFrame.Angles(math.rad(40), 0, 0)
 			nt = CFrame.new(0, -0.25, 0) * CFrame.Angles(math.rad(-20), 0, 0)
 			rst = CFrame.Angles(math.rad(-5 - 2 * math.cos(timingsine / 19)), 0, math.rad(-45))
 			lst = CFrame.Angles(math.rad(-5 - 2 * math.cos(timingsine / 19)), 0, math.rad(45))
@@ -2050,6 +2082,14 @@ AddModule(function()
 		ContextActionService:UnbindAction("Uhhhhhh_LCDash")
 		flyv:Destroy()
 		flyg:Destroy()
+		if uisbegin then
+			uisbegin:Disconnect()
+			uisbegin = nil
+		end
+		if uisend then
+			uisend:Disconnect()
+			uisbegin = nil
+		end
 		if chatconn then
 			chatconn:Disconnect()
 			chatconn = nil
