@@ -3016,10 +3016,10 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Smug Dance"
-	m.Description = "Portal music seems to fit"
-	m.Assets = {"Smug.anim", "Smug.mp3", "Smug2.mp3"}
+	m.Description = "Portal music seems to fit\nIncludes:\n- GladOS's Console\n- Tune from 85.2 FM\n- Dark Mode"
+	m.Assets = {"SmugDance.anim", "SmugDance.mp3", "SmugDance2.mp3"}
 
-	m.Deltarolled = true
+	m.Deltarolled = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Dark mode", m.Deltarolled).Changed:Connect(function(val)
 			m.Deltarolled = val
@@ -3035,21 +3035,113 @@ AddModule(function()
 	end
 
 	local animator = nil
+	local start = 0
 	local lasttime = 0
+	local portalgui = {}
+	local darkmode = false
+	local consolelogs = {
+		[false] = {
+			{2.5, "##### Console Log Entry start"},
+			{3.5, "[Glad log] This was a triumph!"},
+			{5.5, "[Glad log] Making a note here..."},
+			{6.5, "[Note] \"Huge Success!\""},
+			{8.0, "[Glad log] It's hard to overstate my satis-"},
+			{10.0, "[ERROR] Oh... the syllables do not fit."},
+			{11.4, "[Glad log] Apeture Science."},
+			{13.0, "[Apeture Science] What?"},
+			{13.4, "[Glad log] Do what we must, because we can."},
+			{15.5, "[Apeture Science] Okay?"},
+			{16.0, "[Glad log] For the good of all of us..."},
+			{18.0, "[Glad log] Except"},
+			{18.7, "[Glad log] for"},
+			{19.3, "[Glad log] the"},
+			{19.6, "[Glad log] ones"},
+			{20.0, "[Glad log] who"},
+			{20.3, "[Glad log] are"},
+			{20.7, "[Glad log] already"},
+			{21.7, "[Glad log] dead"},
+		},
+		[true] = {
+			{2.5, "##### Console Log Entry start"},
+			{3.5, "[Delta log] When the light is running low."},
+			{5.5, "[Delta log] And the shadows start to grow."},
+			{7.8, "[Delta log] And the places that you know."},
+			{9.5, "[Delta log] Seems like fantasy."},
+			{11.5, "[Delta log] There's a light inside your soul."},
+			{13.6, "[Delta log] That's still shining in the cold."},
+			{15.8, "[Delta log] With the truth."},
+			{16.7, "[Delta log] The promise in our-"},
+			{18.0, "[Delta log] Don't"},
+			{18.5, "[Delta log] Forget"},
+			{19.5, "[Delta log] That I am"},
+			{20.0, "[Delta log] With"},
+			{20.3, "[Delta log] You"},
+			{20.7, "[Delta log] In the"},
+			{21.7, "[Delta log] Dark"},
+		},
+	}
 	local function setmusic()
-		if math.random(1, 5) == 1 or m.Deltarolled then
-			SetOverrideDanceMusic(AssetGetContentId("Smug2.mp3"), "Portal Radio", 1)
+		if math.random(10) == 1 or m.Deltarolled then
+			darkmode = true
+			SetOverrideDanceMusic(AssetGetContentId("SmugDance2.mp3"), "Portal Radio", 1)
 		else
-			SetOverrideDanceMusic(AssetGetContentId("Smug.mp3"), "Portal Radio", 1)
+			darkmode = false
+			SetOverrideDanceMusic(AssetGetContentId("SmugDance.mp3"), "Portal Radio", 1)
 		end
 	end
 	m.Init = function(figure: Model)
+		start = tick()
 		setmusic()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
-		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Smug.anim"))
-		animator.map = {{0, 22.572}, {0, 22.4}}
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SmugDance.anim"))
+		animator.speed = 1.152266177
+		for _,v in portalgui do v:Destroy() end
+		local float = Instance.new("Part")
+		float.Color = Color3.new(0, 0, 0)
+		float.Transparency = 0.5
+		float.Anchored = true
+		float.CanCollide = false
+		float.CanTouch = false
+		float.CanQuery = false
+		float.Name = "PortalGui"
+		float.Size = Vector3.new(5, 4, 0) * figure:GetScale()
+		local sgui = Instance.new("SurfaceGui")
+		sgui.LightInfluence = 0
+		sgui.Brightness = 5
+		sgui.AlwaysOnTop = false
+		sgui.MaxDistance = 100
+		sgui.SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
+		sgui.CanvasSize = Vector2.new(150, 120)
+		sgui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+		local frame = Instance.new("Frame")
+		frame.Position = UDim2.new(0, 0, 0, 0)
+		frame.Size = UDim2.new(1, 0, 1, 0)
+		frame.BackgroundColor3 = Color3.new(0, 0, 0)
+		frame.BackgroundTransparency = 0.5
+		frame.BorderColor3 = Color3.new(1, 0.5, 0)
+		frame.BorderSizePixel = 1
+		frame.BorderMode = Enum.BorderMode.Inset
+		local text = Instance.new("TextLabel")
+		text.Position = UDim2.new(0, 2, 0, 2)
+		text.Size = UDim2.new(1, -4, 1, -4)
+		text.BackgroundTransparency = 1
+		text.FontFace = Font.fromId(12187371840)
+		text.TextColor3 = Color3.new(1, 0.5, 0)
+		text.TextXAlignment = Enum.TextXAlignment.Left
+		text.TextYAlignment = Enum.TextYAlignment.Top
+		text.TextWrapped = true
+		text.TextSize = 8
+		text.Text = ""
+		text.Parent = frame
+		frame.Parent = sgui
+		sgui.Parent = float
+		float.Parent = figure
+		portalgui = {text, frame, sgui, float}
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
+		float.CFrame = root.CFrame
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = GetOverrideDanceMusicTime()
@@ -3058,12 +3150,37 @@ AddModule(function()
 			SetOverrideDanceMusicTime(t)
 		end
 		lasttime = t
-		animator:Step(t)
+		local t2 = tick() - start
+		animator:Step(t2)
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
+		t2 += 60
+		local scale = figure:GetScale()
+		local tcf = root.CFrame * CFrame.new(3 * scale, -1 * scale, -2 * scale) * CFrame.new(math.rad(10 + 10 * math.sin(t2 * 1.12)), math.rad(10 + 10 * math.sin(t2 * 0.98)), math.rad(20 * math.sin(t2)))
+		local float, text = portalgui[4], portalgui[1]
+		if float then
+			if (tcf.Position - float.Position).Magnitude > 20 * scale then
+				float.CFrame = root.CFrame
+			end
+			float.CFrame = tcf:Lerp(float.CFrame, math.exp(-24 * dt))
+		end
+		if text then
+			local str = ""
+			local arr = consolelogs[darkmode]
+			for i=1, #arr do
+				if arr[i][1] <= t then
+					str ..= arr[i][2] .. "\n"
+				end
+			end
+			text.Text = str
+		end
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
+		for _,v in portalgui do v:Destroy() end
+		portalgui = {}
 	end
-	--return m
+	return m
 end)
 
 return modules
