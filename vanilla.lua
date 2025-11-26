@@ -1516,7 +1516,7 @@ AddModule(function()
 						end
 						local loop = t * 60
 						local t2 = loop / ticks
-						mesh.Scale = size + growth * (bmr2 + bmr2 * t2 + b * b * 0.5 * t2 * t2)
+						mesh.Scale = size + growth * (bmr2 + bmr2 * t2 + bmr2 * bmr2 * 0.5 * t2 * t2)
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
 						local add = CFrame.identity
 						if movedir ~= nil then
@@ -3596,6 +3596,7 @@ AddModule(function()
 			SetOverrideDanceMusic(AssetGetContentId("InternetYamero.mp3"), "NEEDY GIRL OVERDOSE - INTERNET YAMERO", 1)
 		else
 			SetOverrideDanceMusic(AssetGetContentId("InternetYamero.mp3"), "NEEDY GIRL OVERDOSE - INTERNET YAMERO", 1, NumberRange.new(21.394, 62.94))
+			SetOverrideDanceMusicTime(21.394)
 		end
 		animator1 = AnimLib.Animator.new()
 		animator1.rig = figure
