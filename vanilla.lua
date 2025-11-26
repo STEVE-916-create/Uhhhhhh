@@ -117,12 +117,12 @@ pose structure
 
 keyframe structure
 ```txt
-<4 bytes float time> <2 bytes short n> <pose poses, times n>
+<4 bytes float time> <4 bytes int n> <pose poses, times n>
 ```
 
 main file structure
 ```txt
-<string animation_name> <2 bytes short n> <keyframe keyframes, times n>
+<string animation_name> <4 bytes int n> <keyframe keyframes, times n>
 ```
 
 ## Uhhhhhh's env

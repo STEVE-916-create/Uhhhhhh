@@ -1293,6 +1293,8 @@ def convert(path, inst):
 		s = s.encode()
 		putshort(len(s))
 		b.write(s)
+	def putsizet(x):
+		b.write(struct.pack("<I", x))
 	def putfloat(x):
 		b.write(struct.pack("<f", x))
 	putstring(inst.Name)
@@ -1300,7 +1302,7 @@ def convert(path, inst):
 	for kf in inst.GetChildren():
 		if kf.ClassName == "Keyframe":
 			kfs.append(kf)
-	putshort(len(kfs))
+	putsizet(len(kfs))
 	totaltime = 0
 	for kf in kfs:
 		t = kf.Time or 0
@@ -1310,7 +1312,7 @@ def convert(path, inst):
 		for pose in kf.GetDescendants():
 			if pose.ClassName == "Pose":
 				poses.append(pose)
-		putshort(len(poses))
+		putsizet(len(poses))
 		for pose in poses:
 			putstring(pose.Name)
 			putfloat(pose.Weight or 1)
