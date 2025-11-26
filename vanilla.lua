@@ -3537,7 +3537,7 @@ AddModule(function()
 	m.Destroy = function(figure: Model?)
 		animator = nil
 	end
-	return m
+	--return m
 end)
 
 AddModule(function()
@@ -3564,7 +3564,7 @@ AddModule(function()
 	m.Destroy = function(figure: Model?)
 		animator = nil
 	end
-	return m
+	--return m
 end)
 
 return modules

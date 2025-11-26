@@ -1,9 +1,6 @@
 # credits to 2024 STEVE
 
-import io, struct
-
-import warnings
-import base64, re, math, struct
+import io, os, struct, warnings, base64, re, math, struct
 import xml.etree.ElementTree as ET
 
 def _parsecall(f, x):
@@ -1331,6 +1328,12 @@ def convert(path, inst):
 	f.write(b.read())
 	f.close()
 	print("Done.")
+	print("Verifying...")
+	f = open("verify.lua")
+	script = f.read()
+	f.close()
+	
+	script.replace("[DATAINSERTION]", hi)
 def parsenconvert(path):
 	if path[-6:] == ".rbxmx":
 		path2 = path[:-6] + ".anim"
