@@ -1294,7 +1294,7 @@ def makeverify(raw):
 	f = open("verify2.lua", "wt")
 	f.write(script)
 	f.close()
-def convert(path, inst):
+def convert(inst):
 	print("Converting instance...")
 	e_style = ["Linear", "Constant", "Elastic", "Cubic", "Bounce", "CubicV2"]
 	e_direc = ["In", "Out", "InOut"]
@@ -1338,6 +1338,7 @@ def convert(path, inst):
 	print("  Keyframes: " + str(len(kfs)))
 	print("  End Time: " + str(totaltime))
 	b.seek(0, 0)
+	path = inst.Name + ".anim"
 	print("Saving to " + path + "...")
 	f = open(path, "wb")
 	raw = b.read()
@@ -1346,10 +1347,6 @@ def convert(path, inst):
 	print("Done.")
 	#makeverify(raw)
 def parsenconvert(path):
-	if path[-6:] == ".rbxmx":
-		path2 = path[:-6] + ".anim"
-	if path[-5:] == ".rbxm":
-		path2 = path[:-5] + ".anim"
 	print("Reading file...")
 	f = open(path, "rb")
 	raw = f.read()
@@ -1360,7 +1357,7 @@ def parsenconvert(path):
 	while True:
 		assert len(insts) > 0, "DEAD END"
 		if len(insts) == 1 and insts[0].ClassName == "KeyframeSequence":
-			return convert(path2, insts[0])
+			return convert(insts[0])
 		print("Pick the KeyframeSequence (or traverse the dungeon)")
 		for i in range(len(insts)):
 			print("  " + str(i + 1) + " - " + insts[i].Name + " (" + insts[i].ClassName + ")")
@@ -1369,7 +1366,7 @@ def parsenconvert(path):
 			pick = int(pick) - 1
 			if pick >= 0 and pick < len(insts):
 				if insts[pick].ClassName == "KeyframeSequence":
-					return convert(path2, insts[pick])
+					return convert(insts[pick])
 				insts = insts[pick].GetChildren()
 		except ValueError:
 			pass

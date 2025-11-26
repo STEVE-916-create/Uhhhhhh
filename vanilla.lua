@@ -3567,4 +3567,121 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "INTERNET YAMERO"
+	m.Description = "me when i lag in tsb\n\"STOP LAGGING ME INTERNET\""
+	m.Assets = {"InternetYamero.anim", "InternetYameroSickTock.anim", "InternetYamero.mp3"}
+
+	m.FullVersion = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Complete", m.FullVersion).Changed:Connect(function(val)
+			m.FullVersion = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.FullVersion = not not save.FullVersion
+	end
+	m.SaveConfig = function()
+		return {
+			FullVersion = m.FullVersion
+		}
+	end
+
+	local animator1 = nil
+	local animator2 = nil
+	m.Init = function(figure: Model)
+		if m.FullVersion then
+			SetOverrideDanceMusic(AssetGetContentId("InternetYamero.mp3"), "NEEDY GIRL OVERDOSE - INTERNET YAMERO", 1)
+		else
+			SetOverrideDanceMusic(AssetGetContentId("InternetYamero.mp3"), "NEEDY GIRL OVERDOSE - INTERNET YAMERO", 1, NumberRange.new(21.394, 62.94))
+		end
+		animator1 = AnimLib.Animator.new()
+		animator1.rig = figure
+		animator1.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("InternetYameroSickTock.anim"))
+		animator1.looped = false
+		animator2 = AnimLib.Animator.new()
+		animator2.rig = figure
+		animator2.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("InternetYamero.anim"))
+		animator2.looped = true
+		animator2.map = {{0.667, 62.944}, {0, 64.667}}
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = GetOverrideDanceMusicTime()
+		if t < 11 then
+			animator1:Step(t)
+		else
+			animator2:Step(t)
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		animator1 = nil
+		animator2 = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Tenna Cabbage Dance"
+	m.Description = "try not to do this dance wrong\nchallenge impossible"
+	m.Assets = {"TennaCabbage.anim", "TennaBaciPerugina.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("TennaBaciPerugina.mp3"), "Deltarune - TV TIME", 1)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.speed = 0.9 + 0.2 * math.random()
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("TennaCabbage.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick()
+		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Tenna Swingy Dance"
+	m.Description = "r6"
+	m.Assets = {"TennaSwing.anim", "TennaBaciPerugina.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("TennaBaciPerugina.mp3"), "Deltarune - TV TIME", 1)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.speed = 0.9 + 0.2 * math.random()
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("TennaSwing.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick()
+		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
