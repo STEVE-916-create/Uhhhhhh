@@ -5,21 +5,25 @@ function verify(buf: buffer)
 		return buflen - needle
 	end
 	local function readstring()
+		print(needle, "string length expect")
 		assert(getleft() >= 2)
 		local len = buffer.readu16(buf, needle)
 		needle += 2
+		print(needle, "string of length " .. len .. " expect")
 		assert(getleft() >= len)
 		local val = buffer.readstring(buf, needle, len)
 		needle += len
 		return val
 	end
 	local function readsizet()
+		print(needle, "int expect")
 		assert(getleft() >= 4)
 		local val = buffer.readu32(buf, needle)
 		needle += 4
 		return val
 	end
 	local function readfloat()
+		print(needle, "float expect")
 		assert(getleft() >= 4)
 		local val = buffer.readf32(buf, needle)
 		needle += 4

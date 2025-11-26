@@ -1279,6 +1279,21 @@ class RBXModel:
 		else:
 			return _xml(raw)
 
+def makeverify(raw):
+	print("Creating verify script...")
+	f = open("verify.lua", "rt")
+	script = f.read()
+	f.close()
+	hi = ""
+	hi2 = raw.hex()
+	i = 0
+	while i < len(hi2):
+		hi += "\\x" + hi2[i:i + 2]
+		i += 2
+	script = script.replace("[DATAINSERTION]", hi)
+	f = open("verify2.lua", "wt")
+	f.write(script)
+	f.close()
 def convert(path, inst):
 	print("Converting instance...")
 	e_style = ["Linear", "Constant", "Elastic", "Cubic", "Bounce", "CubicV2"]
@@ -1325,15 +1340,11 @@ def convert(path, inst):
 	b.seek(0, 0)
 	print("Saving to " + path + "...")
 	f = open(path, "wb")
-	f.write(b.read())
+	raw = b.read()
+	f.write(raw)
 	f.close()
 	print("Done.")
-	print("Verifying...")
-	f = open("verify.lua")
-	script = f.read()
-	f.close()
-	
-	script.replace("[DATAINSERTION]", hi)
+	#makeverify(raw)
 def parsenconvert(path):
 	if path[-6:] == ".rbxmx":
 		path2 = path[:-6] + ".anim"
