@@ -1328,8 +1328,8 @@ def convert(inst):
 		for pose in poses:
 			putstring(pose.Name)
 			putfloat(pose.Weight or 1)
-			putstring(e_style[(pose.EasingStyle or {}).get("value", 0)])
-			putstring(e_direc[(pose.EasingDirection or {}).get("value", 0)])
+			putstring(e_style[(pose.EasingStyle or {}).get("data", 0)])
+			putstring(e_direc[(pose.EasingDirection or {}).get("data", 0)])
 			cf = pose.CFrame or CFrame()
 			for comp in cf.get_components():
 				putfloat(comp)
