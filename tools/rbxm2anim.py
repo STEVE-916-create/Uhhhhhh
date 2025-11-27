@@ -1327,7 +1327,10 @@ def convert(inst):
 		putsizet(len(poses))
 		for pose in poses:
 			putstring(pose.Name)
-			putfloat(pose.Weight or 1)
+			if pose.Weight is not None:
+				putfloat(pose.Weight)
+			else:
+				putfloat(0)
 			putstring(e_style[(pose.EasingStyle or {}).get("data", 0)])
 			putstring(e_direc[(pose.EasingDirection or {}).get("data", 0)])
 			cf = pose.CFrame or CFrame()
