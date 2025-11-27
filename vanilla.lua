@@ -3829,7 +3829,7 @@ AddModule(function()
 		start = tick()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
-		animator.looped = false
+		animator.looped = true
 		SetOverrideDanceMusic(AssetGetContentId("Kazotsky.mp3"), "some russian music idk", 1)
 		local variants = {"", "Demoman", "Engineer", "Heavy", "Medic", "Pyro", "Scout", "Sniper", "Soldier", "Spy"}
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Kazotsky" .. (variants[m.Variant] or "") .. ".anim"))
