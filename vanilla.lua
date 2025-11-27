@@ -3851,6 +3851,9 @@ AddModule(function()
 	m.Description = "its for the small hitbox trust\n\nthis tune is fuhhing :3333"
 	m.Assets = {"Doodle.anim", "Doodle.mp3", "Doodle2.mp3"}
 
+	m.Config = function(parent: GuiBase2d)
+	end
+
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
