@@ -3635,7 +3635,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Tenna Cabbage Dance"
-	m.Description = "try not to do this dance wrong\nchallenge impossible"
+	m.Description = "try not to do this dance wrong challenge\ndifficulty: impossible"
 	m.Assets = {"TennaCabbage.anim", "TennaBaciPerugina.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
@@ -3686,6 +3686,33 @@ AddModule(function()
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
 		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Squidward Yell"
+	m.Description = "erm what the stick ma\nthis is the best animation library benchmarker\nthe original \"animation file\" was 10MB. it has been magically reduced to 1MB using C struct magic."
+	m.Assets = {"SquidwardYell1.anim", "SquidwardYell1.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("SquidwardYell1.mp3"), "idk what this insanity is", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = false
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SquidwardYell1.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
