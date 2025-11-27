@@ -1586,7 +1586,7 @@ AddModule(function()
 		local sizeend = params.SizeEnd or 1
 		local transparency = params.Transparency or 0
 		local endtransparency = params.TransparencyEnd or 1
-		local lenperseg = params.SegmentSize or 5
+		local lenperseg = params.SegmentSize or 10
 		local boomerangsize = params.BoomerangSize
 		local dist = (finish - start).Magnitude
 		local segs = math.clamp(dist // lenperseg, 1, 20)
