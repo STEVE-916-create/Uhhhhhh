@@ -3697,7 +3697,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Squidward Yell"
-	m.Description = "erm what the stick ma\nthis is the best animation library benchmarker\nthe original \"animation file\" was 10MB. it has been magically reduced to 1MB using C struct magic.\nits also optimised down to 3714 keyframes"
+	m.Description = "erm what the stick ma\nthis is the best animation library benchmarker\nthe original \"animation file\" was 10MB. it has been magically reduced to 1MB using C struct magic. (STEVE's KeyframeSequence file format)\nits also optimised down to 3714 keyframes"
 	m.Assets = {"SquidwardYell1.anim", "SquidwardYell1.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
@@ -3705,10 +3705,10 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideDanceMusic(AssetGetContentId("SquidwardYell1.mp3"), "idk what this insanity is", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = false
+		SetOverrideDanceMusic(AssetGetContentId("SquidwardYell1.mp3"), "idk what this insanity is", 1)
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SquidwardYell1.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)

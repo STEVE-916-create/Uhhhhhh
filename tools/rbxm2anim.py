@@ -1361,6 +1361,7 @@ def parsenconvert(path):
 		print("Pick the KeyframeSequence (or traverse the dungeon)")
 		for i in range(len(insts)):
 			print("  " + str(i + 1) + " - " + insts[i].Name + " (" + insts[i].ClassName + ")")
+		print("  " + str(len(insts)) + " - Convert every KeyframeSequence here)")
 		pick = input("YOUR selection: ")
 		try:
 			pick = int(pick) - 1
@@ -1368,6 +1369,11 @@ def parsenconvert(path):
 				if insts[pick].ClassName == "KeyframeSequence":
 					return convert(insts[pick])
 				insts = insts[pick].GetChildren()
+			elif pick == len(insts):
+				for inst in insts:
+					if inst.ClassName == "KeyframeSequence":
+						convert(inst)
+				return
 		except ValueError:
 			pass
 
