@@ -1516,11 +1516,11 @@ AddModule(function()
 						end
 						local loop = t * 60
 						local t2 = loop / ticks
-						mesh.Scale = size + growth * (bmr2 + bmr2 * t2 - bmr2 * bmr2 * 0.5 * t2 * t2)
+						mesh.Scale = size + growth * (t2 - bmr2 * 0.5 * t2 * t2) * bmr2
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
 						local add = CFrame.identity
 						if movedir ~= nil then
-							add = CFrame.new(0, 0, -movespeed * (1 + t2 - bmr1 * 0.5 * t2 * t2))
+							add = CFrame.new(0, 0, -movespeed * (t2 - bmr1 * 0.5 * t2 * t2))
 						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
@@ -3697,10 +3697,22 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Squidward Yell"
-	m.Description = "erm what the stick ma\nthis is the best animation library benchmarker\nthe original \"animation file\" was 10MB. it has been magically reduced to 1MB using C struct magic. (STEVE's KeyframeSequence file format)\nits also optimised down to 3714 keyframes"
-	m.Assets = {"SquidwardYell1.anim", "SquidwardYell1.mp3"}
+	m.Description = "erm what the stick ma\nthis is the best animation library benchmarker\nthe second variant's original \"animation file\" was 10MB. it has been magically reduced to 1MB using C struct magic. (STEVE's KeyframeSequence file format)\nits also optimised down to 3714 keyframes\nthe third variant was reduced from 16MB to 2MB, and trimmed to 5742 keyframes.\nthe first, 9MB to 1MB, trimmed to 3216 keyframes."
+	m.Assets = {"SquidwardYell1.anim", "SquidwardYell1.mp3", "SquidwardYell2.anim", "SquidwardYell2.mp3", "SquidwardYell3.anim", "SquidwardYell3.mp3"}
 
+	m.Variant = 1
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateDropdown(parent, "Variant", {"Second", "Third", "First"}, m.Variant).Changed:Connect(function(val)
+			m.Variant = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Variant = save.Variant or m.Variant
+	end
+	m.SaveConfig = function()
+		return {
+			Variant = m.Variant
+		}
 	end
 
 	local animator = nil
@@ -3708,11 +3720,152 @@ AddModule(function()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = false
-		SetOverrideDanceMusic(AssetGetContentId("SquidwardYell1.mp3"), "idk what this insanity is", 1)
-		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SquidwardYell1.anim"))
+		if m.Variant == 1 then
+			SetOverrideDanceMusic(AssetGetContentId("SquidwardYell1.mp3"), "Zivixius - Squidward Yell 2", 1)
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SquidwardYell1.anim"))
+		end
+		if m.Variant == 2 then
+			SetOverrideDanceMusic(AssetGetContentId("SquidwardYell2.mp3"), "Zivixius - Squidward Yell 3", 1)
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SquidwardYell2.anim"))
+		end
+		if m.Variant == 3 then
+			SetOverrideDanceMusic(AssetGetContentId("SquidwardYell3.mp3"), "Zivixius - Squidward Yell", 1)
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SquidwardYell3.anim"))
+		end
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideDanceMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Take The L"
+	m.Description = "accept the loss man\njust accept the loss\ncmon\ngood boy~ <33"
+	m.Assets = {"TakeTheL.anim", "TakeTheLDubmood.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		SetOverrideDanceMusic(AssetGetContentId("TakeTheLDubmood.mp3"), "Dubmood+Zabutom+Ogge - Razor Comeback Intro", 1)
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("TakeTheL.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(tick() - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Torture Dance"
+	m.Description = "im gonna put a magnifying glass on ur eyes\nand dance while your eyes burn\nitll feel like a burning sunlight"
+	m.Assets = {"TortureDance1.anim", "TortureDance2.anim", "TortureDance.mp3"}
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		SetOverrideDanceMusic(AssetGetContentId("TortureDance.mp3"), "JoJo's Bizzare Adventure - Torture Dance", 1, NumberRange.new(1.234, 140.28))
+		if math.random() < 0.5 then
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("TortureDance1.anim"))
+		else
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("TortureDance2.anim"))
+		end
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(tick() - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Kazotsky Kick+"
+	m.Description = "the + is for the variants\null see why"
+	m.Assets = {"Kazotsky.anim", "KazotskyDemoman.anim", "KazotskyEngineer.anim", "KazotskyHeavy.anim", "KazotskyMedic.anim", "KazotskyPyro.anim", "KazotskyScout.anim", "KazotskySniper.anim", "KazotskySoldier.anim", "KazotskySpy.anim", "Kazotsky.mp3"}
+
+	m.Variant = 1
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateDropdown(parent, "Variant", {"Regular", "TF2 Demoman", "TF2 Engineerman", "TF2 Heavyman", "TF2 Medicman", "TF2 Pyroman", "TF2 Scout", "TF2 Sniperman", "TF2 Soldierman", "TF2 Spyman", "Gordon Freeman"}, m.Variant).Changed:Connect(function(val)
+			m.Variant = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Variant = save.Variant or m.Variant
+	end
+	m.SaveConfig = function()
+		return {
+			Variant = m.Variant
+		}
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = false
+		SetOverrideDanceMusic(AssetGetContentId("Kazotsky.mp3"), "some russian music idk", 1)
+		local variants = {"", "Demoman", "Engineer", "Heavy", "Medic", "Pyro", "Scout", "Sniper", "Soldier", "Spy"}
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Kazotsky" .. (variants[m.Variant] or "") .. ".anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(tick() - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Doodle"
+	m.Description = "its for the small hitbox trust\n\nthis tune is fuhhing :3333"
+	m.Assets = {"Doodle.anim", "Doodle.mp3", "Doodle2.mp3"}
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Doodle.anim"))
+		if math.random() < 0.75 then
+			SetOverrideDanceMusic(AssetGetContentId("Doodle.mp3"), "Zachz Winner - doodle", 1)
+		else
+			SetOverrideDanceMusic(AssetGetContentId("Doodle2.mp3"), "reconstructed doodle", 1)
+		end
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(tick() - start)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
