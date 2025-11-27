@@ -3697,7 +3697,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Squidward Yell"
-	m.Description = "erm what the stick ma\nthis is the best animation library benchmarker\nthe original \"animation file\" was 10MB. it has been magically reduced to 1MB using C struct magic."
+	m.Description = "erm what the stick ma\nthis is the best animation library benchmarker\nthe original \"animation file\" was 10MB. it has been magically reduced to 1MB using C struct magic.\nits also optimised down to 3714 keyframes"
 	m.Assets = {"SquidwardYell1.anim", "SquidwardYell1.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
