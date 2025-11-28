@@ -4121,8 +4121,8 @@ AddModule(function()
 			local pcles = effects:FindFirstChild("Particles")
 			if glass then
 				glass.CFrame = root.CFrame * CFrame.new(0, 1.5, 2 - group1t)
-				if t < 6.9 then
-					glass.Transparency = 0.2
+				if t < 6.9 or t > 30 then
+					glass.Transparency = 0.2 + 0.8 * group1t
 				else
 					glass.Transparency = 1
 				end
@@ -4139,7 +4139,7 @@ AddModule(function()
 						cf *= CFrame.Angles(math.pi, 0, 0)
 					end
 					shard.CFrame = root.CFrame * CFrame.new(0, 1.5, 2 - group1t + shardsoffset[i]) * cf
-					if t < 6.9 then
+					if t < 6.9 or t > 30 then
 						shard.Transparency = 1
 					else
 						shard.Transparency = 0.2 + 0.8 * group1t
