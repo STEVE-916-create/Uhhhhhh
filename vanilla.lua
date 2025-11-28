@@ -3986,8 +3986,10 @@ AddModule(function()
 
 	local animator = nil
 	local effects = nil
+	local shardsoffset = {}
+	for _=1, 8 do table.insert(shardsoffset, math.random() * 0.3) end
 	m.Init = function(figure: Model)
-		SetOverrideDanceMusic(AssetGetContentId("Billy.mp3"), "FNF VS Yourself mod", 1, NumberRange.new(2.13, 87.3))
+		SetOverrideDanceMusic(AssetGetContentId("Billy.mp3"), "FNF VS Yourself mod", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = false
@@ -4034,12 +4036,11 @@ AddModule(function()
 				weld.C0 = CFrame.new(0.875, 0, 0)
 				weld.Parent = effects
 			end
-			local function makepart(name, color, mater, size, ref, tra)
+			local function makepart(name, color, mater, size, tra)
 				local part = Instance.new("Part")
 				part.Name = name
 				part.Color = color
 				part.Material = mater
-				part.Reflectance = ref
 				part.Transparency = tra
 				part.Anchored = true
 				part.CanCollide = false
@@ -4048,11 +4049,11 @@ AddModule(function()
 				part.Size = size
 				part.Parent = effects
 			end
-			makepart("Glass", Color3.fromRGB(111, 130, 255), Enum.Material.Glass, Vector3.new(6, 9, 0.2), 0.1, 0)
-			makepart("Pillar1", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(1, 9, 1), 0, 0)
-			makepart("Pillar2", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(1, 9, 1), 0, 0)
-			makepart("Pillar3", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(2.5, 1, 2.5), 0, 0)
-			makepart("Pillar4", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(2.5, 1, 2.5), 0, 0)
+			makepart("Glass", Color3.fromRGB(111, 130, 255), Enum.Material.SmoothPlastic, Vector3.new(6, 9, 0.2), 0)
+			makepart("Pillar1", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(1, 9, 1), 0)
+			makepart("Pillar2", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(1, 9, 1), 0)
+			makepart("Pillar3", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(2.5, 1, 2.5), 0)
+			makepart("Pillar4", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(2.5, 1, 2.5), 0)
 			local flash = Instance.new("Highlight")
 			flash.Name = "Flash"
 			flash.DepthMode = "Occluded"
@@ -4088,6 +4089,18 @@ AddModule(function()
 			star2.Rate = 3
 			star2.ZOffset = 1
 			star2.Parent = effects.Particles
+			for i=1, 8 do
+				local shard = Instance.new("WedgePart")
+				shard.Name = "Shard" .. i
+				shard.Color = Color3.fromRGB(111, 130, 255)
+				shard.Material = Enum.Material.SmoothPlastic
+				shard.Anchored = true
+				shard.CanCollide = false
+				shard.CanTouch = false
+				shard.CanQuery = false
+				shard.Size = Vector3.new(0.5, 4.5, 3)
+				shard.Parent = effects
+			end
 			effects.Parent = figure
 		end
 	end
@@ -4107,30 +4120,53 @@ AddModule(function()
 			local flash = effects:FindFirstChild("Flash")
 			local pcles = effects:FindFirstChild("Particles")
 			if glass then
-				glass.CFrame = root.CFrame * CFrame.new(0, 1.5, 2 + group1t)
-				glass.Transparency = group1t
+				glass.CFrame = root.CFrame * CFrame.new(0, 1.5, 2 - group1t)
+				if t < 6.9 then
+					glass.Transparency = 0.2
+				else
+					glass.Transparency = 1
+				end
+			end
+			for i=1, 8 do
+				local j = i - 1
+				local shard = effects:FindFirstChild("Shard" .. i)
+				if shard then
+					local cf = CFrame.new((CFrame.Angles(0, 0, (j // 2) * math.pi * 0.5) * Vector3.new(1, 0, 1)) * Vector3.new(1.5, 2.25, 0)) * CFrame.Angles(0, -math.pi / 2, 0)
+					if (j // 2) % 2 == 0 then
+						cf *= CFrame.new(0, math.pi, 0)
+					end
+					if j % 2 == 0 then
+						cf *= CFrame.new(math.pi, 0, 0)
+					end
+					shard.CFrame = root.CFrame * CFrame.new(0, 1.5, 2 - group1t + shardsoffset[i]) * cf
+					if t < 6.9 then
+						shard.Transparency = 1
+					else
+						shard.Transparency = 0.2 + 0.8 * group1tp
+					end
+				end
 			end
 			if pillar1 then
-				pillar1.CFrame = root.CFrame * CFrame.new(4.5, 1.5, 2 + group1t)
+				pillar1.CFrame = root.CFrame * CFrame.new(3.5, 1.5, 2 - group1t)
 				pillar1.Transparency = group1t
 			end
 			if pillar2 then
-				pillar2.CFrame = root.CFrame * CFrame.new(-4.5, 1.5, 2 + group1t)
+				pillar2.CFrame = root.CFrame * CFrame.new(-3.5, 1.5, 2 + group1t)
 				pillar2.Transparency = group1t
 			end
 			if pillar3 then
-				pillar3.CFrame = root.CFrame * CFrame.new(4.5, -2.5, 2 + group1t)
+				pillar3.CFrame = root.CFrame * CFrame.new(3.5, -2.5, 2 - group1t)
 				pillar3.Transparency = group1t
 			end
 			if pillar4 then
-				pillar4.CFrame = root.CFrame * CFrame.new(-4.5, -2.5, 2 + group1t)
+				pillar4.CFrame = root.CFrame * CFrame.new(-3.5, -2.5, 2 - group1t)
 				pillar4.Transparency = group1t
 			end
 			if flash then
 				if t < 6.9 then
 					flash.FillTransparency = 1
 				else
-					flash.FillTransparency = 0.8 + math.min(t - 6.9, 1) * 0.2
+					flash.FillTransparency = 0.5 + 0.5 * math.min(t - 6.9, 1)
 				end
 			end
 			if pcles then
