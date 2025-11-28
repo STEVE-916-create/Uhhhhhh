@@ -4283,4 +4283,61 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Headlock"
+	m.Description = "bakas bakas bakas bakas baka sekao"
+	m.Assets = {"Headlock.anim", "Headlock.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("Headlock.mp3"), "what is this tune broski", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.map = {{0, 14.774}, {0, 14.76}}
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Headlock.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideDanceMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Cat Dance"
+	m.Description = "colonthreespam\nthe smallest dance in the whole nekocollection\n\ngarou slide is still smaller-"
+	m.Assets = {"CatDance.anim"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		start = tick()
+		SetOverrideDanceMusic("rbxassetid://9039445224", "8 Bitty Kitty Underscore", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("CatDance.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(tick() - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
