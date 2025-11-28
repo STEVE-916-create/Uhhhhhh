@@ -1132,7 +1132,7 @@ AddModule(function()
 		lht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(-10))
 		if onground and not flight then
 			rst = CFrame.Angles(0, 0, math.rad(-10))
-			swordoff = CFrame.new(0, -1, 0) * CFrame.Angles(math.rad(154.35 - 5.65 * math.sin(timingsine / 25)), 0, 0)
+			swordoff = CFrame.new(0, -1, 0) * CFrame.Angles(math.rad(154.35 + 5.65 * math.sin(timingsine / 25)), 0, 0)
 		else
 			rst = CFrame.Angles(math.rad(45), 0, math.rad(80 - 5 * math.cos(timingsine / 25)))
 			swordoff = CFrame.new(0, 0, -0.5) * CFrame.Angles(0, math.rad(170), math.rad(-10))
@@ -4099,7 +4099,7 @@ AddModule(function()
 				shard.CanCollide = false
 				shard.CanTouch = false
 				shard.CanQuery = false
-				shard.Size = Vector3.new(0.5, 4.5, 3)
+				shard.Size = Vector3.new(0.2, 4.5, 3)
 				shard.Parent = effects
 			end
 			effects.Parent = figure
@@ -4141,7 +4141,7 @@ AddModule(function()
 						cf *= CFrame.Angles(math.pi, 0, 0)
 					end
 					shard.CFrame = root.CFrame * CFrame.new(0, 1.5 * scale, (2 - group1t + shardsoffset[i]) * scale) * cf
-					shard.Size = Vector3.new(0.5, 4.5, 3) * scale
+					shard.Size = Vector3.new(0.2, 4.5, 3) * scale
 					if t < 6.9 or t > 30 then
 						shard.Transparency = 1
 					else
