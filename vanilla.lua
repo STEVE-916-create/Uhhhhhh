@@ -3925,14 +3925,14 @@ AddModule(function()
 		if not hum then return end
 		hum.WalkSpeed = 16 * figure:GetScale()
 	end
-	--return m
+	return m
 end)
 
 AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Left Right Left Right"
-	m.Description = "up down up down\nburger king, burger throne"
+	m.Description = "up down up down\nburger king, burger throne\n:3 :3 :3 :3 :3"
 	m.Assets = {"LeftRight.anim", "LeftRight.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
@@ -3963,22 +3963,29 @@ AddModule(function()
 	m.Description = "bro that shit aint 'me' :wilted_rose:"
 	m.Assets = {"Billy.anim", "Billy2.anim", "Billy.mp3"}
 
+	m.Effects = true
 	m.Alternative = false
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Effects", m.Effects).Changed:Connect(function(val)
+			m.Effects = val
+		end)
 		Util_CreateSwitch(parent, "Alt. Version", m.Alternative).Changed:Connect(function(val)
 			m.Alternative = val
 		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Alternative = not not save.Alternative
+		m.Effects = not save.NoEffects
 	end
 	m.SaveConfig = function()
 		return {
-			Alternative = m.Alternative
+			Alternative = m.Alternative,
+			NoEffects = not m.Effects
 		}
 	end
 
 	local animator = nil
+	local effects = nil
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("Billy.mp3"), "FNF VS Yourself mod", 1, NumberRange.new(2.13, 87.3))
 		animator = AnimLib.Animator.new()
@@ -3989,12 +3996,170 @@ AddModule(function()
 		else
 			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Billy.anim"))
 		end
+		if m.Effects then
+			effects = Instance.new("Model")
+			effects.Name = "SillyBilly"
+			local arm = figure:FindFirstChild("Left Arm")
+			if arm then
+				local handle = Instance.new("Part")
+				handle.Name = "MicHandle"
+				handle.Color = Color3.new(0, 0, 0)
+				handle.Anchored = true
+				handle.CanCollide = false
+				handle.CanTouch = false
+				handle.CanQuery = false
+				handle.Size = Vector3.new(1, 0.5, 0.5)
+				handle.Shape = "Cylinder"
+				handle.Parent = effects
+				local grip = Instance.new("Weld")
+				grip.Name = "MicGrip"
+				grip.Part0 = arm
+				grip.Part1 = handle
+				grip.C0 = CFrame.new(0, -1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
+				grip.Parent = effects
+				local casing = Instance.new("Part")
+				casing.Name = "MicRoundThing"
+				casing.Color = Color3.new(0, 0, 0)
+				casing.Anchored = true
+				casing.CanCollide = false
+				casing.CanTouch = false
+				casing.CanQuery = false
+				casing.Size = Vector3.new(1, 1, 1)
+				casing.Shape = "Ball"
+				casing.Parent = effects
+				local weld = Instance.new("Weld")
+				weld.Name = "MicWeld"
+				weld.Part0 = handle
+				weld.Part1 = casing
+				weld.C0 = CFrame.new(0.875, 0, 0)
+				weld.Parent = effects
+			end
+			local function makepart(name, color, mater, size, ref, tra)
+				local part = Instance.new("Part")
+				part.Name = name
+				part.Color = color
+				part.Material = mater
+				part.Reflectance = ref
+				part.Transparency = tra
+				part.Anchored = true
+				part.CanCollide = false
+				part.CanTouch = false
+				part.CanQuery = false
+				part.Size = size
+				part.Parent = effects
+			end
+			makepart("Glass", Color3.fromRGB(111, 130, 255), Enum.Material.Glass, Vector3.new(6, 9, 0.2), 0.1, 0)
+			makepart("Pillar1", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(1, 9, 1), 0, 0)
+			makepart("Pillar2", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(1, 9, 1), 0, 0)
+			makepart("Pillar3", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(2.5, 1, 2.5), 0, 0)
+			makepart("Pillar4", Color3.fromRGB(52, 61, 120), Enum.Material.Concrete, Vector3.new(2.5, 1, 2.5), 0, 0)
+			local flash = Instance.new("Highlight")
+			flash.Name = "Flash"
+			flash.DepthMode = "Occluded"
+			flash.Enabled = true
+			flash.FillColor = Color3.new(1, 1, 1)
+			flash.FillTransparency = 1
+			flash.OutlineTransparency = 1
+			flash.Parent = effects
+			makepart("Particles", Color3.new(0, 0, 0), Enum.Material.Plastic, Vector3.zero, 0, 1)
+			local star1 = Instance.new("Highlight")
+			star1.Name = "Star1"
+			star1.Enabled = true
+			star1.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+			star1.Color = ColorSequence.new(Color3.fromRGB(30, 64, 255))
+			star1.LightInfluence = 0
+			star1.LightEmission = 0
+			star1.Brightness = 2
+			star1.Size = NumberSequence.new(0)
+			star1.Transparency = NumberSequence.new(0.5)
+			star1.Orientation = "VelocityPerpendicular"
+			star1.EmissionDirection = "Front"
+			star1.Lifetime = NumberRange.new(1)
+			star1.Rate = 10
+			star1.Rotation = NumberRange.new(0)
+			star1.RotSpeed = NumberRange.new(-180)
+			star1.Speed = NumberRange.new(0.001)
+			star1.LockedToPart = true
+			star1.Parent = effects.Particles
+			local star2 = star1:Clone()
+			star2.Name = "Star2"
+			star2.Color = ColorSequence.new(Color3.fromRGB(148, 138, 255))
+			star2.Rate = 3
+			star2.Parent = effects.Particles
+			effects.Parent = figure
+		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideDanceMusicTime())
+		local t = GetOverrideDanceMusicTime()
+		animator:Step(t)
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
+		if effects then
+			local group1t = 1 - math.pow(1 - math.clamp(t - 11, 0, 1), 3)
+			group1t -= math.max(0, t - 45.537)
+			local glass = effects:FindFirstChild("Glass")
+			local pillar1 = effects:FindFirstChild("Pillar1")
+			local pillar2 = effects:FindFirstChild("Pillar2")
+			local pillar3 = effects:FindFirstChild("Pillar3")
+			local pillar4 = effects:FindFirstChild("Pillar4")
+			local flash = effects:FindFirstChild("Flash")
+			local pcles = effects:FindFirstChild("Particles")
+			if glass then
+				glass.CFrame = root.CFrame * CFrame.new(0, 1.5, 2 + group1t)
+				glass.Transparency = group1t
+			end
+			if pillar1 then
+				pillar1.CFrame = root.CFrame * CFrame.new(4.5, 1.5, 2 + group1t)
+				pillar1.Transparency = group1t
+			end
+			if pillar2 then
+				pillar2.CFrame = root.CFrame * CFrame.new(-4.5, 1.5, 2 + group1t)
+				pillar2.Transparency = group1t
+			end
+			if pillar3 then
+				pillar3.CFrame = root.CFrame * CFrame.new(4.5, -2.5, 2 + group1t)
+				pillar3.Transparency = group1t
+			end
+			if pillar4 then
+				pillar4.CFrame = root.CFrame * CFrame.new(-4.5, -2.5, 2 + group1t)
+				pillar4.Transparency = group1t
+			end
+			if flash then
+				if t < 6.9 then
+					flash.FillTransparency = 1
+				else
+					flash.FillTransparency = 0.8 + math.min(t - 6.9, 1) * 0.2
+				end
+			end
+			if pcles then
+				pcles.CFrame = root.CFrame * CFrame.new(0, 0.25, 3)
+				local starflash = 2
+				if t < 18.05 then
+					starflash = 2 + 5 * (1 - math.min(t - 18.05, 5) / 5)
+				end
+				if t < 23.6 then
+					starflash = 5
+				end
+				local star1 = pcles:FindFirstChild("Star1")
+				local star2 = pcles:FindFirstChild("Star2")
+				if star1 then
+					star1.Size = NumberSequence.new({
+						NumberSequenceKeypoint.new(0, 8 * group1t, 2 * group1t),
+						NumberSequenceKeypoint.new(1, 8 * group1t, 2 * group1t),
+					})
+				end
+				if star2 then
+					star2.Size = NumberSequence.new(5 * group1t)
+				end
+			end
+		end
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
+		if effects then
+			effects:Destroy()
+			effects = nil
+		end
 	end
 	return m
 end)
