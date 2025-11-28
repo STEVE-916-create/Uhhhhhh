@@ -4004,7 +4004,7 @@ AddModule(function()
 				local handle = Instance.new("Part")
 				handle.Name = "MicHandle"
 				handle.Color = Color3.new(0, 0, 0)
-				handle.Anchored = true
+				handle.Anchored = false
 				handle.CanCollide = false
 				handle.CanTouch = false
 				handle.CanQuery = false
@@ -4020,7 +4020,7 @@ AddModule(function()
 				local casing = Instance.new("Part")
 				casing.Name = "MicRoundThing"
 				casing.Color = Color3.new(0, 0, 0)
-				casing.Anchored = true
+				casing.Anchored = false
 				casing.CanCollide = false
 				casing.CanTouch = false
 				casing.CanQuery = false
@@ -4080,11 +4080,13 @@ AddModule(function()
 			star1.RotSpeed = NumberRange.new(-180)
 			star1.Speed = NumberRange.new(0.001)
 			star1.LockedToPart = true
+			star1.ZIndex = 0
 			star1.Parent = effects.Particles
 			local star2 = star1:Clone()
 			star2.Name = "Star2"
 			star2.Color = ColorSequence.new(Color3.fromRGB(148, 138, 255))
 			star2.Rate = 3
+			star2.ZIndex = 1
 			star2.Parent = effects.Particles
 			effects.Parent = figure
 		end
