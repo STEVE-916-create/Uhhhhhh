@@ -4244,4 +4244,43 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Backflips"
+	m.Description = "dance like you have 62 seconds left!\n\n(this is an evangelion reference ofc)"
+	m.Assets = {"Backflips.anim", "Backflips.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("Backflips.mp3"), "Both Of You, Dance Like You Want To Win", 1)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Backflips.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(tick() - start)
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum or not hum.RootPart then return end
+		if hum.MoveDirection.Magnitude > 0 then
+			-- move backwards
+			hum.RootPart.Velocity = Vector3.new(
+				hum.MoveDirection.X * -16 * figure:GetScale(),
+				hum.RootPart.Velocity.Y,
+				hum.MoveDirection.Z * -16 * figure:GetScale()
+			)
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
