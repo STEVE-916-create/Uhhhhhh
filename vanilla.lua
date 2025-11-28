@@ -3916,7 +3916,7 @@ AddModule(function()
 		end
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
-		hum.WalkSpeed = 4 * figure:GetScale()
+		hum.WalkSpeed = 8 * figure:GetScale()
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -3944,7 +3944,7 @@ AddModule(function()
 		SetOverrideDanceMusic(AssetGetContentId("LeftRight.mp3"), "idk this tune", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
-		animator.looped = false
+		animator.looped = true
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("LeftRight.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
@@ -4023,7 +4023,7 @@ AddModule(function()
 		animator:Step(tick() - start)
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
-		hum.WalkSpeed = 4 * figure:GetScale()
+		hum.WalkSpeed = 8 * figure:GetScale()
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
