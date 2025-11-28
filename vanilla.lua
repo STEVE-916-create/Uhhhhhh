@@ -4142,7 +4142,7 @@ AddModule(function()
 					if t < 6.9 then
 						shard.Transparency = 1
 					else
-						shard.Transparency = 0.2 + 0.8 * group1tp
+						shard.Transparency = 0.2 + 0.8 * group1t
 					end
 				end
 			end
