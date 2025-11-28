@@ -4133,10 +4133,10 @@ AddModule(function()
 				if shard then
 					local cf = CFrame.new((CFrame.Angles(0, 0, (j // 2) * math.pi * 0.5) * Vector3.new(1, 0, 1)) * Vector3.new(1.5, 2.25, 0)) * CFrame.Angles(0, -math.pi / 2, 0)
 					if (j // 2) % 2 == 0 then
-						cf *= CFrame.new(0, math.pi, 0)
+						cf *= CFrame.Angles(0, math.pi, 0)
 					end
 					if j % 2 == 0 then
-						cf *= CFrame.new(math.pi, 0, 0)
+						cf *= CFrame.Angles(math.pi, 0, 0)
 					end
 					shard.CFrame = root.CFrame * CFrame.new(0, 1.5, 2 - group1t + shardsoffset[i]) * cf
 					if t < 6.9 then
@@ -4185,9 +4185,11 @@ AddModule(function()
 						NumberSequenceKeypoint.new(0, 8 * group1t, 2 * group1t),
 						NumberSequenceKeypoint.new(1, 8 * group1t, 2 * group1t),
 					})
+					star1.Brightness = starflash
 				end
 				if star2 then
 					star2.Size = NumberSequence.new(5 * group1t)
+					star2.Brightness = starflash
 				end
 			end
 		end
