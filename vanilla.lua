@@ -60,6 +60,7 @@ table.insert(modules, function() -- put into modules table
 	-- Util_CreateButton(parent, text, fontsize)
 	-- Util_CreateSwitch(parent, text, is_on)
 	-- Util_CreateTextbox(parent, text, placeholdertext, fontsize)
+	-- Util_CreateSlider(parent, text, value, min, max, step)
 	-- Util_CreateDropdown(parent, text, items, itemindex)
 	-- Util_CreateCanvas(parent)
 	-- Util_CreateScrollCanvas(parent, height)
@@ -138,6 +139,7 @@ Util_CreateText
 Util_CreateButton
 Util_CreateSwitch
 Util_CreateTextbox
+Util_CreateSlider
 Util_CreateDropdown
 Util_CreateCanvas
 Util_CreateScrollCanvas
