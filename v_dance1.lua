@@ -2180,7 +2180,7 @@ AddModule(function()
 		animator:Step(tick() - start)
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum or not hum.RootPart then return end
-		hum.WalkSpeed = 0
+		hum.WalkSpeed = 0.05
 		if hum.MoveDirection.Magnitude > 0 then
 			-- move backwards
 			hum.RootPart.Velocity = Vector3.new(

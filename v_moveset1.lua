@@ -1689,17 +1689,23 @@ AddModule(function()
 		end, true, Enum.KeyCode.Z)
 		ContextActionService:SetTitle("Uhhhhhh_LCDash", "Z")
 		ContextActionService:SetPosition("Uhhhhhh_LCDash", UDim2.new(1, -180, 1, -130))
-		task.delay(0, notify, "Lightning Cannon, by LuaQuack")
+		if math.random(3) == 1 then
+			task.delay(0, notify, "Lightning Cannon, by LuaQuack")
+		elseif math.random(2) == 1 then
+			task.delay(0, notify, "Lightning Cannon, by myworld")
+		else
+			task.delay(0, notify, "Lightning Cannon, by STEVE")
+		end
 		task.delay(1, randomdialog, {
 			"Immortality Lord did not have to say that...",
-			"that intro sucked",
-			"I THINK THE USER KNOWS WHO I AM",
-			"blah blah blah blah BLAHH!!",
-			"die... Die... DIE!!!",
-			"now WHERE IS THE MELEE USER",
-			"its been years since the good times for me",
+			"That intro sucked.",
+			"I THINK THIS MORTAL KNOWS WHO I AM",
+			"Blah, blah, blah, blah, BLAHH!!",
+			"Die... Die... DIE!!!",
+			"Now, WHERE IS THE MELEE USER",
+			"It's been years since the good times for me",
 			"WHO ARE WE GOING TO BLAST TO STARDUST TODAY?",
-			"ready or not, MY LIGHTNING CANNON IS READY",
+			"Ready or not, MY LIGHTNING CANNON IS READY",
 			"LETS BLAST SOMEONE WITH INFINITE VOLTS",g
 		}, true)
 		if uisbegin then
@@ -1777,6 +1783,10 @@ AddModule(function()
 			hum.HipHeight = 0
 		else
 			hum.HipHeight = 3
+			-- and be fast if not attacking
+			if not attacking then
+				hum.WalkSpeed = 50 * figure:GetScale()
+			end
 		end
 		
 		-- joints
@@ -1869,14 +1879,14 @@ AddModule(function()
 			if name == "RAGDOLL" then
 				dancereact.Ragdoll = dancereact.Ragdoll or 0
 				if t - dancereact.Ragdoll > 1 then
-					notify("ow my leg")
+					notify("ow my leg.")
 				end
 				dancereact.Ragdoll = t
 			end
 			if name == "SpeedAndKaiCenat" then
 				if not dancereact.AlightMotion then
-					task.delay(1, notify, "i have an idea " .. Player.Name:lower())
-					task.delay(4, notify, "what if immortality lord is the other guy")
+					task.delay(1, notify, "I have an idea, " .. Player.Name)
+					task.delay(4, notify, "What if... Immortality Lord is the other guy?")
 				end
 				dancereact.AlightMotion = true
 			end
@@ -1900,7 +1910,6 @@ AddModule(function()
 			chatconn = nil
 		end
 	end
-	if Player.UserId ~= 1949002397 then return end
 	return m
 end)
 
