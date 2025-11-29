@@ -761,7 +761,7 @@ AddModule(function()
 			NoTextType = not m.Notifications,
 			FlySpeed = m.FlySpeed,
 			HitboxScale = m.HitboxScale,
-			HitboxDebug = not save.NoHitbox,
+			NoHitbox = not m.HitboxDebug,
 		}
 	end
 
