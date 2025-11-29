@@ -2180,17 +2180,22 @@ AddModule(function()
 		animator:Step(tick() - start)
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum or not hum.RootPart then return end
+		hum.WalkSpeed = 0
 		if hum.MoveDirection.Magnitude > 0 then
 			-- move backwards
 			hum.RootPart.Velocity = Vector3.new(
-				hum.MoveDirection.X * -16 * figure:GetScale(),
+				hum.MoveDirection.X * -8 * figure:GetScale(),
 				hum.RootPart.Velocity.Y,
-				hum.MoveDirection.Z * -16 * figure:GetScale()
+				hum.MoveDirection.Z * -8 * figure:GetScale()
 			)
 		end
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
+		if not figure then return end
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum or not hum.RootPart then return end
+		hum.WalkSpeed = 16 * figure:GetScale()
 	end
 	return m
 end)

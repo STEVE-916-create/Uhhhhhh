@@ -635,6 +635,8 @@ AddModule(function()
 			hitvis.Material = Enum.Material.ForceField
 			hitvis.Anchored = true
 			hitvis.CanCollide = false
+			hitvis.CanTouch = false
+			hitvis.CanQuery = false
 			hitvis.Shape = Enum.PartType.Ball
 			hitvis.Color = Color3.new(0, 0, 0)
 			hitvis.Size = Vector3.one * radius * 2
@@ -1261,9 +1263,10 @@ AddModule(function()
 			local effect = Instance.new("Part")
 			effect.Massless = true
 			effect.Transparency = transparency
+			effect.Anchored = true
 			effect.CanCollide = false
 			effect.CanTouch = false
-			effect.Anchored = true
+			effect.CanQuery = false
 			effect.Color = color
 			effect.Name = RandomString()
 			effect.Size = Vector3.one
@@ -1425,6 +1428,7 @@ AddModule(function()
 		sound.Volume = 1
 		sound.Pitch = pitch
 		sound.Parent = torso
+		sound.EmitterSize = 300
 		sound:Play()
 		sound.Ended:Connect(function()
 			sound:Destroy()
@@ -1437,6 +1441,8 @@ AddModule(function()
 		hitvis.Material = Enum.Material.ForceField
 		hitvis.Anchored = true
 		hitvis.CanCollide = false
+		hitvis.CanTouch = false
+		hitvis.CanQuery = false
 		hitvis.Shape = Enum.PartType.Ball
 		hitvis.Color = Color3.new(1, 1, 1)
 		hitvis.Size = Vector3.one * radius * 2
@@ -1540,11 +1546,11 @@ AddModule(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(30))
 				nt = CFrame.Angles(math.rad(15), 0, math.rad(-30))
-				rst = CFrame.Angles(math.rad(30), 0, math.rad(-90))
+				rst = CFrame.Angles(math.rad(30), 0, math.rad(90))
 				lst = CFrame.Angles(math.rad(0), math.rad(0), math.rad(30))
 				local tcf = CFrame.lookAt(root.Position, mouse.Hit.Position)
 				local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
-				root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 15
+				root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
 				return rt, nt, rst, lst, rht, lht, gunoff
 			end
 			task.wait(0.15)
