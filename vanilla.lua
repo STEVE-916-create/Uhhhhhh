@@ -734,14 +734,10 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
 		end)
-		Util_CreateDropdown(parent, "Fly Speed", {
-			"1x", "2x", "3x", "4x", "5x", "6.1x", "6.7x"
-		}, m.FlySpeed).Changed:Connect(function(val)
+		Util_CreateSlider(parent, "Fly Speed", m.FlySpeed, 1, 8, 1).Changed:Connect(function(val)
 			m.FlySpeed = val
 		end)
-		Util_CreateDropdown(parent, "Hitbox Scale", {
-			"1x", "2x", "3x", "4x"
-		}, m.HitboxScale).Changed:Connect(function(val)
+		Util_CreateSlider(parent, "Hitbox Scale", m.HitboxScale, 1, 4, 1).Changed:Connect(function(val)
 			m.HitboxScale = val
 		end)
 		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
