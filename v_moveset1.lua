@@ -1122,6 +1122,7 @@ AddModule(function()
 	m.Bee = false
 	m.Notifications = true
 	m.Sounds = true
+	m.NoCooldown = false
 	m.FlySpeed = 2
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Bee Wings", m.Bee).Changed:Connect(function(val)
@@ -1133,9 +1134,10 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Sounds", m.Sounds).Changed:Connect(function(val)
 			m.Sounds = val
 		end)
-		Util_CreateDropdown(parent, "Fly Speed", {
-			"1x", "2x", "3x", "4x", "5x", "6.1x", "6.7x"
-		}, m.FlySpeed).Changed:Connect(function(val)
+		Util_CreateSwitch(parent, "Turbo mode", m.NoCooldown).Changed:Connect(function(val)
+			m.NoCooldown = val
+		end)
+		Util_CreateSlider(parent, "Fly Speed", m.FlySpeed, 1, 8, 1).Changed:Connect(function(val)
 			m.FlySpeed = val
 		end)
 	end
@@ -1143,6 +1145,7 @@ AddModule(function()
 		m.Bee = not not save.Bee
 		m.Notifications = not save.NoTextType
 		m.Sounds = not save.Muted
+		m.NoCooldown = not not save.NoCooldown
 		m.FlySpeed = save.FlySpeed or m.FlySpeed
 	end
 	m.SaveConfig = function()
@@ -1150,6 +1153,7 @@ AddModule(function()
 			Bee = m.Bee,
 			NoTextType = not m.Notifications,
 			Muted = not m.Sounds,
+			NoCooldown = m.NoCooldown,
 			FlySpeed = m.FlySpeed,
 		}
 	end
@@ -1279,6 +1283,10 @@ AddModule(function()
 				mesh.Scale = size
 			elseif shapetype == "Block" or shapetype == "Box" then
 				mesh = Instance.new("BlockMesh", effect)
+				mesh.Scale = size
+			elseif shapetype == "Cylinder" then
+				mesh = Instance.new("SpecialMesh", effect)
+				mesh.MeshType = "Cylinder"
 				mesh.Scale = size
 			elseif shapetype == "Slash" then
 				mesh = Instance.new("SpecialMesh", effect)
@@ -1465,7 +1473,7 @@ AddModule(function()
 	local animationOverride = nil
 	local currentmode = 0
 	local function Dash()
-		if attacking then return end
+		if attacking and not m.NoCooldown then return end
 		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
@@ -1523,7 +1531,7 @@ AddModule(function()
 		end)
 	end
 	local function KaBoom()
-		if attacking then return end
+		if attacking and not m.NoCooldown then return end
 		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
@@ -1537,7 +1545,7 @@ AddModule(function()
 		end)
 	end
 	local function AttackOne()
-		if attacking then return end
+		if attacking and not m.NoCooldown then return end
 		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
