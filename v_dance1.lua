@@ -2168,6 +2168,7 @@ AddModule(function()
 
 	local animator = nil
 	local start = 0
+	local force = nil
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("Backflips.mp3"), "Both Of You, Dance Like You Want To Win", 1)
 		start = tick()
@@ -2175,6 +2176,9 @@ AddModule(function()
 		animator.rig = figure
 		animator.looped = true
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Backflips.anim"))
+		force = Instance.new("BodyVelocity")
+		force.P = 9e4
+		force.MaxForce = Vector3.new(math.huge, 0, math.huge)
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(tick() - start)
@@ -2183,11 +2187,13 @@ AddModule(function()
 		hum.WalkSpeed = 0.05
 		if hum.MoveDirection.Magnitude > 0 then
 			-- move backwards
-			hum.RootPart.Velocity = Vector3.new(
+			force.Velocity = Vector3.new(
 				hum.MoveDirection.X * -8 * figure:GetScale(),
-				hum.RootPart.Velocity.Y,
+				0,
 				hum.MoveDirection.Z * -8 * figure:GetScale()
 			)
+		else
+			force.Velocity = Vector3.zero
 		end
 	end
 	m.Destroy = function(figure: Model?)
