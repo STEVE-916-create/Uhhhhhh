@@ -1158,6 +1158,10 @@ AddModule(function()
 		}
 	end
 
+	local rcp = RaycastParams.new()
+	rcp.FilterType = Enum.RaycastFilterType.Exclude
+	rcp.RespectCanCollide = true
+	rcp.IgnoreWater = true
 	local hum = nil
 	local root = nil
 	local torso = nil
@@ -1467,6 +1471,7 @@ AddModule(function()
 			end
 		end
 	end
+	
 	local flight = false
 	local start = 0
 	local attacking = false
@@ -1563,8 +1568,9 @@ AddModule(function()
 			end
 			task.wait(0.15)
 			if not rootu:IsDescendantOf(workspace) then return end
-			local target = mouse.Hit.Position
 			local hole = root.CFrame * CFrame.new(Vector3.new(1, 0.5, -5) * root.Size.Z)
+			local target = mouse.Hit.Position
+			local raycast = workspace:Raycast(hole.Position, target - hole.Position, rcp)
 			local dist = (hole.Position - target).Magnitude
 			CreateSound(642890855, 0.45)
 			CreateSound(192410089, 0.55)
@@ -1572,7 +1578,7 @@ AddModule(function()
 			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
 			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
 			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
-			Effect({Time = 25, EffectType = "Cylinder", Size = Vector3.new(1, dist, 1), SizeEnd = Vector3.new(1, dist, 1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.lookAt((hole.Position + target) / 2, target) * CFrame.Angles(math.rad(90), 0, 0), Material = "Neon", Color = Color3.new(1, 1, 1)})
+			Effect({Time = 25, EffectType = "Cylinder", Size = Vector3.new(dist, 1, 1), SizeEnd = Vector3.new(dist, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.lookAt((hole.Position + target) / 2, target) * CFrame.Angles(0, math.rad(90), 0), Material = "Neon", Color = Color3.new(1, 1, 1)})
 			for _=1,5 do
 				Lightning({Start = hole.Position, Finish = target, Offset = 3.5, Color = Color3.new(1, 0, 0), Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
 			end
@@ -1750,6 +1756,7 @@ AddModule(function()
 				notify(msg)
 			end
 		end)
+		rcp.FilterDescendantsInstances = {figure}
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick() - start
