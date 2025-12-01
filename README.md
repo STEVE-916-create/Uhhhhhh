@@ -184,3 +184,10 @@ OnPlayerChatted.Event:Connect(function(player, message) end) -- event when a pla
 
 HiddenGui -- the reference to the ScreenGui Uhhhhhh uses
 ```
+
+# Uhhhhhh's Licenses
+My code is covered by the MIT license. I made most of it. BUT...
+
+MOST OF THESE ANIMATIONS AND MUSIC ARE NOT MINE!!!
+
+See THIRD_PARTY for credits, original licenses, and usage notes.
