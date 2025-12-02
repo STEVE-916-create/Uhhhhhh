@@ -1507,12 +1507,29 @@ AddModule(function()
 	m.Description = "Don't jump! You have so much to live for!\nEVERYBODY DO THE FLOP! *FLOP*\n*SPLAT*"
 	m.Assets = {"DoTheFlop.anim", "DoTheFlop.mp3"}
 
+	m.Once = false
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Not looped", m.Once).Changed:Connect(function(val)
+			m.Once = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Once = not not save.Once
+	end
+	m.SaveConfig = function()
+		return {
+			Once = m.Once
+		}
 	end
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideDanceMusic(AssetGetContentId("DoTheFlop.mp3"), "asdfmovie - Do The Flop", 1)
+		if m.Once then
+			SetOverrideDanceMusic(AssetGetContentId("DoTheFlop.mp3"), "asdfmovie - Do The Flop", 1, NumberRange.new(16.592, 16.593))
+			SetOverrideDanceMusicTime(14.746)
+		else
+			SetOverrideDanceMusic(AssetGetContentId("DoTheFlop.mp3"), "asdfmovie - Do The Flop", 1)
+		end
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("DoTheFlop.anim"))
@@ -2317,7 +2334,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Default Dance"
 	m.Description = "FORTY NIGHTY LA PABAJI\npabaji\nPABAJI LA EKES BOKES SERES EKES\npabaji\nPABAJI LA BALESTESHONFAIV\nbalesteshon... faiv...\nBALESTESHONFAIVI LA LUKITIK\nlukitik\nLUKITIKI LA HAYBAR EKES EKES EKES EKES\nhaybar ekes ekes ekes ekes\nHAYBAR EKES EKES EKES EKES E LA GIRANDIFIFDORIGINI\ngirandfifdoridini"
-	m.Assets = {"Fortnite.anim"}
+	m.Assets = {"Fortnite.anim", "Fortnite.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
 	end
@@ -2327,6 +2344,7 @@ AddModule(function()
 		SetOverrideDanceMusic(AssetGetContentId("Fortnite.mp3"), "fortnight default dance", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
+		animator.speed = 0.875
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Fortnite.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
@@ -2335,7 +2353,7 @@ AddModule(function()
 	m.Destroy = function(figure: Model?)
 		animator = nil
 	end
-	--return m
+	return m
 end)
 
 return modules
