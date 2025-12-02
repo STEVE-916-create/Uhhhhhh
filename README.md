@@ -174,7 +174,7 @@ AnimLib -- Uhhhhhh's animation library
 			.weight -- use to blend with other animators, or smoothen animation
 			:Step(time) -- apply pose
 
--- utils for grabbing assets from Uhhhhhh/Assets/...
+-- utils for grabbing assets from Uhhhhhh/Content/...
 AssetGetPathFromFilename(filename) -- used for AnimLib.Track.fromfile
 AssetGetContentId(filename) -- loads file with getcustomasset
 
