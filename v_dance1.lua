@@ -153,10 +153,25 @@ AddModule(function()
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
 		hum.PlatformStand = true
-		if hum.MoveDirection.Magnitude > 0 or hum.Jump then
-			root.Velocity = hum.MoveDirection * 50
-			if hum.Jump then
-				root.Velocity += Vector3.new(0, 50, 0)
+		if selmode ~= 1 then
+			if hum.MoveDirection.Magnitude > 0 or hum.Jump then
+				local acc = hum.MoveDirection * 16
+				if hum.Jump then
+					acc += Vector3.new(0, 16, 0)
+				end
+				root.Velocity = acc * figure:GetScale()
+			end
+		end
+		if selmode == 1 then
+			local he = figure:FindFirstChild("Head")
+			local la = figure:FindFirstChild("Left Arm")
+			local ra = figure:FindFirstChild("Right Arm")
+			local ll = figure:FindFirstChild("Left Leg")
+			local rl = figure:FindFirstChild("Right Leg")
+			for _,v in {he, la, ra, ll, rl} do
+				if v.Position.Y < FallenPartsDestroyHeight then
+					v.Position = root.Position
+				end
 			end
 		end
 		if selmode == 2 then

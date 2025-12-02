@@ -183,6 +183,7 @@ ProtectedChat(message) -- make player say something, errors are supressed
 OnPlayerChatted.Event:Connect(function(player, message) end) -- event when a player chats
 
 HiddenGui -- the reference to the ScreenGui Uhhhhhh uses
+FallenPartsDestroyHeight -- self explanatory
 ```
 
 # Uhhhhhh's Licenses
