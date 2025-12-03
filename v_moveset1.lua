@@ -853,6 +853,14 @@ AddModule(function()
 				notify("magic is BORING.")
 			end
 		end, false, Enum.KeyCode.C)
+		ContextActionService:BindAction("Uhhhhhh_ILMusic", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				musictime = 0
+				changesong()
+			end
+		end, true, Enum.KeyCode.M)
+		ContextActionService:SetTitle("Uhhhhhh_ILMusic", "M")
+		ContextActionService:SetPosition("Uhhhhhh_ILMusic", UDim2.new(1, -130, 1, -180))
 		task.delay(0, notify, "im BORED!!")
 		local lines = {
 			"theres NOTHING really FUN for me to do since 2022",
@@ -1117,6 +1125,7 @@ AddModule(function()
 		ContextActionService:UnbindAction("Uhhhhhh_ILAttack")
 		ContextActionService:UnbindAction("Uhhhhhh_ILTeleport")
 		ContextActionService:UnbindAction("Uhhhhhh_ILDestroy")
+		ContextActionService:UnbindAction("Uhhhhhh_ILMusic")
 		flyv:Destroy()
 		flyg:Destroy()
 		if chatconn then
