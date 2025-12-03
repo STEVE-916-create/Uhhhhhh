@@ -1034,20 +1034,26 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Smug Dance"
-	m.Description = "Portal music seems to fit\nIncludes:\n- GladOS's Console\n- Tune from 85.2 FM\n- Dark Mode"
-	m.Assets = {"SmugDance.anim", "SmugDance.mp3", "SmugDance2.mp3"}
+	m.Description = "Portal music seems to fit\nIf not, theres a switch, it's right below.\nIncludes:\n- GladOS's Console\n- Tune from 85.2 FM\n- Dark Mode"
+	m.Assets = {"SmugDance.anim", "SmugDance.mp3", "SmugDance2.mp3", "SmugDance3.mp3"}
 
+	m.Original = false
 	m.Deltarolled = false
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Correct Music", m.Original).Changed:Connect(function(val)
+			m.Original = val
+		end)
 		Util_CreateSwitch(parent, "Dark mode", m.Deltarolled).Changed:Connect(function(val)
 			m.Deltarolled = val
 		end)
 	end
 	m.LoadConfig = function(save: any)
+		m.Original = not not save.Original
 		m.Deltarolled = not not save.Deltarolled
 	end
 	m.SaveConfig = function()
 		return {
+			Original = m.Original,
 			Deltarolled = m.Deltarolled
 		}
 	end
