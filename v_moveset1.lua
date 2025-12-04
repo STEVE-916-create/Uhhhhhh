@@ -1327,6 +1327,11 @@ AddModule(function()
 				mesh.MeshType = "FileMesh"
 				mesh.MeshId = "rbxassetid://662585058"
 				mesh.Scale = size
+			elseif shapetype == "Swirl" then
+				mesh = Instance.new("SpecialMesh", effect)
+				mesh.MeshType = "FileMesh"
+				mesh.MeshId = "rbxassetid://1051557"
+				mesh.Scale = size
 			end
 			if mesh ~= nil then
 				local movespeed = nil
@@ -1615,7 +1620,12 @@ AddModule(function()
 			CreateSound(415700134)
 			Effect({Time = 140, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(98, 1120, 98), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
 			Effect({Time = 140, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(280, 280, 280), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
-			task.wait(140 / 60)
+			local s = os.clock()
+			repeat
+				local t = os.clock() - s
+				Effect({Time = 5 + t * 60, EffectType = "Swirl", Size = Vector3.one * d * 128, SizeEnd = Vector3.new(0, d * 111.5, 0), Transparency = 0.8, TransparencyEnd = 1, CFrame = beam * CFrame.Angles(0, math.rad(d * 300), 0), RotationY = d * 7.5, Material = "Neon", Color = Color3.new(0, 0, 1)})
+				task.wait()
+			until os.clock() - s >= 2.333333
 			Attack(beam.Position, 560)
 			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(98, 1120, 98), SizeEnd = Vector3.new(0, 1120, 0), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
 			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(280, 280, 280), SizeEnd = Vector3.zero, Transparency = 0, TransparencyEnd = 0.6, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
