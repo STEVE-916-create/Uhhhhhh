@@ -876,7 +876,12 @@ AddModule(function()
 			"SO BORED, i would LOVE to use a NOOB skin",
 			"lets hope " .. Player.Name:lower() .. " is NOT BORING",
 			"last time things were FUN for me was FIGHTING LIGHTNING CANNON",
-			"server, tune up Lightning Cannon's powerup theme...",
+			"i don't think seeing Lightning Cannon will cure THIS boredom",
+			"server, tune up In Aisles for me.",
+			"and its NOT because i HACK my stats in EVERY GAME i play", -- headcanon
+			"does ANYONE have a copy of Paper Mario for the Gamecube?", -- yet another headcanon
+			"what has changed anyway?",
+			"what is changed anyway?", -- "Immortality Lord has not yet heard of Changed."
 		}
 		task.delay(3, notify, lines[math.random(1, #lines)])
 		if chatconn then
@@ -1455,6 +1460,28 @@ AddModule(function()
 			curpos = CFrame.new(curpos, uwu) * Vector3.new(0, 0, -length)
 		end
 	end
+	local function EffectCannon(hole, target)
+		CreateSound(642890855, 0.45)
+		CreateSound(192410089, 0.55)
+		local dist = (hole - target).Magnitude
+		hole = CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))) + hole
+		Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
+		Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+		Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
+		Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+		Effect({Time = 25, EffectType = "Cylinder", Size = Vector3.new(dist, 1, 1), SizeEnd = Vector3.new(dist, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.lookAt((hole.Position + target) / 2, target) * CFrame.Angles(0, math.rad(90), 0), Material = "Neon", Color = Color3.new(1, 1, 1)})
+		for _=1,5 do
+			Lightning({Start = hole., Finish = target, Offset = 3.5, Color = Color3.new(1, 0, 0), Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+		end
+		for _=0,2 do
+			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
+			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+		end
+		for _=0,2 do
+			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
+			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+		end
+	end
 	local function CreateSound(id, pitch)
 		pitch = pitch or 1
 		if not m.Sounds then return end
@@ -1569,7 +1596,29 @@ AddModule(function()
 		notify("die... Die... DIE!!!", true)
 		CreateSound(1566051529)
 		task.spawn(function()
-			--CreateSound(642890855, 0.45)
+			for _=1, 3 do
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+					rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(5))
+					nt = CFrame.Angles(math.rad(15), 0, math.rad(-5))
+					rst = CFrame.Angles(math.rad(10), math.rad(-10), math.rad(-175))
+					lst = CFrame.Angles(math.rad(5), math.rad(-10), math.rad(-10))
+					return rt, nt, rst, lst, rht, lht, gunoff
+				end
+				task.wait(0.15)
+				local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, -1) * root.Size.Z)
+				EffectCannon(hole, root.CFrame * Vector3.new(0, 300, -50))
+				animationOverride = nil
+				task.wait(0.7)
+			end
+			task.wait(0.15)
+			local beam = root.CFrame
+			CreateSound(415700134)
+			Effect({Time = 140, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(98, 1120, 98), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
+			Effect({Time = 140, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(280, 280, 280), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
+			task.wait(140 / 60)
+			Attack(beam.Position, 560)
+			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(98, 1120, 98), SizeEnd = Vector3.new(0, 1120, 0), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
+			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(280, 280, 280), SizeEnd = Vector3.zero, Transparency = 0, TransparencyEnd = 0.6, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
 			attacking = false
 			hum.WalkSpeed = 50 * root.Size.Z
 		end)
@@ -1581,6 +1630,57 @@ AddModule(function()
 		attacking = true
 		local mouse = Player:GetMouse()
 		local target = mouse.Hit.Position
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(30))
+				nt = CFrame.Angles(math.rad(15), 0, math.rad(-30))
+				rst = CFrame.Angles(math.rad(30), 0, math.rad(90))
+				lst = CFrame.Angles(math.rad(0), math.rad(0), math.rad(30))
+				local tcf = CFrame.lookAt(root.Position, target)
+				local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
+				root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			task.wait(0.15)
+			if not rootu:IsDescendantOf(workspace) then return end
+			local raycast = workspace:Raycast(hole.Position, target - hole.Position, rcp)
+			if raycast then
+				target = raycast.Position
+			end
+			EffectCannon(hole.Position, target)
+			if math.random(2) == 1 then
+				randomdialog({
+					"BOOM",
+					"THAT ANT IS DEAD",
+					"JUST DOING A GOD'S WORK",
+					"Immortality Lord, YOU CANNOT DO THIS",
+					"LIGHTNING FAST",
+					"WHO THE HELL DO YOU THINK I AM???", -- gurren lagann referencs
+					"EAT THIS IF YOU CAN EVEN",
+					"READ MY NAME, OF COURSE I SHOOT LIGHTNING",
+					"AND IT CANNOT FIGHT BACK",
+					"DEATH IS INESCAPABLE. YOU MUST ACCEPT IT.",
+				}, true)
+			end
+			Attack(target, 10)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(30))
+				nt = CFrame.Angles(math.rad(10), 0, math.rad(-60))
+				rst = CFrame.Angles(math.rad(60), math.rad(-20), math.rad(-160))
+				lst = CFrame.Angles(math.rad(-5), math.rad(5), math.rad(40))
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			task.wait(0.1)
+			if not rootu:IsDescendantOf(workspace) then return end
+			animationOverride = nil
+			attacking = false
+		end)
+	end
+	local function Granada()
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
 		task.spawn(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(30))
@@ -1736,6 +1836,13 @@ AddModule(function()
 		end, true, Enum.KeyCode.Z)
 		ContextActionService:SetTitle("Uhhhhhh_LCDash", "Z")
 		ContextActionService:SetPosition("Uhhhhhh_LCDash", UDim2.new(1, -180, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_LCKaboom", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				KaBoom()
+			end
+		end, true, Enum.KeyCode.B)
+		ContextActionService:SetTitle("Uhhhhhh_LCKaboom", "B")
+		ContextActionService:SetPosition("Uhhhhhh_LCKaboom", UDim2.new(1, -230, 1, -130))
 		if math.random(3) == 1 then
 			task.delay(0, notify, "Lightning Cannon, by LuaQuack")
 		elseif math.random(2) == 1 then
@@ -1945,6 +2052,7 @@ AddModule(function()
 	m.Destroy = function(figure: Model?)
 		ContextActionService:UnbindAction("Uhhhhhh_LCFlight")
 		ContextActionService:UnbindAction("Uhhhhhh_LCDash")
+		ContextActionService:UnbindAction("Uhhhhhh_LCKaboom")
 		flyv:Destroy()
 		flyg:Destroy()
 		if uisbegin then
