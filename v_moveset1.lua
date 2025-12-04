@@ -1623,7 +1623,7 @@ AddModule(function()
 			local s = os.clock()
 			repeat
 				local t = os.clock() - s
-				Effect({Time = 5 + t * 60, EffectType = "Swirl", Size = Vector3.one * d * 128, SizeEnd = Vector3.new(0, d * 111.5, 0), Transparency = 0.8, TransparencyEnd = 1, CFrame = beam * CFrame.Angles(0, math.rad(d * 300), 0), RotationY = d * 7.5, Material = "Neon", Color = Color3.new(0, 0, 1)})
+				Effect({Time = 5 + t * 60, EffectType = "Swirl", Size = Vector3.one * t * 128, SizeEnd = Vector3.new(0, t * 111.5, 0), Transparency = 0.8, TransparencyEnd = 1, CFrame = beam * CFrame.Angles(0, math.rad(t * 300), 0), RotationY = t * 7.5, Material = "Neon", Color = Color3.new(0, 0, 1)})
 				task.wait()
 			until os.clock() - s >= 2.333333
 			Attack(beam.Position, 560)
