@@ -1659,7 +1659,7 @@ AddModule(function()
 		elseif t < 21.333 then
 			animator2:Step(t * 100)
 		else
-			animator2:Step(t + 1.667)
+			animator2:Step(t + 0.667)
 		end
 	end
 	m.Destroy = function(figure: Model?)
