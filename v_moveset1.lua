@@ -29,8 +29,10 @@ local function ResetC0C1Joints(rj, nj, rsj, lsj, rhj, lhj)
 	lhj.C1 = CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
 end
 local function SetC0C1Joint(j, c0, c1, scale)
-	local t = j.C0:Inverse() * c0 * c1:Inverse() * j.C1
-	j.Transform = t + t.Position * (scale - 1)
+	local t = c0 * c1:Inverse()
+	t += t.Position * (scale - 1)
+	t = j.C0:Inverse() * t * j.C1
+	j.Transform = t
 end
 
 local modules = {}
@@ -2068,8 +2070,8 @@ AddModule(function()
 			end
 			task.wait(0.5)
 			for _=1, m.RainAmount do
-				local hit = target * Vector3.new(math.random(-18, 18), 0, math.random(-18, 18))
-				EffectCannon(CFrame.new(sky), hit, false)
+				local hit = target + Vector3.new(math.random(-18, 18), 0, math.random(-18, 18))
+				EffectCannon(sky, hit, false)
 				Attack(hit, 12)
 				task.wait(1.25 / m.RainAmount)
 			end
@@ -2102,6 +2104,7 @@ AddModule(function()
 				lst = CFrame.new(-1.25, 0.5, -0.25) * CFrame.Angles(math.rad(95), 0, math.rad(10)) * LEFTSHOULDERC0
 				gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
 				AimTowards(mouse.Hit.Position)
+				return rt, nt, rst, lst, rht, lht, gunoff
 			end
 			SingularityBeam_ischarging = true
 			local kamehameha = math.random(10) == 1
@@ -2138,9 +2141,17 @@ AddModule(function()
 				core.Size = Vector3.one * 2.5 * (os.clock() - s) / m.BeamCharge
 				task.wait()
 			until os.clock() - s > m.BeamCharge or not SingularityBeam_ischarging or not rootu:IsDescendantOf(workspace)
-			if not SingularityBeam_ischarging or not rootu:IsDescendantOf(workspace) then
+			if not rootu:IsDescendantOf(workspace) then
+				SingularityBeam_ischarging = false
 				core:Destroy()
+				return
+			end
+			if not SingularityBeam_ischarging then
 				CreateSound(3264923, 1)
+				core:Destroy()
+				animationOverride = nil
+				hum.WalkSpeed = 50 * scale
+				attacking = false
 				return
 			end
 			SingularityBeam_ischarging = false
