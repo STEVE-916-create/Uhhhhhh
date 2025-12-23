@@ -149,7 +149,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = tick()
+		local t = os.clock()
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
 		local root = figure:FindFirstChild("HumanoidRootPart")
@@ -229,7 +229,7 @@ AddModule(function()
 	local start = 0
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("RatDance.mp3"), "Chess Type Beat Slowed", 1, NumberRange.new(2.13, 87.3))
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -241,7 +241,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = tick()
+		local t = os.clock()
 		animator:Step(t - start)
 	end
 	m.Destroy = function(figure: Model?)
@@ -521,7 +521,7 @@ AddModule(function()
 	local start = 0
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("CaliforniaGirls.mp3"), "Katy Perry - California Girls", 1)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -529,7 +529,7 @@ AddModule(function()
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("CaliforniaGirls.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = tick()
+		local t = os.clock()
 		animator:Step(t - start)
 	end
 	m.Destroy = function(figure: Model?)
@@ -564,7 +564,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -586,7 +586,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = tick()
+		local t = os.clock()
 		animator:Step(t - start)
 	end
 	m.Destroy = function(figure: Model?)
@@ -721,7 +721,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		start = tick() + 1.505
+		start = os.clock() + 1.505
 		SetOverrideDanceMusic(AssetGetContentId("Gangnam.mp3"), "PSY - Gangnam Style", 1, NumberRange.new(1.505, 30.583))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
@@ -730,7 +730,7 @@ AddModule(function()
 		animator.speed = 1.01795171
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = tick()
+		local t = os.clock()
 		animator:Step(t - start)
 	end
 	m.Destroy = function(figure: Model?)
@@ -1152,7 +1152,7 @@ AddModule(function()
 		end
 	end
 	m.Init = function(figure: Model)
-		start = tick()
+		start = os.clock()
 		original = m.Original
 		setmusic()
 		animator = AnimLib.Animator.new()
@@ -1216,7 +1216,7 @@ AddModule(function()
 			SetOverrideDanceMusicTime(t)
 		end
 		lasttime = t
-		local t2 = tick() - start
+		local t2 = os.clock() - start
 		animator:Step(t2)
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
@@ -1283,7 +1283,7 @@ AddModule(function()
 	local animator3 = nil
 	local textsandstuff = nil
 	m.Init = function(figure: Model)
-		start = tick()
+		start = os.clock()
 		if m.FullVersion then
 			SetOverrideDanceMusic(AssetGetContentId("InternetAngel.mp3"), "NEEDY GIRL OVERDOSE - INTERNET ANGEL", 1)
 		else
@@ -1683,7 +1683,7 @@ AddModule(function()
 	local start = 0
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("TennaBaciPerugina.mp3"), "Deltarune - TV TIME", 1)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -1691,7 +1691,7 @@ AddModule(function()
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("TennaCabbage.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = tick()
+		local t = os.clock()
 		animator:Step(t - start)
 	end
 	m.Destroy = function(figure: Model?)
@@ -1714,7 +1714,7 @@ AddModule(function()
 	local start = 0
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("TennaBaciPerugina.mp3"), "Deltarune - TV TIME", 1)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -1722,7 +1722,7 @@ AddModule(function()
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("TennaSwing.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = tick()
+		local t = os.clock()
 		animator:Step(t - start)
 	end
 	m.Destroy = function(figure: Model?)
@@ -1793,7 +1793,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -1801,7 +1801,7 @@ AddModule(function()
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("TakeTheL.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(tick() - start)
+		animator:Step(os.clock() - start)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1822,7 +1822,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -1834,7 +1834,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(tick() - start)
+		animator:Step(os.clock() - start)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1867,7 +1867,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -1876,7 +1876,7 @@ AddModule(function()
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Kazotsky" .. (variants[m.Variant] or "") .. ".anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(tick() - start)
+		animator:Step(os.clock() - start)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1897,7 +1897,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -1909,7 +1909,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(tick() - start)
+		animator:Step(os.clock() - start)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -2262,14 +2262,14 @@ AddModule(function()
 	local start = 0
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("SkippingHappily.mp3"), "idk this tune", 1)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SkippingHappily.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(tick() - start)
+		animator:Step(os.clock() - start)
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
 		hum.WalkSpeed = 8 * figure:GetScale()
@@ -2299,7 +2299,7 @@ AddModule(function()
 	local force = nil
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("Backflips.mp3"), "Both Of You, Dance Like You Want To Win", 1)
-		start = tick()
+		start = os.clock()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -2310,7 +2310,7 @@ AddModule(function()
 		force.Parent = figure.HumanoidRootPart
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(tick() - start)
+		animator:Step(os.clock() - start)
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum or not hum.RootPart then return end
 		hum.WalkSpeed = 0.05
@@ -2377,7 +2377,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		start = tick()
+		start = os.clock()
 		SetOverrideDanceMusic("rbxassetid://9039445224", "8 Bitty Kitty Underscore", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
@@ -2385,7 +2385,7 @@ AddModule(function()
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("CatDance.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(tick() - start)
+		animator:Step(os.clock() - start)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
