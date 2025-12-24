@@ -2517,7 +2517,7 @@ AddModule(function()
 			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54)), math.rad(-80), 0) * CFrame.Angles(math.rad(5 * math.cos(timingsine / 41)), 0, 0)
 		end
 		if currentmode == 1 then
-			local sync = math.floor((GetOverrideMovesetMusicTime() - 0.779) / 2.795)
+			local sync = math.floor(GetOverrideMovesetMusicTime() / 2.795)
 			if sanitysongsync < sync then
 				sanitysongsync = sync
 				if sanitysongsync == 0 then
