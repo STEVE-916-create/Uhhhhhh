@@ -1641,6 +1641,7 @@ AddModule(function()
 	end
 	local function AimTowards(target)
 		if not root then return end
+		if flight then return end
 		local tcf = CFrame.lookAt(root.Position, target)
 		local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
 		root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
@@ -2270,7 +2271,7 @@ AddModule(function()
 		flyv.Parent = nil
 		flyg = Instance.new("BodyGyro")
 		flyg.Name = "FlightBodyMover"
-		flyg.P = 3000
+		flyg.P = 5000
 		flyg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 		flyg.Parent = nil
 		walkingwheel = Instance.new("Model")
@@ -2288,7 +2289,7 @@ AddModule(function()
 			v.Color = Color3.new()
 			v.Parent = walkingwheel
 		end
-		walkingwheel.Parent = figure
+		walkingwheel.Parent = workspace
 		hum = figure:FindFirstChild("Humanoid")
 		root = figure:FindFirstChild("HumanoidRootPart")
 		torso = figure:FindFirstChild("Torso")
@@ -2459,7 +2460,7 @@ AddModule(function()
 			end
 			local _,angle,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
 			local movedir = CFrame.Angles(0, angle, 0):VectorToObjectSpace(hum.MoveDirection)
-			flyv.Velocity = camcf:VectorToWorldSpace(movedir) * hum.WalkSpeed * m.FlySpeed
+			flyv.Velocity = camcf:VectorToWorldSpace(movedir) * 50 * scale * m.FlySpeed
 			flyg.CFrame = camcf.Rotation
 		else
 			hum.PlatformStand = false
@@ -2480,7 +2481,7 @@ AddModule(function()
 			if attacking then
 				hum.HipHeight = 3
 			else
-				hum.WalkSpeed = 50 * figure:GetScale()
+				hum.WalkSpeed = 50 * scale
 				-- mode 3 is not floating
 				if currentmode == 2 then
 					hum.HipHeight = 0
