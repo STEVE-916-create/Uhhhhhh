@@ -2878,7 +2878,7 @@ AddModule(function()
 		local lhj = torso:FindFirstChild("Left Hip")
 		
 		-- interpolation
-		local alpha = 0--math.exp(-18.6 * dt)
+		local alpha = math.exp(-18.6 * dt)
 		joints.r = rt:Lerp(joints.r, alpha)
 		joints.n = nt:Lerp(joints.n, alpha)
 		joints.rs = rst:Lerp(joints.rs, alpha)
