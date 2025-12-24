@@ -2501,7 +2501,7 @@ AddModule(function()
 		local sin50 = math.sin(timingsine / 50)
 		local cos50 = math.cos(timingsine / 50)
 		gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(math.rad(180), 0, 0)
-		if attacking or currentmode == 1 or (currentmode == 2 and sanitysongsync < 8) then
+		if attacking or currentmode == 0 or (currentmode == 1 and sanitysongsync < 8) then
 			if root.Velocity.Magnitude < 8 * scale or attacking then
 				rt = ROOTC0 * CFrame.new(0.5 * cos50, 0, 10 * math.clamp(math.pow(1 - t, 3), 0, 1) - 0.5 * sin50)
 				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
@@ -2517,7 +2517,7 @@ AddModule(function()
 				rht = CFrame.new(1, -0.5, -0.5) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74)), math.rad(80), 0) * CFrame.Angles(math.rad(5 * math.cos(timingsine / 37)), 0, 0)
 				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54)), math.rad(-80), 0) * CFrame.Angles(math.rad(5 * math.cos(timingsine / 41)), 0, 0)
 			end
-		elseif currentmode == 2 and sanitysongsync >= 8 then
+		elseif currentmode == 1 and sanitysongsync >= 8 then
 			rt = ROOTC0 * CFrame.new(0, 0, 0.5 * sin50) * CFrame.Angles(math.rad(20), 0, 0)
 			nt = NECKC0
 			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-41.6 - 4 * sin50), 0, 0) * RIGHTSHOULDERC0
@@ -2531,7 +2531,7 @@ AddModule(function()
 				end
 				joints.n = nt
 			end
-		elseif currentmode == 3 then
+		elseif currentmode == 2 then
 			if segment then
 				local sin2 = math.sin(timingsine / 2)
 				rt = ROOTC0 * CFrame.new(0, 0, -0.2) * CFrame.Angles(math.rad(-45), 0, 0)
