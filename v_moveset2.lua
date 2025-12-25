@@ -426,13 +426,13 @@ AddModule(function()
 		if maryo.AnimCurrent == data then
 			return maryo.AnimFrame
 		end
-		m.AnimFrameCount = data.C
-		m.AnimCurrent = data
-		m.AnimAccelAssist = 0
-		m.AnimAccel = 0
-		m.AnimReset = true
-		m.AnimDirty = true
-		m.AnimFrame = data.F
+		maryo.AnimFrameCount = data.C
+		maryo.AnimCurrent = data
+		maryo.AnimAccelAssist = 0
+		maryo.AnimAccel = 0
+		maryo.AnimReset = true
+		maryo.AnimDirty = true
+		maryo.AnimFrame = data.F
 		return data.F
 	end
 	function maryo.SetAnimationWithAccel(anim, accel)
@@ -763,7 +763,7 @@ AddModule(function()
 		elseif action.NAME == "LONG_JUMP" then
 			maryo.AnimReset = true
 			maryo.SetYVelBasedOnFSpeed(30, 0)
-			maryo.LongJumpIsSlow = m.ForwardVel <= 16
+			maryo.LongJumpIsSlow = maryo.ForwardVel <= 16
 			maryo.ForwardVel *= 1.5
 			if maryo.ForwardVel > 48 then
 				maryo.ForwardVel = 48
@@ -945,7 +945,7 @@ AddModule(function()
 				maryo.PlaySound("MARIO_PUNCH_WAH")
 			end
 			maryo.SetAnimation("SECOND_PUNCH")
-			maryo.ActionArg = m:IsAnimPastEnd() and 5 or 4
+			maryo.ActionArg = maryo.IsAnimPastEnd() and 5 or 4
 			if maryo.AnimFrame > 0 then
 				maryo.Flags.PUNCHING = true
 			end
@@ -964,7 +964,7 @@ AddModule(function()
 			maryo.PlayActionSound("MARIO_PUNCH_HOO", 1)
 			local animFrame = maryo.SetAnimation("GROUND_KICK")
 			if animFrame >= 0 and animFrame < 8 then
-				m.Flags.KICKING = true
+				maryo.Flags.KICKING = true
 			end
 			if maryo.IsAnimAtEnd() then
 				maryo.SetAction(endAction)
@@ -1017,13 +1017,13 @@ AddModule(function()
 		return maryo.PerformGroundStep()
 	end
 	function maryo.PerformGroundQuarterStep(nextPos)
-		local lowerPos, _ = maryo.FindWallCollisions(nextPos, 30, 24)
+		local lowerPos, _ = maryo.FindWallCollisions(nextPos, 1.5, 1.2)
 		nextPos = lowerPos
-		local upperPos, upperWall = maryo.FindWallCollisions(nextPos, 60, 50)
+		local upperPos, upperWall = maryo.FindWallCollisions(nextPos, 3, 2.5)
 		nextPos = upperPos
 		local floorHeight, f = maryo.FindFloor(nextPos)
 		local ceilHeight, _ = maryo.FindCeiling(nextPos, floorHeight)
-		m.Wall = upperWall
+		maryo.Wall = upperWall
 		if f == nil then
 			return "HIT_WALL_STOP_QSTEPS"
 		end
@@ -1042,283 +1042,208 @@ AddModule(function()
 		maryo.FloorHeight = floorHeight
 		maryo.Position = Vector3.new(nextPos.X, floorHeight, nextPos.Z)
 		if upperWall then
-			local wallDYaw = maryo.NormalizeAngle(math.atan2(upperWall.Normal.Z, upperWall.Normal.X) - m.FaceAngle.Y)
-			if math.abs(wallDYaw) >= 0x2AAA and math.abs(wallDYaw) <= 0x5555 then
+			local wallDYaw = math.abs(maryo.NormalizeAngle(math.atan2(upperWall.Normal.Z, upperWall.Normal.X) - maryo.FaceAngle.Y))
+			if wallDYaw >= math.pi / 6 and wallDYaw <= math.pi / 3 then
 				return "NONE"
 			end
-	
 			return "HIT_WALL_CONTINUE_QSTEPS"
 		end
-	
 		return "NONE"
 	end
-	
-	function Mario.PerformGroundStep(m: Mario): number
-		local floor = m.Floor
-	
-		if not floor then
-			return GroundStep.NONE
+	function maryo.PerformGroundStep()
+		local f = maryo.Floor
+		if not f then
+			return "NONE"
 		end
-	
-		local stepResult: number
-		assert(floor)
-	
+		local stepResult = "NONE"
 		for i = 1, 4 do
-			local intendedX = m.Position.X + floor.Normal.Y * (m.Velocity.X / 4)
-			local intendedZ = m.Position.Z + floor.Normal.Y * (m.Velocity.Z / 4)
-			local intendedY = m.Position.Y
-	
+			local intendedX = maryo.Position.X + f.Normal.Y * (maryo.Velocity.X / 80)
+			local intendedZ = maryo.Position.Z + f.Normal.Y * (maryo.Velocity.Z / 80)
+			local intendedY = maryo.Position.Y
 			local intendedPos = Vector3.new(intendedX, intendedY, intendedZ)
-			stepResult = m:PerformGroundQuarterStep(intendedPos)
-	
-			if stepResult == GroundStep.LEFT_GROUND or stepResult == GroundStep.HIT_WALL_STOP_QSTEPS then
+			stepResult = maryo.PerformGroundQuarterStep(intendedPos)
+			if stepResult == "LEFT_GROUND" or stepResult == "HIT_WALL_STOP_QSTEPS" then
 				break
 			end
 		end
-	
-		m.TerrainType = m:GetTerrainType()
-		m.GfxAngle = Vector3int16.new(0, m.FaceAngle.Y, 0)
-	
-		if stepResult == GroundStep.HIT_WALL_CONTINUE_QSTEPS then
-			stepResult = GroundStep.HIT_WALL
+		maryo.TerrainType = maryo.GetTerrainType()
+		if stepResult == "HIT_WALL_CONTINUE_QSTEPS" then
+			stepResult = "HIT_WALL"
 		end
-	
 		return stepResult
 	end
-	
-	function Mario.CheckLedgeGrab(m: Mario, wall: RaycastResult, intendedPos: Vector3, nextPos: Vector3): boolean
-		if m.Velocity.Y > 0 then
+	function maryo.CheckLedgeGrab(wall, intendedPos, nextPos)
+		if maryo.Velocity.Y > 0 then
 			return false
 		end
-	
 		local dispX = nextPos.X - intendedPos.X
 		local dispZ = nextPos.Z - intendedPos.Z
-	
-		if dispX * m.Velocity.X + dispZ * m.Velocity.Z > 0 then
+		if dispX * maryo.Velocity.X + dispZ * maryo.Velocity.Z > 0 then
 			return false
 		end
-	
-		local ledgeX = nextPos.X - (wall.Normal.X * 60)
-		local ledgeZ = nextPos.Z - (wall.Normal.Z * 60)
-	
-		local ledgePos = Vector3.new(ledgeX, nextPos.Y + 160, ledgeZ)
-		local ledgeY, ledgeFloor = Util.FindFloor(ledgePos)
-	
-		if ledgeY - nextPos.Y < 100 then
+		local ledgeX = nextPos.X - (wall.Normal.X * 3)
+		local ledgeZ = nextPos.Z - (wall.Normal.Z * 3)
+		local ledgePos = Vector3.new(ledgeX, nextPos.Y + 8, ledgeZ)
+		local ledgeY, ledgeFloor = maryo.FindFloor(ledgePos)
+		if ledgeY - nextPos.Y < 5 then
 			return false
 		end
-	
 		if ledgeFloor then
 			ledgePos = ledgeFloor.Position
-			m.Position = ledgePos
-	
-			m.Floor = ledgeFloor
-			m.FloorHeight = ledgeY
-			m.FloorAngle = Util.Atan2s(ledgeFloor.Normal.Z, ledgeFloor.Normal.X)
-	
-			m.FaceAngle *= Vector3int16.new(0, 1, 1)
-			m.FaceAngle = Util.SetY(m.FaceAngle, Util.Atan2s(wall.Normal.Z, wall.Normal.X) + 0x8000)
+			maryo.Position = ledgePos
+			maryo.Floor = ledgeFloor
+			maryo.FloorHeight = ledgeY
+			maryo.FloorAngle = maryo.NormalizeAngle(math.atan2(ledgeFloor.Normal.Z, ledgeFloor.Normal.X))
+			maryo.FaceAngle *= Vector3.new(0, 1, 1)
+			maryo.SetFaceYaw(math.atan2(wall.Normal.Z, wall.Normal.X) + math.pi)
+			return true
 		end
-	
-		return ledgeFloor ~= nil
-	end
-	
-	function Mario.PerformAirQuarterStep(m: Mario, intendedPos: Vector3, stepArg: number)
-		local nextPos = intendedPos
-	
-		local upperPos, upperWall = Util.FindWallCollisions(nextPos, 150, 50)
-		nextPos = upperPos
-	
-		local lowerPos, lowerWall = Util.FindWallCollisions(nextPos, 30, 50)
-		nextPos = lowerPos
-	
-		local floorHeight, floor = Util.FindFloor(nextPos)
-		local ceilHeight = Util.FindCeiling(nextPos, floorHeight)
-	
-		m.Wall = nil
-	
-		if floor == nil then
-			if nextPos.Y <= m.FloorHeight then
-				m.Position = Util.SetY(m.Position, m.FloorHeight)
-				return AirStep.LANDED
-			end
-	
-			m.Position = Util.SetY(m.Position, nextPos.Y)
-			return AirStep.HIT_WALL
-		end
-	
-		if nextPos.Y <= floorHeight then
-			if ceilHeight - floorHeight > 160 then
-				m.Floor = floor
-				m.FloorHeight = floorHeight
-				m.Position = Vector3.new(nextPos.X, m.Position.Y, nextPos.Z)
-			end
-	
-			m.Position = Util.SetY(m.Position, floorHeight)
-			return AirStep.LANDED
-		end
-	
-		if nextPos.Y + 160 > ceilHeight then
-			if m.Velocity.Y > 0 then
-				m.Velocity = Util.SetY(m.Velocity, 0)
-				return AirStep.NONE
-			end
-	
-			if nextPos.Y <= m.FloorHeight then
-				m.Position = Util.SetY(m.Position, floorHeight)
-				return AirStep.LANDED
-			end
-	
-			m.Position = Util.SetY(m.Position, nextPos.Y)
-			return AirStep.HIT_WALL
-		end
-	
-		if bit32.btest(stepArg, AirStep.CHECK_LEDGE_GRAB) and upperWall == nil and lowerWall ~= nil then
-			if m:CheckLedgeGrab(lowerWall, intendedPos, nextPos) then
-				return AirStep.GRABBED_LEDGE
-			end
-	
-			m.Floor = floor
-			m.Position = nextPos
-			m.FloorHeight = floorHeight
-	
-			return AirStep.NONE
-		end
-	
-		m.Floor = floor
-		m.Position = nextPos
-		m.FloorHeight = floorHeight
-	
-		if upperWall or lowerWall then
-			local wall = assert(upperWall or lowerWall)
-			local wallDYaw = Util.SignedShort(Util.Atan2s(wall.Normal.Z, wall.Normal.X) - m.FaceAngle.Y)
-			m.Wall = wall
-	
-			if math.abs(wallDYaw) > 0x6000 then
-				return AirStep.HIT_WALL
-			end
-		end
-	
-		return AirStep.NONE
-	end
-	
-	function Mario.ApplyTwirlGravity(m: Mario)
-		local heaviness = 1
-	
-		if m.AngleVel.Y > 1024 then
-			heaviness = 1024 / m.AngleVel.Y
-		end
-	
-		local terminalVelocity = -75 * heaviness
-		m.Velocity -= Vector3.new(0, 4 * heaviness, 0)
-	
-		if m.Velocity.Y < terminalVelocity then
-			m.Velocity = Util.SetY(m.Velocity, terminalVelocity)
-		end
-	end
-	
-	function Mario.ShouldStrengthenGravityForJumpAscent(m: Mario): boolean
-		if not m.Flags:Has(MarioFlags.MOVING_UP_IN_AIR) then
-			return false
-		end
-	
-		if m.Action:Has(ActionFlags.INTANGIBLE, ActionFlags.INVULNERABLE) then
-			return false
-		end
-	
-		if not m.Input:Has(InputFlags.A_DOWN) and m.Velocity.Y > 20 then
-			return m.Action:Has(ActionFlags.CONTROL_JUMP_HEIGHT)
-		end
-	
 		return false
 	end
-	
-	function Mario.ApplyGravity(m: Mario)
-		local action = m.Action()
-	
-		if action == Action.TWIRLING and m.Velocity.Y < 0 then
-			m:ApplyTwirlGravity()
-		elseif action == Action.SHOT_FROM_CANNON then
-			m.Velocity -= Vector3.yAxis
-	
-			if m.Velocity.Y < -75 then
-				m.Velocity = Util.SetY(m.Velocity, -75)
+	function maryo.PerformAirQuarterStep(intendedPos, checkLedge)
+		local nextPos = intendedPos
+		local upperPos, upperWall = maryo.FindWallCollisions(nextPos, 7.5, 2.5)
+		nextPos = upperPos
+		local lowerPos, lowerWall = maryo.FindWallCollisions(nextPos, 1.5, 2.5)
+		nextPos = lowerPos
+		local floorHeight, f = maryo.FindFloor(nextPos)
+		local ceilHeight = maryo.FindCeiling(nextPos, floorHeight)
+		maryo.Wall = nil
+		if not f then
+			if nextPos.Y <= maryo.FloorHeight then
+				maryo.SetHeight(maryo.FloorHeight)
+				return "LANDED"
 			end
-		elseif action == Action.LONG_JUMP or action == Action.SLIDE_KICK or action == Action.BBH_ENTER_SPIN then
-			m.Velocity -= (Vector3.yAxis * 2)
-	
-			if m.Velocity.Y < -75 then
-				m.Velocity = Util.SetY(m.Velocity, -75)
+			maryo.SetHeight(nextPos.Y)
+			return "HIT_WALL"
+		end
+		if nextPos.Y <= floorHeight then
+			if ceilHeight - floorHeight > 8 then
+				maryo.Floor = f
+				maryo.FloorHeight = floorHeight
+				maryo.Position = Vector3.new(nextPos.X, maryo.Position.Y, nextPos.Z)
 			end
-		elseif action == Action.LAVA_BOOST or action == Action.FALL_AFTER_STAR_GRAB then
-			m.Velocity -= (Vector3.yAxis * 3.2)
-	
-			if m.Velocity.Y < -65 then
-				m.Velocity = Util.SetY(m.Velocity, -65)
+			maryo.SetHeight(floorHeight)
+			return "LANDED"
+		end
+		if nextPos.Y + 8 > ceilHeight then
+			if maryo.Velocity.Y > 0 then
+				maryo.SetUpwardVel(0)
+				return "NONE"
 			end
-		elseif m:ShouldStrengthenGravityForJumpAscent() then
-			m.Velocity *= Vector3.new(1, 0.25, 1)
-		elseif m.Action:Has(ActionFlags.METAL_WATER) then
-			m.Velocity -= (Vector3.yAxis * 1.6)
-	
-			if m.Velocity.Y < -16 then
-				m.Velocity = Util.SetY(m.Velocity, -16)
+			if nextPos.Y <= maryo.FloorHeight then
+				maryo.SetHeight(floorHeight)
+				return "LANDED"
 			end
-		elseif m.Flags:Has(MarioFlags.WING_CAP) and m.Velocity.Y < 0 and m.Input:Has(InputFlags.A_DOWN) then
-			m.BodyState.WingFlutter = true
-			m.Velocity -= (Vector3.yAxis * 2)
-	
-			if m.Velocity.Y < -37.5 then
-				m.Velocity += (Vector3.yAxis * 4)
-	
-				if m.Velocity.Y > -37.5 then
-					m.Velocity = Util.SetY(m.Velocity, -37.5)
+			maryo.SetHeight(nextPos.Y)
+			return "HIT_WALL"
+		end
+		if checkLedge and upperWall == nil and lowerWall ~= nil then
+			if maryo.CheckLedgeGrab(lowerWall, intendedPos, nextPos) then
+				return "GRABBED_LEDGE"
+			end
+			maryo.Floor = f
+			maryo.Position = nextPos
+			maryo.FloorHeight = floorHeight
+			return "NONE"
+		end
+		maryo.Floor = f
+		maryo.Position = nextPos
+		maryo.FloorHeight = floorHeight
+		if upperWall or lowerWall then
+			local wall = upperWall or lowerWall
+			local wallDYaw = math.abs(maryo.NormalizeAngle(math.atan2(wall.Normal.Z, wall.Normal.X) - maryo.FaceAngle.Y))
+			maryo.Wall = wall
+			if wallDYaw > math.pi * 0.375 then
+				return "HIT_WALL"
+			end
+		end
+		return "NONE"
+	end
+	function maryo.ApplyTwirlGravity()
+		local heaviness = 1
+		if maryo.AngleVel.Y > 1024 then
+			heaviness = 1024 / maryo.AngleVel.Y
+		end
+		local terminalVelocity = -75 * heaviness
+		maryo.Velocity -= Vector3.new(0, 4 * heaviness, 0)
+		if maryo.Velocity.Y < terminalVelocity then
+			maryo.SetUpwardVel(terminalVelocity)
+		end
+	end
+	function maryo.ShouldStrengthenGravityForJumpAscent()
+		if not maryo.Flags.MOVING_UP_IN_AIR then
+			return false
+		end
+		if maryo.Action.INTANGIBLE or maryo.Action.INVULNERABLE then
+			return false
+		end
+		if not maryo.Input.A_DOWN and maryo.Velocity.Y > 20 then
+			return maryo.Action.CONTROL_JUMP_HEIGHT
+		end
+		return false
+	end
+	function maryo.ApplyGravity()
+		local action = maryo.Action
+		if action.NAME == "TWIRLING" and maryo.Velocity.Y < 0 then
+			maryo.ApplyTwirlGravity()
+		elseif action.NAME == "SHOT_FROM_CANNON" then
+			maryo.Velocity -= Vector3.yAxis
+			if maryo.Velocity.Y < -75 then
+				maryo.SetUpwardVel(-75)
+			end
+		elseif action.NAME == "LONG_JUMP" or action.NAME == "SLIDE_KICK" or action.NAME == "BBH_ENTER_SPIN" then
+			maryo.Velocity -= Vector3.yAxis * 2
+			if maryo.Velocity.Y < -75 then
+				maryo.SetUpwardVel(-75)
+			end
+		elseif action.NAME == "LAVA_BOOST" or action.NAME == "FALL_AFTER_STAR_GRAB" then
+			maryo.Velocity -= Vector3.yAxis * 3.2
+			if maryo.Velocity.Y < -65 then
+				maryo.SetUpwardVel(-65)
+			end
+		elseif maryo.ShouldStrengthenGravityForJumpAscent() then
+			maryo.Velocity *= Vector3.new(1, 0.25, 1)
+		elseif maryo.Action.METAL_WATER then
+			maryo.Velocity -= Vector3.yAxis * 1.6
+			if maryo.Velocity.Y < -16 then
+				maryo.SetUpwardVel(-16)
+			end
+		elseif maryo.Flags.WING_CAP and maryo.Velocity.Y < 0 and maryo.Input.A_DOWN then
+			maryo.Velocity -= Vector3.yAxis * 2
+			if maryo.Velocity.Y < -37.5 then
+				maryo.Velocity += Vector3.yAxis * 4
+				if maryo.Velocity.Y > -37.5 then
+					maryo.SetUpwardVel(-37.5)
 				end
 			end
 		else
-			m.Velocity -= (Vector3.yAxis * 4)
-	
-			if m.Velocity.Y < -75 then
-				m.Velocity = Util.SetY(m.Velocity, -75)
+			maryo.Velocity -= Vector3.yAxis * 4
+			if maryo.Velocity.Y < -75 then
+				maryo.SetUpwardVel(-75)
 			end
 		end
 	end
-	
-	function Mario.PerformAirStep(m: Mario, maybeStepArg: number?)
-		local stepArg = maybeStepArg or 0
-		local stepResult = AirStep.NONE
-		m.Wall = nil
-	
+	function maryo.PerformAirStep(checkLedge)
+		local stepResult = "NONE"
+		maryo.Wall = nil
 		for i = 1, 4 do
-			local intendedPos = m.Position + (m.Velocity / 4)
-			local result = m:PerformAirQuarterStep(intendedPos, stepArg)
-	
-			if result ~= AirStep.NONE then
+			local intendedPos = maryo.Position + (maryo.Velocity / 80)
+			local result = maryo.PerformAirQuarterStep(intendedPos, checkLedge)
+			if result ~= "NONE" then
 				stepResult = result
 			end
-	
-			if
-				result == AirStep.LANDED
-				or result == AirStep.GRABBED_LEDGE
-				or result == AirStep.GRABBED_CEILING
-				or result == AirStep.HIT_LAVA_WALL
-			then
+			if result == "LANDED" or result == "GRABBED_LEDGE" or result == "GRABBED_CEILING" or result == "HIT_LAVA_WALL" then
 				break
 			end
 		end
-	
-		if m.Velocity.Y >= 0 then
-			m.PeakHeight = m.Position.Y
+		if maryo.Velocity.Y >= 0 then
+			maryo.PeakHeight = maryo.Position.Y
 		end
-	
-		m.TerrainType = m:GetTerrainType()
-	
-		if m.Action() ~= Action.FLYING then
-			m:ApplyGravity()
+		maryo.TerrainType = maryo.GetTerrainType()
+		if maryo.Action.NAME ~= "FLYING" then
+			maryo.ApplyGravity()
 		end
-	
-		m.GfxAngle = Vector3int16.new(0, m.FaceAngle.Y, 0)
-	
 		return stepResult
 	end
 	function maryo.UpdateInputs()
@@ -1407,6 +1332,13 @@ AddModule(function()
 		if maryo.DoubleJumpTimer > 0 then
 			maryo.DoubleJumpTimer -= 1
 		end
+		if maryo.Input.NONZERO_ANALOG or maryo.Input.A_PRESSED or maryo.Input.OFF_FLOOR or maryo.Input.ABOVE_SLIDE or maryo.Input.FIRST_PERSON or maryo.Input.STOMPED or maryo.Input.B_PRESSED or maryo.Input.Z_PRESSED then
+			maryo.Input.DISTURBED = true
+		end
+		if maryo.Events.STOMPED then
+			maryo.Events.STOMPED = false
+			maryo.Input.STOMPED = true
+		end
 	end
 	function maryo.CheckKickOrPunchWall()
 		if maryo.Flags.PUNCHING or maryo.Flags.KICKING or maryo.Flags.TRIPPING then
@@ -1440,10 +1372,10 @@ AddModule(function()
 		maryo.SetAction("WATER_PLUNGE")
 	end
 	function maryo.PlayFarFallSound()
-		if m.Flags.FALLING_FAR then
+		if maryo.Flags.FALLING_FAR then
 			return
 		end
-		local action = m.Action
+		local action = maryo.Action
 		if action.NAME == "TWIRLING" then
 			return
 		end
@@ -1466,7 +1398,7 @@ AddModule(function()
 		maryo.AnimFrame = (maryo.AnimFrame + 1) % (maryo.AnimFrameCount + 1)
 		if maryo.AnimAccel > 0 then
 			maryo.AnimAccelAssist += maryo.AnimAccel
-			maryo.AnimAccelAssist %= (m.AnimFrameCount + 1) * 65536
+			maryo.AnimAccelAssist %= (maryo.AnimFrameCount + 1) * 65536
 		end
 		if maryo.SquishTimer > 0 then
 			maryo.SquishTimer -= 1
@@ -1498,14 +1430,14 @@ AddModule(function()
 			if action then
 				local group = id.GROUP
 				local cancel = false
-				if group ~= "SUBMERGED" and m.Position.Y < m.WaterLevel - 5 then
+				if group ~= "SUBMERGED" and maryo.Position.Y < maryo.WaterLevel - 5 then
 					maryo.SetWaterPlungeAction()
 					cancel = true
 				else
 					if group == "AIRBORNE" then
 						maryo.PlayFarFallSound()
 					elseif group == "SUBMERGED" then
-						if maryo.Position.Y > m.WaterLevel - 4 then
+						if maryo.Position.Y > maryo.WaterLevel - 4 then
 							if maryo.WaterLevel - 4 > maryo.FloorHeight then
 								maryo.SetHeight(maryo.WaterLevel - 4)
 							else
@@ -1530,227 +1462,808 @@ AddModule(function()
 			end
 		end
 	end
-
-	-- Airborne.lua
-	do
+	local DEF_ACTION = function(name, func)
+		maryo.Actions[name] = func
+	end
+	do -- STATIONARY
+		local function checkCommonIdleCancels()
+			local f = maryo.Floor
+			if f and f.Normal.Y < 0.29237169 then
+				maryo.PushOffSteepFloor("FREEFALL", 0)
+				return true
+			end
+			if maryo.Input.STOMPED then
+				maryo.SetAction(SHOCKWAVE_BOUNCE)
+				return true
+			end
+			if maryo.Input.A_PRESSED then
+				maryo.SetJumpingAction("JUMP", 0)
+				return true
+			end
+			if maryo.Input.OFF_FLOOR then
+				maryo.SetAction("FREEFALL")
+				return true
+			end
+			if maryo.Input.ABOVE_SLIDE then
+				maryo.SetAction("BEGIN_SLIDING")
+				return true
+			end
+			if maryo.Input.NONZERO_ANALOG) then
+				maryo.SetFaceYaw(maryo.IntendedYaw)
+				maryo.SetAction("WALKING")
+				return true
+			end
+			if maryo.Input.B_PRESSED then
+				maryo.SetAction("PUNCHING")
+				return true
+			end
+			if maryo.Input.Z_DOWN then
+				maryo.SetAction("START_CROUCHING")
+				return true
+			end
+			return false
+		end
+		local function playAnimSound(actionState, animFrame, sound)
+			if maryo.ActionState == actionState and maryo.AnimFrame == animFrame then
+				maryo.PlaySound(sound)
+			end
+		end
+		local function stoppingStep(anim, action)
+			maryo.StationaryGroundStep()
+			maryo.SetAnimation(anim)
+			if maryo.IsAnimPastEnd() then
+				maryo.SetAction(action)
+			end
+		end
+		local function landingStep(anim, action)
+			stoppingStep(anim, action)
+		end
+		local function checkCommonLandingCancels(action)
+			if maryo.Input.STOMPED then
+				maryo.SetAction("SHOCKWAVE_BOUNCE")
+				return true
+			end
+			if maryo.Input.A_PRESSED then
+				if not action then
+					maryo.SetJumpFromLanding()
+				else
+					maryo.SetJumpingAction(action, 0)
+				end
+			end
+			if maryo.Input.NONZERO_ANALOG or maryo.Input.A_PRESSED or maryo.Input.OFF_FLOOR or maryo.Input.ABOVE_SLIDE) then
+				return maryo.CheckCommonActionExits()
+			end
+			if maryo.Input.B_PRESSED then
+				maryo.SetAction("PUNCHING")
+				return true
+			end
+			return false
+		end
+		DEF_ACTION("IDLE", function()
+			if not bit32.btest(maryo.ActionArg, 1) and maryo.Health < 3 then
+				maryo.SetAction("PANTING")
+				return true
+			end
+			if checkCommonIdleCancels() then
+				return true
+			end
+			if maryo.ActionState == 3 then
+				maryo.SetAction("START_SLEEPING")
+				return true
+			end
+			if bit32.btest(maryo.ActionArg, 1) then
+				maryo.SetAnimation("STAND_AGAINST_WALL")
+			else
+				if maryo.ActionState == 0 then
+					maryo.SetAnimation("IDLE_HEAD_LEFT")
+				elseif maryo.ActionState == 1 then
+					maryo.SetAnimation("IDLE_HEAD_RIGHT")
+				elseif maryo.ActionState == 2 then
+					maryo.SetAnimation("IDLE_HEAD_CENTER")
+				end
+				if maryo.IsAnimAtEnd() then
+					maryo.ActionState += 1
+					if maryo.ActionState == 3 then
+						local deltaYOfFloorBehindMario = maryo.Position.Y - maryo.FindFloorHeightRelativePolar(math.pi, 3)
+						if math.abs(deltaYOfFloorBehindMario) > 1.2 then
+							maryo.ActionState = 0
+						else
+							maryo.ActionTimer += 1
+							if maryo.ActionTimer < 10 then
+								maryo.ActionState = 0
+							end
+						end
+					end
+				end
+			end
+			maryo.StationaryGroundStep()
+			return false
+		end)
+		DEF_ACTION("START_SLEEPING", function()
+			local animFrame = -1
+			if checkCommonIdleCancels() then
+				return true
+			end
+			if maryo.ActionState == 4 then
+				maryo.SetAction("SLEEPING")
+				return true
+			end
+			if maryo.ActionState == 0 then
+				animFrame = maryo.SetAnimation("START_SLEEP_IDLE")
+			elseif maryo.ActionState == 1 then
+				animFrame = maryo.SetAnimation("START_SLEEP_SCRATCH")
+			elseif maryo.ActionState == 2 then
+				animFrame = maryo.SetAnimation("START_SLEEP_YAWN")
+			elseif maryo.ActionState == 3 then
+				animFrame = maryo.SetAnimation("START_SLEEP_SITTING")
+			end
+			playAnimSound(1, 41, "ACTION_PAT_BACK")
+			playAnimSound(1, 49, "ACTION_PAT_BACK")
+			if maryo.IsAnimAtEnd() then
+				maryo.ActionState += 1
+			end
+			if maryo.ActionState == 2 and animFrame == 0 then
+				maryo.PlaySound("MARIO_YAWNING")
+			end
+			if maryo.ActionState == 1 and animFrame == 0 then
+				maryo.PlaySound("MARIO_IMA_TIRED")
+			end
+			maryo.StationaryGroundStep()
+			return false
+		end)
+		DEF_ACTION("SLEEPING", function()
+			if maryo.Input.DISTURBED then
+				maryo.SetAction("WAKING_UP", maryo.ActionState)
+				return true
+			end
+			if maryo.Position.Y - maryo.FindFloorHeightRelativePolar(math.pi, 3) > 1.2 then
+				maryo.SetAction("WAKING_UP", maryo.ActionState)
+				return true
+			end
+			maryo.StationaryGroundStep()
+			if maryo.ActionState == 0 then
+				local animFrame = maryo.SetAnimation("SLEEP_IDLE")
+				if animFrame == 2 then
+					maryo.PlaySound("MARIO_SNORING1")
+				end
+				if animFrame == 20 then
+					maryo.PlaySound("MARIO_SNORING2")
+				end
+				if maryo.IsAnimAtEnd() then
+					maryo.ActionTimer += 1
+					if maryo.ActionTimer > 45 then
+						maryo.ActionState += 1
+					end
+				end
+			elseif maryo.ActionState == 1 then
+				if maryo.SetAnimation("SLEEP_START_LYING") == 18 then
+					maryo.PlayHeavyLandingSound("ACTION_TERRAIN_BODY_HIT_GROUND")
+				end
+				if maryo.IsAnimAtEnd() then
+					maryo.ActionState += 1
+				end
+			elseif maryo.ActionState == 2 then
+				maryo.SetAnimation("SLEEP_LYING")
+				maryo.PlaySoundIfNoFlag("MARIO_SNORING3", "ACTION_SOUND_PLAYED")
+			end
+			return false
+		end)
+		DEF_ACTION("WAKING_UP", function()
+			if maryo.Input.STOMPED then
+				maryo.SetAction("SHOCKWAVE_BOUNCE")
+				return true
+			end
+			if maryo.Input.OFF_FLOOR then
+				maryo.SetAction("FREEFALL")
+				return true
+			end
+			if maryo.Input.ABOVE_SLIDE then
+				maryo.SetAction("BEGIN_SLIDING")
+				return true
+			end
+			maryo.ActionTimer += 1
+			if maryo.ActionTimer > 20 then
+				maryo.SetAction("IDLE")
+				return true
+			end
+			maryo.StationaryGroundStep()
+			maryo.SetAnimation(if maryo.ActionArg == 0 then "WAKE_FROM_SLEEP" else "WAKE_FROM_LYING")
+			return false
+		end)
+		DEF_ACTION("STANDING_AGAINST_WALL", function(m: Mario)
+			if maryo.Input.STOMPED then
+				maryo.SetAction("SHOCKWAVE_BOUNCE")
+				return true
+			end
+			if maryo.Input.NONZERO_ANALOG or maryo.Input.A_PRESSED or maryo.Input.OFF_FLOOR or maryo.Input.ABOVE_SLIDE then
+				return maryo.CheckCommonActionExits()
+			end
+			if maryo.Input.B_PRESSED then
+				maryo.SetAction(Action.PUNCHING)
+				return true
+			end
+			maryo.SetAnimation("A_POSE")
+			maryo.StationaryGroundStep()
+			return false
+		end)
+		DEF_ACTION("CROUCHING", function()
+			if maryo.Input.STOMPED then
+				maryo.SetAction("SHOCKWAVE_BOUNCE")
+				return true
+			end
+			if maryo.Input.A_PRESSED then
+				maryo.SetAction("BACKFLIP")
+				return true
+			end
+			if maryo.Input.OFF_FLOOR then
+				maryo.SetAction("FREEFALL")
+				return true
+			end
+			if maryo.Input.ABOVE_SLIDE then
+				maryo.SetAction("BEGIN_SLIDING")
+				return true
+			end
+			if not maryo.Input.Z_DOWN then
+				maryo.SetAction("STOP_CROUCHING")
+				return true
+			end
+			if maryo.Input.NONZERO_ANALOG then
+				maryo.SetAction("START_CRAWLING")
+				return true
+			end
+			if maryo.Input.B_PRESSED then
+				maryo.SetAction("PUNCHING", 9)
+				return true
+			end
+			maryo.StationaryGroundStep()
+			maryo.SetAnimation("CROUCHING")
+			return false
+		end)
+		DEF_ACTION("PANTING", function()
+			if maryo.Input.STOMPED then
+				maryo.SetAction("SHOCKWAVE_BOUNCE")
+				return true
+			end
+			if maryo.Health >= 5 then
+				maryo.SetAction(Action.IDLE)
+				return
+			end
+			if checkCommonIdleCancels() then
+				return true
+			end
+			if maryo.SetAnimation("PANTING") == 1 then
+				maryo.PlaySound("MARIO_PANTING")
+			end
+			maryo.StationaryGroundStep()
+			return false
+		end)
+		
+		DEF_ACTION(Action.BRAKING_STOP, function(m: Mario)
+			if maryo.Input.STOMPED then
+				maryo.SetAction("SHOCKWAVE_BOUNCE")
+				return true
+			end
+		
+			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
+				return maryo.SetAction(Action.FREEFALL)
+			end
+		
+			if maryo.Input:Has(InputFlags.B_PRESSED) then
+				return maryo.SetAction(Action.PUNCHING)
+			end
+		
+			if maryo.Input:Has(InputFlags.NONZERO_ANALOG, InputFlags.A_PRESSED, InputFlags.OFF_FLOOR, InputFlags.ABOVE_SLIDE) then
+				return maryo.CheckCommonActionExits()
+			end
+		
+			stoppingStep(m, Animations.STOP_SKID, Action.IDLE)
+			return false
+		end)
+		
+		DEF_ACTION(Action.BUTT_SLIDE_STOP, function(m: Mario)
+			if maryo.Input:Has(InputFlags.STOMPED) then
+				return maryo.SetAction(Action.SHOCKWAVE_BOUNCE)
+			end
+		
+			if maryo.Input:Has(InputFlags.NONZERO_ANALOG, InputFlags.A_PRESSED, InputFlags.OFF_FLOOR, InputFlags.ABOVE_SLIDE) then
+				return maryo.CheckCommonActionExits()
+			end
+		
+			stoppingStep(m, Animations.STOP_SLIDE, Action.IDLE)
+		
+			if maryo.AnimFrame == 6 then
+				maryo.PlayLandingSound()
+			end
+		
+			return false
+		end)
+		
+		DEF_ACTION(Action.SLIDE_KICK_SLIDE_STOP, function(m: Mario)
+			if maryo.Input:Has(InputFlags.STOMPED) then
+				return maryo.SetAction(Action.SHOCKWAVE_BOUNCE)
+			end
+		
+			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
+				return maryo.SetAction(Action.FREEFALL)
+			end
+		
+			stoppingStep(m, Animations.CROUCH_FROM_SLIDE_KICK, Action.CROUCHING)
+			return false
+		end)
+		
+		DEF_ACTION(Action.START_CROUCHING, function(m: Mario)
+			if maryo.CheckCommonActionExits() then
+				return true
+			end
+		
+			maryo.StationaryGroundStep()
+			maryo.SetAnimation(Animations.START_CROUCHING)
+		
+			if maryo.IsAnimPastEnd() then
+				maryo.SetAction(Action.CROUCHING)
+			end
+		
+			return false
+		end)
+		
+		DEF_ACTION(Action.STOP_CROUCHING, function(m: Mario)
+			if maryo.CheckCommonActionExits() then
+				return true
+			end
+		
+			maryo.StationaryGroundStep()
+			maryo.SetAnimation(Animations.START_CROUCHING)
+		
+			if maryo.IsAnimPastEnd() then
+				maryo.SetAction(Action.IDLE)
+			end
+		
+			return false
+		end)
+		
+		DEF_ACTION(Action.START_CRAWLING, function(m: Mario)
+			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
+				return maryo.SetAction(Action.FREEFALL)
+			end
+		
+			if maryo.Input:Has(InputFlags.STOMPED) then
+				return maryo.SetAction(Action.SHOCKWAVE_BOUNCE)
+			end
+		
+			if maryo.Input:Has(InputFlags.ABOVE_SLIDE) then
+				return maryo.SetAction(Action.BEGIN_SLIDING)
+			end
+		
+			maryo.StationaryGroundStep()
+			maryo.SetAnimation(Animations.START_CRAWLING)
+		
+			if maryo.IsAnimPastEnd() then
+				maryo.SetAction(Action.CRAWLING)
+			end
+		
+			return false
+		end)
+		
+		DEF_ACTION(Action.STOP_CRAWLING, function(m: Mario)
+			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
+				return maryo.SetAction(Action.FREEFALL)
+			end
+		
+			if maryo.Input:Has(InputFlags.STOMPED) then
+				return maryo.SetAction(Action.SHOCKWAVE_BOUNCE)
+			end
+		
+			if maryo.Input:Has(InputFlags.ABOVE_SLIDE) then
+				return maryo.SetAction(Action.BEGIN_SLIDING)
+			end
+		
+			maryo.StationaryGroundStep()
+			maryo.SetAnimation(Animations.STOP_CRAWLING)
+		
+			if maryo.IsAnimPastEnd() then
+				maryo.SetAction(Action.CROUCHING)
+			end
+		
+			return false
+		end)
+		
+		DEF_ACTION(Action.SHOCKWAVE_BOUNCE, function(m: Mario)
+			maryo.ActionTimer += 1
+		
+			if maryo.ActionTimer == 48 then
+				maryo.SetAction(Action.IDLE)
+			end
+		
+			local sp1E = bit32.lshift(maryo.ActionTimer % 16, 12)
+			local sp18 = ((6 - maryo.ActionTimer / 8) * 8) + 4
+		
+			maryo.SetForwardVel(0)
+			maryo.Velocity = Vector3.zero
+		
+			if Util.Sins(sp1E) >= 0 then
+				maryo.Position = Util.SetY(maryo.Position, Util.Sins(sp1E) * sp18 + maryo.FloorHeight)
+			else
+				maryo.Position = Util.SetY(maryo.Position, maryo.FloorHeight - Util.Sins(sp1E) * sp18)
+			end
+		
+			maryo.SetAnimation(Animations.A_POSE)
+			return false
+		end)
+		
+		DEF_ACTION(Action.JUMP_LAND_STOP, function(m: Mario)
+			if checkCommonLandingCancels(m, 0) then
+				return true
+			end
+		
+			landingStep(m, Animations.LAND_FROM_SINGLE_JUMP, Action.IDLE)
+			return false
+		end)
+		
+		DEF_ACTION(Action.DOUBLE_JUMP_LAND_STOP, function(m: Mario)
+			if checkCommonLandingCancels(m, 0) then
+				return true
+			end
+		
+			landingStep(m, Animations.LAND_FROM_DOUBLE_JUMP, Action.IDLE)
+			return false
+		end)
+		
+		DEF_ACTION(Action.SIDE_FLIP_LAND_STOP, function(m: Mario)
+			if checkCommonLandingCancels(m, 0) then
+				return true
+			end
+		
+			landingStep(m, Animations.SLIDEFLIP_LAND, Action.IDLE)
+			--maryo.GfxAngle += Vector3int16.new(0, 0x8000, 0)
+		
+			return false
+		end)
+		
+		DEF_ACTION(Action.FREEFALL_LAND_STOP, function(m: Mario)
+			if checkCommonLandingCancels(m, 0) then
+				return true
+			end
+		
+			landingStep(m, Animations.GENERAL_LAND, Action.IDLE)
+			return false
+		end)
+		
+		DEF_ACTION(Action.TRIPLE_JUMP_LAND_STOP, function(m: Mario)
+			if checkCommonLandingCancels(m, Action.JUMP) then
+				return true
+			end
+		
+			landingStep(m, Animations.TRIPLE_JUMP_LAND, Action.IDLE)
+			return false
+		end)
+		
+		DEF_ACTION(Action.BACKFLIP_LAND_STOP, function(m: Mario)
+			if not maryo.Input:Has(InputFlags.Z_DOWN) and maryo.AnimFrame >= 6 then
+				maryo.Input:Remove(InputFlags.A_PRESSED)
+			end
+		
+			if checkCommonLandingCancels(m, Action.BACKFLIP) then
+				return true
+			end
+		
+			landingStep(m, Animations.TRIPLE_JUMP_LAND, Action.IDLE)
+			return false
+		end)
+		
+		DEF_ACTION(Action.LAVA_BOOST_LAND, function(m: Mario)
+			maryo.Input:Remove(InputFlags.FIRST_PERSON, InputFlags.B_PRESSED)
+		
+			if checkCommonLandingCancels(m, 0) then
+				return true
+			end
+		
+			landingStep(m, Animations.STAND_UP_FROM_LAVA_BOOST, Action.IDLE)
+			return false
+		end)
+		
+		DEF_ACTION(Action.LONG_JUMP_LAND_STOP, function(m: Mario)
+			maryo.Input:Remove(InputFlags.B_PRESSED)
+		
+			if checkCommonLandingCancels(m, Action.JUMP) then
+				return true
+			end
+		
+			landingStep(
+				m,
+				if maryo.LongJumpIsSlow then Animations.CROUCH_FROM_FAST_LONGJUMP else Animations.CROUCH_FROM_SLOW_LONGJUMP,
+				Action.CROUCHING
+			)
+		
+			return false
+		end)
+		
+		DEF_ACTION(Action.TWIRL_LAND, function(m: Mario)
+			maryo.ActionState = 1
+		
+			if maryo.Input:Has(InputFlags.STOMPED) then
+				return maryo.SetAction(Action.SHOCKWAVE_BOUNCE)
+			end
+		
+			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
+				return maryo.SetAction(Action.FREEFALL)
+			end
+		
+			maryo.StationaryGroundStep()
+			maryo.SetAnimation(Animations.TWIRL_LAND)
+		
+			if maryo.AngleVel.Y > 0 then
+				maryo.AngleVel -= Vector3int16.new(0, 0x400, 0)
+		
+				if maryo.AngleVel.Y < 0 then
+					maryo.AngleVel *= Vector3int16.new(1, 0, 1)
+				end
+		
+				maryo.TwirlYaw += maryo.AngleVel.Y
+			end
+		
+			maryo.GfxAngle += Vector3int16.new(0, maryo.TwirlYaw, 0)
+		
+			if maryo.IsAnimAtEnd() and maryo.AngleVel.Y == 0 then
+				maryo.FaceAngle += Vector3int16.new(0, maryo.TwirlYaw, 0)
+				maryo.SetAction(Action.IDLE)
+			end
+		
+			return false
+		end)
+		
+		DEF_ACTION(Action.GROUND_POUND_LAND, function(m: Mario)
+			if maryo.Input:Has(InputFlags.STOMPED) then
+				return maryo.SetAction(Action.SHOCKWAVE_BOUNCE)
+			end
+		
+			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
+				return maryo.SetAction(Action.FREEFALL)
+			end
+		
+			if maryo.Input:Has(InputFlags.ABOVE_SLIDE) then
+				return maryo.SetAction(Action.BUTT_SLIDE)
+			end
+		
+			landingStep(m, Animations.GROUND_POUND_LANDING, Action.BUTT_SLIDE_STOP)
+			return false
+		end)
+		
+		DEF_ACTION(Action.STOMACH_SLIDE_STOP, function(m: Mario)
+			if maryo.Input:Has(InputFlags.STOMPED) then
+				return maryo.SetAction(Action.SHOCKWAVE_BOUNCE)
+			end
+		
+			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
+				return maryo.SetAction(Action.FREEFALL)
+			end
+		
+			if maryo.Input:Has(InputFlags.ABOVE_SLIDE) then
+				return maryo.SetAction(Action.BEGIN_SLIDING)
+			end
+		
+			animatedStationaryGroundStep(m, Animations.SLOW_LAND_FROM_DIVE, Action.IDLE)
+			return false
+		end)
+	end
+	do -- AIRBORNE
 		local function stopRising(m: Mario)
-			if m.Velocity.Y > 0 then
-				m.Velocity *= Vector3.new(1, 0, 1)
+			if maryo.Velocity.Y > 0 then
+				maryo.Velocity *= Vector3.new(1, 0, 1)
 			end
 		end
 		
 		local function playFlipSounds(m: Mario, frame1: number, frame2: number, frame3: number)
-			local animFrame = m.AnimFrame
+			local animFrame = maryo.AnimFrame
 		
 			if animFrame == frame1 or animFrame == frame2 or animFrame == frame3 then
-				m:PlaySound(Sounds.ACTION_SPIN)
+				maryo.PlaySound(Sounds.ACTION_SPIN)
 			end
 		end
 		
 		local function playKnockbackSound(m: Mario)
-			if m.ActionArg == 0 and math.abs(m.ForwardVel) >= 28 then
-				m:PlaySoundIfNoFlag(Sounds.MARIO_DOH, MarioFlags.MARIO_SOUND_PLAYED)
+			if maryo.ActionArg == 0 and math.abs(maryo.ForwardVel) >= 28 then
+				maryo.PlaySoundIfNoFlag(Sounds.MARIO_DOH, MarioFlags.MARIO_SOUND_PLAYED)
 			else
-				m:PlaySoundIfNoFlag(Sounds.MARIO_UH, MarioFlags.MARIO_SOUND_PLAYED)
+				maryo.PlaySoundIfNoFlag(Sounds.MARIO_UH, MarioFlags.MARIO_SOUND_PLAYED)
 			end
 		end
 		
 		local function lavaBoostOnWall(m: Mario)
-			local wall = m.Wall
+			local wall = maryo.Wall
 		
 			if wall then
 				local angle = Util.Atan2s(wall.Normal.Z, wall.Normal.X)
-				m.FaceAngle = Util.SetY(m.FaceAngle, angle)
+				maryo.FaceAngle = Util.SetY(maryo.FaceAngle, angle)
 			end
 		
-			if m.ForwardVel < 24 then
-				m.ForwardVel = 24
+			if maryo.ForwardVel < 24 then
+				maryo.ForwardVel = 24
 			end
 		
-			if not m.Flags:Has(MarioFlags.METAL_CAP) then
-				m.HurtCounter += if m.Flags:Has(MarioFlags.CAP_ON_HEAD) then 12 else 18
+			if not maryo.Flags:Has(MarioFlags.METAL_CAP) then
+				maryo.HurtCounter += if maryo.Flags:Has(MarioFlags.CAP_ON_HEAD) then 12 else 18
 			end
 		
-			m:PlaySound(Sounds.MARIO_ON_FIRE)
-			m:SetAction(Action.LAVA_BOOST, 1)
+			maryo.PlaySound(Sounds.MARIO_ON_FIRE)
+			maryo.SetAction(Action.LAVA_BOOST, 1)
 		end
 		
 		local function checkFallDamage(m: Mario, hardFallAction: number): boolean
-			local fallHeight = m.PeakHeight - m.Position.Y
+			local fallHeight = maryo.PeakHeight - maryo.Position.Y
 			local damageHeight = 1150
 		
-			if m.Action() == Action.TWIRLING then
+			if maryo.Action() == Action.TWIRLING then
 				return false
 			end
 		
-			if m.Velocity.Y < -55 and fallHeight > 3000 then
-				m.HurtCounter += if m.Flags:Has(MarioFlags.CAP_ON_HEAD) then 16 else 24
-				m:PlaySound(Sounds.MARIO_ATTACKED)
-				m:SetAction(hardFallAction, 4)
-			elseif fallHeight > damageHeight and not m:FloorIsSlippery() then
-				m.HurtCounter += if m.Flags:Has(MarioFlags.CAP_ON_HEAD) then 8 else 12
-				m:PlaySound(Sounds.MARIO_ATTACKED)
-				m.SquishTimer = 30
+			if maryo.Velocity.Y < -55 and fallHeight > 3000 then
+				maryo.HurtCounter += if maryo.Flags:Has(MarioFlags.CAP_ON_HEAD) then 16 else 24
+				maryo.PlaySound(Sounds.MARIO_ATTACKED)
+				maryo.SetAction(hardFallAction, 4)
+			elseif fallHeight > damageHeight and not maryo.FloorIsSlippery() then
+				maryo.HurtCounter += if maryo.Flags:Has(MarioFlags.CAP_ON_HEAD) then 8 else 12
+				maryo.PlaySound(Sounds.MARIO_ATTACKED)
+				maryo.SquishTimer = 30
 			end
 		
 			return false
 		end
 		
 		local function checkKickOrDiveInAir(m: Mario): boolean
-			if m.Input:Has(InputFlags.B_PRESSED) then
-				return m:SetAction(if m.ForwardVel > 28 then Action.DIVE else Action.JUMP_KICK)
+			if maryo.Input:Has(InputFlags.B_PRESSED) then
+				return maryo.SetAction(if maryo.ForwardVel > 28 then Action.DIVE else Action.JUMP_KICK)
 			end
 		
 			return false
 		end
 		
 		local function updateAirWithTurn(m: Mario)
-			local dragThreshold = if m.Action() == Action.LONG_JUMP then 48 else 32
-			m.ForwardVel = Util.ApproachFloat(m.ForwardVel, 0, 0.35)
+			local dragThreshold = if maryo.Action() == Action.LONG_JUMP then 48 else 32
+			maryo.ForwardVel = Util.ApproachFloat(maryo.ForwardVel, 0, 0.35)
 		
-			if m.Input:Has(InputFlags.NONZERO_ANALOG) then
-				local intendedDYaw = m.IntendedYaw - m.FaceAngle.Y
-				local intendedMag = m.IntendedMag / 32
+			if maryo.Input:Has(InputFlags.NONZERO_ANALOG) then
+				local intendedDYaw = maryo.IntendedYaw - maryo.FaceAngle.Y
+				local intendedMag = maryo.IntendedMag / 32
 		
-				m.ForwardVel += 1.5 * Util.Coss(intendedDYaw) * intendedMag
-				m.FaceAngle += Vector3int16.new(0, 512 * Util.Sins(intendedDYaw) * intendedMag, 0)
+				maryo.ForwardVel += 1.5 * Util.Coss(intendedDYaw) * intendedMag
+				maryo.FaceAngle += Vector3int16.new(0, 512 * Util.Sins(intendedDYaw) * intendedMag, 0)
 			end
 		
-			if m.ForwardVel > dragThreshold then
-				m.ForwardVel -= 1
+			if maryo.ForwardVel > dragThreshold then
+				maryo.ForwardVel -= 1
 			end
 		
-			if m.ForwardVel < -16 then
-				m.ForwardVel += 2
+			if maryo.ForwardVel < -16 then
+				maryo.ForwardVel += 2
 			end
 		
-			m.SlideVelX = m.ForwardVel * Util.Sins(m.FaceAngle.Y)
-			m.SlideVelZ = m.ForwardVel * Util.Coss(m.FaceAngle.Y)
-			m.Velocity = Vector3.new(m.SlideVelX, m.Velocity.Y, m.SlideVelZ)
+			maryo.SlideVelX = maryo.ForwardVel * Util.Sins(maryo.FaceAngle.Y)
+			maryo.SlideVelZ = maryo.ForwardVel * Util.Coss(maryo.FaceAngle.Y)
+			maryo.Velocity = Vector3.new(maryo.SlideVelX, maryo.Velocity.Y, maryo.SlideVelZ)
 		end
 		
 		local function updateAirWithoutTurn(m: Mario)
 			local dragThreshold = 32
 		
-			if m.Action() == Action.LONG_JUMP then
+			if maryo.Action() == Action.LONG_JUMP then
 				dragThreshold = 48
 			end
 		
 			local sidewaysSpeed = 0
-			m.ForwardVel = Util.ApproachFloat(m.ForwardVel, 0, 0.35)
+			maryo.ForwardVel = Util.ApproachFloat(maryo.ForwardVel, 0, 0.35)
 		
-			if m.Input:Has(InputFlags.NONZERO_ANALOG) then
-				local intendedDYaw = m.IntendedYaw - m.FaceAngle.Y
-				local intendedMag = m.IntendedMag / 32
+			if maryo.Input:Has(InputFlags.NONZERO_ANALOG) then
+				local intendedDYaw = maryo.IntendedYaw - maryo.FaceAngle.Y
+				local intendedMag = maryo.IntendedMag / 32
 		
-				m.ForwardVel += intendedMag * Util.Coss(intendedDYaw) * 1.5
+				maryo.ForwardVel += intendedMag * Util.Coss(intendedDYaw) * 1.5
 				sidewaysSpeed = intendedMag * Util.Sins(intendedDYaw) * 10
 			end
 		
 			--! Uncapped air speed. Net positive when moving forward.
-			if m.ForwardVel > dragThreshold then
-				m.ForwardVel -= 1
+			if maryo.ForwardVel > dragThreshold then
+				maryo.ForwardVel -= 1
 			end
 		
-			if m.ForwardVel < -16 then
-				m.ForwardVel += 2
+			if maryo.ForwardVel < -16 then
+				maryo.ForwardVel += 2
 			end
 		
-			m.SlideVelX = m.ForwardVel * Util.Sins(m.FaceAngle.Y)
-			m.SlideVelZ = m.ForwardVel * Util.Coss(m.FaceAngle.Y)
+			maryo.SlideVelX = maryo.ForwardVel * Util.Sins(maryo.FaceAngle.Y)
+			maryo.SlideVelZ = maryo.ForwardVel * Util.Coss(maryo.FaceAngle.Y)
 		
-			m.SlideVelX += sidewaysSpeed * Util.Sins(m.FaceAngle.Y + 0x4000)
-			m.SlideVelZ += sidewaysSpeed * Util.Coss(m.FaceAngle.Y + 0x4000)
+			maryo.SlideVelX += sidewaysSpeed * Util.Sins(maryo.FaceAngle.Y + 0x4000)
+			maryo.SlideVelZ += sidewaysSpeed * Util.Coss(maryo.FaceAngle.Y + 0x4000)
 		
-			m.Velocity = Vector3.new(m.SlideVelX, m.Velocity.Y, m.SlideVelZ)
+			maryo.Velocity = Vector3.new(maryo.SlideVelX, maryo.Velocity.Y, maryo.SlideVelZ)
 		end
 		
 		local function updateLavaBoostOrTwirling(m: Mario)
-			if m.Input:Has(InputFlags.NONZERO_ANALOG) then
-				local intendedDYaw = m.IntendedYaw - m.FaceAngle.Y
-				local intendedMag = m.IntendedMag / 32
+			if maryo.Input:Has(InputFlags.NONZERO_ANALOG) then
+				local intendedDYaw = maryo.IntendedYaw - maryo.FaceAngle.Y
+				local intendedMag = maryo.IntendedMag / 32
 		
-				m.ForwardVel += Util.Coss(intendedDYaw) * intendedMag
-				m.FaceAngle += Vector3int16.new(0, Util.Sins(intendedDYaw) * intendedMag * 1024, 0)
+				maryo.ForwardVel += Util.Coss(intendedDYaw) * intendedMag
+				maryo.FaceAngle += Vector3int16.new(0, Util.Sins(intendedDYaw) * intendedMag * 1024, 0)
 		
-				if m.ForwardVel < 0 then
-					m.FaceAngle += Vector3int16.new(0, 0x8000, 0)
-					m.ForwardVel *= -1
+				if maryo.ForwardVel < 0 then
+					maryo.FaceAngle += Vector3int16.new(0, 0x8000, 0)
+					maryo.ForwardVel *= -1
 				end
 		
-				if m.ForwardVel > 32 then
-					m.ForwardVel -= 2
+				if maryo.ForwardVel > 32 then
+					maryo.ForwardVel -= 2
 				end
 			end
 		
-			m.SlideVelX = m.ForwardVel * Util.Sins(m.FaceAngle.Y)
-			m.SlideVelZ = m.ForwardVel * Util.Coss(m.FaceAngle.Y)
+			maryo.SlideVelX = maryo.ForwardVel * Util.Sins(maryo.FaceAngle.Y)
+			maryo.SlideVelZ = maryo.ForwardVel * Util.Coss(maryo.FaceAngle.Y)
 		
-			m.Velocity = Vector3.new(m.SlideVelX, m.Velocity.Y, m.SlideVelZ)
+			maryo.Velocity = Vector3.new(maryo.SlideVelX, maryo.Velocity.Y, maryo.SlideVelZ)
 		end
 		
 		local function updateFlyingYaw(m: Mario)
-			local targetYawVel = -Util.SignedShort(m.Controller.StickX * (m.ForwardVel / 4))
+			local targetYawVel = -Util.SignedShort(maryo.Controller.StickX * (maryo.ForwardVel / 4))
 		
 			if targetYawVel > 0 then
-				if m.AngleVel.Y < 0 then
-					m.AngleVel += Vector3int16.new(0, 0x40, 0)
+				if maryo.AngleVel.Y < 0 then
+					maryo.AngleVel += Vector3int16.new(0, 0x40, 0)
 		
-					if m.AngleVel.Y > 0x10 then
-						m.AngleVel = Util.SetY(m.AngleVel, 0x10)
+					if maryo.AngleVel.Y > 0x10 then
+						maryo.AngleVel = Util.SetY(maryo.AngleVel, 0x10)
 					end
 				else
-					local y = Util.ApproachInt(m.AngleVel.Y, targetYawVel, 0x10, 0x20)
-					m.AngleVel = Util.SetY(m.AngleVel, y)
+					local y = Util.ApproachInt(maryo.AngleVel.Y, targetYawVel, 0x10, 0x20)
+					maryo.AngleVel = Util.SetY(maryo.AngleVel, y)
 				end
 			elseif targetYawVel < 0 then
-				if m.AngleVel.Y > 0 then
-					m.AngleVel -= Vector3int16.new(0, 0x40, 0)
+				if maryo.AngleVel.Y > 0 then
+					maryo.AngleVel -= Vector3int16.new(0, 0x40, 0)
 		
-					if m.AngleVel.Y < -0x10 then
-						m.AngleVel = Util.SetY(m.AngleVel, -0x10)
+					if maryo.AngleVel.Y < -0x10 then
+						maryo.AngleVel = Util.SetY(maryo.AngleVel, -0x10)
 					end
 				else
-					local y = Util.ApproachInt(m.AngleVel.Y, targetYawVel, 0x20, 0x10)
-					m.AngleVel = Util.SetY(m.AngleVel, y)
+					local y = Util.ApproachInt(maryo.AngleVel.Y, targetYawVel, 0x20, 0x10)
+					maryo.AngleVel = Util.SetY(maryo.AngleVel, y)
 				end
 			else
-				local y = Util.ApproachInt(m.AngleVel.Y, 0, 0x40)
-				m.AngleVel = Util.SetY(m.AngleVel, y)
+				local y = Util.ApproachInt(maryo.AngleVel.Y, 0, 0x40)
+				maryo.AngleVel = Util.SetY(maryo.AngleVel, y)
 			end
 		
-			m.FaceAngle += Vector3int16.new(0, m.AngleVel.Y, 0)
-			m.FaceAngle = Util.SetZ(m.FaceAngle, 20 * -m.AngleVel.Y)
+			maryo.FaceAngle += Vector3int16.new(0, maryo.AngleVel.Y, 0)
+			maryo.FaceAngle = Util.SetZ(maryo.FaceAngle, 20 * -maryo.AngleVel.Y)
 		end
 		
 		local function updateFlyingPitch(m: Mario)
-			local targetPitchVel = -Util.SignedShort(m.Controller.StickY * (m.ForwardVel / 5))
+			local targetPitchVel = -Util.SignedShort(maryo.Controller.StickY * (maryo.ForwardVel / 5))
 		
 			if targetPitchVel > 0 then
-				if m.AngleVel.X < 0 then
-					m.AngleVel += Vector3int16.new(0x40, 0, 0)
+				if maryo.AngleVel.X < 0 then
+					maryo.AngleVel += Vector3int16.new(0x40, 0, 0)
 		
-					if m.AngleVel.X > 0x20 then
-						m.AngleVel = Util.SetX(m.AngleVel, 0x20)
+					if maryo.AngleVel.X > 0x20 then
+						maryo.AngleVel = Util.SetX(maryo.AngleVel, 0x20)
 					end
 				else
-					local x = Util.ApproachInt(m.AngleVel.X, targetPitchVel, 0x20, 0x40)
-					m.AngleVel = Util.SetX(m.AngleVel, x)
+					local x = Util.ApproachInt(maryo.AngleVel.X, targetPitchVel, 0x20, 0x40)
+					maryo.AngleVel = Util.SetX(maryo.AngleVel, x)
 				end
 			elseif targetPitchVel < 0 then
-				if m.AngleVel.X > 0 then
-					m.AngleVel -= Vector3int16.new(0x40, 0, 0)
+				if maryo.AngleVel.X > 0 then
+					maryo.AngleVel -= Vector3int16.new(0x40, 0, 0)
 		
-					if m.AngleVel.X < -0x20 then
-						m.AngleVel = Util.SetX(m.AngleVel, -0x20)
+					if maryo.AngleVel.X < -0x20 then
+						maryo.AngleVel = Util.SetX(maryo.AngleVel, -0x20)
 					end
 				else
-					local x = Util.ApproachInt(m.AngleVel.X, targetPitchVel, 0x40, 0x20)
-					m.AngleVel = Util.SetX(m.AngleVel, x)
+					local x = Util.ApproachInt(maryo.AngleVel.X, targetPitchVel, 0x40, 0x20)
+					maryo.AngleVel = Util.SetX(maryo.AngleVel, x)
 				end
 			else
-				local x = Util.ApproachInt(m.AngleVel.X, 0, 0x40)
-				m.AngleVel = Util.SetX(m.AngleVel, x)
+				local x = Util.ApproachInt(maryo.AngleVel.X, 0, 0x40)
+				maryo.AngleVel = Util.SetX(maryo.AngleVel, x)
 			end
 		end
 		
@@ -1758,85 +2271,85 @@ AddModule(function()
 			updateFlyingPitch(m)
 			updateFlyingYaw(m)
 		
-			m.ForwardVel -= 2 * (m.FaceAngle.X / 0x4000) + 0.1
-			m.ForwardVel -= 0.5 * (1 - Util.Coss(m.AngleVel.Y))
+			maryo.ForwardVel -= 2 * (maryo.FaceAngle.X / 0x4000) + 0.1
+			maryo.ForwardVel -= 0.5 * (1 - Util.Coss(maryo.AngleVel.Y))
 		
-			if m.ForwardVel < 0 then
-				m.ForwardVel = 0
+			if maryo.ForwardVel < 0 then
+				maryo.ForwardVel = 0
 			end
 		
-			if m.ForwardVel > 16 then
-				m.FaceAngle += Vector3int16.new((m.ForwardVel - 32) * 6, 0, 0)
-			elseif m.ForwardVel > 4 then
-				m.FaceAngle += Vector3int16.new((m.ForwardVel - 32) * 10, 0, 0)
+			if maryo.ForwardVel > 16 then
+				maryo.FaceAngle += Vector3int16.new((maryo.ForwardVel - 32) * 6, 0, 0)
+			elseif maryo.ForwardVel > 4 then
+				maryo.FaceAngle += Vector3int16.new((maryo.ForwardVel - 32) * 10, 0, 0)
 			else
-				m.FaceAngle -= Vector3int16.new(0x400, 0, 0)
+				maryo.FaceAngle -= Vector3int16.new(0x400, 0, 0)
 			end
 		
-			m.FaceAngle += Vector3int16.new(m.AngleVel.X, 0, 0)
+			maryo.FaceAngle += Vector3int16.new(maryo.AngleVel.X, 0, 0)
 		
-			if m.FaceAngle.X > 0x2AAA then
-				m.FaceAngle = Util.SetX(m.FaceAngle, 0x2AAA)
+			if maryo.FaceAngle.X > 0x2AAA then
+				maryo.FaceAngle = Util.SetX(maryo.FaceAngle, 0x2AAA)
 			end
 		
-			if m.FaceAngle.X < -0x2AAA then
-				m.FaceAngle = Util.SetX(m.FaceAngle, -0x2AAA)
+			if maryo.FaceAngle.X < -0x2AAA then
+				maryo.FaceAngle = Util.SetX(maryo.FaceAngle, -0x2AAA)
 			end
 		
-			local velX = Util.Coss(m.FaceAngle.X) * Util.Sins(m.FaceAngle.Y)
-			m.SlideVelX = m.ForwardVel * velX
+			local velX = Util.Coss(maryo.FaceAngle.X) * Util.Sins(maryo.FaceAngle.Y)
+			maryo.SlideVelX = maryo.ForwardVel * velX
 		
-			local velZ = Util.Coss(m.FaceAngle.X) * Util.Coss(m.FaceAngle.Y)
-			m.SlideVelZ = m.ForwardVel * velZ
+			local velZ = Util.Coss(maryo.FaceAngle.X) * Util.Coss(maryo.FaceAngle.Y)
+			maryo.SlideVelZ = maryo.ForwardVel * velZ
 		
-			local velY = Util.Sins(m.FaceAngle.X)
-			m.Velocity = m.ForwardVel * Vector3.new(velX, velY, velZ)
+			local velY = Util.Sins(maryo.FaceAngle.X)
+			maryo.Velocity = maryo.ForwardVel * Vector3.new(velX, velY, velZ)
 		end
 		
 		local function commonAirActionStep(m: Mario, landAction: number, anim: Animation, stepArg: number): number
 			local stepResult
 			do
 				updateAirWithoutTurn(m)
-				stepResult = m:PerformAirStep(stepArg)
+				stepResult = maryo.PerformAirStep(stepArg)
 			end
 		
 			if stepResult == AirStep.NONE then
-				m:SetAnimation(anim)
+				maryo.SetAnimation(anim)
 			elseif stepResult == AirStep.LANDED then
 				if not checkFallDamage(m, Action.HARD_BACKWARD_GROUND_KB) then
-					m:SetAction(landAction)
+					maryo.SetAction(landAction)
 				end
 			elseif stepResult == AirStep.HIT_WALL then
-				m:SetAnimation(anim)
+				maryo.SetAnimation(anim)
 		
-				if m.ForwardVel > 16 then
-					m:BonkReflection()
-					m.FaceAngle += Vector3int16.new(0, 0x8000, 0)
+				if maryo.ForwardVel > 16 then
+					maryo.BonkReflection()
+					maryo.FaceAngle += Vector3int16.new(0, 0x8000, 0)
 		
-					if m.Wall then
-						m:SetAction(Action.AIR_HIT_WALL)
+					if maryo.Wall then
+						maryo.SetAction(Action.AIR_HIT_WALL)
 					else
 						stopRising(m)
 		
-						if m.ForwardVel >= 38 then
-							m.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
-							m:SetAction(Action.BACKWARD_AIR_KB)
+						if maryo.ForwardVel >= 38 then
+							maryo.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
+							maryo.SetAction(Action.BACKWARD_AIR_KB)
 						else
-							if m.ForwardVel > 8 then
-								m:SetForwardVel(-8)
+							if maryo.ForwardVel > 8 then
+								maryo.SetForwardVel(-8)
 							end
 		
-							m:SetAction(Action.SOFT_BONK)
+							maryo.SetAction(Action.SOFT_BONK)
 						end
 					end
 				else
-					m:SetForwardVel(0)
+					maryo.SetForwardVel(0)
 				end
 			elseif stepResult == AirStep.GRABBED_LEDGE then
-				m:SetAnimation(Animations.IDLE_ON_LEDGE)
-				m:SetAction(Action.LEDGE_GRAB)
+				maryo.SetAnimation(Animations.IDLE_ON_LEDGE)
+				maryo.SetAction(Action.LEDGE_GRAB)
 			elseif stepResult == AirStep.GRABBED_CEILING then
-				m:SetAction(Action.START_HANGING)
+				maryo.SetAction(Action.START_HANGING)
 			elseif stepResult == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
@@ -1847,35 +2360,35 @@ AddModule(function()
 		local function commonRolloutStep(m: Mario, anim: Animation)
 			local stepResult
 		
-			if m.ActionState == 0 then
-				m.Velocity = Util.SetY(m.Velocity, 30)
-				m.ActionState = 1
+			if maryo.ActionState == 0 then
+				maryo.Velocity = Util.SetY(maryo.Velocity, 30)
+				maryo.ActionState = 1
 			end
 		
-			m:PlaySound(Sounds.ACTION_TERRAIN_JUMP)
+			maryo.PlaySound(Sounds.ACTION_TERRAIN_JUMP)
 			updateAirWithoutTurn(m)
 		
-			stepResult = m:PerformAirStep()
+			stepResult = maryo.PerformAirStep()
 		
 			if stepResult == AirStep.NONE then
-				if m.ActionState == 1 then
-					if m:SetAnimation(anim) == 4 then
-						m:PlaySound(Sounds.ACTION_SPIN)
+				if maryo.ActionState == 1 then
+					if maryo.SetAnimation(anim) == 4 then
+						maryo.PlaySound(Sounds.ACTION_SPIN)
 					end
 				else
-					m:SetAnimation(Animations.GENERAL_FALL)
+					maryo.SetAnimation(Animations.GENERAL_FALL)
 				end
 			elseif stepResult == AirStep.LANDED then
-				m:SetAction(Action.FREEFALL_LAND_STOP)
-				m:PlayLandingSound()
+				maryo.SetAction(Action.FREEFALL_LAND_STOP)
+				maryo.PlayLandingSound()
 			elseif stepResult == AirStep.HIT_WALL then
-				m:SetForwardVel(0)
+				maryo.SetForwardVel(0)
 			elseif stepResult == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
 		
-			if m.ActionState == 1 and m:IsAnimPastEnd() then
-				m.ActionState = 2
+			if maryo.ActionState == 1 and maryo.IsAnimPastEnd() then
+				maryo.ActionState = 2
 			end
 		end
 		
@@ -1888,28 +2401,28 @@ AddModule(function()
 		)
 			local stepResult
 			do
-				m:SetForwardVel(speed)
-				stepResult = m:PerformAirStep()
+				maryo.SetForwardVel(speed)
+				stepResult = maryo.PerformAirStep()
 			end
 		
 			if stepResult == AirStep.NONE then
-				m:SetAnimation(anim)
+				maryo.SetAnimation(anim)
 			elseif stepResult == AirStep.LANDED then
 				if not checkFallDamage(m, hardFallAction) then
-					local action = m.Action()
+					local action = maryo.Action()
 		
 					if action == Action.THROWN_FORWARD or action == Action.THROWN_BACKWARD then
-						m:SetAction(landAction, m.HurtCounter)
+						maryo.SetAction(landAction, maryo.HurtCounter)
 					else
-						m:SetAction(landAction, m.ActionArg)
+						maryo.SetAction(landAction, maryo.ActionArg)
 					end
 				end
 			elseif stepResult == AirStep.HIT_WALL then
-				m:SetAnimation(Animations.BACKWARD_AIR_KB)
-				m:BonkReflection()
+				maryo.SetAnimation(Animations.BACKWARD_AIR_KB)
+				maryo.BonkReflection()
 		
 				stopRising(m)
-				m:SetForwardVel(-speed)
+				maryo.SetForwardVel(-speed)
 			elseif stepResult == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
@@ -1918,10 +2431,10 @@ AddModule(function()
 		end
 		
 		local function checkWallKick(m: Mario)
-			if m.WallKickTimer ~= 0 then
-				if m.Input:Has(InputFlags.A_PRESSED) then
-					if m.PrevAction() == Action.AIR_HIT_WALL then
-						m.FaceAngle += Vector3int16.new(0, 0x8000, 0)
+			if maryo.WallKickTimer ~= 0 then
+				if maryo.Input:Has(InputFlags.A_PRESSED) then
+					if maryo.PrevAction() == Action.AIR_HIT_WALL then
+						maryo.FaceAngle += Vector3int16.new(0, 0x8000, 0)
 					end
 				end
 			end
@@ -1941,43 +2454,43 @@ AddModule(function()
 				return true
 			end
 		
-			if m.Input:Has(InputFlags.Z_PRESSED) then
-				return m:SetAction(Action.GROUND_POUND)
+			if maryo.Input:Has(InputFlags.Z_PRESSED) then
+				return maryo.SetAction(Action.GROUND_POUND)
 			end
 		
-			m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
+			maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
 			commonAirActionStep(m, Action.JUMP_LAND, Animations.SINGLE_JUMP, AIR_STEP_CHECK_BOTH)
 		
 			return false
 		end)
 		
 		DEF_ACTION(Action.DOUBLE_JUMP, function(m: Mario)
-			local anim = if m.Velocity.Y >= 0 then Animations.DOUBLE_JUMP_RISE else Animations.DOUBLE_JUMP_FALL
+			local anim = if maryo.Velocity.Y >= 0 then Animations.DOUBLE_JUMP_RISE else Animations.DOUBLE_JUMP_FALL
 		
 			if checkKickOrDiveInAir(m) then
 				return true
 			end
 		
-			if m.Input:Has(InputFlags.Z_PRESSED) then
-				return m:SetAction(Action.GROUND_POUND)
+			if maryo.Input:Has(InputFlags.Z_PRESSED) then
+				return maryo.SetAction(Action.GROUND_POUND)
 			end
 		
-			m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_HOOHOO)
+			maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_HOOHOO)
 			commonAirActionStep(m, Action.DOUBLE_JUMP_LAND, anim, AIR_STEP_CHECK_BOTH)
 		
 			return false
 		end)
 		
 		DEF_ACTION(Action.TRIPLE_JUMP, function(m: Mario)
-			if m.Input:Has(InputFlags.B_PRESSED) then
-				return m:SetAction(Action.DIVE)
+			if maryo.Input:Has(InputFlags.B_PRESSED) then
+				return maryo.SetAction(Action.DIVE)
 			end
 		
-			if m.Input:Has(InputFlags.Z_PRESSED) then
-				return m:SetAction(Action.GROUND_POUND)
+			if maryo.Input:Has(InputFlags.Z_PRESSED) then
+				return maryo.SetAction(Action.GROUND_POUND)
 			end
 		
-			m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
+			maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
 			commonAirActionStep(m, Action.TRIPLE_JUMP_LAND, Animations.TRIPLE_JUMP, 0)
 		
 			playFlipSounds(m, 2, 8, 20)
@@ -1985,11 +2498,11 @@ AddModule(function()
 		end)
 		
 		DEF_ACTION(Action.BACKFLIP, function(m: Mario)
-			if m.Input:Has(InputFlags.Z_PRESSED) then
-				return m:SetAction(Action.GROUND_POUND)
+			if maryo.Input:Has(InputFlags.Z_PRESSED) then
+				return maryo.SetAction(Action.GROUND_POUND)
 			end
 		
-			m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_YAH_WAH_HOO)
+			maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_YAH_WAH_HOO)
 			commonAirActionStep(m, Action.BACKFLIP_LAND, Animations.BACKFLIP, 0)
 		
 			playFlipSounds(m, 2, 3, 17)
@@ -1997,21 +2510,21 @@ AddModule(function()
 		end)
 		
 		DEF_ACTION(Action.FREEFALL, function(m: Mario)
-			if m.Input:Has(InputFlags.B_PRESSED) then
-				return m:SetAction(Action.DIVE)
+			if maryo.Input:Has(InputFlags.B_PRESSED) then
+				return maryo.SetAction(Action.DIVE)
 			end
 		
-			if m.Input:Has(InputFlags.Z_PRESSED) then
-				return m:SetAction(Action.GROUND_POUND)
+			if maryo.Input:Has(InputFlags.Z_PRESSED) then
+				return maryo.SetAction(Action.GROUND_POUND)
 			end
 		
 			local anim
 		
-			if m.ActionArg == 0 then
+			if maryo.ActionArg == 0 then
 				anim = Animations.GENERAL_FALL
-			elseif m.ActionArg == 1 then
+			elseif maryo.ActionArg == 1 then
 				anim = Animations.FALL_FROM_SLIDE
-			elseif m.ActionArg == 2 then
+			elseif maryo.ActionArg == 2 then
 				anim = Animations.FALL_FROM_SLIDE_KICK
 			end
 		
@@ -2020,121 +2533,121 @@ AddModule(function()
 		end)
 		
 		DEF_ACTION(Action.SIDE_FLIP, function(m: Mario)
-			if m.Input:Has(InputFlags.B_PRESSED) then
-				return m:SetAction(Action.DIVE, 0)
+			if maryo.Input:Has(InputFlags.B_PRESSED) then
+				return maryo.SetAction(Action.DIVE, 0)
 			end
 		
-			if m.Input:Has(InputFlags.Z_PRESSED) then
-				return m:SetAction(Action.GROUND_POUND)
+			if maryo.Input:Has(InputFlags.Z_PRESSED) then
+				return maryo.SetAction(Action.GROUND_POUND)
 			end
 		
-			m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
+			maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
 			commonAirActionStep(m, Action.SIDE_FLIP_LAND, Animations.SLIDEFLIP, AirStep.CHECK_LEDGE_GRAB)
 		
-			if m.AnimFrame == 6 then
-				m:PlaySound(Sounds.ACTION_SIDE_FLIP)
+			if maryo.AnimFrame == 6 then
+				maryo.PlaySound(Sounds.ACTION_SIDE_FLIP)
 			end
 		
 			return false
 		end)
 		
 		DEF_ACTION(Action.WALL_KICK_AIR, function(m: Mario)
-			if m.Input:Has(InputFlags.B_PRESSED) then
-				return m:SetAction(Action.DIVE)
+			if maryo.Input:Has(InputFlags.B_PRESSED) then
+				return maryo.SetAction(Action.DIVE)
 			end
 		
-			if m.Input:Has(InputFlags.Z_PRESSED) then
-				return m:SetAction(Action.GROUND_POUND)
+			if maryo.Input:Has(InputFlags.Z_PRESSED) then
+				return maryo.SetAction(Action.GROUND_POUND)
 			end
 		
-			m:PlayJumpSound()
+			maryo.PlayJumpSound()
 			commonAirActionStep(m, Action.JUMP_LAND, Animations.SLIDEJUMP, AirStep.CHECK_LEDGE_GRAB)
 		
 			return false
 		end)
 		
 		DEF_ACTION(Action.LONG_JUMP, function(m: Mario)
-			local anim = if m.LongJumpIsSlow then Animations.SLOW_LONGJUMP else Animations.FAST_LONGJUMP
+			local anim = if maryo.LongJumpIsSlow then Animations.SLOW_LONGJUMP else Animations.FAST_LONGJUMP
 		
-			m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_YAHOO)
+			maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_YAHOO)
 			commonAirActionStep(m, Action.LONG_JUMP_LAND, anim, AirStep.CHECK_LEDGE_GRAB)
 		
 			return false
 		end)
 		
 		DEF_ACTION(Action.TWIRLING, function(m: Mario)
-			local startTwirlYaw = m.TwirlYaw
+			local startTwirlYaw = maryo.TwirlYaw
 			local yawVelTarget = 0x1000
 		
-			if m.Input:Has(InputFlags.A_DOWN) then
+			if maryo.Input:Has(InputFlags.A_DOWN) then
 				yawVelTarget = 0x2000
 			end
 		
-			local yVel = Util.ApproachInt(m.AngleVel.Y, yawVelTarget, 0x200)
-			m.AngleVel = Util.SetY(m.AngleVel, yVel)
-			m.TwirlYaw += yVel
+			local yVel = Util.ApproachInt(maryo.AngleVel.Y, yawVelTarget, 0x200)
+			maryo.AngleVel = Util.SetY(maryo.AngleVel, yVel)
+			maryo.TwirlYaw += yVel
 		
-			m:SetAnimation(if m.ActionArg == 0 then Animations.START_TWIRL else Animations.TWIRL)
+			maryo.SetAnimation(if maryo.ActionArg == 0 then Animations.START_TWIRL else Animations.TWIRL)
 		
-			if m:IsAnimPastEnd() then
-				m.ActionArg = 1
+			if maryo.IsAnimPastEnd() then
+				maryo.ActionArg = 1
 			end
 		
-			if startTwirlYaw > m.TwirlYaw then
-				m:PlaySound(Sounds.ACTION_TWIRL)
+			if startTwirlYaw > maryo.TwirlYaw then
+				maryo.PlaySound(Sounds.ACTION_TWIRL)
 			end
 		
-			local step = m:PerformAirStep()
+			local step = maryo.PerformAirStep()
 		
 			if step == AirStep.LANDED then
-				m:SetAction(Action.TWIRL_LAND)
+				maryo.SetAction(Action.TWIRL_LAND)
 			elseif step == AirStep.HIT_WALL then
-				m:BonkReflection(false)
+				maryo.BonkReflection(false)
 			elseif step == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
 		
-			m.GfxAngle += Vector3int16.new(0, m.TwirlYaw, 0)
+			maryo.GfxAngle += Vector3int16.new(0, maryo.TwirlYaw, 0)
 			return false
 		end)
 		
 		DEF_ACTION(Action.DIVE, function(m: Mario)
 			local airStep
 		
-			if m.ActionArg == 0 then
-				m:PlayMarioSound(Sounds.ACTION_THROW, Sounds.MARIO_HOOHOO)
+			if maryo.ActionArg == 0 then
+				maryo.PlayMarioSound(Sounds.ACTION_THROW, Sounds.MARIO_HOOHOO)
 			else
-				m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
+				maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
 			end
 		
-			m:SetAnimation(Animations.DIVE)
+			maryo.SetAnimation(Animations.DIVE)
 			updateAirWithoutTurn(m)
-			airStep = m:PerformAirStep()
+			airStep = maryo.PerformAirStep()
 		
 			if airStep == AirStep.NONE then
-				if m.Velocity.Y < 0 and m.FaceAngle.X > -0x2AAA then
-					m.FaceAngle -= Vector3int16.new(0x200, 0, 0)
+				if maryo.Velocity.Y < 0 and maryo.FaceAngle.X > -0x2AAA then
+					maryo.FaceAngle -= Vector3int16.new(0x200, 0, 0)
 		
-					if m.FaceAngle.X < -0x2AAA then
-						m.FaceAngle = Util.SetX(m.FaceAngle, -0x2AAA)
+					if maryo.FaceAngle.X < -0x2AAA then
+						maryo.FaceAngle = Util.SetX(maryo.FaceAngle, -0x2AAA)
 					end
 				end
 		
-				m.GfxAngle = Util.SetX(m.GfxAngle, -m.FaceAngle.X)
+				maryo.GfxAngle = Util.SetX(maryo.GfxAngle, -maryo.FaceAngle.X)
 			elseif airStep == AirStep.LANDED then
 				if not checkFallDamage(m, Action.HARD_FORWARD_GROUND_KB) then
-					m:SetAction(Action.DIVE_SLIDE)
+					maryo.SetAction(Action.DIVE_SLIDE)
 				end
 		
-				m.FaceAngle *= Vector3int16.new(0, 1, 1)
+				maryo.FaceAngle *= Vector3int16.new(0, 1, 1)
 			elseif airStep == AirStep.HIT_WALL then
-				m:BonkReflection(true)
-				m.FaceAngle *= Vector3int16.new(0, 1, 1)
+				maryo.BonkReflection(true)
+				maryo.FaceAngle *= Vector3int16.new(0, 1, 1)
 		
 				stopRising(m)
 		
-				m.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
-				m:SetAction(Action.BACKWARD_AIR_KB)
+				maryo.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
+				maryo.SetAction(Action.BACKWARD_AIR_KB)
 			elseif airStep == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
@@ -2143,22 +2656,22 @@ AddModule(function()
 		end)
 		
 		DEF_ACTION(Action.WATER_JUMP, function(m: Mario)
-			if m.ForwardVel < 15 then
-				m:SetForwardVel(15)
+			if maryo.ForwardVel < 15 then
+				maryo.SetForwardVel(15)
 			end
 		
-			m:PlaySound(Sounds.ACTION_WATER_EXIT)
-			m:SetAnimation(Animations.SINGLE_JUMP)
+			maryo.PlaySound(Sounds.ACTION_WATER_EXIT)
+			maryo.SetAnimation(Animations.SINGLE_JUMP)
 		
-			local step = m:PerformAirStep(AirStep.CHECK_LEDGE_GRAB)
+			local step = maryo.PerformAirStep(AirStep.CHECK_LEDGE_GRAB)
 		
 			if step == AirStep.LANDED then
-				m:SetAction(Action.JUMP_LAND)
+				maryo.SetAction(Action.JUMP_LAND)
 			elseif step == AirStep.HIT_WALL then
-				m:SetForwardVel(15)
+				maryo.SetForwardVel(15)
 			elseif step == AirStep.GRABBED_LEDGE then
-				m:SetAnimation(Animations.IDLE_ON_LEDGE)
-				m:SetAction(Action.LEDGE_GRAB)
+				maryo.SetAnimation(Animations.IDLE_ON_LEDGE)
+				maryo.SetAction(Action.LEDGE_GRAB)
 			elseif step == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
@@ -2169,27 +2682,27 @@ AddModule(function()
 		DEF_ACTION(Action.STEEP_JUMP, function(m: Mario)
 			local airStep
 		
-			if m.Input:Has(InputFlags.B_PRESSED) then
-				return m:SetAction(Action.DIVE)
+			if maryo.Input:Has(InputFlags.B_PRESSED) then
+				return maryo.SetAction(Action.DIVE)
 			end
 		
-			m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
-			m:SetForwardVel(0.98 * m.ForwardVel)
-			airStep = m:PerformAirStep()
+			maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
+			maryo.SetForwardVel(0.98 * maryo.ForwardVel)
+			airStep = maryo.PerformAirStep()
 		
 			if airStep == AirStep.LANDED then
 				if not checkFallDamage(m, Action.HARD_BACKWARD_GROUND_KB) then
-					m.FaceAngle *= Vector3int16.new(0, 1, 1)
-					m:SetAction(if m.ForwardVel < 0 then Action.BEGIN_SLIDING else Action.JUMP_LAND)
+					maryo.FaceAngle *= Vector3int16.new(0, 1, 1)
+					maryo.SetAction(if maryo.ForwardVel < 0 then Action.BEGIN_SLIDING else Action.JUMP_LAND)
 				end
 			elseif airStep == AirStep.HIT_WALL then
-				m:SetForwardVel(0)
+				maryo.SetForwardVel(0)
 			elseif airStep == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
 		
-			m:SetAnimation(Animations.SINGLE_JUMP)
-			m.GfxAngle = Util.SetY(m.GfxAngle, m.SteepJumpYaw)
+			maryo.SetAnimation(Animations.SINGLE_JUMP)
+			maryo.GfxAngle = Util.SetY(maryo.GfxAngle, maryo.SteepJumpYaw)
 		
 			return false
 		end)
@@ -2198,51 +2711,51 @@ AddModule(function()
 			local stepResult
 			local yOffset
 		
-			m:PlaySoundIfNoFlag(Sounds.ACTION_THROW, MarioFlags.ACTION_SOUND_PLAYED)
+			maryo.PlaySoundIfNoFlag(Sounds.ACTION_THROW, MarioFlags.ACTION_SOUND_PLAYED)
 		
-			if m.ActionState == 0 then
-				if m.ActionTimer < 10 then
-					yOffset = 20 - 2 * m.ActionTimer
+			if maryo.ActionState == 0 then
+				if maryo.ActionTimer < 10 then
+					yOffset = 20 - 2 * maryo.ActionTimer
 		
-					if m.Position.Y + yOffset + 160 < m.CeilHeight then
-						m.Position += Vector3.new(0, yOffset, 0)
-						m.PeakHeight = m.Position.Y
+					if maryo.Position.Y + yOffset + 160 < maryo.CeilHeight then
+						maryo.Position += Vector3.new(0, yOffset, 0)
+						maryo.PeakHeight = maryo.Position.Y
 					end
 				end
 		
-				m.Velocity = Util.SetY(m.Velocity, -50)
-				m:SetForwardVel(0)
+				maryo.Velocity = Util.SetY(maryo.Velocity, -50)
+				maryo.SetForwardVel(0)
 		
-				m:SetAnimation(if m.ActionArg == 0 then Animations.START_GROUND_POUND else Animations.TRIPLE_JUMP_GROUND_POUND)
+				maryo.SetAnimation(if maryo.ActionArg == 0 then Animations.START_GROUND_POUND else Animations.TRIPLE_JUMP_GROUND_POUND)
 		
-				if m.ActionTimer == 0 then
-					m:PlaySound(Sounds.ACTION_SPIN)
+				if maryo.ActionTimer == 0 then
+					maryo.PlaySound(Sounds.ACTION_SPIN)
 				end
 		
-				m.ActionTimer += 1
-				m.GfxAngle = Vector3int16.new(0, m.FaceAngle.Y, 0)
+				maryo.ActionTimer += 1
+				maryo.GfxAngle = Vector3int16.new(0, maryo.FaceAngle.Y, 0)
 		
-				if m.ActionTimer >= m.AnimFrameCount + 4 then
-					m:PlaySound(Sounds.MARIO_GROUND_POUND_WAH)
-					m.ActionState = 1
+				if maryo.ActionTimer >= maryo.AnimFrameCount + 4 then
+					maryo.PlaySound(Sounds.MARIO_GROUND_POUND_WAH)
+					maryo.ActionState = 1
 				end
 			else
-				m:SetAnimation(Animations.GROUND_POUND)
-				stepResult = m:PerformAirStep()
+				maryo.SetAnimation(Animations.GROUND_POUND)
+				stepResult = maryo.PerformAirStep()
 		
 				if stepResult == AirStep.LANDED then
-					m:PlayHeavyLandingSound(Sounds.ACTION_HEAVY_LANDING)
+					maryo.PlayHeavyLandingSound(Sounds.ACTION_HEAVY_LANDING)
 		
 					if not checkFallDamage(m, Action.HARD_BACKWARD_GROUND_KB) then
-						m.ParticleFlags:Add(ParticleFlags.MIST_CIRCLE, ParticleFlags.HORIZONTAL_STAR)
-						m:SetAction(Action.GROUND_POUND_LAND)
+						maryo.ParticleFlags:Add(ParticleFlags.MIST_CIRCLE, ParticleFlags.HORIZONTAL_STAR)
+						maryo.SetAction(Action.GROUND_POUND_LAND)
 					end
 				elseif stepResult == AirStep.HIT_WALL then
-					m:SetForwardVel(-16)
+					maryo.SetForwardVel(-16)
 					stopRising(m)
 		
-					m.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
-					m:SetAction(Action.BACKWARD_AIR_KB)
+					maryo.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
+					maryo.SetAction(Action.BACKWARD_AIR_KB)
 				end
 			end
 		
@@ -2250,44 +2763,44 @@ AddModule(function()
 		end)
 		
 		DEF_ACTION(Action.BURNING_JUMP, function(m: Mario)
-			m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
-			m:SetForwardVel(m.ForwardVel)
+			maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP)
+			maryo.SetForwardVel(maryo.ForwardVel)
 		
-			if m:PerformAirStep() == AirStep.LANDED then
-				m:PlayLandingSound()
-				m:SetAction(Action.BURNING_GROUND)
+			if maryo.PerformAirStep() == AirStep.LANDED then
+				maryo.PlayLandingSound()
+				maryo.SetAction(Action.BURNING_GROUND)
 			end
 		
-			m:SetAnimation(Animations.GENERAL_FALL)
-			m.ParticleFlags:Add(ParticleFlags.FIRE)
-			m:PlaySound(Sounds.MOVING_LAVA_BURN)
+			maryo.SetAnimation(Animations.GENERAL_FALL)
+			maryo.ParticleFlags:Add(ParticleFlags.FIRE)
+			maryo.PlaySound(Sounds.MOVING_LAVA_BURN)
 		
-			m.BurnTimer += 3
-			m.Health -= 10
+			maryo.BurnTimer += 3
+			maryo.Health -= 10
 		
-			if m.Health < 0x100 then
-				m.Health = 0xFF
+			if maryo.Health < 0x100 then
+				maryo.Health = 0xFF
 			end
 		
 			return false
 		end)
 		
 		DEF_ACTION(Action.BURNING_FALL, function(m: Mario)
-			m:SetForwardVel(m.ForwardVel)
+			maryo.SetForwardVel(maryo.ForwardVel)
 		
-			if m:PerformAirStep() == AirStep.LANDED then
-				m:PlayLandingSound(Sounds.ACTION_TERRAIN_LANDING)
-				m:SetAction(Action.BURNING_GROUND)
+			if maryo.PerformAirStep() == AirStep.LANDED then
+				maryo.PlayLandingSound(Sounds.ACTION_TERRAIN_LANDING)
+				maryo.SetAction(Action.BURNING_GROUND)
 			end
 		
-			m:SetAnimation(Animations.GENERAL_FALL)
-			m.ParticleFlags:Add(ParticleFlags.FIRE)
+			maryo.SetAnimation(Animations.GENERAL_FALL)
+			maryo.ParticleFlags:Add(ParticleFlags.FIRE)
 		
-			m.BurnTimer += 3
-			m.Health -= 10
+			maryo.BurnTimer += 3
+			maryo.Health -= 10
 		
-			if m.Health < 0x100 then
-				m.Health = 0xFF
+			if maryo.Health < 0x100 then
+				maryo.Health = 0xFF
 			end
 		
 			return false
@@ -2356,34 +2869,34 @@ AddModule(function()
 		end)
 		
 		DEF_ACTION(Action.THROWN_BACKWARD, function(m: Mario)
-			local landAction = if m.ActionArg ~= 0 then Action.HARD_BACKWARD_GROUND_KB else Action.BACKWARD_GROUND_KB
+			local landAction = if maryo.ActionArg ~= 0 then Action.HARD_BACKWARD_GROUND_KB else Action.BACKWARD_GROUND_KB
 		
-			m:PlaySoundIfNoFlag(Sounds.MARIO_WAAAOOOW, MarioFlags.MARIO_SOUND_PLAYED)
-			commonAirKnockbackStep(m, landAction, Action.HARD_BACKWARD_GROUND_KB, Animations.BACKWARD_AIR_KB, m.ForwardVel)
+			maryo.PlaySoundIfNoFlag(Sounds.MARIO_WAAAOOOW, MarioFlags.MARIO_SOUND_PLAYED)
+			commonAirKnockbackStep(m, landAction, Action.HARD_BACKWARD_GROUND_KB, Animations.BACKWARD_AIR_KB, maryo.ForwardVel)
 		
-			m.ForwardVel *= 0.98
+			maryo.ForwardVel *= 0.98
 			return false
 		end)
 		
 		DEF_ACTION(Action.THROWN_FORWARD, function(m: Mario)
-			local landAction = if m.ActionArg ~= 0 then Action.HARD_FORWARD_GROUND_KB else Action.FORWARD_GROUND_KB
+			local landAction = if maryo.ActionArg ~= 0 then Action.HARD_FORWARD_GROUND_KB else Action.FORWARD_GROUND_KB
 		
-			m:PlaySoundIfNoFlag(Sounds.MARIO_WAAAOOOW, MarioFlags.MARIO_SOUND_PLAYED)
+			maryo.PlaySoundIfNoFlag(Sounds.MARIO_WAAAOOOW, MarioFlags.MARIO_SOUND_PLAYED)
 		
 			if
-				commonAirKnockbackStep(m, landAction, Action.HARD_FORWARD_GROUND_KB, Animations.FORWARD_AIR_KB, m.ForwardVel)
+				commonAirKnockbackStep(m, landAction, Action.HARD_FORWARD_GROUND_KB, Animations.FORWARD_AIR_KB, maryo.ForwardVel)
 				== AirStep.NONE
 			then
-				local pitch = Util.Atan2s(m.ForwardVel, -m.Velocity.Y)
+				local pitch = Util.Atan2s(maryo.ForwardVel, -maryo.Velocity.Y)
 		
 				if pitch > 0x1800 then
 					pitch = 0x1800
 				end
 		
-				m.GfxAngle = Util.SetX(m.GfxAngle, pitch + 0x1800)
+				maryo.GfxAngle = Util.SetX(maryo.GfxAngle, pitch + 0x1800)
 			end
 		
-			m.ForwardVel *= 0.98
+			maryo.ForwardVel *= 0.98
 			return false
 		end)
 		
@@ -2398,45 +2911,45 @@ AddModule(function()
 				Action.FREEFALL_LAND,
 				Action.HARD_BACKWARD_GROUND_KB,
 				Animations.GENERAL_FALL,
-				m.ForwardVel
+				maryo.ForwardVel
 			)
 		
 			return false
 		end)
 		
 		DEF_ACTION(Action.AIR_HIT_WALL, function(m: Mario)
-			m.ActionTimer += 1
+			maryo.ActionTimer += 1
 		
-			if m.ActionTimer <= 2 then
-				if m.Input:Has(InputFlags.A_PRESSED) then
-					m.Velocity = Util.SetY(m.Velocity, 52)
-					m.FaceAngle += Vector3int16.new(0, 0x8000, 0)
-					return m:SetAction(Action.WALL_KICK_AIR)
+			if maryo.ActionTimer <= 2 then
+				if maryo.Input:Has(InputFlags.A_PRESSED) then
+					maryo.Velocity = Util.SetY(maryo.Velocity, 52)
+					maryo.FaceAngle += Vector3int16.new(0, 0x8000, 0)
+					return maryo.SetAction(Action.WALL_KICK_AIR)
 				end
-			elseif m.ForwardVel >= 38 then
-				m.WallKickTimer = 5
+			elseif maryo.ForwardVel >= 38 then
+				maryo.WallKickTimer = 5
 		
-				if m.Velocity.Y > 0 then
-					m.Velocity = Util.SetY(m.Velocity, 0)
+				if maryo.Velocity.Y > 0 then
+					maryo.Velocity = Util.SetY(maryo.Velocity, 0)
 				end
 		
-				m.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
-				return m:SetAction(Action.BACKWARD_AIR_KB)
+				maryo.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
+				return maryo.SetAction(Action.BACKWARD_AIR_KB)
 			else
-				m.WallKickTimer = 5
+				maryo.WallKickTimer = 5
 		
 				if m.Velocity.Y > 0 then
-					m.Velocity = Util.SetY(m.Velocity, 0)
+					maryo.Velocity = Util.SetY(maryo.Velocity, 0)
 				end
 		
-				if m.ForwardVel > 8 then
-					m:SetForwardVel(-8)
+				if maryo.ForwardVel > 8 then
+					maryo.SetForwardVel(-8)
 				end
 		
-				return m:SetAction(Action.SOFT_BONK)
+				return maryo.SetAction(Action.SOFT_BONK)
 			end
 		
-			return m:SetAnimation(Animations.START_WALLKICK) > 0
+			return maryo.SetAnimation(Animations.START_WALLKICK) > 0
 		end)
 		
 		DEF_ACTION(Action.FORWARD_ROLLOUT, function(m: Mario)
@@ -2451,55 +2964,55 @@ AddModule(function()
 		
 		DEF_ACTION(Action.BUTT_SLIDE_AIR, function(m: Mario)
 			local stepResult
-			m.ActionTimer += 1
+			maryo.ActionTimer += 1
 		
-			if m.ActionTimer > 30 and m.Position.Y - m.FloorHeight > 500 then
-				return m:SetAction(Action.FREEFALL, 1)
+			if maryo.ActionTimer > 30 and maryo.Position.Y - maryo.FloorHeight > 500 then
+				return maryo.SetAction(Action.FREEFALL, 1)
 			end
 		
 			updateAirWithTurn(m)
-			stepResult = m:PerformAirStep()
+			stepResult = maryo.PerformAirStep()
 		
 			if stepResult == AirStep.LANDED then
-				if m.ActionState == 0 and m.Velocity.Y < 0 then
-					local floor = m.Floor
+				if maryo.ActionState == 0 and maryo.Velocity.Y < 0 then
+					local floor = maryo.Floor
 		
 					if floor and floor.Normal.Y > 0.9848077 then
-						m.Velocity *= Vector3.new(1, -0.5, 1)
-						m.ActionState = 1
+						maryo.Velocity *= Vector3.new(1, -0.5, 1)
+						maryo.ActionState = 1
 					else
-						m:SetAction(Action.BUTT_SLIDE)
+						maryo.SetAction(Action.BUTT_SLIDE)
 					end
 				else
-					m:SetAction(Action.BUTT_SLIDE)
+					maryo.SetAction(Action.BUTT_SLIDE)
 				end
 		
-				m:PlayLandingSound()
+				maryo.PlayLandingSound()
 			elseif stepResult == AirStep.HIT_WALL then
 				stopRising(m)
-				m.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
-				m:SetAction(Action.BACKWARD_AIR_KB)
+				maryo.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
+				maryo.SetAction(Action.BACKWARD_AIR_KB)
 			elseif stepResult == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
 		
-			m:SetAnimation(Animations.SLIDE)
+			maryo.SetAnimation(Animations.SLIDE)
 			return false
 		end)
 		
 		DEF_ACTION(Action.LAVA_BOOST, function(m: Mario)
 			local stepResult
-			m:PlaySoundIfNoFlag(Sounds.MARIO_ON_FIRE, MarioFlags.MARIO_SOUND_PLAYED)
+			maryo.PlaySoundIfNoFlag(Sounds.MARIO_ON_FIRE, MarioFlags.MARIO_SOUND_PLAYED)
 		
-			if not m.Input:Has(InputFlags.NONZERO_ANALOG) then
-				m.ForwardVel = Util.ApproachFloat(m.ForwardVel, 0, 0.35)
+			if not maryo.Input:Has(InputFlags.NONZERO_ANALOG) then
+				maryo.ForwardVel = Util.ApproachFloat(maryo.ForwardVel, 0, 0.35)
 			end
 		
 			updateLavaBoostOrTwirling(m)
-			stepResult = m:PerformAirStep()
+			stepResult = maryo.PerformAirStep()
 		
 			if stepResult == AirStep.LANDED then
-				local floor = m.Floor
+				local floor = maryo.Floor
 				local floorType: Enum.Material?
 		
 				if floor then
@@ -2507,86 +3020,86 @@ AddModule(function()
 				end
 		
 				if floorType == Enum.Material.CrackedLava then
-					m.ActionState = 0
+					maryo.ActionState = 0
 		
-					if not m.Flags:Has(MarioFlags.METAL_CAP) then
-						m.HurtCounter += if m.Flags:Has(MarioFlags.CAP_ON_HEAD) then 12 else 18
+					if not maryo.Flags:Has(MarioFlags.METAL_CAP) then
+						maryo.HurtCounter += if maryo.Flags:Has(MarioFlags.CAP_ON_HEAD) then 12 else 18
 					end
 		
-					m.Velocity = Util.SetY(m.Velocity, 84)
-					m:PlaySound(Sounds.MARIO_ON_FIRE)
+					maryo.Velocity = Util.SetY(maryo.Velocity, 84)
+					maryo.PlaySound(Sounds.MARIO_ON_FIRE)
 				else
-					m:PlayHeavyLandingSound(Sounds.ACTION_TERRAIN_BODY_HIT_GROUND)
+					maryo.PlayHeavyLandingSound(Sounds.ACTION_TERRAIN_BODY_HIT_GROUND)
 		
-					if m.ActionState < 2 and m.Velocity.Y < 0 then
-						m.Velocity *= Vector3.new(1, -0.4, 1)
-						m:SetForwardVel(m.ForwardVel / 2)
-						m.ActionState += 1
+					if maryo.ActionState < 2 and maryo.Velocity.Y < 0 then
+						maryo.Velocity *= Vector3.new(1, -0.4, 1)
+						maryo.SetForwardVel(maryo.ForwardVel / 2)
+						maryo.ActionState += 1
 					else
-						m:SetAction(Action.LAVA_BOOST_LAND)
+						maryo.SetAction(Action.LAVA_BOOST_LAND)
 					end
 				end
 			elseif stepResult == AirStep.HIT_WALL then
-				m:BonkReflection()
+				maryo.BonkReflection()
 			elseif stepResult == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
 		
-			m:SetAnimation(Animations.FIRE_LAVA_BURN)
+			maryo.SetAnimation(Animations.FIRE_LAVA_BURN)
 		
-			if not m.Flags:Has(MarioFlags.METAL_CAP) and m.Velocity.Y > 0 then
-				m.ParticleFlags:Add(ParticleFlags.FIRE)
+			if not maryo.Flags:Has(MarioFlags.METAL_CAP) and maryo.Velocity.Y > 0 then
+				maryo.ParticleFlags:Add(ParticleFlags.FIRE)
 		
-				if m.ActionState == 0 then
-					m:PlaySound(Sounds.MOVING_LAVA_BURN)
+				if maryo.ActionState == 0 then
+					maryo.PlaySound(Sounds.MOVING_LAVA_BURN)
 				end
 			end
 		
-			m.BodyState.EyeState = MarioEyes.DEAD
+			maryo.BodyState.EyeState = MarioEyes.DEAD
 			return false
 		end)
 		
 		DEF_ACTION(Action.SLIDE_KICK, function(m: Mario)
 			local stepResult
 		
-			if m.ActionState == 0 and m.ActionTimer == 0 then
-				m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_HOOHOO)
-				m:SetAnimation(Animations.SLIDE_KICK)
+			if maryo.ActionState == 0 and maryo.ActionTimer == 0 then
+				maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_HOOHOO)
+				maryo.SetAnimation(Animations.SLIDE_KICK)
 			end
 		
-			m.ActionTimer += 1
+			maryo.ActionTimer += 1
 		
-			if m.ActionTimer > 30 and m.Position.Y - m.FloorHeight > 500 then
-				return m:SetAction(Action.FREEFALL, 2)
+			if maryo.ActionTimer > 30 and maryo.Position.Y - maryo.FloorHeight > 500 then
+				return maryo.SetAction(Action.FREEFALL, 2)
 			end
 		
 			updateAirWithoutTurn(m)
-			stepResult = m:PerformAirStep()
+			stepResult = maryo.PerformAirStep()
 		
 			if stepResult == AirStep.NONE then
-				if m.ActionState == 0 then
-					local tilt = Util.Atan2s(m.ForwardVel, -m.Velocity.Y)
+				if maryo.ActionState == 0 then
+					local tilt = Util.Atan2s(maryo.ForwardVel, -maryo.Velocity.Y)
 		
 					if tilt > 0x1800 then
 						tilt = 0x1800
 					end
 		
-					m.GfxAngle = Util.SetX(m.GfxAngle, tilt)
+					maryo.GfxAngle = Util.SetX(maryo.GfxAngle, tilt)
 				end
 			elseif stepResult == AirStep.LANDED then
-				if m.ActionState == 0 and m.Velocity.Y < 0 then
-					m.Velocity *= Vector3.new(1, -0.5, 1)
-					m.ActionState = 1
-					m.ActionTimer = 0
+				if maryo.ActionState == 0 and maryo.Velocity.Y < 0 then
+					maryo.Velocity *= Vector3.new(1, -0.5, 1)
+					maryo.ActionState = 1
+					maryo.ActionTimer = 0
 				else
-					m:SetAction(Action.SLIDE_KICK_SLIDE)
+					maryo.SetAction(Action.SLIDE_KICK_SLIDE)
 				end
 		
-				m:PlayLandingSound()
+				maryo.PlayLandingSound()
 			elseif stepResult == AirStep.HIT_WALL then
 				stopRising(m)
-				m.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
-				m:SetAction(Action.BACKWARD_AIR_KB)
+				maryo.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
+				maryo.SetAction(Action.BACKWARD_AIR_KB)
 			elseif stepResult == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
@@ -2597,182 +3110,182 @@ AddModule(function()
 		DEF_ACTION(Action.JUMP_KICK, function(m: Mario)
 			local stepResult
 		
-			if m.ActionState == 0 then
-				m:PlaySoundIfNoFlag(Sounds.MARIO_PUNCH_HOO, MarioFlags.MARIO_SOUND_PLAYED)
-				m.AnimReset = true
+			if maryo.ActionState == 0 then
+				maryo.PlaySoundIfNoFlag(Sounds.MARIO_PUNCH_HOO, MarioFlags.MARIO_SOUND_PLAYED)
+				maryo.AnimReset = true
 		
-				m:SetAnimation(Animations.AIR_KICK)
-				m.ActionState = 1
+				maryo.SetAnimation(Animations.AIR_KICK)
+				maryo.ActionState = 1
 			end
 		
-			local animFrame = m.AnimFrame
+			local animFrame = maryo.AnimFrame
 		
 			if animFrame == 0 then
-				m.BodyState.PunchType = 2
-				m.BodyState.PunchTimer = 6
+				maryo.BodyState.PunchType = 2
+				maryo.BodyState.PunchTimer = 6
 			end
 		
 			if animFrame >= 0 and animFrame < 8 then
-				m.Flags:Add(MarioFlags.KICKING)
+				maryo.Flags:Add(MarioFlags.KICKING)
 			end
 		
 			updateAirWithoutTurn(m)
-			stepResult = m:PerformAirStep()
+			stepResult = maryo.PerformAirStep()
 		
 			if stepResult == AirStep.LANDED then
 				if not checkFallDamage(m, Action.HARD_BACKWARD_GROUND_KB) then
-					m:SetAction(Action.FREEFALL_LAND)
+					maryo.SetAction(Action.FREEFALL_LAND)
 				end
 			elseif stepResult == AirStep.HIT_WALL then
-				m:SetForwardVel(0)
+				maryo.SetForwardVel(0)
 			end
 		
 			return false
 		end)
 		
 		DEF_ACTION(Action.FLYING, function(m: Mario)
-			local startPitch = m.FaceAngle.X
+			local startPitch = maryo.FaceAngle.X
 		
-			if m.Input:Has(InputFlags.Z_PRESSED) then
-				return m:SetAction(Action.GROUND_POUND)
+			if maryo.Input:Has(InputFlags.Z_PRESSED) then
+				return maryo.SetAction(Action.GROUND_POUND)
 			end
 		
-			if not m.Flags:Has(MarioFlags.WING_CAP) then
-				return m:SetAction(Action.FREEFALL)
+			if not maryo.Flags:Has(MarioFlags.WING_CAP) then
+				return maryo.SetAction(Action.FREEFALL)
 			end
 		
-			if m.ActionState == 0 then
-				if m.ActionArg == 0 then
-					m:SetAnimation(Animations.FLY_FROM_CANNON)
+			if maryo.ActionState == 0 then
+				if maryo.ActionArg == 0 then
+					maryo.SetAnimation(Animations.FLY_FROM_CANNON)
 				else
-					m:SetAnimation(Animations.FORWARD_SPINNING_FLIP)
+					maryo.SetAnimation(Animations.FORWARD_SPINNING_FLIP)
 		
-					if m.AnimFrame == 1 then
-						m:PlaySound(Sounds.ACTION_SPIN)
+					if maryo.AnimFrame == 1 then
+						maryo.PlaySound(Sounds.ACTION_SPIN)
 					end
 				end
 		
-				if m:IsAnimAtEnd() then
-					m:SetAnimation(Animations.WING_CAP_FLY)
-					m.ActionState = 1
+				if maryo.IsAnimAtEnd() then
+					maryo.SetAnimation(Animations.WING_CAP_FLY)
+					maryo.ActionState = 1
 				end
 			end
 		
 			local stepResult
 			do
 				updateFlying(m)
-				stepResult = m:PerformAirStep()
+				stepResult = maryo.PerformAirStep()
 			end
 		
 			if stepResult == AirStep.NONE then
-				m.GfxAngle = Util.SetX(m.GfxAngle, -m.FaceAngle.X)
-				m.GfxAngle = Util.SetZ(m.GfxAngle, m.FaceAngle.Z)
-				m.ActionTimer = 0
+				maryo.GfxAngle = Util.SetX(maryo.GfxAngle, -maryo.FaceAngle.X)
+				maryo.GfxAngle = Util.SetZ(maryo.GfxAngle, maryo.FaceAngle.Z)
+				maryo.ActionTimer = 0
 			elseif stepResult == AirStep.LANDED then
-				m:SetAction(Action.DIVE_SLIDE)
-				m:SetAnimation(Animations.DIVE)
+				maryo.SetAction(Action.DIVE_SLIDE)
+				maryo.SetAnimation(Animations.DIVE)
 		
-				m:SetAnimToFrame(7)
-				m.FaceAngle *= Vector3int16.new(0, 1, 1)
+				maryo.SetAnimToFrame(7)
+				maryo.FaceAngle *= Vector3int16.new(0, 1, 1)
 			elseif stepResult == AirStep.HIT_WALL then
-				if m.Wall then
-					m:SetForwardVel(-16)
-					m.FaceAngle *= Vector3int16.new(0, 1, 1)
+				if maryo.Wall then
+					maryo.SetForwardVel(-16)
+					maryo.FaceAngle *= Vector3int16.new(0, 1, 1)
 		
 					stopRising(m)
-					m:PlaySound(if m.Flags:Has(MarioFlags.METAL_CAP) then Sounds.ACTION_METAL_BONK else Sounds.ACTION_BONK)
+					maryo.PlaySound(if maryo.Flags:Has(MarioFlags.METAL_CAP) then Sounds.ACTION_METAL_BONK else Sounds.ACTION_BONK)
 		
-					m.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
-					m:SetAction(Action.BACKWARD_AIR_KB)
+					maryo.ParticleFlags:Add(ParticleFlags.VERTICAL_STAR)
+					maryo.SetAction(Action.BACKWARD_AIR_KB)
 				else
-					m.ActionTimer += 1
+					maryo.ActionTimer += 1
 		
-					if m.ActionTimer == 0 then
-						m:PlaySound(Sounds.ACTION_HIT)
+					if maryo.ActionTimer == 0 then
+						maryo.PlaySound(Sounds.ACTION_HIT)
 					end
 		
-					if m.ActionTimer == 30 then
-						m.ActionTimer = 0
+					if maryo.ActionTimer == 30 then
+						maryo.ActionTimer = 0
 					end
 		
-					m.FaceAngle -= Vector3int16.new(0x200, 0, 0)
+					maryo.FaceAngle -= Vector3int16.new(0x200, 0, 0)
 		
-					if m.FaceAngle.X < -0x2AAA then
-						m.FaceAngle = Util.SetX(m.FaceAngle, -0x2AAA)
+					if maryo.FaceAngle.X < -0x2AAA then
+						maryo.FaceAngle = Util.SetX(maryo.FaceAngle, -0x2AAA)
 					end
 		
-					m.GfxAngle = Util.SetX(m.GfxAngle, -m.FaceAngle.X)
-					m.GfxAngle = Util.SetZ(m.GfxAngle, m.FaceAngle.Z)
+					maryo.GfxAngle = Util.SetX(maryo.GfxAngle, -maryo.FaceAngle.X)
+					maryo.GfxAngle = Util.SetZ(maryo.GfxAngle, maryo.FaceAngle.Z)
 				end
 			elseif stepResult == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
 		
-			if m.FaceAngle.X > 0x800 and m.ForwardVel >= 48 then
-				m.ParticleFlags:Add(ParticleFlags.DUST)
+			if maryo.FaceAngle.X > 0x800 and maryo.ForwardVel >= 48 then
+				maryo.ParticleFlags:Add(ParticleFlags.DUST)
 			end
 		
-			if startPitch <= 0 and m.FaceAngle.X > 0 and m.ForwardVel >= 48 then
-				m:PlaySound(Sounds.ACTION_FLYING_FAST)
-				m:PlaySound(Sounds.MARIO_YAHOO_WAHA_YIPPEE)
+			if startPitch <= 0 and maryo.FaceAngle.X > 0 and maryo.ForwardVel >= 48 then
+				maryo.PlaySound(Sounds.ACTION_FLYING_FAST)
+				maryo.PlaySound(Sounds.MARIO_YAHOO_WAHA_YIPPEE)
 			end
 		
-			m:PlaySound(Sounds.MOVING_FLYING)
-			m:AdjustSoundForSpeed()
+			maryo.PlaySound(Sounds.MOVING_FLYING)
+			maryo.AdjustSoundForSpeed()
 		
 			return false
 		end)
 		
 		DEF_ACTION(Action.FLYING_TRIPLE_JUMP, function(m: Mario)
-			if m.Input:Has(InputFlags.B_PRESSED) then
-				return m:SetAction(Action.DIVE)
+			if maryo.Input:Has(InputFlags.B_PRESSED) then
+				return maryo.SetAction(Action.DIVE)
 			end
 		
-			if m.Input:Has(InputFlags.Z_PRESSED) then
-				return m:SetAction(Action.GROUND_POUND)
+			if maryo.Input:Has(InputFlags.Z_PRESSED) then
+				return maryo.SetAction(Action.GROUND_POUND)
 			end
 		
-			m:PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_YAHOO)
+			maryo.PlayMarioSound(Sounds.ACTION_TERRAIN_JUMP, Sounds.MARIO_YAHOO)
 		
-			if m.ActionState == 0 then
-				m:SetAnimation(Animations.TRIPLE_JUMP_FLY)
+			if maryo.ActionState == 0 then
+				maryo.SetAnimation(Animations.TRIPLE_JUMP_FLY)
 		
-				if m.AnimFrame == 7 then
-					m:PlaySound(Sounds.ACTION_SPIN)
+				if maryo.AnimFrame == 7 then
+					maryo.PlaySound(Sounds.ACTION_SPIN)
 				end
 		
-				if m:IsAnimPastEnd() then
-					m:SetAnimation(Animations.FORWARD_SPINNING)
-					m.ActionState = 1
+				if maryo.IsAnimPastEnd() then
+					maryo.SetAnimation(Animations.FORWARD_SPINNING)
+					maryo.ActionState = 1
 				end
 			end
 		
-			if m.ActionState == 1 and m.AnimFrame == 1 then
-				m:PlaySound(Sounds.ACTION_SPIN)
+			if maryo.ActionState == 1 and maryo.AnimFrame == 1 then
+				maryo.PlaySound(Sounds.ACTION_SPIN)
 			end
 		
-			if m.Velocity.Y < 4 then
-				if m.ForwardVel < 32 then
-					m:SetForwardVel(32)
+			if maryo.Velocity.Y < 4 then
+				if maryo.ForwardVel < 32 then
+					maryo.SetForwardVel(32)
 				end
 		
-				m:SetAction(Action.FLYING, 1)
+				maryo.SetAction(Action.FLYING, 1)
 			end
 		
-			m.ActionTimer += 1
+			maryo.ActionTimer += 1
 		
 			local stepResult
 			do
 				updateAirWithoutTurn(m)
-				stepResult = m:PerformAirStep()
+				stepResult = maryo.PerformAirStep()
 			end
 		
 			if stepResult == AirStep.LANDED then
 				if not checkFallDamage(m, Action.HARD_BACKWARD_GROUND_KB) then
-					m:SetAction(Action.DOUBLE_JUMP_LAND)
+					maryo.SetAction(Action.DOUBLE_JUMP_LAND)
 				end
 			elseif stepResult == AirStep.HIT_WALL then
-				m:BonkReflection()
+				maryo.BonkReflection()
 			elseif stepResult == AirStep.HIT_LAVA_WALL then
 				lavaBoostOnWall(m)
 			end
@@ -2781,20 +3294,20 @@ AddModule(function()
 		end)
 		
 		DEF_ACTION(Action.SPAWN_SPIN_AIRBORNE, function(m: Mario)
-			m:SetForwardVel(m.ForwardVel)
+			maryo.SetForwardVel(maryo.ForwardVel)
 		
-			if m:PerformAirStep() == AirStep.LANDED then
-				m:PlayLandingSound(Sounds.ACTION_TERRAIN_LANDING)
-				m:SetAction(Action.SPAWN_SPIN_LANDING)
+			if maryo.PerformAirStep() == AirStep.LANDED then
+				maryo.PlayLandingSound(Sounds.ACTION_TERRAIN_LANDING)
+				maryo.SetAction(Action.SPAWN_SPIN_LANDING)
 			end
 		
-			if m.ActionState == 0 and m.Position.Y - m.FloorHeight > 300 then
-				if m:SetAnimation(Animations.FORWARD_SPINNING) == 0 then
-					m:PlaySound(Sounds.ACTION_SPIN)
+			if maryo.ActionState == 0 and maryo.Position.Y - maryo.FloorHeight > 300 then
+				if maryo.SetAnimation(Animations.FORWARD_SPINNING) == 0 then
+					maryo.PlaySound(Sounds.ACTION_SPIN)
 				end
 			else
-				m.ActionState = 1
-				m:SetAnimation(Animations.GENERAL_FALL)
+				maryo.ActionState = 1
+				maryo.SetAnimation(Animations.GENERAL_FALL)
 			end
 		
 			return false
@@ -2802,9 +3315,9 @@ AddModule(function()
 		
 		DEF_ACTION(Action.SPAWN_SPIN_LANDING, function(m: Mario)
 			maryo.StopAndSetHeightToFloor()
-			m:SetAnimation(Animations.GENERAL_LAND)
-			if m:IsAnimAtEnd() then
-				m:SetAction(Action.IDLE)
+			maryo.SetAnimation(Animations.GENERAL_LAND)
+			if maryo.IsAnimAtEnd() then
+				maryo.SetAction(Action.IDLE)
 			end
 			return false
 		end)
@@ -2831,6 +3344,9 @@ AddModule(function()
 		}
 		maryo.Input = {}
 		maryo.Sounds = {}
+		maryo.Events = {
+			STOMPED = false,
+		}
 		
 		maryo.Action = nil
 		maryo.ActionArg = 0
@@ -2890,6 +3406,7 @@ AddModule(function()
 		maryo.AnimSkipInterp = 0
 		
 		maryo.AutoJump = false
+		maryo.InfiniteJump = false
 		
 		maryo.SetAction("SPAWN_SPIN_AIRBORNE")
 	end
@@ -2940,414 +3457,6 @@ AddModule(function()
 	m.Destroy = function(figure: Model?)
 	end
 	return m
-end)
-
-AddModule(function()
-	local m = {}
-	m.ModuleType = "MOVESET"
-	m.Name = "2007 Roblox"
-	m.Description = "old roblox is retroslop.\nVery accurate recreation of the old Roblox physics!\nReject Motor6Ds, and return to Motors!"
-	m.InternalName = "RETROSLOP"
-	m.Assets = {}
-
-	m.FPS30 = true
-	m.Snap = true
-	m.Config = function(parent: GuiBase2d)
-		Util_CreateSwitch(parent, "30 FPS Cap", m.FPS30).Changed:Connect(function(val)
-			m.FPS30 = val
-		end)
-		Util_CreateSwitch(parent, "Joint Snapping", m.Snap).Changed:Connect(function(val)
-			m.Snap = val
-		end)
-	end
-	m.LoadConfig = function(save: any)
-		m.FPS30 = not save.FPSUnlock
-		m.Snap = not save.NoSnap
-	end
-	m.SaveConfig = function()
-		return {
-			FPSUnlock = not m.FPS30,
-			NoSnap = not m.Snap
-		}
-	end
-
-	local rcp = RaycastParams.new()
-	rcp.FilterType = Enum.RaycastFilterType.Exclude
-	rcp.RespectCanCollide = true
-	rcp.IgnoreWater = true
-
-	-- https://raw.githubusercontent.com/MaximumADHD/Super-Nostalgia-Zone/refs/heads/main/Player/RetroClimbing.client.lua
-	local searchDepth = 0.7
-	local maxClimbDist = 2.45
-	local sampleSpacing = 1 / 7
-	local lowLadderSearch = 2.7
-	local ladderSearchDist = 2.0
-	local function findPartInLadderZone(figure, root, hum)
-		local cf = root.CFrame
-		local top = -hum.HipHeight
-		local bottom = -lowLadderSearch + top
-		local radius = 0.5 * ladderSearchDist
-		local center = cf.Position + (cf.LookVector * ladderSearchDist * 0.5)
-		local min = Vector3.new(-radius, bottom, -radius)
-		local max = Vector3.new(radius, top, radius)
-		local extents = Region3.new(center + min, center + max)
-		return #workspace:FindPartsInRegion3(extents, figure) > 0
-	end
-	local function findLadder(figure, root, hum)
-		local scale = figure:GetScale()
-		searchDepth = 0.7 * scale
-		maxClimbDist = 2.45 * scale
-		sampleSpacing = scale / 7
-		lowLadderSearch = 2.7 * scale
-		ladderSearchDist = 2.0 * scale
-		if not findPartInLadderZone(figure, root, hum) then
-			return false
-		end
-		local torsoCoord = root.CFrame
-		local torsoLook = torsoCoord.LookVector
-		local firstSpace = 0
-		local firstStep = 0
-		local lookForSpace = true
-		local lookForStep = false
-		local topRay = math.floor(lowLadderSearch / sampleSpacing)
-		for i = 1, topRay do
-			local distFromBottom = i * sampleSpacing
-			local originOnTorso = Vector3.new(0, -lowLadderSearch + distFromBottom, 0)
-			local casterOrigin = torsoCoord.Position + originOnTorso
-			local casterDirection = torsoLook * ladderSearchDist
-			local hitPrim, hitLoc = nil, casterOrigin + casterDirection
-			local hit = workspace:Raycast(casterOrigin, casterDirection, rcp)
-			if hit then
-				hitPrim, hitLoc = hit.Instance, hit.Position
-			end
-			-- make trusses climbable.
-			if hitPrim and hitPrim:IsA("TrussPart") then
-				return true
-			end
-			local mag = (hitLoc - casterOrigin).Magnitude
-			if mag < searchDepth then
-				if lookForSpace then
-					firstSpace = distFromBottom
-					lookForSpace = false
-					lookForStep = true
-				end
-			elseif lookForStep then
-				firstStep = distFromBottom - firstSpace
-				lookForStep = false
-			end
-		end
-		return firstSpace < maxClimbDist and firstStep > 0 and firstStep < maxClimbDist
-	end
-
-	local hstatechange, hrun = nil
-
-	local lastpose = ""
-	local pose = "Standing"
-	local toolAnim = "None"
-	local toolAnimTime = 0
-	local canClimb = false
-	local hipHeight = 0
-
-	local rng = Random.new(math.random(-65536, 65536))
-	
-	local sndpoint, climbforce = nil, nil
-
-	local lastupdate = 0
-	local rs, ls, rh, lh = {V = 0, D = 0, C = 0}, {V = 0, D = 0, C = 0}, {V = 0, D = 0, C = 0}, {V = 0, D = 0, C = 0}
-
-	m.Init = function(figure: Model)
-		local hum = figure:FindFirstChild("Humanoid")
-		hum.AutoRotate = true
-		hum:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
-		hum:ChangeState(Enum.HumanoidStateType.Freefall)
-		sndpoint = Instance.new("Attachment")
-		sndpoint.Name = "oldrobloxsound"
-		sndpoint.Parent = hum.Torso
-		local function makesound(name, id)
-			local sound = Instance.new("Sound")
-			sound.SoundId = id
-			sound.Parent = sndpoint
-			sound.Volume = 5
-			sound.Name = name
-			return sound
-		end
-		makesound("Running", "rbxasset://sounds/bfsl-minifigfoots1.mp3").Looped = true
-		makesound("Climbing", "rbxasset://sounds/bfsl-minifigfoots1.mp3").Looped = true
-		makesound("GettingUp", "rbxasset://sounds/hit.wav")
-		local f = makesound("Freefall", "rbxassetid://12222200")
-		makesound("FallingDown", "rbxasset://sounds/splat.wav")
-		local j = makesound("Jumping", "rbxasset://sounds/button.wav")
-		j.Played:Connect(function()
-			task.wait(0.12 + math.random() * 0.08)
-			j:Stop()
-		end)
-		hrun = hum.Running:Connect(function(speed)
-			if speed > 0.2 then
-				pose = "Running"
-			else
-				pose = "Standing"
-			end
-		end)
-		hstatechange = hum.StateChanged:Connect(function(old, new)
-			local state = new.Name
-			if state == "Jumping" then
-				pose = "Jumping"
-				canClimb = true
-				hum.AutoRotate = false
-				hipHeight = -1
-			elseif state == "Freefall" then
-				pose = "Freefall"
-				canClimb = true
-				hum.AutoRotate = false
-				hipHeight = -1
-			elseif state == "Landed" then
-				pose = "Freefall"
-				canClimb = true
-				local vel = hum.Torso.Velocity
-				local power = -vel.Y / 2
-				if power > 30 then
-					hum.Torso.Velocity = Vector3.new(vel.X, power, vel.Z)
-					hum.Torso.RotVelocity = rng:NextUnitVector() * power * 0.5
-					if power > 100 then
-						hum:ChangeState(Enum.HumanoidStateType.Ragdoll)
-					else
-						hum:ChangeState(Enum.HumanoidStateType.Freefall)
-					end
-				end
-				hum.AutoRotate = false
-				hipHeight = -1
-				f:Play()
-			elseif state == "Seated" then
-				pose = "Seated"
-				canClimb = false
-			elseif state == "Swimming" then
-				pose = "Running"
-				canClimb = false
-			elseif state == "Running" then
-				canClimb = true
-			elseif state == "PlatformStand" then
-				pose = "Standing"
-				canClimb = false
-			elseif state == "GettingUp" then
-				pose = "GettingUp"
-				canClimb = false
-				hum.AutoRotate = false
-				hum.HipHeight = -1
-			elseif state == "Ragdoll" then
-				pose = "Running"
-				canClimb = false
-			elseif state == "FallingDown" then
-				pose = "FallingDown"
-				canClimb = false
-			else
-				pose = "Standing"
-				canClimb = false
-			end
-		end)
-		climbforce = Instance.new("BodyVelocity")
-		climbforce.Name = "ClimbForce"
-		climbforce.Parent = nil
-	end
-	m.Update = function(dt: number, figure: Model)
-		local t = os.clock()
-
-		rcp.FilterDescendantsInstances = {figure}
-
-		local scale = figure:GetScale()
-
-		local hum = figure:FindFirstChild("Humanoid")
-		if not hum then return end
-		local root = figure:FindFirstChild("HumanoidRootPart")
-		if not root then return end
-		local torso = figure:FindFirstChild("Torso")
-		if not torso then return end
-
-		if lastpose ~= pose then
-			local snd1 = sndpoint:FindFirstChild(lastpose)
-			local snd2 = sndpoint:FindFirstChild(pose)
-			if snd1 and snd1.Looped then snd1:Stop() end
-			if snd2 then
-				if pose == "Freefall" then
-					task.delay(0.15, snd2.Play, snd2)
-				else
-					snd2:Play()
-				end
-			end
-			lastpose = pose
-		end
-
-		local function getTool()
-			for _, kid in figure:GetChildren() do
-				if kid.className == "Tool" then
-					return kid
-				end
-			end
-			return nil
-		end
-
-		local function getToolAnim(tool)
-			for _, c in tool:GetChildren() do
-				if c.Name == "toolanim" and c.ClassName == "StringValue" then
-					return c
-				end
-			end
-			return nil
-		end
-
-		local climbing = canClimb and findLadder(figure, root, hum)
-		local jumping = pose == "Jumping" or pose == "Freefall"
-
-		local climbforced = false
-		local climbspeed = hum.WalkSpeed * 0.7
-		if climbing then
-			if hum.MoveDirection.Magnitude > 0 then
-				climbforce.Velocity = Vector3.new(0, climbspeed, 0)
-				climbforced = true
-			elseif jumping then
-				climbforce.Velocity = Vector3.new(0, -climbspeed, 0)
-				climbforced = true
-			end
-		end
-		if climbforced then
-			climbforce.MaxForce = Vector3.new(climbspeed * 100, 10e6, climbspeed * 100)
-			climbforce.Parent = root
-		else
-			climbforce.Parent = nil
-		end
-
-		if not climbing and (jumping or hipHeight < -0.01) then
-			if not jumping then
-				hipHeight *= math.exp(-16 * dt)
-			end
-			hum.JumpPower = 0
-			rs.V = 0.5
-			ls.V = 0.5
-			rs.D = 3.14
-			ls.D = -3.14
-			rh.V = 0.5
-			lh.V = 0.5
-			rh.D = 0
-			lh.D = 0
-		elseif pose == "Seated" then
-			rs.V = 0.15
-			ls.V = 0.15
-			rs.D = 1.57
-			ls.D = -1.57
-			rh.V = 0.15
-			lh.V = 0.15
-			rh.D = 1.57
-			lh.D = -1.57
-		else
-			hum.AutoRotate = true
-			hum.JumpPower = 50
-
-			local amplitude = 1
-			local frequency = 9
-			local climbFudge = 0
-
-			if climbing then
-				rs.V = 0.5
-				ls.V = 0.5
-				rh.V = 0.1
-				lh.V = 0.1
-				climbFudge = 3.14
-			elseif pose == "Running" then
-				rs.V = 0.15
-				ls.V = 0.15
-				rh.V = 0.1
-				lh.V = 0.1
-			else
-				amplitude = 0.1
-				frequency = 1
-			end
-
-			local desiredAngle = amplitude * math.sin(t * frequency)
-			rs.D = desiredAngle + climbFudge
-			ls.D = desiredAngle - climbFudge
-			rh.D = -desiredAngle
-			lh.D = -desiredAngle
-
-			local tool = getTool()
-			if tool and tool.RequiresHandle then
-				local msg = getToolAnim(tool)
-				if msg then
-					toolAnim = msg.Value
-					msg:Destroy()
-					toolAnimTime = t + 0.3
-				end
-				if t > toolAnimTime then
-					toolAnimTime = 0
-					toolAnim = "None"
-				end
-				if toolAnim == "None" then
-					rs.D = 1.57
-				elseif toolAnim == "Slash" then
-					rs.V = 0.5
-					rs.D = 0
-				elseif toolAnim == "Lunge" then
-					rs.V = 0.5
-					ls.V = 0.5
-					rs.D = 1.57
-					ls.D = 1
-					rh.V = 0.5
-					lh.V = 0.5
-					rh.D = 1.57
-					lh.D = 1
-				end
-			else
-				toolAnim = "None"
-				toolAnimTime = 0
-			end
-		end
-		hum.HipHeight = hipHeight * scale
-
-		local rj = root:FindFirstChild("RootJoint")
-		local nj = torso:FindFirstChild("Neck")
-		local rsj = torso:FindFirstChild("Right Shoulder")
-		local lsj = torso:FindFirstChild("Left Shoulder")
-		local rhj = torso:FindFirstChild("Right Hip")
-		local lhj = torso:FindFirstChild("Left Hip")
-
-		local function stepjoint(a, b, c)
-			local d = a.D - a.C
-			if math.abs(d) < a.V then
-				a.C = a.D
-			elseif d > 0 then
-				a.C += a.V * 30 * c
-			else
-				a.C -= a.V * 30 * c
-			end
-			local e = a.C
-			if m.Snap then
-				local snap = math.pi / 90
-				e = math.round(a.C / snap) * snap
-			end
-			b.Transform = CFrame.Angles(0, 0, e)
-		end
-
-		local delta = 1 / 30
-		if not m.FPS30 then
-			lastupdate = 0
-			delta = dt
-		end
-
-		if t - lastupdate > 1 / 30 then
-			lastupdate = t
-			rj.Transform = CFrame.identity
-			nj.Transform = CFrame.identity
-			stepjoint(rs, rsj, delta)
-			stepjoint(ls, lsj, delta)
-			stepjoint(rh, rhj, delta)
-			stepjoint(lh, lhj, delta)
-		end
-	end
-	m.Destroy = function(figure: Model?)
-		hstatechange:Disconnect()
-		hrun:Disconnect()
-		sndpoint:Destroy()
-		climbforce:Destroy()
-	end
-	--return m
 end)
 
 return modules
