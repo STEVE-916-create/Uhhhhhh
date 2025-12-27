@@ -1436,7 +1436,7 @@ AddModule(function()
 			local s = os.clock()
 			local throt = 0
 			repeat
-				local hole = root.CFrame * CFrame.new(Vector3.new(0, -1, -2) * scale)
+				local hole = root.CFrame * CFrame.new(Vector3.new(-1.5, 0.5, -2.25) * scale)
 				if throt > 0.02 then
 					Effect({Time = math.random(35, 55), EffectType = "Sphere", Size = Vector3.new(0.5, 0.5, 0.5), SizeEnd = Vector3.new(1, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = hole, MoveToPos = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Boomerang = 50, BoomerangSize = 50})
 				end
@@ -1445,7 +1445,7 @@ AddModule(function()
 			if not rootu:IsDescendantOf(workspace) then return end
 			for _=1, amount do
 				task.spawn(function()
-					local from = root.CFrame * CFrame.new(Vector3.new(0, -1, -2) * scale)
+					local from = root.CFrame * CFrame.new(Vector3.new(-1.5, 0.5, -2.25) * scale)
 					local death = Instance.new("Part")
 					death.Massless = true
 					death.Transparency = 0
@@ -1460,7 +1460,10 @@ AddModule(function()
 					death.Material = Enum.Material.Neon
 					death.Parent = workspace
 					Effect({Time = math.random(5, 20), EffectType = "Sphere", Size = Vector3.new(3, 3, 3) * math.random(-3, 2), SizeEnd = Vector3.new(6, 6, 6) * math.random(-3, 2), Transparency = 0.4, TransparencyEnd = 1, CFrame = from, Boomerang = 0, BoomerangSize = 25})
-					for _=1, amount do task.wait() end
+					for _=1, amount do
+						death.Color = curcolor
+						task.wait()
+					end
 					Effect({Time = math.random(25, 35), EffectType = "Sphere", Size = Vector3.new(0.6, 0.6, 0.6), SizeEnd = Vector3.new(1.6, 1.6, 1.6), Transparency = 0, TransparencyEnd = 1, CFrame = from, Boomerang = 0, BoomerangSize = 25})
 					local toward = MouseHit() + Vector3.new(math.random(-15, 15), math.random(-7, 7), math.random(-15, 15))
 					local raycast = PhysicsRaycast(from.Position, (toward - from.Position) * 5)
