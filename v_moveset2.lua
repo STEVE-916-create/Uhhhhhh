@@ -1476,7 +1476,7 @@ AddModule(function()
 					repeat
 						local a = (os.clock() - s2) * 60
 						death.Color = curcolor
-						death.CFrame = from * CFrame.new(0, 200 * a * (t - a) / (t * t * h), -(toward - from.Position).Magnitude * (a / t))
+						death.CFrame = from * CFrame.new(0, 800 * a * (t - a) / (t * t * h), -(toward - from.Position).Magnitude * (a / t))
 						task.wait()
 					until os.clock() - s2 > t / 60
 					death.CFrame = from.Rotation + toward
