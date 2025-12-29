@@ -892,6 +892,7 @@ AddModule(function()
 			else
 				toolAnim = "None"
 				toolAnimTime = 0
+				stopToolAnimations()
 			end
 		end
 	end
