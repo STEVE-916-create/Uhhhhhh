@@ -823,6 +823,14 @@ AddModule(function()
 		local torso = figure:FindFirstChild("Torso")
 		if not torso then return end
 
+		if figure:GetAttribute("IsDancing") then
+			for _,v in hum:GetPlayingAnimationTracks() do
+				v:Stop(0)
+				v:Destroy()
+			end
+			return
+		end
+
 		local function getTool()
 			for _, kid in figure:GetChildren() do
 				if kid.className == "Tool" then
