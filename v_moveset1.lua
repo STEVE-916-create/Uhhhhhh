@@ -754,8 +754,11 @@ AddModule(function()
 		hstatechange = hum.StateChanged:Connect(function(old, new)
 			local verticalSpeed = math.abs(hum.RootPart.AssemblyLinearVelocity.Y)
 			local state = new.Name
-			local id = math.random(-65536, 65536)
-			stateid = id
+			local id = stateid
+			if state ~= "Freefall" then
+				id = math.random(-65536, 65536)
+				stateid = id
+			end
 			run.Playing = false
 			swim.Playing = false
 			clim.Playing = false
