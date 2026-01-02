@@ -2478,4 +2478,363 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "Minigun"
+	m.InternalName = "IAMBULLETPROOF"
+	m.Description = "Let's Go! Goodbye!"
+	m.Assets = {}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local start = 0
+	local hum, root, torso
+	local rcp = RaycastParams.new()
+	rcp.FilterType = Enum.RaycastFilterType.Exclude
+	rcp.RespectCanCollide = true
+	rcp.IgnoreWater = true
+	local function PhysicsRaycast(origin, direction)
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local mouse = Player:GetMouse()
+	local function MouseHit()
+		local ray = mouse.UnitRay
+		local dist = 2000
+		local raycast = PhysicsRaycast(ray.Origin, ray.Direction * dist)
+		if raycast then
+			return raycast.Position
+		end
+		return ray.Origin + ray.Direction * dist
+	end
+	local function notify(text)
+		if not m.Notifications then return end
+		if not root or not torso then return end
+		local dialog = torso:FindFirstChild("NOTIFICATION")
+		if dialog then
+			dialog:Destroy()
+		end
+		dialog = Instance.new("BillboardGui", torso)
+		dialog.Size = UDim2.new(50 * scale, 0, 2 * scale, 0)
+		dialog.StudsOffset = Vector3.new(0, 5 * scale, 0)
+		dialog.Adornee = torso
+		dialog.Name = "NOTIFICATION"
+		local text = Instance.new("TextLabel", dialog)
+		text.BackgroundTransparency = 1
+		text.BorderSizePixel = 0
+		text.Text = ""
+		text.Font = Enum.Font.Fantasy
+		text.TextScaled = true
+		text.TextStrokeTransparency = 0
+		text.Size = UDim2.new(1, 0, 1, 0)
+		text.TextColor3 = Color3.new(27/255, 42/255, 53/255)
+		text.TextStrokeColor3 = Color3.new(0, 0, 0)
+		task.spawn(function()
+			local function update()
+				text.Position = UDim2.new(0, math.random(-45, 45), 0, math.random(-5, 5))
+			end
+			local cps = 30
+			local t = os.clock()
+			local ll = 0
+			repeat
+				task.wait()
+				local l = math.floor((os.clock() - t) * cps)
+				if l > ll then
+					ll = l
+				end
+				update()
+				text.Text = string.sub(message, 1, l)
+			until ll >= #message
+			text.Text = message
+			t = os.clock()
+			repeat
+				task.wait()
+				update()
+			until os.clock() - t > 1
+			t = os.clock()
+			repeat
+				task.wait()
+				local a = os.clock() - t
+				text.Position = UDim2.new(0, math.random(-45, 45) + math.random(-a, a) * 100, 0, math.random(-5, 5) + math.random(-a, a) * 40)
+				text.TextTransparency = a
+				text.TextStrokeTransparency = a
+			until os.clock() - t > 1
+			dialog:Destroy()
+		end)
+	end
+	local function randomdialog(arr)
+		notify(arr[math.random(1, #arr)])
+	end
+	local function CreateSound(id, pitch, extra)
+		if not m.Sounds then return end
+		if not torso then return end
+		local parent = torso
+		if typeof(id) == "Instance" then
+			parent = id
+			id, pitch = pitch, extra
+		end
+		pitch = pitch or 1
+		local sound = Instance.new("Sound")
+		sound.Name = tostring(id)
+		sound.SoundId = "rbxassetid://" .. id
+		sound.Volume = 1
+		sound.Pitch = pitch
+		sound.EmitterSize = 300
+		sound.Parent = parent
+		sound:Play()
+		sound.Ended:Connect(function()
+			sound:Destroy()
+		end)
+	end
+	local function AimTowards(target)
+		if not root then return end
+		if flight then return end
+		local tcf = CFrame.lookAt(root.Position, target)
+		local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
+		root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
+	end
+	local chatconn
+	local attacking = false
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+		sw = CFrame.identity,
+	}
+	local flyv, flyg = nil, nil
+	local mousedown = false
+	local uisbegin, uisend
+	local dancereact = false
+
+	m.Init = function(figure)
+		start = os.clock()
+		attacking = false
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		SetOverrideMovesetMusic("rbxassetid://1843497734", "CHAOS: INTENSE HYBRID ROCK", 1)
+		flyv = Instance.new("BodyVelocity")
+		flyv.Name = "FlightBodyMover"
+		flyv.P = 90000
+		flyv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+		flyv.Parent = nil
+		flyg = Instance.new("BodyGyro")
+		flyg.Name = "FlightBodyMover"
+		flyg.P = 5000
+		flyg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+		flyg.Parent = nil
+		randomdialog({
+			"I have arrived.",
+			"Order is restored.",
+			"The anomaly will be corrected.",
+		})
+		if math.random(5) == 1 then
+			task.delay(2, function()
+				for _=1, 3 do
+					notify("AUGUST 12TH 2036.")
+					task.wait(2)
+					notify("THE HEAT DEATH OF THE UNIVERSE.")
+					task.wait(1.5)
+				end
+			end)
+		else
+			task.delay(2, randomdialog, {
+				"Your time ends now.",
+				"Your existence will be denied.",
+				"You dare delay me?",
+				"Thy death is now."
+			})
+		end
+		mousedown = false
+		if uisbegin then
+			uisbegin:Disconnect()
+		end
+		uisbegin = UserInputService.InputBegan:Connect(function(input, gpe)
+			if gpe then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				mousedown = true
+			end
+		end)
+		if uisend then
+			uisend:Disconnect()
+		end
+		uisend = UserInputService.InputEnded:Connect(function(input, gpe)
+			if gpe then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				mousedown = false
+			end
+		end)
+		if chatconn then
+			chatconn:Disconnect()
+		end
+		chatconn = OnPlayerChatted.Event:Connect(function(plr, msg)
+			if plr == Player then
+				notify(msg)
+			end
+		end)
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock() - start
+		scale = figure:GetScale()
+		curcolor = Color3.fromHSV(os.clock() % 1, 1, 1)
+		isdancing = not not figure:GetAttribute("IsDancing")
+		rcp.FilterDescendantsInstances = {figure}
+		
+		-- get vii
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		
+		-- fly
+		if flight then
+			hum.PlatformStand = true
+			flyv.Parent = root
+			flyg.Parent = root
+			local camcf = CFrame.identity
+			if workspace.CurrentCamera then
+				camcf = workspace.CurrentCamera.CFrame
+			end
+			local _,angle,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
+			local movedir = CFrame.Angles(0, angle, 0):VectorToObjectSpace(hum.MoveDirection)
+			flyv.Velocity = camcf:VectorToWorldSpace(movedir) * 50 * scale * m.FlySpeed
+			flyg.CFrame = camcf.Rotation
+		else
+			hum.PlatformStand = false
+			flyv.Parent = nil
+			flyg.Parent = nil
+		end
+		
+		-- joints
+		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		local gunoff = CFrame.identity
+		
+		local timingsine = t * 60 -- timing from original
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
+		-- animations
+		local hitfloor = hum.FloorMaterial ~= Enum.Material.Air
+		local torsovelocity = root.Velocity
+		local torsovelocityy = torsovelocity.Y
+		local animationspeed = 107.5
+		if torsovelocityy > 1 and not hitfloor then
+			if mousedown then
+				animationspeed = 162.5
+			else
+				rt = ROOTC0
+				nt = NECKC0 * CFrame.new(0, 0, 0.1) * CFrame.Angles(math.rad(-20), 0, 0)
+				rst = CFrame.new(1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(-15)) * RIGHTSHOULDERC0
+				lst = CFrame.new(-1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(15)) * LEFTSHOULDERC0
+				rht = CFrame.new(1, -.5, -0.5) * CFrame.Angles(math.rad(-15), math.rad(80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			end
+		elseif torsovelocityy < -1 and not hitfloor then
+				rt = ROOTC0 * CFrame.Angles(math.rad(15), math.rad(0), math.rad(0)), .5 / Animation_Speed)
+				Neck.C0 = Clerp(Neck.C0, NECKC0 * CF(0, 0, 0 + ((1.1) - 1)) * ANGLES(math.rad(20), math.rad(0), math.rad(0))
+				RightShoulder.C0 = Clerp(RightShoulder.C0, CF(1.5, 0.5, 0) * ANGLES(math.rad(-10), math.rad(0), math.rad(25)) * RIGHTSHOULDERC0
+				LeftShoulder.C0 = Clerp(LeftShoulder.C0, CF(-1.5, 0.5, 0) * ANGLES(math.rad(-10), math.rad(0), math.rad(-25)) * LEFTSHOULDERC0
+				RightHip.C0 = Clerp(RightHip.C0, CF(1, -.5, -0.5) * ANGLES(math.rad(-15), math.rad(80), math.rad(0)) * ANGLES(math.rad(-4), math.rad(0), math.rad(0))
+				LeftHip.C0 = Clerp(LeftHip.C0, CF(-1, -1, 0) * ANGLES(math.rad(-10), math.rad(-80), math.rad(0)) * ANGLES(math.rad(-4), math.rad(0), math.rad(0))
+  elseif TORSOVELOCITY < 1 then
+   ANIM = "Walk"
+   if ATTACK == false then
+    local Testwalk1 = Humanoid.MoveDirection*Torso.CFrame.LookVector
+             local Testwalk2 = Humanoid.MoveDirection*Torso.CFrame.RightVector
+             LOOKVEC = Testwalk1.X+Testwalk1.Z
+             RIGHTVEC = Testwalk2.X+Testwalk2.Z
+          local RIGHTHIPSECOND = CF(LOOKVEC/10 * COS(SINE / 18),0,0)*ANGLES(SIN(RIGHTVEC/5) * COS(SINE / 18),0,SIN(-LOOKVEC/2) * COS(SINE / 18))
+          local LEFTHIPSECOND = CF(-LOOKVEC/10 * COS(SINE / 18),0,0)*ANGLES(SIN(RIGHTVEC/5) * COS(SINE / 18),0,SIN(-LOOKVEC/2) * COS(SINE / 18))
+    BODYWELD.C0 = CF(0,0.5,0.3) * ANGLES(math.rad(0), math.rad(90), math.rad(0))
+    RightShoulder.C0 = Clerp(RightShoulder.C0, CF(1.5, 0.4, 0) * ANGLES(math.rad(30), math.rad(40), math.rad(0)) * RIGHTSHOULDERC0, 0.5 / Animation_Speed)
+     Neck.C0 = Clerp(Neck.C0, NECKC0 * CF(0, 0, 0 + ((1) - 1)) * ANGLES(math.rad(0 - 2* SIN(SINE / 10)), math.rad(0), math.rad(40)), 0.8 / Animation_Speed)
+    LeftShoulder.C0 = Clerp(LeftShoulder.C0, CF(-0.3, 0.3, -0.8) * ANGLES(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0, 0.5 / Animation_Speed)
+    RootJoint.C0 = Clerp(RootJoint.C0,ROOTC0 * CF(0, 0.1 , -0.185 + 0.055 * COS(SINE / 10) + -SIN(SINE / 10) / 8) * ANGLES(math.rad((LOOKVEC  - LOOKVEC/5  * COS(SINE / 10))*10), math.rad((-RIGHTVEC - -RIGHTVEC/5  * COS(SINE / 10))*5) , math.rad(-40)), 0.8 / Animation_Speed)
+    RightHip.C0 = Clerp(RightHip.C0, CF(1, -1+ 0.2 * SIN(SINE / 18), -0.5)* ANGLES(math.rad(0),math.rad(120),math.rad(0))*RIGHTHIPSECOND*ANGLES(math.rad(0),math.rad(0),math.rad(0 - 5 * COS(SINE / 18))), 0.8 / Animation_Speed)
+    LeftHip.C0 = Clerp(LeftHip.C0, CF(-1.3, -0.8- 0.2 * SIN(SINE / 18), -.05)* ANGLES(math.rad(0),math.rad(-50),math.rad(0))*LEFTHIPSECOND*ANGLES(math.rad(-5),math.rad(0),math.rad(0 - 5 * COS(SINE / 18))), 0.8 / Animation_Speed)
+            end
+  end
+		
+		-- joints
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		-- interpolation
+		local alpha = math.exp(-animationspeed * dt)
+		joints.r = rt:Lerp(joints.r, alpha)
+		joints.n = nt:Lerp(joints.n, alpha)
+		joints.rs = rst:Lerp(joints.rs, alpha)
+		joints.ls = lst:Lerp(joints.ls, alpha)
+		joints.rh = rht:Lerp(joints.rh, alpha)
+		joints.lh = lht:Lerp(joints.lh, alpha)
+		joints.sw = gunoff:Lerp(joints.sw, alpha)
+		
+		-- apply transforms
+		SetC0C1Joint(rj, joints.r, ROOTC0, scale)
+		SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)), scale)
+		SetC0C1Joint(rsj, joints.rs, CFrame.new(0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		SetC0C1Joint(lsj, joints.ls, CFrame.new(-0.5, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		
+		-- wings
+		if isdancing then
+			leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15), 0)
+			rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15), 0)
+		else
+			if m.Bee then
+				leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15 + 25 * math.cos(timingsine)), 0)
+				rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15 - 25 * math.cos(timingsine)), 0)
+			else
+				leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15 + 25 * math.cos(timingsine / 25)), 0)
+				rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15 - 25 * math.cos(timingsine / 25)), 0)
+			end
+		end
+		
+		-- gun
+		if m.UseSword then
+			gun.Group = "Sword"
+		else
+			gun.Group = "Gun"
+		end
+		gun.Offset = joints.sw
+		
+		-- dance reactions
+		if isdancing and not dancereact then
+			notify("Let's Go!")
+		end
+		dancereact = isdancing
+	end
+	m.Destroy = function(figure: Model?)
+		flyv:Destroy()
+		flyg:Destroy()
+		if uisbegin then
+			uisbegin:Disconnect()
+			uisbegin = nil
+		end
+		if uisend then
+			uisend:Disconnect()
+			uisbegin = nil
+		end
+		if chatconn then
+			chatconn:Disconnect()
+			chatconn = nil
+		end
+		root, torso, hum = nil, nil, nil
+	end
+	return m
+end)
+
 return modules
