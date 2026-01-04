@@ -2478,6 +2478,7 @@ AddModule(function()
 	return m
 end)
 
+--[[
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
@@ -2835,6 +2836,6 @@ AddModule(function()
 		root, torso, hum = nil, nil, nil
 	end
 	--return m
-end)
+end)]]
 
 return modules
