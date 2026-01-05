@@ -951,9 +951,9 @@ AddModule(function()
 			lastdodgestate = newdodgestate
 			if m.RootPartOverride then
 				if newdodgestate then
-					LimbReanimator.Mode = 0
+					LimbReanimator.SetRootPartMode(0)
 				else
-					LimbReanimator.Mode = 2
+					LimbReanimator.SetRootPartMode(2)
 				end
 			end
 		end

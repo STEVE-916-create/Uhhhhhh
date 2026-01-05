@@ -132,7 +132,7 @@ Util_CreateSeparator
 -- Reanimators
 LimbReanimator
 	.Running -- is running
-	.Mode -- rootpart offset mode
+	.SetRootPartMode(mode) -- set rootpart mode
 		-- 0 - RootPart in void
 		-- 1 - Keep RootPart streamed
 		-- 2 - CurrentAngle style
@@ -142,6 +142,20 @@ HatReanimator
 	.HasPermadeath -- has permadeath?
 	.HasHatCollide -- hat collde enabled?
 	.HatCFrameOverride -- array of hat overrides
+		-- see IL moveset for use case
+	.GetHatMap() -- get current hat map (changes wont apply)
+		-- returns table of hat map items
+		{
+			Name = "hat name",
+			MeshId = "mesh id", TextureId = "texture id",
+			C0 = "C0 virtual weld",
+			C1 = "C1 virtual weld",
+			Scale = "the hat's scale set from Roblox accessory refiner",
+			Limb = "the limb it is attached to",
+			Group = "the name of the hat group, see IL moveset for use case"
+		}
+	.GetHatCFrameMeshAndTexture(mesh, tex) -- pass in mesh id and texture id to get hat cframe
+	.GetAttachmentCFrame(name) -- attachment by name
 ReanimateShowHitboxes() -- function to show hitboxes, laggy for many hats
 ReanimateFling(target, duration) -- fling target
 -- target can be model, part, Vector3 or CFrame

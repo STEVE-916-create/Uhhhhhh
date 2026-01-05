@@ -2478,7 +2478,6 @@ AddModule(function()
 	return m
 end)
 
---[[
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
@@ -2606,10 +2605,13 @@ AddModule(function()
 		lh = CFrame.identity,
 		sw = CFrame.identity,
 	}
-	local flyv, flyg = nil, nil
 	local mousedown = false
 	local uisbegin, uisend
 	local dancereact = false
+	local ROOTC0 = CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-90), 0, RAD(180))
+	local NECKC0 = CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(-90), 0, RAD(180))
+	local RIGHTSHOULDERC0 = CFrame.new(-0.5, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
+	local LEFTSHOULDERC0 = CFrame.new(0.5, 0, 0) * CFrame.Angles(0, math.rad(-90), 0)
 
 	m.Init = function(figure)
 		start = os.clock()
@@ -2621,16 +2623,6 @@ AddModule(function()
 		if not root then return end
 		if not torso then return end
 		SetOverrideMovesetMusic("rbxassetid://1843497734", "CHAOS: INTENSE HYBRID ROCK", 1)
-		flyv = Instance.new("BodyVelocity")
-		flyv.Name = "FlightBodyMover"
-		flyv.P = 90000
-		flyv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-		flyv.Parent = nil
-		flyg = Instance.new("BodyGyro")
-		flyg.Name = "FlightBodyMover"
-		flyg.P = 5000
-		flyg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
-		flyg.Parent = nil
 		randomdialog({
 			"I have arrived.",
 			"Order is restored.",
@@ -2660,7 +2652,7 @@ AddModule(function()
 		uisbegin = UserInputService.InputBegan:Connect(function(input, gpe)
 			if gpe then return end
 			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				mousedown = true
+				--mousedown = true
 			end
 		end)
 		if uisend then
@@ -2680,6 +2672,7 @@ AddModule(function()
 				notify(msg)
 			end
 		end)
+		hum.WalkSpeed = 13
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock() - start
@@ -2696,73 +2689,60 @@ AddModule(function()
 		if not root then return end
 		if not torso then return end
 		
-		-- fly
-		if flight then
-			hum.PlatformStand = true
-			flyv.Parent = root
-			flyg.Parent = root
-			local camcf = CFrame.identity
-			if workspace.CurrentCamera then
-				camcf = workspace.CurrentCamera.CFrame
-			end
-			local _,angle,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
-			local movedir = CFrame.Angles(0, angle, 0):VectorToObjectSpace(hum.MoveDirection)
-			flyv.Velocity = camcf:VectorToWorldSpace(movedir) * 50 * scale * m.FlySpeed
-			flyg.CFrame = camcf.Rotation
-		else
-			hum.PlatformStand = false
-			flyv.Parent = nil
-			flyg.Parent = nil
-		end
-		
 		-- joints
 		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
 		local gunoff = CFrame.identity
 		
-		local timingsine = t * 60 -- timing from original
+		local timingsine = t * 40 -- timing from original
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		-- animations
 		local hitfloor = hum.FloorMaterial ~= Enum.Material.Air
-		local torsovelocity = root.Velocity
-		local torsovelocityy = torsovelocity.Y
+		local torsovelocity = root.Velocity.Magnitude
+		local torsovelocityy = root.Velocity.Y
 		local animationspeed = 107.5
-		if torsovelocityy > 1 and not hitfloor then
-			if mousedown then
-				animationspeed = 162.5
-			else
+		if mousedown then
+			animationspeed = 162.5
+		else
+			if torsovelocityy > 1 and not hitfloor then
 				rt = ROOTC0
 				nt = NECKC0 * CFrame.new(0, 0, 0.1) * CFrame.Angles(math.rad(-20), 0, 0)
 				rst = CFrame.new(1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(-15)) * RIGHTSHOULDERC0
 				lst = CFrame.new(-1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(15)) * LEFTSHOULDERC0
 				rht = CFrame.new(1, -.5, -0.5) * CFrame.Angles(math.rad(-15), math.rad(80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
 				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			elseif torsovelocityy < -1 and not hitfloor then
+				rt = ROOTC0 * CFrame.Angles(math.rad(15), 0, 0)
+				nt = NECKC0 * CFrame.new(0, 0, 0.1) * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), 0, math.rad(25)) * RIGHTSHOULDERC0
+				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), 0, math.rad(-25)) * LEFTSHOULDERC0
+				rht = CFrame.new(1, -.5, -0.5) * CFrame.Angles(math.rad(-15), math.rad(80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			elseif torsovelocity < 1 and hitfloor then
+				rt = ROOTC0 * CFrame.new(0, 0.1, 0.05 * math.cos(timingsine / 60)) * CFrame.Angles(math.rad(-10), math.rad(10), math.rad(-40))
+				nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-5.5 * math.sin(timingsine / 60)), math.rad(10), math.rad(40))
+				rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), 0) * RIGHTSHOULDERC0
+				lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
+				rht = CFrame.new(1, -1 - 0.05 * math.cos(timingsine / 60), -0.01) * CFrame.Angles(math.rad(-20), math.rad(87), 0) * CFrame.Angles(math.rad(-7), 0, 0)
+				lht = CFrame.new(-1, -1 - 0.05 * math.cos(timingsine / 60), -0.01) * CFrame.Angles(math.rad(-12), math.rad(-75), 0) * CFrame.Angles(math.rad(-7), 0, 0)
+				gun.Offset = CFrame.new()--CFrame.new(0,0.5,0.3) * CFrame.Angles(math.rad(0), math.rad(90), math.rad(0))
+			elseif torsovelocity > 1 and hitfloor then
+				animationspeed = 79.3
+				local tw1 = Humanoid.MoveDirection * Torso.CFrame.LookVector
+				local tw2 = Humanoid.MoveDirection * Torso.CFrame.RightVector
+				local lv = tw1.X + tw1.Z
+				local rv = tw2.X + tw2.Z
+				local rh = CFrame.new(lv/10 * math.cos(timingsine / 18), 0, 0) * CFrame.Angles(math.sin(rv/5) * math.cos(timingsine / 18), 0, math.sin(-lv/2) * math.cos(timingsine / 18))
+				local lh = CFrame.new(-lv/10 * math.cos(timingsine / 18), 0, 0) * CFrame.Angles(math.sin(rv/5) * math.cos(timingsine / 18), 0, math.sin(-lv/2) * math.cos(timingsine / 18))
+				rt = ROOTC0 * CFrame.new(0, 0.1, -0.185 + 0.055 * math.cos(timingsine / 10) + -math.sin(timingsine / 10) / 8) * CFrame.Angles(math.rad((lv - lv/5 * math.cos(timingsine / 10)) * 10), math.rad((-rv + rv/5 * math.sin(timingsine / 10)) * 5), math.rad(-40))
+				nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-2 * math.sin(timingsine / 10)), 0, math.rad(40))
+				rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), math.rad(0)) * RIGHTSHOULDERC0
+				lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
+				rht = CFrame.new(1, -1 + 0.2 * math.sin(timingsine / 18), -0.5) * CFrame.Angles(0, math.rad(120), 0) *RIGHTHIPSECOND * CFrame.Angles(0, 0, math.rad(-5 * math.cos(timingsine / 18)))
+				lht = CFrame.new(-1.3, -0.8 - 0.2 * math.sin(timingsine / 18), -0.05) * CFrame.Angles(0, math.rad(-50), 0) * LEFTHIPSECOND * CFrame.Angles(math.rad(-5), 0, math.rad(-5 * math.cos(timingsine / 18)))
+				gun.Offset = CFrame.new()--CFrame.new(0,0.5,0.3) * CFrame.Angles(math.rad(0), math.rad(90), math.rad(0))
 			end
-		elseif torsovelocityy < -1 and not hitfloor then
-				rt = ROOTC0 * CFrame.Angles(math.rad(15), math.rad(0), math.rad(0))
-				Neck.C0 = Clerp(Neck.C0, NECKC0 * CF(0, 0, 0 + ((1.1) - 1)) * ANGLES(math.rad(20), math.rad(0), math.rad(0))
-				RightShoulder.C0 = Clerp(RightShoulder.C0, CF(1.5, 0.5, 0) * ANGLES(math.rad(-10), math.rad(0), math.rad(25)) * RIGHTSHOULDERC0
-				LeftShoulder.C0 = Clerp(LeftShoulder.C0, CF(-1.5, 0.5, 0) * ANGLES(math.rad(-10), math.rad(0), math.rad(-25)) * LEFTSHOULDERC0
-				RightHip.C0 = Clerp(RightHip.C0, CF(1, -.5, -0.5) * ANGLES(math.rad(-15), math.rad(80), math.rad(0)) * ANGLES(math.rad(-4), math.rad(0), math.rad(0))
-				LeftHip.C0 = Clerp(LeftHip.C0, CF(-1, -1, 0) * ANGLES(math.rad(-10), math.rad(-80), math.rad(0)) * ANGLES(math.rad(-4), math.rad(0), math.rad(0))
-  elseif TORSOVELOCITY < 1 then
-   ANIM = "Walk"
-   if ATTACK == false then
-    local Testwalk1 = Humanoid.MoveDirection*Torso.CFrame.LookVector
-             local Testwalk2 = Humanoid.MoveDirection*Torso.CFrame.RightVector
-             LOOKVEC = Testwalk1.X+Testwalk1.Z
-             RIGHTVEC = Testwalk2.X+Testwalk2.Z
-          local RIGHTHIPSECOND = CF(LOOKVEC/10 * COS(SINE / 18),0,0)*ANGLES(SIN(RIGHTVEC/5) * COS(SINE / 18),0,SIN(-LOOKVEC/2) * COS(SINE / 18))
-          local LEFTHIPSECOND = CF(-LOOKVEC/10 * COS(SINE / 18),0,0)*ANGLES(SIN(RIGHTVEC/5) * COS(SINE / 18),0,SIN(-LOOKVEC/2) * COS(SINE / 18))
-    BODYWELD.C0 = CF(0,0.5,0.3) * ANGLES(math.rad(0), math.rad(90), math.rad(0))
-    RightShoulder.C0 = Clerp(RightShoulder.C0, CF(1.5, 0.4, 0) * ANGLES(math.rad(30), math.rad(40), math.rad(0)) * RIGHTSHOULDERC0, 0.5 / Animation_Speed)
-     Neck.C0 = Clerp(Neck.C0, NECKC0 * CF(0, 0, 0 + ((1) - 1)) * ANGLES(math.rad(0 - 2* SIN(SINE / 10)), math.rad(0), math.rad(40)), 0.8 / Animation_Speed)
-    LeftShoulder.C0 = Clerp(LeftShoulder.C0, CF(-0.3, 0.3, -0.8) * ANGLES(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0, 0.5 / Animation_Speed)
-    RootJoint.C0 = Clerp(RootJoint.C0,ROOTC0 * CF(0, 0.1 , -0.185 + 0.055 * COS(SINE / 10) + -SIN(SINE / 10) / 8) * ANGLES(math.rad((LOOKVEC  - LOOKVEC/5  * COS(SINE / 10))*10), math.rad((-RIGHTVEC - -RIGHTVEC/5  * COS(SINE / 10))*5) , math.rad(-40)), 0.8 / Animation_Speed)
-    RightHip.C0 = Clerp(RightHip.C0, CF(1, -1+ 0.2 * SIN(SINE / 18), -0.5)* ANGLES(math.rad(0),math.rad(120),math.rad(0))*RIGHTHIPSECOND*ANGLES(math.rad(0),math.rad(0),math.rad(0 - 5 * COS(SINE / 18))), 0.8 / Animation_Speed)
-    LeftHip.C0 = Clerp(LeftHip.C0, CF(-1.3, -0.8- 0.2 * SIN(SINE / 18), -.05)* ANGLES(math.rad(0),math.rad(-50),math.rad(0))*LEFTHIPSECOND*ANGLES(math.rad(-5),math.rad(0),math.rad(0 - 5 * COS(SINE / 18))), 0.8 / Animation_Speed)
-            end
-  end
+		end
 		
 		-- joints
 		local rj = root:FindFirstChild("RootJoint")
@@ -2819,8 +2799,6 @@ AddModule(function()
 		dancereact = isdancing
 	end
 	m.Destroy = function(figure: Model?)
-		flyv:Destroy()
-		flyg:Destroy()
 		if uisbegin then
 			uisbegin:Disconnect()
 			uisbegin = nil
@@ -2836,6 +2814,6 @@ AddModule(function()
 		root, torso, hum = nil, nil, nil
 	end
 	--return m
-end)]]
+end)
 
 return modules
