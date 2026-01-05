@@ -2707,9 +2707,9 @@ AddModule(function()
 		local hitfloor = hum.FloorMaterial ~= Enum.Material.Air
 		local torsovelocity = root.Velocity.Magnitude
 		local torsovelocityy = root.Velocity.Y
-		local animationspeed = 107.5
+		local animationspeed = 11
 		if mousedown then
-			animationspeed = 162.5
+			animationspeed = 4
 		else
 			if torsovelocityy > 1 then
 				rt = ROOTC0
@@ -2734,7 +2734,7 @@ AddModule(function()
 				lht = CFrame.new(-1, -1 - 0.05 * math.cos(timingsine / 60), -0.01) * CFrame.Angles(math.rad(-12), math.rad(-75), 0) * CFrame.Angles(math.rad(-7), 0, 0)
 				gun.Offset = CFrame.new()--CFrame.new(0,0.5,0.3) * CFrame.Angles(math.rad(0), math.rad(90), math.rad(0))
 			elseif torsovelocity > 1 then
-				animationspeed = 79.3
+				animationspeed = 18.5
 				local tw1 = hum.MoveDirection * root.CFrame.LookVector
 				local tw2 = hum.MoveDirection * root.CFrame.RightVector
 				local lv = tw1.X + tw1.Z
@@ -2745,8 +2745,8 @@ AddModule(function()
 				nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-2 * math.sin(timingsine / 10)), 0, math.rad(40))
 				rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), math.rad(0)) * RIGHTSHOULDERC0
 				lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
-				rht = CFrame.new(1, -1 + 0.2 * math.sin(timingsine / 18), -0.5) * CFrame.Angles(0, math.rad(120), 0) *RIGHTHIPSECOND * CFrame.Angles(0, 0, math.rad(-5 * math.cos(timingsine / 18)))
-				lht = CFrame.new(-1.3, -0.8 - 0.2 * math.sin(timingsine / 18), -0.05) * CFrame.Angles(0, math.rad(-50), 0) * LEFTHIPSECOND * CFrame.Angles(math.rad(-5), 0, math.rad(-5 * math.cos(timingsine / 18)))
+				rht = CFrame.new(1, -1 + 0.2 * math.sin(timingsine / 18), -0.5) * CFrame.Angles(0, math.rad(120), 0) * rh * CFrame.Angles(0, 0, math.rad(-5 * math.cos(timingsine / 18)))
+				lht = CFrame.new(-1.3, -0.8 - 0.2 * math.sin(timingsine / 18), -0.05) * CFrame.Angles(0, math.rad(-50), 0) * lh * CFrame.Angles(math.rad(-5), 0, math.rad(-5 * math.cos(timingsine / 18)))
 				gun.Offset = CFrame.new()--CFrame.new(0,0.5,0.3) * CFrame.Angles(math.rad(0), math.rad(90), math.rad(0))
 			end
 		end
