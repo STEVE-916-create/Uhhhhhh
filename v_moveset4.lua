@@ -54,7 +54,7 @@ AddModule(function()
 	m.AutofireJump = true
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateDropdown(parent, "Cap", {
-			"Capless Mario"
+			"Capless Mario",
 			"Mario",
 			"Wing Cap Mario",
 			"Metal Mario",
@@ -104,8 +104,8 @@ AddModule(function()
 		hash = hash:rep(16):sub(1, 16)
 		hash = "SM64_" .. hash .. ".lua"
 		table.insert(m.Assets, hash .. "@" .. SM64RobloxUrl .. "/client/" .. pathe)
-		h.Source = hash,
-		h.Parent = parent,
+		h.Source = hash
+		h.Parent = parent
 		parent[name] = h
 	end
 	CreateHierarch("Enums", "Enums/init.lua", SM64Hierarchy)
