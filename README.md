@@ -16,7 +16,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhh
    
    Uhhhhhh's hatdrop supports most (if not all) hat rigs!
    
-   <img src="./images/ILdoesKemusan.gif" alt="drawing" width="350"/>
+   <img src="./images/ILDoesKemusan.gif" alt="drawing" width="350"/>
    
    <img src="./images/WaistRigSupport.gif" alt="drawing" width="350"/>
 
