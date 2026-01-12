@@ -6,6 +6,8 @@ This is the official repository for Uhhhhhh.
 All code is stored in this repository.
 Feel free to use these as your reference.
 
+Join the [DISCORD](https://discord.gg/NASNUKRBVM) of all my programming shenanigans! :D
+
 ## Loadstring
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/source/reanim.lua"))()
