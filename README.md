@@ -8,6 +8,8 @@ Feel free to use these as your reference.
 
 Join the [DISCORD](https://discord.gg/NASNUKRBVM) of all my programming shenanigans! :D
 
+**NOTICE:** This is still in development, so things are subject to change and stuff are expected to be missing.
+
 ## Loadstring
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/source/reanim.lua"))()
