@@ -1,3 +1,48 @@
+# <p align="center">Universal Hierarchical 6 Reanimator</p>
+<p align="center">A really cool, optimised animation program with demo scenes!</p>
+<p align="center"><img src="./images/Showcase.gif" alt="drawing" width="350"/></p>
+
+This is the official repository for Uhhhhhh.
+All code is stored in this repository.
+Feel free to use these as your reference.
+
+## Features:
+1. Probably the most stable hatdrop
+   
+   Uhhhhhh's hatdrop supports most (if not all) hat rigs!
+   
+   <img src="./images/ILdoesKemusan.gif" alt="drawing" width="350"/>
+   
+   <img src="./images/WaistRigSupport.gif" alt="drawing" width="350"/>
+
+2. Limb reanimation support
+   
+   In the case where you are just unable to afford hats, you can use your own limbs instead!
+   
+   Unfortunately, this only supports a few games.
+   
+   <img src="./images/LimbReanimation.gif" alt="drawing" width="350"/>
+
+3. Good looking UI
+   
+   definitely better than genesis
+   
+   <img src="./images/UserInterface.gif" alt="drawing" width="350"/>
+
+4. Moveset and Dance system
+   
+   Have old animations, or become Lightning Cannon. Dance anytime!
+   
+   <img src="./images/IllMakeYouSay.gif" alt="drawing" width="350"/>
+
+5. Takes advantage of random replicate properties
+   
+   Serversided Physics glue = very accurate (and fast) fling!
+
+6. Modding support
+   
+   Infinite Yield lets you make plugins. So why not add it to Uhhhhhh too? The documentation is right below.
+
 # Uhhhhhh documentation
 Modules are just luau tables that are created by a function.
 It does impose vulnerabilities, but who cares? Executors already

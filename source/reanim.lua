@@ -2960,108 +2960,6 @@ local HumanoidLASetHookState do
 	end
 end
 
-local UhhhhhhSocket = {
-	Reanimator = nil,
-	Collisions = {},
-}
-task.defer(function()
-	-- UhhhhhhSocket: bugsocket but optimised basically
-	local RobloxReplicatedStorage = cloneref(game:GetService("RobloxReplicatedStorage"))
-	local Request = RobloxReplicatedStorage:WaitForChild("RequestDeviceCameraCFrame", 10)
-	local Replicate = RobloxReplicatedStorage:WaitForChild("ReplicateDeviceCameraCFrame", 10)
-	if not Request or not Replicate then
-		Util.Notify("Failed to create UhhhhhhSocket.")
-		return
-	end
-	local ReplicateModel = Instance.new("Model")
-	ReplicateModel.Name = "(C) Uhhhhhh V" .. UhhhhhhVersion
-	ReplicateModel.Parent = workspace
-	local RobloxGui = CoreGui:WaitForChild("RobloxGui")
-	local stupid = RobloxGui:FindFirstChild("CoreScripts/PlayerView")
-	if stupid then stupid.Enabled = false end
-	-- and a more random hash, not just 1 dimensional
-	local function GetHashForPlayer(player)
-		local key = player.Name .. player.UserId
-		key ..= key:reverse()
-		local x, y, z = key:byte(1) * 2, key:byte(2) * 2, key:byte(3) * 2
-		for i=1, #key do
-			local v = key:byte(i)
-			x = bit32.bxor(x, v)
-			if i % 4 == 0 then
-				x = bit32.lshift(x, 1)
-			end
-			x = bit32.band(x, 0xFFFFFFFF)
-			y = bit32.bxor(y, 255 - v)
-			if i % 16 == 0 then
-				y = bit32.lshift(y, 4)
-			end
-			y = bit32.band(y, 0xFFFFFFFF)
-			z = bit32.bxor(z, v * 2)
-			if i % 8 == 0 then
-				z = bit32.lshift(z, 2)
-			end
-			z = bit32.band(z, 0xFFFFFFFF)
-		end
-		-- floating points :3
-		x /= 16
-		y /= 16
-		z /= 16
-		return Vector3.new(x, y, z)
-	end
-	local MyHash = GetHashForPlayer(Player)
-	Replicate.OnClientEvent:Connect(function(player, hash, args)
-		if player ~= Players.LocalPlayer and GetHashForPlayer(player):FuzzyEq(hash.Position) then
-			local data = args[1]
-			if type(data) == "table" then
-				if type(data.Collisions) == "table" then
-					for _,v in data.Collisions do
-						if v and typeof(v) == "Instance" and not CollisionParts[v] then
-							local w = Util.Instance("Part", ReplicateModel)
-							w.Transparency = 1
-							w.Anchored = true
-							w.CanCollide = true
-							w.CanTouch = false
-							CollisionParts[v] = w
-						end
-					end
-				end
-			end
-		end
-	end)
-	local CollisionParts = {}
-	RunService.PreAnimation:Connect(function()
-		for v,w in CollisionParts do
-			if v:IsDescendantOf(workspace) then
-				if Reanimate.P2PCollision then
-					w.CFrame = v.CFrame
-					w.Size = v.Size
-					w.Velocity = Vector3.zero
-					w.RotVelocity = Vector3.zero
-					if not w.CanCollide then w.CanCollide = true end
-				else
-					if w.CanCollide then w.CanCollide = false end
-				end
-			else
-				w:Destroy()
-				CollisionParts[v] = nil
-			end
-		end
-	end)
-	local timer = 0
-	local interval = 1 / 10 -- speed of property replication, faster
-	RunService.Heartbeat:Connect(function(dt)
-		timer += dt
-		if timer >= interval then
-			timer %= interval
-			for _,v in Players:GetPlayers() do
-				Request:FireServer(v.UserId)
-			end
-			Replicate:FireServer(MyHash, {UhhhhhhSocket})
-		end
-	end)
-	Request.OnClientEvent:Connect(function() end)
-end)
-
 Util.SetMotor6DTransform = function(motor, transform)
 	local name = motor.Name
 	motor.MaxVelocity = 9e9
@@ -3311,7 +3209,6 @@ function LimbReanimator.Start()
 		if v:IsA("BasePart") then
 			if not table.find(BaseParts, v) then
 				table.insert(BaseParts, v)
-				table.insert(UhhhhhhSocket.Collisions, v)
 				v.CanCollide = false
 				v:GetPropertyChangedSignal("CanCollide"):Connect(function()
 					if v.CanCollide then v.CanCollide = false end
@@ -3397,7 +3294,6 @@ function LimbReanimator.Start()
 			Camera.CFrame = camcfr
 		end)
 		lastspawn = os.clock()
-		table.clear(UhhhhhhSocket.Collisions)
 		table.clear(BaseParts)
 		table.clear(UnknownMotor6Ds)
 		for _,map in LimbMapping do
@@ -4420,7 +4316,6 @@ function HatReanimator.Start()
 						if i then table.remove(CharHats, i) end
 					end
 				end)
-				task.spawn(function() table.insert(UhhhhhhSocket.Collisions, v:WaitForChild("Handle", 5)) end)
 			end
 		end
 	end
@@ -5590,14 +5485,6 @@ do
 	UI.CreateSwitch(MainPage, "Apply RotVelocity", Reanimate.UseAngularVelocity).Changed:Connect(function(val)
 		Reanimate.UseAngularVelocity = val
 		SaveData.UseAngularVelocity = val
-	end)
-end
-UI.CreateSeparator(MainPage)
-do
-	UI.CreateText(MainPage, "UhhhhhhSocket Settings", 15, Enum.TextXAlignment.Center)
-	UI.CreateSwitch(MainPage, "Collisions", Reanimate.P2PCollision).Changed:Connect(function(val)
-		Reanimate.P2PCollision = val
-		SaveData.P2PCollision = val
 	end)
 end
 UI.CreateSeparator(MainPage)
