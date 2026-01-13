@@ -1,5 +1,5 @@
 # <p align="center">STEVETHEREALONE (@steve_internal)'s Universal Hierarchical 6 Reanimator</p>
-<p align="center">A really cool, optimised animation program with demo scenes!</p>
+<p align="center">A really cool, optimised animation program with demo scenes! Idea originated from a dream.</p>
 <p align="center"><img src="./images/Showcase.gif" alt="drawing" width="600"/></p>
 
 This is the official repository for Uhhhhhh.

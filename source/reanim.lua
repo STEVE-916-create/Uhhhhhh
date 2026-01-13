@@ -4583,7 +4583,9 @@ function HatReanimator.Start()
 	}
 	local NumHats = 0
 	local IsRespawning = false
+	local dontfireifthischar = nil
 	local function OnCharacter(character)
+		if dontfireifthischar == character then return end
 		local camcfr = Camera.CFrame
 		RunService.PreRender:Once(function()
 			RunService.PreAnimation:Wait()
@@ -4675,9 +4677,13 @@ function HatReanimator.Start()
 		local cdsbeffect = os.clock()
 		local cdsbtime = os.clock()
 		if perma then
-			replicatesignal(Player.ConnectDiedSignalBackend)
-			HatReanimator.Status.Permadeath = "Fired CDSB Signal."
-			cdsbeffect += Players.RespawnTime
+			if rcddisabled then
+				HatReanimator.Status.Permadeath = "RCDless mode. Not yet."
+			else
+				replicatesignal(Player.ConnectDiedSignalBackend)
+				HatReanimator.Status.Permadeath = "Fired CDSB Signal."
+				cdsbeffect += Players.RespawnTime
+			end
 		end
 		HatReanimator.Status.RespawnFling = "Flinging targets..."
 		if HatReanimator.UseNaNFling and HatReanimator.FlingTargets[1] then
@@ -4760,10 +4766,37 @@ function HatReanimator.Start()
 		end)
 		HatReanimator.Status.ReanimState = "Loading Permadeath."
 		if perma then
-			HatReanimator.Status.Permadeath = "Waiting for CDSB hack."
-			while Humanoid:GetState() ~= Enum.HumanoidStateType.Dead and character:IsDescendantOf(workspace) do
-				if os.clock() > cdsbeffect then break end
-				task.wait()
+			if rcddisabled then
+				cdsbeffect = os.clock() + Players.RespawnTime + 0.05
+				local oldperma = Util.Instance("Model", workspace)
+				Instance.new("Part", oldperma).Name = "Torso"
+				Instance.new("Part", oldperma).Name = "Head"
+				Instance.new("Humanoid", oldperma).Name = "Humanoid"
+				oldperma.PrimaryPart = oldperma.Torso
+				oldperma:PivotTo(CFrame.new(0, 99999, 0))
+				dontfireifthischar = oldperma
+				Player.Character = oldperma
+				task.wait(3)
+				if not character:IsDescendantOf(workspace) then
+					lgloop:Disconnect()
+					return
+				end
+				dontfireifthischar = character
+				Player.Character = character
+				while Humanoid:GetState() ~= Enum.HumanoidStateType.Dead and character:IsDescendantOf(workspace) do
+					if os.clock() > cdsbeffect then break end
+					task.wait()
+				end
+				if not character:IsDescendantOf(workspace) then
+					lgloop:Disconnect()
+					return
+				end
+			else
+				HatReanimator.Status.Permadeath = "Waiting for CDSB hack."
+				while Humanoid:GetState() ~= Enum.HumanoidStateType.Dead and character:IsDescendantOf(workspace) do
+					if os.clock() > cdsbeffect then break end
+					task.wait()
+				end
 			end
 			HatReanimator.Status.Permadeath = string.format("Permadeathed after %.3fs.", os.clock() - cdsbtime)
 		else
@@ -4777,8 +4810,11 @@ function HatReanimator.Start()
 		HatReanimator.Status.ReanimState = "Reanimate State: 1"
 		NumHats = #CharHats
 		selhatcol.State1(character, Humanoid, CharHats)
+		task.wait(0.1)
+		readystate = 2
+		HatReanimator.Status.ReanimState = "Reanimate State: 2"
 		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
-		claimarea = Vector3.new(claimarea.X, FallenPartsDestroyHeight + 16, claimarea.Z)
+		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, RootPart.CFrame.Y + 4), claimarea.Z)
 		local bringconns = {}
 		if hatcols then
 			for _,hat in CharHats do
@@ -4791,9 +4827,6 @@ function HatReanimator.Start()
 				end
 			end
 		end
-		task.wait(0.1)
-		readystate = 2
-		HatReanimator.Status.ReanimState = "Reanimate State: 2"
 		task.wait(0.15)
 		replicatesignal(Humanoid.ServerBreakJoints)
 		Humanoid.BreakJointsOnDeath = true
