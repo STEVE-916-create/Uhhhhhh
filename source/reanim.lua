@@ -799,8 +799,9 @@ local function Stylize(obj, options)
 		Glos = Glos
 	})
 end
+local ForceUIColor = nil
 local function UpdateGrads(t)
-	local c = Util.LoopedHSV(t / 10, 0.8, 1)
+	local c = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
 	for _,grad in Grads do
 		local obj, Out, Glos = grad.obj, grad.Out, grad.Glos
 		Out.Color = c
@@ -818,6 +819,7 @@ if SaveData.MuteUISound then
 	UISound.Click.Volume = 0
 end
 
+local CracktroFrameText = "Uhhhhhh Reanimate V" .. UhhhhhhVersion
 local UIMainWindow, WindowContent do
 	UIMainWindow = Util.Instance("Frame", UIMainFrame)
 	UIMainWindow.Active = true
@@ -896,8 +898,9 @@ local UIMainWindow, WindowContent do
 			"<font color=\"#00DDFF\">Oxide</font> Version 67",
 			"currentangle v5",
 			"patchma hub by <font color=\"#0000FF\">MyWorld</font>",
+			"Genesis FE with extra steps",
 		}
-		if os.date("%m") == "12" and math.random(2) == 1 then
+		if os.date("%m") == "12" and math.random(4) == 1 then
 			quotes = {
 				"ho ho ho",
 				"dess from deltarune",
@@ -910,7 +913,7 @@ local UIMainWindow, WindowContent do
 				"UHHHH]",
 			}
 		end
-		if os.date("%m") == "01" and math.random(2) == 1 then
+		if os.date("%m") == "01" and math.random(4) == 1 then
 			quotes = {
 				"new year new me",
 				"HAVE A HAPPY NEW YEAR",
@@ -921,8 +924,27 @@ local UIMainWindow, WindowContent do
 				"kaboom? yes rico, kaboom.",
 			}
 		end
+		local aprilfools = os.date("%m") == "04 01" or true
+		if aprilfools then
+			local troll = math.random(3)
+			if troll == 1 then
+				CracktroFrameText = "Oxide Reanimation V67"
+				quotes = {" <font color=\"#00DDFF\">Oxide</font>  Reanimation"}
+				ForceUIColor = Color3.fromHex("00DDFF")
+			end
+			if troll == 2 then
+				CracktroFrameText = "patchma hub V67"
+				quotes = {"<font color=\"#0000FF\">patchma hub</font> by MyWorld"}
+				ForceUIColor = Color3.fromHex("0000FF")
+			end
+			if troll == 3 then
+				CracktroFrameText = "Genesis V4 but better"
+				quotes = {"<font color=\"#CC11FF\">Genesis V4 - Neptunian V</font>"}
+				ForceUIColor = Color3.fromHex("7733FF")
+			end
+		end
 		TopBarText.Text = quotes[math.random(1, #quotes)]
-		if os.date("%m %d") ~= "04 01" then
+		if not aprilfools then
 			task.delay(2, function()
 				TopBarText.Text = "Uhhhhhh Reanimate | v" .. UhhhhhhVersion
 			end)
@@ -1130,7 +1152,7 @@ do -- homepage
 	local trivel = 360
 	local oldpbl = 0
 
-	local text = Util.MakeText("Uhhhhhh Reanimate V" .. UhhhhhhVersion)
+	local text = Util.MakeText(CracktroFrameText)
 	text.AnchorPoint = Vector2.new(0.5, 1)
 	text.Position = UDim2.new(0.5, 0, 1, -25)
 	text.ZIndex = 3
@@ -6662,6 +6684,34 @@ UI.CreateText(CreditsPage, "zero from iwbtc for no reason", 12, Enum.TextXAlignm
 UI.CreateText(CreditsPage, "presidentanvil, mech/catlover", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "return from fishstrap", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "erika, skeltoun", 12, Enum.TextXAlignment.Center)
+UI.CreateSeparator(CreditsPage)
+UI.CreateText(CreditsPage, "* Very random quotes *", 15, Enum.TextXAlignment.Center)
+do
+	local quotes = {
+		"anthonyisnthere: \":fasttrack Luacope\"\n(funny because most of the music in this script is made in FastTracker 2)",
+		"hemi once said: \"hat collide has never worked on perma\"",
+		"skids after genesis adds a minimize button: \"REVOLUTIONARY\"",
+		"\"roblox banned my leg\" sounds the same in any context",
+		"what is a 0x1b packet hack? cuz idk wattahel that is",
+		"\"i have real fe bypass but i cant show here cuz roblox will detect and patch you have to join me in my game\"",
+		"my income is 2 dollars. i shall DELETE /self now /j",
+		"obfuscator: gifted power\nreal-time registry dumper: pure effort",
+		"always flinging kdrv3 users (they think they'll have antifling)",
+		"im gonna fling you. *turns your screen black*",
+		"headcanon: \"Lightning Cannon is a top.\"",
+		"\"dont bpt ples\" \"brick portationtele?\"",
+		"WHO CARES IF A FEW TREES ARE DYING!?",
+		"okay so you know why i put my discord link to the bottom of the credits? so skids can use Uhhhhhh without ads! :D",
+		"while i was in mwtp, someone said \"leak the hatdrop script\"",
+		"i was in fencing, then someone said \"its the genesis killer\"",
+		"STEVE, THE DANCING IMMORTALITY LORD!",
+		"\"kid im filipino\" - " .. (math.random() < 0.67 and "Tatsuki" or "Kaylie"),
+	}
+	for _=1, 15 do
+		local idx = math.random(1, #quotes)
+		UI.CreateText(CreditsPage, table.remove(quotes, idx), 12, Enum.TextXAlignment.Center)
+	end
+end
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "This \"software\" is FREE, meaning YOU SHOULD NOT REDISTRIBUTE WITH RENUMERATIVE INTENT!!", 15, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances or Movesets, go to <font color=\"#0000FF\">this thing</font>.", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
