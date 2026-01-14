@@ -59,7 +59,15 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhh
    
    <img src="./images/GiantSkipping.gif" alt="drawing" width="350"/>
    
-   The documentation is right below.
+   The documentation is right below all of whatever these are.
+
+## Contributing
+
+"Can I help? Can I/you add support for my hat?""
+
+If you want to help by changing code, fixing bugs, doing further optimisations, my pull requests are open.
+
+As for me adding support for your hats (since the hat database is very small), create an issue and ill prolly read it.
 
 # Uhhhhhh documentation
 Modules are just luau tables that are created by a function.
