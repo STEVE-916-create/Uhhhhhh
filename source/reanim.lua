@@ -6788,7 +6788,7 @@ task.spawn(function()
 			if v:sub(1, 2) == "# " then
 				UI.CreateText(ChangelogsPage, "* " .. v:sub(3) .. " *", 15, Enum.TextXAlignment.Center)
 			else
-				UI.CreateText(ChangelogsPage, "* " .. v:sub(3) .. " *", 15, Enum.TextXAlignment.Center)
+				UI.CreateText(ChangelogsPage, v, 12, Enum.TextXAlignment.Center)
 			end
 		end
 		content.Parent:Destroy()
