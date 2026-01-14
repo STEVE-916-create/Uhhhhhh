@@ -6782,8 +6782,8 @@ task.spawn(function()
 	UI.CreateText(ChangelogsPage, "Changelogs", 30, Enum.TextXAlignment.Center)
 	local content = UI.CreateText(ChangelogsPage, "Loading...", 12, Enum.TextXAlignment.Left)
 	xpcall(function()
-		content.Text:Destroy()
 		local logs = game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/CHANGELOGS")
+		content.Text = "Rendering error."
 		for _,v in string.split(logs, "\n") do
 			if v:sub(1, 2) == "# " then
 				UI.CreateText(ChangelogsPage, "* " .. v:sub(3) .. " *", 15, Enum.TextXAlignment.Center)
@@ -6791,6 +6791,7 @@ task.spawn(function()
 				UI.CreateText(ChangelogsPage, "* " .. v:sub(3) .. " *", 15, Enum.TextXAlignment.Center)
 			end
 		end
+		content.Parent:Destroy()
 	end, function()
 		content.Text = "ERROR: Could not fetch"
 	end)
