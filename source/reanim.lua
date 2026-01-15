@@ -4536,7 +4536,7 @@ function HatReanimator.Start()
 		State2 = function(character, hats)
 			local torso = character:FindFirstChild("Torso")
 			if torso then
-				torso.AncestryChanged:Wait()
+				task.wait(calculatepartdestroytime(torso.CFrame.Y - FallenPartsDestroyHeight, torso.AssemblyLinearVelocity.Y, workspace.Gravity) + 0.01)
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, state unlocked."
 			for _,v in hats do
@@ -4634,13 +4634,8 @@ function HatReanimator.Start()
 			end
 		end,
 		State2 = function(character, hats)
-<<<<<<< HEAD
-			task.wait(0.45)
-			HatReanimator.Status.HatCollide = "Torso removed."
-=======
 			task.wait(calculatepartdestroytime(4, 30, workspace.Gravity) + 0.01)
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
->>>>>>> refs/remotes/origin/main
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
 			end
