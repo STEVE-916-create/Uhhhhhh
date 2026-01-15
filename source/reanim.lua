@@ -3814,7 +3814,8 @@ function HatReanimator.Start()
 				C1 = CFrame.identity,
 				Scale = 1,
 				Limb = "HumanoidRootPart",
-				Group = "RIG"
+				Group = "RIG",
+				Attachments = nil,
 			}
 			local originalsize = handle:FindFirstChild("OriginalSize")
 			if originalsize and originalsize:IsA("Vector3Value") then
@@ -3831,6 +3832,7 @@ function HatReanimator.Start()
 					mapdata.C1 = data.C1
 					mapdata.Limb = data.Limb
 					mapdata.Group = data.Group
+					mapdata.Attachments = data.Attachments
 					return mapdata, "Accessories", 0
 				end
 			end
