@@ -4630,7 +4630,7 @@ function HatReanimator.Start()
 			end
 		end,
 		State2 = function(character, hats)
-			task.wait(0.3)
+			task.wait(0.45)
 			HatReanimator.Status.HatCollide = "Torso removed."
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
@@ -4891,7 +4891,7 @@ function HatReanimator.Start()
 			task.spawn(function()
 				local collidable = selhatcol.State2(character, CharHats)
 				stateunlocked = true
-				if hatcols and collidable < #CharHats then
+				if hatcols and (collidable == 0 or (HatReanimator.IWantAllHats and collidable < #CharHats)) then
 					if perma then
 						HatReanimator.Status.Permadeath = "No hat collide. Fired CDSB Signal!"
 						replicatesignal(Player.ConnectDiedSignalBackend)
