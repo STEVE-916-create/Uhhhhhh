@@ -4167,8 +4167,6 @@ function HatReanimator.Start()
 		local ReanimCharacter = Reanimate.Character
 		if not ReanimCharacter then return end
 		local scale = ReanimCharacter:GetScale()
-		local handle = hat:FindFirstChild("Handle")
-		if not handle or not handle:IsA("BasePart") then return end
 		local hatmapped = nil
 		-- find hat mapping
 		for _,data in HatMap do
