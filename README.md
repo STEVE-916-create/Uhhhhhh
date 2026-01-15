@@ -69,6 +69,9 @@ If you want to help by changing code, fixing bugs, doing further optimisations, 
 
 As for me adding support for your hats (since the hat database is very small), create an issue and ill prolly read it.
 
+# Uhhhhhh's probably the most important quotes
+**DISCLAIMER**: Some random quotes made here are *simple jokes* (e.g.: "this script mogs genesis") and should **not** be taken seriously. This also includes *all* the self-glazing quotes. **It's your choice to agree with them or not**, and if you do or don't, **don't come harass/mock any individuals from it.** In the end, a *joke quote* is a *joke quote*.
+
 # Uhhhhhh documentation
 Modules are just luau tables that are created by a function.
 It does impose vulnerabilities, but who cares? Executors already
