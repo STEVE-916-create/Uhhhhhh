@@ -2337,6 +2337,75 @@ task.spawn(function()
 		end
 		table.insert(AsciiTextarttr, a)
 	end
+	local function switchart()
+		if AsciiTextartsw then return end
+		AsciiTextartsw = true
+		local function animation(art, inv)
+			local transmap = AsciiTextarttr[math.random(1, #AsciiTextarttr)]
+			local rot = math.random(0, 3)
+			local st = os.clock()
+			repeat
+				local t = os.clock() - st
+				local i = math.clamp(math.floor(t * 60) + 1, 1, 60)
+				local render = {}
+				for iy=1, #art do
+					local y = (iy - 1) / #art
+					local conc = ""
+					local txt = art[iy]
+					for ix=1, #txt do
+						local x = (ix - 1) / #txt
+						local ch = string.sub(txt, ix, ix)
+						local b = 0
+						if rot == 0 then
+							b = transmap[i][math.floor(y * 64) + 1][math.floor(x * 64) + 1]
+						elseif rot == 1 then
+							b = transmap[i][math.floor(x * 64) + 1][64 - math.floor(y * 64)]
+						elseif rot == 2 then
+							b = transmap[i][64 - math.floor(y * 64)][64 - math.floor(x * 64)]
+						elseif rot == 3 then
+							b = transmap[i][64 - math.floor(x * 64)][math.floor(y * 64) + 1]
+						end
+						if inv then b = 3 - b end
+						if b == 1 then
+							if (ch == ch:upper() and ch ~= ch:lower()) or ch == "8" or ch == "0" then
+								ch = "?"
+							elseif ch == ":" or ch == ";" or ch == "_" then
+								ch = "."
+							elseif ch == "." or ch == "," or ch == " " then
+								ch = " "
+							else
+								ch = ":"
+							end
+						elseif b == 2 then
+							if (ch == ch:upper() and ch ~= ch:lower()) or ch == "8" or ch == "0" then
+								ch = ":"
+							elseif ch == ":" or ch == ";" or ch == "_" or ch == "." or ch == "," or ch == " " then
+								ch = " "
+							else
+								ch = "."
+							end
+						elseif b == 3 then
+							ch = " "
+						end
+						conc ..= ch
+					end
+					table.insert(render, conc)
+				end
+				AsciiText.Text = table.concat(render, "\n")
+				task.wait()
+			until os.clock() > st + 1
+		end
+		local source = string.split(AsciiText.Text, "\n")
+		local target = source
+		while table.concat(source, "\n") == table.concat(target, "\n") do
+			task.wait()
+			target = AsciiTextarts[math.random(1, #AsciiTextarts)]
+		end
+		animation(source, false)
+		animation(target, true)
+		AsciiText.Text = table.concat(target, "\n")
+		AsciiTextartsw = false
+	end
 	local AsciiTextartin = nil
 	AsciiText.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -2346,75 +2415,10 @@ task.spawn(function()
 	AsciiText.InputEnded:Connect(function(input)
 		if AsciiTextartin == input then
 			AsciiTextartin = nil
-			if AsciiTextartsw then return end
-			AsciiTextartsw = true
-			local function animation(art, inv)
-				local transmap = AsciiTextarttr[math.random(1, #AsciiTextarttr)]
-				local rot = math.random(0, 3)
-				local st = os.clock()
-				repeat
-					local t = os.clock() - st
-					local i = math.clamp(math.floor(t * 60) + 1, 1, 60)
-					local render = {}
-					for iy=1, #art do
-						local y = (iy - 1) / #art
-						local conc = ""
-						local txt = art[iy]
-						for ix=1, #txt do
-							local x = (ix - 1) / #txt
-							local ch = string.sub(txt, ix, ix)
-							local b = 0
-							if rot == 0 then
-								b = transmap[i][math.floor(y * 64) + 1][math.floor(x * 64) + 1]
-							elseif rot == 1 then
-								b = transmap[i][math.floor(x * 64) + 1][64 - math.floor(y * 64)]
-							elseif rot == 2 then
-								b = transmap[i][64 - math.floor(y * 64)][64 - math.floor(x * 64)]
-							elseif rot == 3 then
-								b = transmap[i][64 - math.floor(x * 64)][math.floor(y * 64) + 1]
-							end
-							if inv then b = 3 - b end
-							if b == 1 then
-								if (ch == ch:upper() and ch ~= ch:lower()) or ch == "8" or ch == "0" then
-									ch = "?"
-								elseif ch == ":" or ch == ";" or ch == "_" then
-									ch = "."
-								elseif ch == "." or ch == "," or ch == " " then
-									ch = " "
-								else
-									ch = ":"
-								end
-							elseif b == 2 then
-								if (ch == ch:upper() and ch ~= ch:lower()) or ch == "8" or ch == "0" then
-									ch = ":"
-								elseif ch == ":" or ch == ";" or ch == "_" or ch == "." or ch == "," or ch == " " then
-									ch = " "
-								else
-									ch = "."
-								end
-							elseif b == 3 then
-								ch = " "
-							end
-							conc ..= ch
-						end
-						table.insert(render, conc)
-					end
-					AsciiText.Text = table.concat(render, "\n")
-					task.wait()
-				until os.clock() > st + 1
-			end
-			local source = string.split(AsciiText.Text, "\n")
-			local target = source
-			while table.concat(source, "\n") == table.concat(target, "\n") do
-				task.wait()
-				target = AsciiTextarts[math.random(1, #AsciiTextarts)]
-			end
-			animation(source, false)
-			animation(target, true)
-			AsciiText.Text = table.concat(target, "\n")
-			AsciiTextartsw = false
+			switchart()
 		end
 	end)
+	switchart()
 end)
 UI.CreateText(MainPage, `Reanimate V{UhhhhhhVersion}, By STEVE :D`, 15, Enum.TextXAlignment.Right)
 UI.CreateSeparator(MainPage)
