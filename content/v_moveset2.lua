@@ -790,6 +790,23 @@ AddModule(function()
 	local sanitysongsync = 0
 	local fastboistart = 0
 	local fastboisegment = false
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+		sw = CFrame.identity,
+	}
+	local leftwing = {}
+	local rightwing = {}
+	local gun = {}
+	local flyv, flyg = nil, nil
+	local walkingwheel = nil
+	local chatconn = nil
+	local uisbegin, uisend = nil, nil
+	local dancereact = {}
 	local rcp = RaycastParams.new()
 	rcp.FilterType = Enum.RaycastFilterType.Exclude
 	rcp.RespectCanCollide = true
@@ -1736,24 +1753,6 @@ AddModule(function()
 			attacking = false
 		end)
 	end
-
-	local joints = {
-		r = CFrame.identity,
-		n = CFrame.identity,
-		rs = CFrame.identity,
-		ls = CFrame.identity,
-		rh = CFrame.identity,
-		lh = CFrame.identity,
-		sw = CFrame.identity,
-	}
-	local leftwing = {}
-	local rightwing = {}
-	local gun = {}
-	local flyv, flyg = nil, nil
-	local walkingwheel = nil
-	local chatconn = nil
-	local uisbegin, uisend = nil, nil
-	local dancereact = {}
 	m.Init = function(figure: Model)
 		start = os.clock()
 		flight = false
