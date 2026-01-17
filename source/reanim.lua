@@ -3895,8 +3895,8 @@ function HatReanimator.Start()
 	end
 
 	local CharHats = {}
-	local CharHatsMap = {}
 	local HatMap = {}
+	local HatMapCopy = {}
 	local function RefreshHatMap(Character)
 		local summary = ""
 		summary ..= "[Hat Map Summary]\n"
@@ -4100,6 +4100,7 @@ function HatReanimator.Start()
 			end
 		end
 		summary ..= "...which leaves " .. unused .. " unused."
+		HatMapCopy = Util.DeepcopyTable(HatMap)
 		HatReanimator.HatMapSummary = summary
 		HatReanimator.RebuildRequired = false
 	end
@@ -4194,7 +4195,7 @@ function HatReanimator.Start()
 		end
 		return
 	end
-	HatReanimator.GetHatMap = function() return Util.DeepcopyTable(HatMap) end
+	HatReanimator.GetHatMap = function() return HatMapCopy end
 	HatReanimator.GetHatCFrameMeshAndTexture = GetHatCFrameMeshAndTexture
 	HatReanimator.GetAttachmentCFrame = GetAttachmentCFrame
 
@@ -6652,7 +6653,8 @@ UI.CreateText(CreditsPage, "somehow u got me in touch with MyWorld", 12, Enum.Te
 UI.CreateText(CreditsPage, "MyWorld", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "so thats how netless really works", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "math.max is THE solution here!!", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "Krystal Dance V3, by Theo", 14, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "also, hey, pwease unban me from Hax Updates >m<", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "Krystal Dance V3 mod by Theo", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "nice dance animations. MINE NOW!! >:D", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "Delta Executor", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "primary env target", 12, Enum.TextXAlignment.Center)
@@ -6689,20 +6691,17 @@ UI.CreateText(CreditsPage, "thats a good lua code snippet trade :)", 12, Enum.Te
 UI.CreateText(CreditsPage, "Roblox", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "this program's primary target", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "expose more backend functions for me like a good boy", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "rqz's Genesis FE", 14, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "ill be taking ALL your convertions >:D", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "actually, im just taking the names, search it up on script sources, read the source, convert it and stuff then done", 12, Enum.TextXAlignment.Center)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "* Greetings to *", 15, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "fev, inno, rqz, mry7zz", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "theo, redactedre, colon", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "terminal, guinwah, kasil", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "hamza, nexus, hoster", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "hamoun, baze, luacope", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "2024, 2023 and 2022 me", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "scout, edge, shownape", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "index, blackhole/whitehole", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "zero from iwbtc for no reason", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "presidentanvil, mech/catlover", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "return from fishstrap", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "erika, skeltoun", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "fev, inno, rqz, mry7zz, theo, redactedre, colon", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "terminal, guinwah, kasil, hamza, nexus, hoster", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "hamoun, baze, luacope, 2024, 2023 and 2022 me", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "scout, edge, shownape, index, blackhole/whitehole", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "zero from iwbtc for no reason, presidentanvil, mech/catlover", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "return from fishstrap, erika, skeltoun", 12, Enum.TextXAlignment.Center)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "* Very random quotes *", 15, Enum.TextXAlignment.Center)
 do
