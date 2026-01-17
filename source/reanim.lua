@@ -4880,7 +4880,7 @@ function HatReanimator.Start()
 		selhatcol.State1(character, Humanoid, CharHats)
 		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
 		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, claimarea.Y + 4), claimarea.Z)
-		task.wait(0.05)
+		task.wait(0.1)
 		readystate = 2
 		HatReanimator.Status.ReanimState = "Reanimate State: 2"
 		local bringconns = {}
@@ -4894,7 +4894,7 @@ function HatReanimator.Start()
 				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
 			end
 		end
-		task.wait(0.05)
+		task.wait(0.15)
 		replicatesignal(Humanoid.ServerBreakJoints)
 		Humanoid.BreakJointsOnDeath = true
 		Humanoid.Health = 0
