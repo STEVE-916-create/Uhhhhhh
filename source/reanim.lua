@@ -4894,7 +4894,6 @@ function HatReanimator.Start()
 				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
 			end
 		end
-		task.wait(0.15)
 		replicatesignal(Humanoid.ServerBreakJoints)
 		Humanoid.BreakJointsOnDeath = true
 		Humanoid.Health = 0
