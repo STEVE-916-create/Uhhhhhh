@@ -4126,11 +4126,15 @@ function HatReanimator.Start()
 			if not data.Disable then
 				-- accessory group
 				if overriden and data.Group and groupname == data.Group then
-					overriden = {
-						C0 = data.C0 or data.Offset or CFrame.identity,
-						C1 = overriden.C1 * (data.C1 or CFrame.identity),
-						Limb = data.Limb,
-					}
+					if data.Limb then
+						overriden = {
+							C0 = data.C0 or data.Offset or CFrame.identity,
+							C1 = overriden.C1 * (data.C1 or CFrame.identity),
+							Limb = data.Limb,
+						}
+					else
+						overriden = data
+					end
 					break
 				end
 				-- exact asset id
