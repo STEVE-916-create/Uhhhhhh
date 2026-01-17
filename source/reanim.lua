@@ -4525,7 +4525,7 @@ function HatReanimator.Start()
 						elseif v.Name == "Neck" then
 							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(math.random() * 0.05, 1.5, -20))
 						else
-							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(i * -3, -2 + math.random() * 0.05, 0))
+							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(i * -3, -2 + math.random() * 0.05, -3))
 							i += 1
 						end
 					end
