@@ -3548,6 +3548,7 @@ HatReanimator.HatCollideMethod = SaveData.Reanimator.HatsCollideMethod
 -- 4 - pray that it works for all ur accessories lol
 -- 5 - least amount of chance to hat drop
 -- 6 - experimental
+-- 7 - idk honestly but this is just modified heavily for now
 HatReanimator.IWantAllHats = SaveData.Reanimator.IWantAllHats
 HatReanimator.Permadeath = not SaveData.Reanimator.HatsPatchmahub
 HatReanimator.HatFling = SaveData.Reanimator.HatsFling
@@ -3658,7 +3659,8 @@ function HatReanimator.Config(parent)
 		"5 - 2 but for waist accessories",
 		"6 - STEVE's method V2 (kinda stable)",
 		"7 - 6 but further from void (gl getting hatdrop)",
-		"8 - STEVE's method V3 (testing mode)",
+		"8 - STEVE's method V3 (experimental)",
+		"9 - 8 but modded",
 	}, HatReanimator.HatCollideMethod + 1).Changed:Connect(function(val)
 		HatReanimator.HatCollideMethod = val - 1
 		SaveData.Reanimator.HatsCollideMethod = val - 1
@@ -4656,6 +4658,54 @@ function HatReanimator.Start()
 			if torso and torso.Parent == character then
 				torso.AncestryChanged:Wait()
 			end
+			task.wait(1.5)
+			return _counthats(hats)
+		end,
+	}
+	HatCollideMethods[8] = {
+		NoAnim = true,
+		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
+			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 67, 0))
+			if readystate < 3 then
+				Humanoid:ChangeState(16)
+			end
+			RootPart.CFrame = rootcf
+			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 30, 0), Vector3.zero
+			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
+				for _,v in character:GetDescendants() do
+					if v:IsA("Motor6D") then
+						if v.Name == "Root" then
+							Util.SetMotor6DTransform(v, CFrame.new(0, -60, 0))
+						else
+							Util.SetMotor6DTransform(v, CFrame.identity)
+						end
+					end
+				end
+			else
+				for _,v in character:GetDescendants() do
+					if v:IsA("Motor6D") then
+						if v.Name == "RootJoint" then
+							Util.SetMotor6DOffset(v, CFrame.new(0, -60, 0))
+						else
+							Util.SetMotor6DTransform(v, CFrame.identity)
+						end
+					end
+				end
+			end
+		end,
+		State1 = function(character, Humanoid, hats)
+		end,
+		State2 = function(character, hats)
+			local root = character:FindFirstChild("HumanoidRootPart")
+			local head = character:FindFirstChild("Head")
+			if head then
+				task.wait(0.2)
+			end
+			HatReanimator.Status.HatCollide = "We remain the HumanoidRootPart"
+			for _,v in hats do
+				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
+			end
+			root.AncestryChanged:Wait()
 			task.wait(1.5)
 			return _counthats(hats)
 		end,
