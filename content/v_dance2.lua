@@ -223,7 +223,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Monster Mash"
 	m.Description = "drink the potion that makes you dance!"
-	m.Assets = {"RetroMonsterMash.anim", "RetroMonsterMash.mp3"}
+	m.Assets = {"RetroMonsterMash.anim"}
 
 	m.Config = function(parent: GuiBase2d)
 	end
