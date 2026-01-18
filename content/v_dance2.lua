@@ -126,7 +126,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Terraria Swing dance"
-	m.Description = "enjoy enjoy enjoy enjoy enjoy enjoy\nenjoy enjoy enjoy enjoy\nenjoy enjoy enjoy enjoy\n\nthis is like my first \"linearish\" animation"
+	m.Description = "enjoy enjoy enjoy enjoy enjoy enjoy\nenjoy enjoy enjoy enjoy\nenjoy enjoy enjoy enjoy\n\nthis is my first \"linearish\" animation"
 	m.Assets = {"BusetA.anim", "BusetB.anim", "Buset.mp3"}
 
 	m.MoveForward = false

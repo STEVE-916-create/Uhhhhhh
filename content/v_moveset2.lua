@@ -522,12 +522,12 @@ AddModule(function()
 			end
 		end
 		if hum.Sit then
-			-- bored lay down
-			rt = CFrame.new(0, 0, -1) * CFrame.Angles(math.rad(-90), 0, 0)
-			rst = CFrame.new(0, 0.5, -0.4) * CFrame.Angles(math.rad(-110), 0, 0)
-			lst = CFrame.new(0, 0.5, -0.4) * CFrame.Angles(math.rad(-110), 0, 0)
-			rht = CFrame.new(0, 0.125, 0) * CFrame.Angles(math.rad(-35), 0, 0)
-			lht = CFrame.new(0, 0.125, 0) * CFrame.Angles(math.rad(-35), 0, 0)
+			-- sitting pose idk
+			rt = CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, 0)
+			rst = CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, 1.57)
+			lst = CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, -1.57)
+			rht = CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, 1.57)
+			lht = CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, -1.57)
 			isdancing = true
 		end
 		
