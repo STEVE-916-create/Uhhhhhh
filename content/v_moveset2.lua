@@ -675,6 +675,7 @@ AddModule(function()
 	m.NoCooldown = false
 	m.FlySpeed = 2
 	m.UseSword = false
+	m.GunAuraSpinSpeed = 100
 	m.HitboxDebug = false
 	m.DarkFountain = false
 	m.GrenadeAmount = 42
@@ -708,6 +709,9 @@ AddModule(function()
 		Util_CreateText(parent, "Use the sword instead of the gun!", 12, Enum.TextXAlignment.Center)
 		Util_CreateSwitch(parent, "Gun = Sword", m.UseSword).Changed:Connect(function(val)
 			m.UseSword = val
+		end)
+		Util_CreateSlider(parent, "Gun aura spin speed", m.GunAuraSpinSpeed, 0.1, 100, 0.1).Changed:Connect(function(val)
+			m.GunAuraSpinSpeed = val
 		end)
 		Util_CreateSwitch(parent, "m.DarkFountain =", m.DarkFountain).Changed:Connect(function(val)
 			m.DarkFountain = val
@@ -744,6 +748,7 @@ AddModule(function()
 		m.FlySpeed = save.FlySpeed or m.FlySpeed
 		m.HitboxDebug = not not save.HitboxDebug
 		m.UseSword = not not save.UseSword
+		m.GunAuraSpinSpeed = save.GunAuraSpinSpeed or m.GunAuraSpinSpeed
 		m.NoCooldown = not not save.NoCooldown
 		m.DarkFountain = not not save.DarkFountain
 		m.GrenadeAmount = save.GrenadeAmount or m.GrenadeAmount
@@ -761,6 +766,7 @@ AddModule(function()
 			FlySpeed = m.FlySpeed,
 			HitboxDebug = m.HitboxDebug,
 			UseSword = m.UseSword,
+			GunAuraSpinSpeed = m.GunAuraSpinSpeed,
 			NoCooldown = m.NoCooldown,
 			DarkFountain = m.DarkFountain,
 			GrenadeAmount = m.GrenadeAmount,
@@ -2498,7 +2504,8 @@ AddModule(function()
 		end
 		if gunaurastate[2] > 0 then
 			gunaurastate[2] -= 1
-			gunaura.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + gunaurastate[1]
+			local angle = (timingsine * m.GunAuraSpinSpeed) % (math.pi * 2)
+			gunaura.CFrame = CFrame.Angles(angle, angle, angle) + gunaurastate[1]
 		else
 			gunaura.CFrame = root.CFrame + Vector3.new(0, -24, 0)
 		end
@@ -2661,7 +2668,7 @@ AddModule(function()
 		text.TextScaled = true
 		text.TextStrokeTransparency = 0
 		text.Size = UDim2.new(1, 0, 1, 0)
-		text.TextColor3 = Color3.new(255, 50, 50)
+		text.TextColor3 = Color3.fromRGB(255, 50, 50)
 		text.TextStrokeColor3 = Color3.new(0, 0, 0)
 		task.spawn(function()
 			local function update()
@@ -3022,7 +3029,7 @@ AddModule(function()
 					shell.CanCollide = false
 					shell.CanTouch = false
 					shell.CanQuery = false
-					shell.Color = Color3.new(1, 0.25, 0.25)
+					shell.Color = Color3.new(1, 0.5, 0.5)
 					shell.CastShadow = false
 					shell.Material = "Neon"
 					shell.Size = Vector3.new(0.1, 0.1, 0.1)
