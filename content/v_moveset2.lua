@@ -2505,7 +2505,7 @@ AddModule(function()
 		if gunaurastate[2] > 0 then
 			gunaurastate[2] -= 1
 			local angle = (timingsine * m.GunAuraSpinSpeed) % (math.pi * 2)
-			gunaura.CFrame = CFrame.Angles(angle, angle, angle) + gunaurastate[1]
+			gunaura.CFrame = (root.CFrame.Rotation * CFrame.Angles(math.pi / 2, angle, 0)) + gunaurastate[1]
 		else
 			gunaura.CFrame = root.CFrame + Vector3.new(0, -24, 0)
 		end
