@@ -675,6 +675,7 @@ AddModule(function()
 	m.NoCooldown = false
 	m.FlySpeed = 2
 	m.UseSword = false
+	m.GunAuraSpinSpeed = 100
 	m.HitboxDebug = false
 	m.DarkFountain = false
 	m.GrenadeAmount = 42
@@ -744,6 +745,7 @@ AddModule(function()
 		m.FlySpeed = save.FlySpeed or m.FlySpeed
 		m.HitboxDebug = not not save.HitboxDebug
 		m.UseSword = not not save.UseSword
+		m.GunAuraSpinSpeed = save.GunAuraSpinSpeed or m.GunAuraSpinSpeed
 		m.NoCooldown = not not save.NoCooldown
 		m.DarkFountain = not not save.DarkFountain
 		m.GrenadeAmount = save.GrenadeAmount or m.GrenadeAmount
@@ -761,6 +763,7 @@ AddModule(function()
 			FlySpeed = m.FlySpeed,
 			HitboxDebug = m.HitboxDebug,
 			UseSword = m.UseSword,
+			GunAuraSpinSpeed = m.GunAuraSpinSpeed,
 			NoCooldown = m.NoCooldown,
 			DarkFountain = m.DarkFountain,
 			GrenadeAmount = m.GrenadeAmount,
@@ -2498,7 +2501,8 @@ AddModule(function()
 		end
 		if gunaurastate[2] > 0 then
 			gunaurastate[2] -= 1
-			gunaura.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + gunaurastate[1]
+			local angle = (timingsine * m.GunAuraSpinSpeed) % (math.pi * 2)
+			gunaura.CFrame = CFrame.Angles(angle, angle, angle) + gunaurastate[1]
 		else
 			gunaura.CFrame = root.CFrame + Vector3.new(0, -24, 0)
 		end
