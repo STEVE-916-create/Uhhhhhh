@@ -2797,7 +2797,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 					RCHumanoid.Sit = false
 					SeatWeld:Destroy()
 				end
-			end)
+			end))
 		end
 		if part.Name == "Handle" and part.Parent:IsA("Tool") and not part.Parent.Parent:FindFirstChildOfClass("Humanoid") then
 			if Reanimate.ToolGrab then

@@ -2504,6 +2504,7 @@ AddModule(function()
 	m.BooletsPerSec = 60
 	m.NoShells = false
 	m.HowBadIsAim = 1
+	m.ShakeValue = 1
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
@@ -2525,6 +2526,9 @@ AddModule(function()
 		Util_CreateSlider(parent, "Fire Spread", m.HowBadIsAim, 0, 1, 0).Changed:Connect(function(val)
 			m.HowBadIsAim = val
 		end)
+		Util_CreateSlider(parent, "Shake Amount", m.ShakeValue, 0, 1, 0).Changed:Connect(function(val)
+			m.ShakeValue = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Notifications = not save.NoTextType
@@ -2533,6 +2537,7 @@ AddModule(function()
 		m.BooletsPerSec = save.BooletsPerSec or m.BooletsPerSec
 		m.NoShells = not not save.NoShells
 		m.HowBadIsAim = save.HowBadIsAim or m.HowBadIsAim
+		m.ShakeValue = save.ShakeValue or m.ShakeValue
 	end
 	m.SaveConfig = function()
 		return {
@@ -2542,6 +2547,7 @@ AddModule(function()
 			BooletsPerSec = m.BooletsPerSec,
 			NoShells = m.NoShells,
 			HowBadIsAim = m.HowBadIsAim,
+			ShakeValue = m.ShakeValue,
 		}
 	end
 
@@ -2595,11 +2601,11 @@ AddModule(function()
 		text.TextScaled = true
 		text.TextStrokeTransparency = 0
 		text.Size = UDim2.new(1, 0, 1, 0)
-		text.TextColor3 = Color3.new(27/255, 42/255, 53/255)
+		text.TextColor3 = Color3.new(255, 50, 50)
 		text.TextStrokeColor3 = Color3.new(0, 0, 0)
 		task.spawn(function()
 			local function update()
-				text.Position = UDim2.new(0, math.random(-45, 45), 0, math.random(-5, 5))
+				text.Position = UDim2.new(math.random() * 0.05 * (2 / 50), 0, 0, math.random() * 0.05)
 			end
 			local cps = 30
 			local t = os.clock()
@@ -2686,11 +2692,13 @@ AddModule(function()
 	local LEFTSHOULDERC0 = CFrame.new(0.5, 0, 0) * CFrame.Angles(0, math.rad(-90), 0)
 	local rng = Random.new(math.random(-65536, 65536))
 	local shells = {}
+	local timingwalk1, timingwalk2 = 0, 0
 
 	m.Init = function(figure)
 		start = os.clock()
 		attacking = false
 		state = 0
+		timingwalk1, timingwalk2 = 0, 0
 		hum = figure:FindFirstChild("Humanoid")
 		root = figure:FindFirstChild("HumanoidRootPart")
 		torso = figure:FindFirstChild("Torso")
@@ -2814,10 +2822,12 @@ AddModule(function()
 					local lv = tw1.X + tw1.Z
 					local rv = tw2.X + tw2.Z
 					local d = (hum:GetMoveVelocity().Magnitude / scale) / 8
-					local walk = math.cos(timingsine * d / 18)
-					local walk2 = math.sin(timingsine * d / 18)
-					local walk3 = math.cos(timingsine * d / 10)
-					local walk4 = math.sin(timingsine * d / 10)
+					timingwalk1 += dt * d / 18
+					timingwalk2 += dt * d / 10
+					local walk = math.cos(timingwalk1)
+					local walk2 = math.sin(timingwalk1)
+					local walk3 = math.cos(timingwalk2)
+					local walk4 = math.sin(timingwalk2)
 					local rh = CFrame.new(lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
 					local lh = CFrame.new(-lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
 					rt = ROOTC0 * CFrame.new(0, 0.1, -0.185 + 0.055 * walk3 + -walk4 / 8) * CFrame.Angles(math.rad((lv - lv/5 * walk3) * 10), math.rad((-rv + rv/5 * walk4) * 5), math.rad(-40))
@@ -2983,7 +2993,7 @@ AddModule(function()
 						end
 					end
 				end
-				hum.CameraOffset += rng:NextUnitVector() * 0.05
+				hum.CameraOffset += rng:NextUnitVector() * 0.1 * m.ShakeValue
 			end
 			local bulletstate = (os.clock() // 0.05) % 2
 			if bulletstate == 0 then
