@@ -4523,7 +4523,7 @@ function HatReanimator.Start()
 						if v.Name == "RootJoint" then
 							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, -0.25, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0) * torsooffset))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(math.random() * 0.05, 1.5, -10))
+							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(math.random() * 0.05, 1.5, -20))
 						else
 							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(i * -3, math.random() * 0.05, -2))
 							i += 1
@@ -4617,7 +4617,7 @@ function HatReanimator.Start()
 						if v.Name == "RootJoint" then
 							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 8, 0))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 10, 0))
+							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 20, 0))
 						elseif v.Name:find("Shoulder") or v.Name:find("Hip") then
 							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, 0, -3))
 						else
