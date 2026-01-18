@@ -2958,7 +2958,7 @@ AddModule(function()
 					shell.Size = Vector3.new(0.1, 0.1, 0.1)
 					shell.Shape = Enum.PartType.Ball
 					shell.Transparency = 0.5
-					shell.CFrame = HatReanimator.GetAttachmentCFrame("RightGripAttachment")
+					shell.CFrame = HatReanimator.GetAttachmentCFrame("RightGripAttachment") or (root.CFrame * CFrame.new(1.5, -1, 0))
 					shell.Velocity = root.Velocity + root.CFrame.RightVector * 30 + Vector3.new(math.random(-5, 5), 15, math.random(-5, 5))
 					local a0 = Instance.new("Attachment", shell)
 					a0.CFrame = CFrame.new(0, 0.05, 0)

@@ -3548,6 +3548,7 @@ HatReanimator.HatCollideMethod = SaveData.Reanimator.HatsCollideMethod
 -- 4 - pray that it works for all ur accessories lol
 -- 5 - least amount of chance to hat drop
 -- 6 - experimental
+-- 7 - idk honestly but this is just modified heavily for now
 HatReanimator.IWantAllHats = SaveData.Reanimator.IWantAllHats
 HatReanimator.Permadeath = not SaveData.Reanimator.HatsPatchmahub
 HatReanimator.HatFling = SaveData.Reanimator.HatsFling
@@ -3658,7 +3659,8 @@ function HatReanimator.Config(parent)
 		"5 - 2 but for waist accessories",
 		"6 - STEVE's method V2 (kinda stable)",
 		"7 - 6 but further from void (gl getting hatdrop)",
-		"8 - STEVE's method V3 (testing mode)",
+		"8 - STEVE's method V3 (experimental)",
+		"9 - 8 but modded",
 	}, HatReanimator.HatCollideMethod + 1).Changed:Connect(function(val)
 		HatReanimator.HatCollideMethod = val - 1
 		SaveData.Reanimator.HatsCollideMethod = val - 1
@@ -4523,7 +4525,7 @@ function HatReanimator.Start()
 						if v.Name == "RootJoint" then
 							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, -0.25, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0) * torsooffset))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(math.random() * 0.05, 1.5, -10))
+							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(math.random() * 0.05, 1.5, -20))
 						else
 							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(i * -3, math.random() * 0.05, -2))
 							i += 1
@@ -4615,11 +4617,11 @@ function HatReanimator.Start()
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 8, 0))
+							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 6, 0))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 10, 0))
+							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 40, 0))
 						elseif v.Name:find("Shoulder") or v.Name:find("Hip") then
-							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, 2, -3))
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, 0, -3))
 						else
 							Util.SetMotor6DTransform(v, CFrame.identity)
 						end
@@ -4640,7 +4642,7 @@ function HatReanimator.Start()
 						end
 					end
 				end
-				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
+				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 		end,
 		State2 = function(character, hats)
@@ -4656,6 +4658,54 @@ function HatReanimator.Start()
 			if torso and torso.Parent == character then
 				torso.AncestryChanged:Wait()
 			end
+			task.wait(1.5)
+			return _counthats(hats)
+		end,
+	}
+	HatCollideMethods[8] = {
+		NoAnim = true,
+		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
+			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 67, 0))
+			if readystate < 3 then
+				Humanoid:ChangeState(16)
+			end
+			RootPart.CFrame = rootcf
+			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 30, 0), Vector3.zero
+			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
+				for _,v in character:GetDescendants() do
+					if v:IsA("Motor6D") then
+						if v.Name == "Root" then
+							Util.SetMotor6DTransform(v, CFrame.new(0, -60, 0))
+						else
+							Util.SetMotor6DTransform(v, CFrame.identity)
+						end
+					end
+				end
+			else
+				for _,v in character:GetDescendants() do
+					if v:IsA("Motor6D") then
+						if v.Name == "RootJoint" then
+							Util.SetMotor6DOffset(v, CFrame.new(0, -60, 0))
+						else
+							Util.SetMotor6DTransform(v, CFrame.identity)
+						end
+					end
+				end
+			end
+		end,
+		State1 = function(character, Humanoid, hats)
+		end,
+		State2 = function(character, hats)
+			local root = character:FindFirstChild("HumanoidRootPart")
+			local head = character:FindFirstChild("Head")
+			if head then
+				task.wait(0.2)
+			end
+			HatReanimator.Status.HatCollide = "We remain the HumanoidRootPart"
+			for _,v in hats do
+				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
+			end
+			root.AncestryChanged:Wait()
 			task.wait(1.5)
 			return _counthats(hats)
 		end,
@@ -4891,7 +4941,11 @@ function HatReanimator.Start()
 			local handle = hat:FindFirstChild("Handle")
 			if handle and handle:IsA("BasePart") then
 				table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
-					SetUACFrameNetless(handle, dt, CFrame.new(claimarea), Vector3.zero, false, false)
+					if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
+						handle.CFrame = CFrame.new(claimarea)
+						handle.Velocity = CFrame.new(0, 250, 0)
+						handle.RotVelocity = CFrame.new(0, 0, 0)
+					end
 				end))
 				handle:BreakJoints()
 				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
@@ -4911,7 +4965,7 @@ function HatReanimator.Start()
 			task.spawn(function()
 				local collidable = selhatcol.State2(character, CharHats)
 				stateunlocked = true
-				if hatcols and (collidable == 0 or (HatReanimator.IWantAllHats and collidable < #CharHats)) then
+				if hatcols and (collidable == 0 or (HatReanimator.IWantAllHats and collidable < (#CharHats - 1))) then
 					if perma then
 						HatReanimator.Status.Permadeath = "No hat collide. Fired CDSB Signal!"
 						replicatesignal(Player.ConnectDiedSignalBackend)
@@ -6823,8 +6877,13 @@ task.spawn(function()
 		content.Text = "ERROR: Could not fetch"
 	end)
 end)
+UI.CreateText(MainPage, "\n\n\n<font weight=\"heavy\">DANGER ZONE</font>", 15, Enum.TextXAlignment.Center)
+local clearcontenthash, clearcontenthashtext = UI.CreateButton(MainPage, "CLEAR ALL DOWNLOADED CONTENT", 15)
+clearcontenthash.Activated:Connect(function()
+	SaveData.ContentHash = nil
+	clearcontenthashtext.Text = "Cleared, now rejoin to apply"
+end)
 task.wait()
-
 Util.Notify("Checking SHA1 Hashes...")
 local filesofbuiltins = {"v_moveset1.lua", "v_moveset2.lua", "v_dance1.lua", "v_dance2.lua", "d_limbmap.lua", "d_hatsmap.lua"}
 local filesofbuiltins_m = {"v_moveset1.lua", "v_moveset2.lua", "v_dance1.lua", "v_dance2.lua"}
