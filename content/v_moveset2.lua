@@ -802,6 +802,10 @@ AddModule(function()
 	local leftwing = {}
 	local rightwing = {}
 	local gun = {}
+	local bullet = {}
+	local bulletstate = {Vector3.zero, Vector3.zero, 0}
+	local gunaura = {}
+	local gunaurastate = {Vector3.zero, 0}
 	local flyv, flyg = nil, nil
 	local walkingwheel = nil
 	local chatconn = nil
@@ -902,6 +906,20 @@ AddModule(function()
 	end
 	local function randomdialog(arr, glitchy)
 		notify(arr[math.random(1, #arr)], glitchy)
+	end
+	local function SetBulletState(hole, target)
+		local dist = (target - hole).Magnitude
+		bulletstate[1] = hole
+		if dist > 128 then
+			bulletstate[2] = hole + (target - hole).Unit * 128
+		else
+			bulletstate[2] = target
+		end
+		bulletstate[3] = os.clock()
+	end
+	local function SetGunauraState(hole)
+		gunaurastate[1] = hole
+		gunaurastate[2] = 3
 	end
 	local function Effect(params)
 		if not torso then return end
@@ -1311,7 +1329,9 @@ AddModule(function()
 					if not rootu:IsDescendantOf(workspace) then return end
 					local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, -1) * scale)
 					hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
-					EffectCannon(hole.Position, root.CFrame * Vector3.new(0, 300, -50))
+					local sky = root.CFrame * Vector3.new(0, 300, -50)
+					EffectCannon(hole.Position, sky)
+					SetBulletState(hole.Position, sky)
 					animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 						nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(20), 0, 0)
 						return rt, nt, rst, lst, rht, lht, gunoff
@@ -1377,6 +1397,7 @@ AddModule(function()
 				target = raycast.Position
 			end
 			EffectCannon(hole.Position, target)
+			SetBulletState(hole.Position, target)
 			if math.random(2) == 1 then
 				randomdialog({
 					"BOOM",
@@ -1447,6 +1468,7 @@ AddModule(function()
 			repeat
 				local hole = root.CFrame * CFrame.new(Vector3.new(-1.5, 0.5, -2.25) * scale)
 				hole = HatReanimator.GetAttachmentCFrame("LeftGripAttachment") or hole
+				SetGunauraState(hole.Position)
 				if throt > 0.02 then
 					Effect({Time = math.random(35, 55), EffectType = "Sphere", Size = Vector3.new(0.5, 0.5, 0.5), SizeEnd = Vector3.new(1, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = hole, MoveToPos = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Boomerang = 50, BoomerangSize = 50})
 				end
@@ -1560,6 +1582,7 @@ AddModule(function()
 			hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
 			local sky = root.CFrame * Vector3.new(0, 300, -50)
 			EffectCannon(hole.Position, sky)
+			SetBulletState(hole.Position, sky)
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt = ROOTC0 * CFrame.Angles(0, 0, math.rad(-10))
 				nt = NECKC0 * CFrame.Angles(math.rad(25), 0, math.rad(-20))
@@ -1587,8 +1610,12 @@ AddModule(function()
 			for _=1, m.RainAmount do
 				local hit = target + Vector3.new(math.random(-18, 18), 0, math.random(-18, 18))
 				EffectCannon(sky, hit, false)
+				if (rootu.Position - hit).Magnitude < 256 then
+					SetBulletState(hit, sky) -- yes
+				end
 				Attack(hit, 12)
 				task.wait(1.25 / m.RainAmount)
+				if not rootu:IsDescendantOf(workspace) then return end
 			end
 		end)
 	end
@@ -1655,6 +1682,7 @@ AddModule(function()
 				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
 				core.CFrame = hole
 				core.Size = Vector3.one * 2.5 * (os.clock() - s) / m.BeamCharge
+				SetGunauraState(hole.Position)
 				task.wait()
 			until os.clock() - s > m.BeamCharge or not SingularityBeam_ischarging or not rootu:IsDescendantOf(workspace)
 			if not rootu:IsDescendantOf(workspace) then
@@ -1716,6 +1744,8 @@ AddModule(function()
 				if raycast then
 					target = raycast.Position
 				end
+				SetGunauraState(hole.Position)
+				SetBulletState(hole.Position, target)
 				local dist = (target - hole.Position).Magnitude
 				beam.Size = Vector3.new(dist, 2.5, 2.5)
 				beam.CFrame = CFrame.lookAt(hole.Position:Lerp(target, 0.5), target) * CFrame.Angles(0, math.rad(90), 0)
@@ -1774,9 +1804,21 @@ AddModule(function()
 			Limb = "Right Arm",
 			Offset = CFrame.identity
 		}
+		bullet = {
+			Group = "Bullet",
+			CFrame = CFrame.identity
+		}
+		gunaura = {
+			Group = "GunAura",
+			CFrame = CFrame.identity
+		}
 		table.insert(HatReanimator.HatCFrameOverride, leftwing)
 		table.insert(HatReanimator.HatCFrameOverride, rightwing)
 		table.insert(HatReanimator.HatCFrameOverride, gun)
+		table.insert(HatReanimator.HatCFrameOverride, bullet)
+		table.insert(HatReanimator.HatCFrameOverride, gunaura)
+		bulletstate = {Vector3.zero, Vector3.zero, 0}
+		gunaurastate = {Vector3.zero, 0}
 		flyv = Instance.new("BodyVelocity")
 		flyv.Name = "FlightBodyMover"
 		flyv.P = 90000
@@ -2442,6 +2484,24 @@ AddModule(function()
 		end
 		gun.Offset = joints.sw
 		gun.Disable = not not isdancing
+
+		-- bullet and aura
+		if bulletstate[3] < os.clock() - 0.5 then
+			bullet.CFrame = root.CFrame + Vector3.new(0, -24, 0)
+		else
+			local pos = (os.clock() // 0.05) % 2
+			if pos == 0 then
+				bullet.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + bulletstate[1]
+			else
+				bullet.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + bulletstate[2]
+			end
+		end
+		if gunaurastate[2] > 0 then
+			gunaurastate[2] -= 1
+			gunaura.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + gunaurastate[1]
+		else
+			gunaura.CFrame = root.CFrame + Vector3.new(0, -24, 0)
+		end
 		
 		-- dance reactions
 		if isdancing then
@@ -2504,6 +2564,7 @@ AddModule(function()
 	m.BooletsPerSec = 60
 	m.NoShells = false
 	m.HowBadIsAim = 1
+	m.ShakeValue = 1
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
@@ -2525,6 +2586,9 @@ AddModule(function()
 		Util_CreateSlider(parent, "Fire Spread", m.HowBadIsAim, 0, 1, 0).Changed:Connect(function(val)
 			m.HowBadIsAim = val
 		end)
+		Util_CreateSlider(parent, "Shake Amount", m.ShakeValue, 0, 1, 0).Changed:Connect(function(val)
+			m.ShakeValue = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Notifications = not save.NoTextType
@@ -2533,6 +2597,7 @@ AddModule(function()
 		m.BooletsPerSec = save.BooletsPerSec or m.BooletsPerSec
 		m.NoShells = not not save.NoShells
 		m.HowBadIsAim = save.HowBadIsAim or m.HowBadIsAim
+		m.ShakeValue = save.ShakeValue or m.ShakeValue
 	end
 	m.SaveConfig = function()
 		return {
@@ -2542,6 +2607,7 @@ AddModule(function()
 			BooletsPerSec = m.BooletsPerSec,
 			NoShells = m.NoShells,
 			HowBadIsAim = m.HowBadIsAim,
+			ShakeValue = m.ShakeValue,
 		}
 	end
 
@@ -2595,11 +2661,11 @@ AddModule(function()
 		text.TextScaled = true
 		text.TextStrokeTransparency = 0
 		text.Size = UDim2.new(1, 0, 1, 0)
-		text.TextColor3 = Color3.new(27/255, 42/255, 53/255)
+		text.TextColor3 = Color3.new(255, 50, 50)
 		text.TextStrokeColor3 = Color3.new(0, 0, 0)
 		task.spawn(function()
 			local function update()
-				text.Position = UDim2.new(0, math.random(-45, 45), 0, math.random(-5, 5))
+				text.Position = UDim2.new(math.random() * 0.05 * (2 / 50), 0, 0, math.random() * 0.05)
 			end
 			local cps = 30
 			local t = os.clock()
@@ -2686,11 +2752,13 @@ AddModule(function()
 	local LEFTSHOULDERC0 = CFrame.new(0.5, 0, 0) * CFrame.Angles(0, math.rad(-90), 0)
 	local rng = Random.new(math.random(-65536, 65536))
 	local shells = {}
+	local timingwalk1, timingwalk2 = 0, 0
 
 	m.Init = function(figure)
 		start = os.clock()
 		attacking = false
 		state = 0
+		timingwalk1, timingwalk2 = 0, 0
 		hum = figure:FindFirstChild("Humanoid")
 		root = figure:FindFirstChild("HumanoidRootPart")
 		torso = figure:FindFirstChild("Torso")
@@ -2814,10 +2882,12 @@ AddModule(function()
 					local lv = tw1.X + tw1.Z
 					local rv = tw2.X + tw2.Z
 					local d = (hum:GetMoveVelocity().Magnitude / scale) / 8
-					local walk = math.cos(timingsine * d / 18)
-					local walk2 = math.sin(timingsine * d / 18)
-					local walk3 = math.cos(timingsine * d / 10)
-					local walk4 = math.sin(timingsine * d / 10)
+					timingwalk1 += dt * 80 * d / 18
+					timingwalk2 += dt * 80 * d / 10
+					local walk = math.cos(timingwalk1)
+					local walk2 = math.sin(timingwalk1)
+					local walk3 = math.cos(timingwalk2)
+					local walk4 = math.sin(timingwalk2)
 					local rh = CFrame.new(lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
 					local lh = CFrame.new(-lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
 					rt = ROOTC0 * CFrame.new(0, 0.1, -0.185 + 0.055 * walk3 + -walk4 / 8) * CFrame.Angles(math.rad((lv - lv/5 * walk3) * 10), math.rad((-rv + rv/5 * walk4) * 5), math.rad(-40))
@@ -2983,7 +3053,7 @@ AddModule(function()
 						end
 					end
 				end
-				hum.CameraOffset += rng:NextUnitVector() * 0.05
+				hum.CameraOffset += rng:NextUnitVector() * 0.1 * m.ShakeValue
 			end
 			local bulletstate = (os.clock() // 0.05) % 2
 			if bulletstate == 0 then

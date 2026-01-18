@@ -187,4 +187,97 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Thriller"
+	m.Description = "the moonwalk guy apparently danced this"
+	m.Assets = {"Thriller.anim", "Thriller.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("Thriller.mp3"), "Michael Jackson - Thriller", 1)
+		start = os.clock()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.speed = 1
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Thriller.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock()
+		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Monster Mash"
+	m.Description = "drink the potion that makes you dance!"
+	m.Assets = {"RetroMonsterMash.anim", "RetroMonsterMash.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic("rbxassetid://35930009", "where did this even come from", 1)
+		start = os.clock()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.speed = 1
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RetroMonsterMash.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock()
+		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "So Retro"
+	m.Description = "forsakened\n\nnear at the end there is the literal super mario world tune lol"
+	m.Assets = {"RetroSoRetro.anim", "RetroSoRetro.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("RetroSoRetro.mp3"), "so retro", 1)
+		start = os.clock()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.speed = 1
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RetroSoRetro.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock()
+		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
