@@ -4646,7 +4646,8 @@ function HatReanimator.Start()
 		State2 = function(character, hats)
 			local torso = character:FindFirstChild("Torso")
 			if torso then
-				torso.AncestryChanged:Wait()
+				task.wait(0.1)
+				--torso.AncestryChanged:Wait()
 				--task.wait(calculatepartdestroytime(torso.CFrame.Y - FallenPartsDestroyHeight, torso.AssemblyLinearVelocity.Y, workspace.Gravity) + 0.01)
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
