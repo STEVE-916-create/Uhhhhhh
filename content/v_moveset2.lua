@@ -2822,8 +2822,8 @@ AddModule(function()
 					local lv = tw1.X + tw1.Z
 					local rv = tw2.X + tw2.Z
 					local d = (hum:GetMoveVelocity().Magnitude / scale) / 8
-					timingwalk1 += dt * d / 18
-					timingwalk2 += dt * d / 10
+					timingwalk1 += dt * 80 * d / 18
+					timingwalk2 += dt * 80 * d / 10
 					local walk = math.cos(timingwalk1)
 					local walk2 = math.sin(timingwalk1)
 					local walk3 = math.cos(timingwalk2)
