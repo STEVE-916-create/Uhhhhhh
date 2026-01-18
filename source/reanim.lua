@@ -4640,7 +4640,7 @@ function HatReanimator.Start()
 						end
 					end
 				end
-				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
+				--SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 		end,
 		State2 = function(character, hats)
@@ -4651,7 +4651,7 @@ function HatReanimator.Start()
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
+				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 			if torso and torso.Parent == character then
 				torso.AncestryChanged:Wait()
