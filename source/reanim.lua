@@ -6823,7 +6823,7 @@ task.spawn(function()
 		content.Text = "ERROR: Could not fetch"
 	end)
 end)
-UI.CreateText(ChangelogsPage, "\n\n\n<font weight=\"heavy\">DANGER ZONE</font>", 15, Enum.TextXAlignment.Center)
+UI.CreateText(MainPage, "\n\n\n<font weight=\"heavy\">DANGER ZONE</font>", 15, Enum.TextXAlignment.Center)
 local clearcontenthash, clearcontenthashtext = UI.CreateButton(MainPage, "CLEAR ALL DOWNLOADED CONTENT", 15)
 clearcontenthash.Activated:Connect(function()
 	SaveData.ContentHash = nil
