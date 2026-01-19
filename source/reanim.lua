@@ -2660,6 +2660,8 @@ local function CreateHumanoidCharacter()
 			motor.Transform = tran
 			RunService.PreSimulation:Wait()
 			motor.Transform = tran
+			RunService.PostSimulation:Wait()
+			motor.Transform = tran
 			iskeeping = false
 		end)
 	end
