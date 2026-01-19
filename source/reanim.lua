@@ -4691,9 +4691,9 @@ function HatReanimator.Start()
 	HatCollideMethods[8] = { -- VERY EXPERIMENTAL, do NOT use.
 		NoAnim = true,
 		Wait1 = 0.1,
-		Wait2 = 0.35,
+		Wait2 = 0.15,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 37, 0))
+			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 4, 0))
 			RootPart.CFrame = rootcf
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 30), Vector3.zero
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
@@ -4709,14 +4709,16 @@ function HatReanimator.Start()
 					end
 				end
 			else
+				local i = 1
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
-							Util.SetMotor6DOffset(v, CFrame.new(0, -30, 0))
-						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(0, 67, 0))
+							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, -0.25, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)))
+						elseif v.Name == "Right Hip" then
+							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 1.5, -20))
 						else
-							Util.SetMotor6DTransform(v, CFrame.identity)
+							Util.SetMotor6DOffset(v, CFrame.new(i * -3, math.random() * 0.05, -2))
+							i += 1
 						end
 					end
 				end
@@ -4725,19 +4727,13 @@ function HatReanimator.Start()
 		State1 = function(character, Humanoid, hats)
 		end,
 		State2 = function(character, hats)
-			local root = character:FindFirstChild("HumanoidRootPart")
-			local head = character:FindFirstChild("Head")
-			local torso = character:FindFirstChild("Torso")
+			local rightleg = character:FindFirstChild("Right Leg")
 			local hum = character:FindFirstChild("Humanoid")
-			if torso then
-				task.wait(calculatepartdestroytime(torso.CFrame.Y - FallenPartsDestroyHeight, torso.AssemblyLinearVelocity.Y, workspace.Gravity) + 0.01)
-			end
-			HatReanimator.Status.HatCollide = "We remain the HumanoidRootPart"
+			HatReanimator.Status.HatCollide = "We shall remain 1 part."
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
-			root.AncestryChanged:Wait()
-			if hum then replicatesignal(hum.ServerBreakJoints) end
+			rightleg.AncestryChanged:Wait()
 			task.wait(1.5)
 			return _counthats(hats)
 		end,
