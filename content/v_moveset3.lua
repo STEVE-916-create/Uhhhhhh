@@ -1460,8 +1460,8 @@ AddModule(function()
 		if not torso then return end
 		port.raycastlegs = function()
 			local scale = figure:GetScale()
-			local rayl = PhysicsRaycast(root.CFrame * Vector3.new(-1, -1, 0) * scale, Vector3.new(0, -2 * scale, 0))
-			local rayr = PhysicsRaycast(root.CFrame * Vector3.new(1, -1, 0) * scale, Vector3.new(0, -2 * scale, 0))
+			local rayl = PhysicsRaycast(root.CFrame * (Vector3.new(-1, -1, 0) * scale), Vector3.new(0, -2 * scale, 0))
+			local rayr = PhysicsRaycast(root.CFrame * (Vector3.new(1, -1, 0) * scale), Vector3.new(0, -2 * scale, 0))
 			if rayl then
 				rayl = (rayl.Position.Y - (root.Position.Y - 3 * scale)) / scale
 			else
@@ -1475,14 +1475,13 @@ AddModule(function()
 			return rayr, rayl
 		end
 		port.velbycfrvec = function()
-			local scale = figure:GetScale()
-			return root.CFrame.LookVector:Dot(root.Velocity) / hum.WalkSpeed / scale, root.CFrame.RightVector:Dot(root.Velocity) / hum.WalkSpeed / scale
+			return root.CFrame.LookVector:Dot(root.Velocity) / hum.WalkSpeed, root.CFrame.RightVector:Dot(root.Velocity) / hum.WalkSpeed
 		end
 		local lastvel = Vector3.zero
 		local velchg1 = Vector3.zero
 		port.velchgbycfrvec = function()
 			local scale = figure:GetScale()
-			local xzvel = root.Velocity * Vector3.new(1, 0, 1) / scale
+			local xzvel = (root.Velocity * Vector3.new(1, 0, 1)) / scale
 			velchg1 = velchg1 + (lastvel - xzvel)
 			lastvel = xzvel
 			velchg1 = velchg1 * (1 - deltaTime / 2)
