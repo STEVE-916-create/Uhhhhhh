@@ -1,5 +1,3 @@
--- update force 1
-
 cloneref = cloneref or function(o) return o end
 
 local Debris = cloneref(game:GetService("Debris"))
@@ -44,12 +42,12 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
 	m.Name = "Patchma Hub"
-	m.Description = "see the configurations to set ur anims"
+	m.Description = "A port of MyWorld's hub to Uhhhhhh\nsee the configurations to set ur anims"
 	m.Assets = {}
 
 	local sine = 0
 	local deltaTime = 0
-	local Lerp = Vector3.zero.Lerp
+	local Lerp = CFrame.identity.Lerp
 	local cfMul = function(a, b) return a * b end
 	local cf = CFrame.new
 	local angles = CFrame.Angles
@@ -63,6 +61,7 @@ AddModule(function()
 	local max = math.max
 	local clamp = math.clamp
 	local round = math.round
+	local cf_0 = CFrame.identity
 
 	local anims = {
 		function(t)
@@ -973,13 +972,311 @@ AddModule(function()
 			})
 		end,
 		function(t)
+			local velbycfrvec=t.velbycfrvec
+			local raycastlegs=t.raycastlegs
+			local getJoint=t.getJoint
+			local RootJoint=getJoint("RootJoint")
+			local RightShoulder=getJoint("Right Shoulder")
+			local LeftShoulder=getJoint("Left Shoulder")
+			local RightHip=getJoint("Right Hip")
+			local LeftHip=getJoint("Left Hip")
+			local Neck=getJoint("Neck")
+			t.addmode("default", {
+				idle = function()
+					local rY, lY = raycastlegs()
+		
+					RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cf(1, 0.5, 0),angles(0.6981317007977318 * sin((sine + 0.5) * 4), 1.5707963267948966 - 0.3490658503988659 * sin(sine * 4), 0)),deltaTime) 
+					LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cf(-1, 0.5, 0),angles(0.6981317007977318 * sin((sine + 0.5) * 4), -1.5707963267948966 + 0.3490658503988659 * sin(sine * 4), 0)),deltaTime) 
+					RightHip.C0 = Lerp(RightHip.C0,cfMul(cf(1, -1 + rY, 0),angles(1.5707963267948966 - 1.0471975511965976 * sin(sine * 4), 1.6580627893946132, -1.5707963267948966)),deltaTime) 
+					RootJoint.C0 = Lerp(RootJoint.C0,cfMul(cf(0, -0.2 + 0.2 * sin((sine + 1) * 8), 0),angles(-1.5707963267948966 + 0.6981317007977318 * sin(sine * 4), 0, 3.141592653589793)),deltaTime) 
+					LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cf(-1, -1 + lY, 0),angles(1.5707963267948966 - 1.0471975511965976 * sin(sine * 4), -1.6580627893946132, 1.5707963267948966)),deltaTime) 
+					Neck.C0 = Lerp(Neck.C0,cfMul(cf(0, 1, 0),angles(-1.5707963267948966 - 0.8726646259971648 * sin((sine + 0.25) * 4), 0, 3.141592653589793)),deltaTime) 
+					--RightArm,1,0,0,4,0,40,0.5,4,0.5,0,0,4,90,-20,0,4,0,0,0,4,0,0,0,4,LeftArm,-1,0,0,4,-0,40,0.5,4,0.5,0,0,4,-90,20,0,4,0,0,0,4,0,0,0,4,RightLeg,1,0,0,4,90,-60,0,4,-1,0,0,4,95,0,0,4,0,0,0,4,-90,0,0,4,Torso,0,0,0,4,-90,40,0,4,-0.2,0.2,1,8,-0,0,0,4,0,0,0,4,180,0,0,4,LeftLeg,-1,0,0,4,90,-60,0,4,-1,0,0,4,-95,0,0,4,0,0,0,4,90,0,0,4,Head,0,0,0,4,-90,-50,0.25,4,1,0,0,4,-0,0,0,4,0,0,0,4,180,0,0,4,CPlusPlusTextbook_Handle,8.658389560878277e-09,0,0,4,0,0,0,4,-0.25,0,0,4,0,0,0,4,-0.0002722442150115967,0,0,4,0,0,0,4
+				end,
+				walk = function()
+					local fw, rt = velbycfrvec()
+		
+					Neck.C0 = Lerp(Neck.C0,cfMul(cf(0, 1, 0),angles(-1.5707963267948966 + 0.5235987755982988 * sin((sine + 0.45) * 8), 0, 3.141592653589793)),deltaTime) 
+					RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cf(1, 0.5, 0),angles(2.0943951023931953 - 1.7453292519943295 * sin((sine - 0.1) * 4), 1.9198621771937625, -1.5707963267948966)),deltaTime) 
+					RootJoint.C0 = Lerp(RootJoint.C0,cfMul(cf(0, 0.25 + 0.5 * sin((sine - 0.125) * 8), 0),angles(-1.5707963267948966 + 0.17453292519943295 * sin(sine * 8), 0, 3.141592653589793)),deltaTime) 
+					LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cf(-1, -1 - 1 * sin(sine * 4), 0),angles(1.5707963267948966 - 1.2217304763960306 * sin((sine - 0.15) * 4) * fw, -1.5707963267948966 - 0.6108652381980153 * sin((sine - 0.15) * 4) * rt, 1.5707963267948966)),deltaTime) 
+					RightHip.C0 = Lerp(RightHip.C0,cfMul(cf(1, -1 + 1 * sin(sine * 4), 0),angles(1.5707963267948966 + 1.2217304763960306 * sin((sine - 0.15) * 4) * fw, 1.5707963267948966 + 0.6108652381980153 * sin((sine - 0.15) * 4) * rt, -1.5707963267948966)),deltaTime) 
+					LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cf(-1, 0.5, 0),angles(2.0943951023931953 + 1.7453292519943295 * sin((sine - 0.1) * 4), -1.7453292519943295, 1.5707963267948966)),deltaTime) 
+					--Head,0,0,0,4,-90,30,0.45,8,1,0,0,4,-0,0,0,4,0,0,0,4,180,0,0,4,CPlusPlusTextbook_Handle,8.658389560878277e-09,0,0,4,0,0,0,4,-0.25,0,0,4,0,0,0,4,-0.0002722442150115967,0,0,4,0,0,0,4,RightArm,1,0,0,4,120,-100,-0.1,4,0.5,0,0,4,110,0,0,4,0,0,0,4,-90,0,0,4,Torso,0,0,0,4,-90,10,0,8,0.25,0.5,-0.125,8,-0,0,0,4,0,0,0,4,180,0,0,4,LeftLeg,-1,0,0,4,90,-70,-0.15,4,-1,-1,0,4,-90,-35,-0.15,4,0,0,0,4,90,0,0,4,RightLeg,1,0,0,4,90,70,-0.15,4,-1,1,0,4,90,35,-0.15,4,0,0,0,4,-90,0,0,4,LeftArm,-1,0,0,4,120,100,-0.1,4,0.5,0,0,4,-100,0,0,4,0,0,0,4,90,0,0,4
+				end
+			})
 		end,
 		function(t)
+			local addmode=t.addmode
+			local getJoint=t.getJoint
+			local RootJoint=getJoint("RootJoint")
+			local RightShoulder=getJoint("Right Shoulder")
+			local LeftShoulder=getJoint("Left Shoulder")
+			local RightHip=getJoint("Right Hip")
+			local LeftHip=getJoint("Left Hip")
+			local Neck=getJoint("Neck")
+			local setWalkSpeed=t.setWalkSpeed
+			local setJumpPower=t.setJumpPower
+			setWalkSpeed(20)
+			setJumpPower(50)
+		
+			local ROOTC0=angles(-1.5707963267948966,0,3.141592653589793)
+			local NECKC0=cfMul(cf(0,1,0),angles(-1.5707963267948966,0,3.141592653589793))
+			local RIGHTSHOULDERC0=cfMul(cf(-0.5,0,0),angles(0,1.5707963267948966,0))
+			local LEFTSHOULDERC0=cfMul(cf(0.5,0,0),angles(0,-1.5707963267948966,0))
+			local rad=math.rad
+		
+			--bruh yeah shackluster had a lot of math.rad(0) instead of just 0
+			--and a lot of multyplying by angles(0, 0, 0)
+			--and he had ArtificialHB
+			--and he had a sine value increasing by 2/3 each frame
+			--and a lot of variables with names saying other things
+			--and he had both C0 and C1 lerps for the same animations
+		
+			local jumplerps=function()
+				local Animation_Speed = 0.45 / deltaTime
+				RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+				Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 / Animation_Speed)
+				RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, 1.5707963267948966, 0)), 0.7 / Animation_Speed)
+				LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, -1.5707963267948966, 0)), 0.7 / Animation_Speed)
+		
+				RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0, 0.2 / Animation_Speed)
+				Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(-0.3490658503988659, 0, 0)), 0.2 / Animation_Speed)
+				RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(1.5, 0.5, 0),angles(-0.6981317007977318, 0, 0.3490658503988659)), RIGHTSHOULDERC0), 0.2 / Animation_Speed)
+				LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cfMul(cf(-1.5, 0.5, 0),angles(-0.6981317007977318, 0, -0.3490658503988659)), LEFTSHOULDERC0), 0.2 / Animation_Speed)
+				RightHip.C0 = Lerp(RightHip.C0,cfMul(cf(1, -1, -0.3),angles(0, 1.5707963267948966, 0),angles(-0.08726646259971647, 0, -0.3490658503988659)), 0.2 / Animation_Speed)
+				LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cf(-1, -1, -0.3),angles(0, -1.5707963267948966, 0),angles(-0.08726646259971647, 0, 0.3490658503988659)), 0.2 / Animation_Speed)	
+			end
+			local falllerps=function()
+				local Animation_Speed = 0.45 / deltaTime
+				RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+				Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 / Animation_Speed)
+				RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, 1.5707963267948966, 0)), 0.7 / Animation_Speed)
+				LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, -1.5707963267948966, 0)), 0.7 / Animation_Speed)
+		
+				RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0, 0.2 / Animation_Speed)
+				Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(0.3490658503988659, 0, 0)), 0.2 / Animation_Speed)
+				RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(1.5, 0.5, 0),angles(0, 0, 1.0471975511965976)), RIGHTSHOULDERC0), 0.2 / Animation_Speed)
+				LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cfMul(cf(-1.5, 0.5, 0),angles(0, 0, -1.0471975511965976)), LEFTSHOULDERC0), 0.2 / Animation_Speed)
+				RightHip.C0 = Lerp(RightHip.C0,cfMul(cfMul(cf(1, -1, 0),angles(0, 1.5707963267948966, 0)),angles(0, 0, 0.3490658503988659)), 0.2 / Animation_Speed)
+				LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cfMul(cf(-1, -1, 0),angles(0, -1.5707963267948966, 0)),angles(0, 0, 0.17453292519943295)), 0.2 / Animation_Speed)
+			end
+		
+			local idleOverwrite=nil
+		
+			addmode("default",{ --mode 1
+				modeLeft=function() --enter mode 0
+					setWalkSpeed(0)
+					setJumpPower(0)
+					idleOverwrite=function()
+						local sine = sine * 40
+						local Animation_Speed = 0.45 / deltaTime
+						RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+						Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 / Animation_Speed)
+						RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, 1.5707963267948966, 0)), 0.7 / Animation_Speed)
+						LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, -1.5707963267948966, 0)), 0.7 / Animation_Speed)
+		
+						RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+						Neck.C0 = Lerp(Neck.C0, NECKC0, 1 / Animation_Speed)
+						RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.5, 0.5, 0) * angles(0, 0, 0.4363323129985824) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+						LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.5, 0.5, 0) * angles(0, 0, -0.4363323129985824) * LEFTSHOULDERC0, 1 / Animation_Speed)
+						RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, 1.4486232791552935, 0), 1 / Animation_Speed)
+						LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, -1.4486232791552935, 0), 1 / Animation_Speed)
+					end
+					twait(0.15)
+					idleOverwrite=function()
+						local sine = sine * 40
+						local Animation_Speed = 0.45 / deltaTime
+						RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+						Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 / Animation_Speed)
+						RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, 1.5707963267948966, 0)), 0.7 / Animation_Speed)
+						LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, -1.5707963267948966, 0)), 0.7 / Animation_Speed)
+		
+						RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+						Neck.C0 = Lerp(Neck.C0, NECKC0 * angles(0.08726646259971647, 0, 0), 1 / Animation_Speed)
+						RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.25, 0.5, -0.5) * angles(1.7453292519943295, 0, -1.2217304763960306) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+						LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.25, 0.35, -0.35) * angles(1.2217304763960306, 0, 1.3962634015954636) * LEFTSHOULDERC0, 1 / Animation_Speed)
+						RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, 1.4486232791552935, 0), 1 / Animation_Speed)
+						LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, -1.4486232791552935, 0), 1 / Animation_Speed)
+					end
+					twait(0.5)
+					--CreateSound(363808674, Torso, 6, 1, false)
+					idleOverwrite=function()
+						local sine = sine * 40
+						local Animation_Speed = 0.45 / deltaTime
+						RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+						Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 / Animation_Speed)
+						RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, 1.5707963267948966, 0)), 0.7 / Animation_Speed)
+						LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, -1.5707963267948966, 0)), 0.7 / Animation_Speed)
+		
+						RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+						Neck.C0 = Lerp(Neck.C0, NECKC0 * angles(0.08726646259971647, 0.4363323129985824, 0), 1 / Animation_Speed)
+						RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.25, 0.5, -0.5) * angles(1.7453292519943295, 0, -0.8726646259971648) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+						LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.25, 0.35, -0.35) * angles(1.2217304763960306, 0, 1.0471975511965976) * LEFTSHOULDERC0, 1 / Animation_Speed)
+						RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, 1.4486232791552935, 0), 1 / Animation_Speed)
+						LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, -1.4486232791552935, 0), 1 / Animation_Speed)
+					end
+					twait(0.3)
+					--CreateSound(363808674, Torso, 6, 1, false)
+					idleOverwrite=function()
+						local sine = sine * 40
+						local Animation_Speed = 0.45 / deltaTime
+						RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+						Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 / Animation_Speed)
+						RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, 1.5707963267948966, 0)), 0.7 / Animation_Speed)
+						LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, -1.5707963267948966, 0)), 0.7 / Animation_Speed)
+		
+						RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+						Neck.C0 = Lerp(Neck.C0, NECKC0 * angles(0.08726646259971647, -0.4363323129985824, 0), 1 / Animation_Speed)
+						RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.25, 0.5, -0.5) * angles(1.7453292519943295, 0, -1.5707963267948966) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+						LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.25, 0.35, -0.35) * angles(1.2217304763960306, 0, 1.5707963267948966) * LEFTSHOULDERC0, 1 / Animation_Speed)
+						RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, 1.4486232791552935, 0), 1 / Animation_Speed)
+						LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, -1.4486232791552935, 0), 1 / Animation_Speed)
+					end
+					twait(0.3)
+					idleOverwrite=nil
+					setWalkSpeed(20)
+					setJumpPower(50)
+				end,
+				idle = function()
+					if idleOverwrite then 
+						return idleOverwrite()
+					end
+		
+					local Animation_Speed = 0.45 / deltaTime
+					local sine = sine * 40
+		
+					RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+					Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 / Animation_Speed)
+					RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, 1.5707963267948966, 0)), 0.7 / Animation_Speed)
+					LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, -1.5707963267948966, 0)), 0.7 / Animation_Speed)
+		
+					RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0.05 * cos(sine / 12), 0, 0.05 * sin(sine / 12))), 0.15 / Animation_Speed)
+					Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0, angles(rad(15 - 2.5 * sin(sine / 12)), 0, -0.4363323129985824)), 1 / Animation_Speed)
+					RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(1.25, 0.5, 0.3),angles(-0.7853981633974483, 0, -0.7853981633974483)), RIGHTSHOULDERC0), 1 / Animation_Speed)
+					LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cfMul(cf(-1.25, 0.5, 0.3),angles(-0.6981317007977318, 0, 0.7853981633974483)), LEFTSHOULDERC0), 1 / Animation_Speed)
+					RightHip.C0 = Lerp(RightHip.C0,cfMul(cfMul(cf(1 + 0.05 * cos(sine / 12), -1 - 0.05 * sin(sine / 12), -0.01),angles(0, 1.4835298641951802, 0)),angles(-0.017453292519943295, 0, 0)), 0.15 / Animation_Speed)
+					LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cfMul(cf(-1 + 0.05 * cos(sine / 12), -1 - 0.05 * sin(sine / 12), -0.01),angles(0, -1.4835298641951802, 0)),angles(-0.017453292519943295, 0, 0)), 0.15 / Animation_Speed)
+				end,
+				walk = function()
+					local Animation_Speed = 0.45 / deltaTime
+					local sine = sine * 40
+					RootJoint.C1 = Lerp(RootJoint.C1,cfMul(ROOTC0, cf(0, 0, 0.05 * cos(sine / (2.4)))), 2 * 1.25 / Animation_Speed)
+					Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 * 1.25 / Animation_Speed)
+					RightHip.C1 = Lerp(RightHip.C1,cfMul(cfMul(cf(0.5, 0.875 - 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, 1.5707963267948966, 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
+					LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cfMul(cf(-0.5, 0.875 + 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, -1.5707963267948966, 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
+		
+					RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0, 0, -0.05)), 0.15 / Animation_Speed)
+					Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(0.08726646259971647, 0, 0)), 0.15 / Animation_Speed)
+					RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(1.25, 0.5 + 0.05 * sin(sine / (2.4)), 0.3),angles(-0.7853981633974483, 0, -0.7853981633974483)), RIGHTSHOULDERC0), 1 / Animation_Speed)
+					LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cfMul(cf(-1.25, 0.5 + 0.05 * sin(sine / (2.4)), 0.3),angles(-0.6981317007977318, 0, 0.7853981633974483)), LEFTSHOULDERC0), 1 / Animation_Speed)
+					RightHip.C0 = Lerp(RightHip.C0,cfMul(cfMul(cf(1, -1, 0),angles(0, 1.3962634015954636, 0)),angles(0, 0, -0.08726646259971647)), 2 / Animation_Speed)
+					LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cfMul(cf(-1, -1, 0),angles(0, -1.3962634015954636, 0)),angles(0, 0, 0.08726646259971647)), 2 / Animation_Speed)
+				end,
+				jump = jumplerps,
+				fall = falllerps
+			})
+		
+			addmode("f",{ --mode 0
+				modeLeft=function() --enter mode 1
+					setWalkSpeed(0)
+					setJumpPower(0)
+					--CreateSound(147722227, Torso, 4, 1.3, false)
+					idleOverwrite=function()
+						local sine = sine * 40
+						local Animation_Speed = 0.45 / deltaTime
+						RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+						Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 / Animation_Speed)
+						RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, 1.5707963267948966, 0)), 0.7 / Animation_Speed)
+						LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, -1.5707963267948966, 0)), 0.7 / Animation_Speed)
+		
+						RootJoint.C0 = Lerp(RootJoint.C0,ROOTC0 * cf(0, 0, 0.05 * cos(sine / 12)), 1 / Animation_Speed)
+						Neck.C0 = Lerp(Neck.C0, NECKC0 * angles(0.6108652381980153, 0, 0), 1 / Animation_Speed)
+						RightShoulder.C0 = Lerp(RightShoulder.C0, cf(1.5, 0.5, 0) * angles(0, 0, 0.4363323129985824) * RIGHTSHOULDERC0, 1 / Animation_Speed)
+						LeftShoulder.C0 = Lerp(LeftShoulder.C0, cf(-1.5, 0.5, 0) * angles(0, 0, -0.4363323129985824) * LEFTSHOULDERC0, 1 / Animation_Speed)
+						RightHip.C0 = Lerp(RightHip.C0, cf(1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, 1.4486232791552935, 0), 1 / Animation_Speed)
+						LeftHip.C0 = Lerp(LeftHip.C0, cf(-1, -1 - 0.05 * cos(sine / 12), -0.01) * angles(0, -1.4486232791552935, 0), 1 / Animation_Speed)
+					end
+					twait(0.15)
+					idleOverwrite=nil
+					setWalkSpeed(20)
+					setJumpPower(50)
+				end,
+				idle = function()
+					if idleOverwrite then 
+						return idleOverwrite()
+					end
+		
+					local Animation_Speed = 0.45 / deltaTime
+					local sine = sine * 40
+		
+					RootJoint.C1 = Lerp(RootJoint.C1,ROOTC0, 0.2 / Animation_Speed)
+					Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 / Animation_Speed)
+					RightHip.C1 = Lerp(RightHip.C1,cfMul(cf(0.5, 1, 0),angles(0, 1.5707963267948966, 0)), 0.7 / Animation_Speed)
+					LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cf(-0.5, 1, 0),angles(0, -1.5707963267948966, 0)), 0.7 / Animation_Speed)
+		
+					RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0, 0, 0.05 * cos(sine / 12))), 1 / Animation_Speed)
+					Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(rad(-5 - 2.5 * cos(sine / 12)), 0, 0.4363323129985824)), 1 / Animation_Speed)
+					RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(0.9, 0.5 + 0.05 * sin(sine / 12), -0.5),angles(1.7453292519943295, 0, -1.2217304763960306)), RIGHTSHOULDERC0), 1 / Animation_Speed)
+					LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cfMul(cf(-0.9, 0.25 + 0.05 * sin(sine / 12), -0.35),angles(1.2217304763960306, 0, 1.3962634015954636)), LEFTSHOULDERC0), 1 / Animation_Speed)
+					RightHip.C0 = Lerp(RightHip.C0,cfMul(cf(1, -1 - 0.05 * cos(sine / 12), -0.01),angles(0, 1.3962634015954636, 0)), 1 / Animation_Speed)
+					LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cf(-1, -1 - 0.05 * cos(sine / 12), -0.01),angles(0, -1.3962634015954636, 0)), 1 / Animation_Speed)
+				end,
+				walk = function()
+					local Animation_Speed = 0.45 / deltaTime
+					local sine = sine * 40
+					RootJoint.C1 = Lerp(RootJoint.C1,cfMul(ROOTC0, cf(0, 0, 0.05 * cos(sine / (2.4)))), 2 * 1.25 / Animation_Speed)
+					Neck.C1 = Lerp(Neck.C1,cfMul(cf(0, -0.5, 0),angles(-1.5707963267948966, 0, 3.141592653589793)), 0.2 * 1.25 / Animation_Speed)
+					RightHip.C1 = Lerp(RightHip.C1,cfMul(cfMul(cf(0.5, 0.875 - 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, 1.5707963267948966, 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
+					LeftHip.C1 = Lerp(LeftHip.C1,cfMul(cfMul(cf(-0.5, 0.875 + 0.125 * sin(sine / 4.8) - 0.15 * cos(sine / 2.4), 0),angles(0, -1.5707963267948966, 0)),angles(0, 0, rad(35 * cos(sine / 4.8)))), 0.6 / Animation_Speed)
+		
+					RootJoint.C0 = Lerp(RootJoint.C0,cfMul(ROOTC0, cf(0, 0, -0.05)), 0.15 / Animation_Speed)
+					Neck.C0 = Lerp(Neck.C0,cfMul(NECKC0,angles(0.08726646259971647, 0, 0)), 0.15 / Animation_Speed)
+					RightShoulder.C0 = Lerp(RightShoulder.C0,cfMul(cfMul(cf(0.9, 0.5 + 0.05 * sin(sine / (2.4)), -0.5),angles(1.7453292519943295, 0, -1.2217304763960306)), RIGHTSHOULDERC0), 1 / Animation_Speed)
+					LeftShoulder.C0 = Lerp(LeftShoulder.C0,cfMul(cfMul(cf(-0.9, 0.25 + 0.05 * sin(sine / (2.4)), -0.35),angles(1.2217304763960306, 0, 1.3962634015954636)), LEFTSHOULDERC0), 1 / Animation_Speed)
+					RightHip.C0 = Lerp(RightHip.C0,cfMul(cfMul(cf(1, -1, 0),angles(0, 1.3962634015954636, 0)),angles(0, 0, -0.08726646259971647)), 2 / Animation_Speed)
+					LeftHip.C0 = Lerp(LeftHip.C0,cfMul(cfMul(cf(-1, -1, 0),angles(0, -1.3962634015954636, 0)),angles(0, 0, 0.08726646259971647)), 2 / Animation_Speed)
+				end,
+				jump = jumplerps,
+				fall = falllerps
+			})
 		end,
 		function(t)
+			local addmode=t.addmode
+			local getJoint=t.getJoint
+			local velbycfrvec=t.velbycfrvec
+			local RootJoint=getJoint("RootJoint")
+			local RightShoulder=getJoint("Right Shoulder")
+			local LeftShoulder=getJoint("Left Shoulder")
+			local RightHip=getJoint("Right Hip")
+			local LeftHip=getJoint("Left Hip")
+			local Neck=getJoint("Neck")
+			t.setWalkSpeed(4.5)
+		
+			addmode("default",{
+				idle=function()
+					Neck.C0=Lerp(Neck.C0,cfMul(cf(0,1,0),angles(-1.7453292519943295-0.08726646259971647*sin(sine*8),-0.12217304763960307*sin((sine+0.2)*4),2.8797932657906435+0.2007128639793479*sin((sine+0.15)*4))),deltaTime) 
+					RightHip.C0=Lerp(RightHip.C0,cfMul(cf(1,-1+0.1*sin(sine*4),0),angles(1.5707963267948966,1.5707963267948966+0.17453292519943295*sin(sine*4),-1.5707963267948966)),deltaTime) 
+					RightShoulder.C0=Lerp(RightShoulder.C0,cfMul(cf(1,0.3,0),angles(2.530727415391778+0.20943951023931956*sin((sine+0.4)*8),1.5707963267948966-0.4363323129985824*sin((sine+0.2)*4),-1.5707963267948966)),deltaTime) 
+					LeftShoulder.C0=Lerp(LeftShoulder.C0,cfMul(cf(-1,0.5,0),angles(1.0471975511965976,-1.2217304763960306+0.08726646259971647*sin((sine+0.2)*4),1.5707963267948966)),deltaTime) 
+					LeftHip.C0=Lerp(LeftHip.C0,cfMul(cf(-1,-1-0.1*sin(sine*4),0),angles(1.5707963267948966,-1.5707963267948966+0.17453292519943295*sin(sine*4),1.5707963267948966)),deltaTime) 
+					RootJoint.C0=Lerp(RootJoint.C0,cfMul(cf(-0.1 * sin(sine*4),0,0),angles(-1.5707963267948966,0.08726646259971647*sin(sine*4),3.141592653589793)),deltaTime) 
+					--MW_animatorProgressSave: Fedora_Handle,8.657480066176504e-09,0,0,4,-6,0,0,4,-0.15052366256713867,0,0,4,0,0,0,4,-0.010221302509307861,0,0,4,0,0,0,4,Bandana_Handle,3.9362930692732334e-09,0,0,4,0,0,0,4,0.3000001907348633,0,0,4,0,0,0,4,-0.6002722978591919,0,0,4,0,0,0,4,Head,0,0,0,4,-100,-5,0,8,1,0,0,4,-0,-7,0.2,4,0,0,0,4,165,11.5,0.15,4,RightLeg,1,0,0,4,90,0,0,4,-1,0.1,0,4,90,10,0,4,0,0,0,4,-90,0,0,4,RightArm,1,0,0,4,145,12,0.4,8,0.3,0,0,4,90,-25,0.2,4,0,0,0,4,-90,0,0,4,LeftArm,-1,0,0,4,60,0,0,4,0.5,0,0,4,-70,5,0.2,4,0,0,0,4,90,0,0,4,LeftLeg,-1,0,0,4,90,0,0,4,-1,-0.1,0,4,-90,10,0,4,0,0,0,4,90,0,0,4,Torso,0,-0.1,0,4,-90,0,0,4,0,0,0,4,-0,5,0,4,0,0,0,4,180,0,0,4
+				end,
+				walk=function()
+					local fw,rt=velbycfrvec()
+		
+					Neck.C0=Lerp(Neck.C0,cfMul(cf(0,1,0),angles(-1.5707963267948966+0.08726646259971647*sin((sine-0.1)*8),0.3490658503988659*sin((sine-0.07)*4),3.141592653589793-0.4363323129985824*sin((sine-0.4)*4))),deltaTime) 
+					RightHip.C0=Lerp(RightHip.C0,cfMul(cf(1,-1+0.3*sin((sine + 0.3)*4),0),angles(1.5707963267948966,1.5707963267948966+0.6981317007977318*sin(sine*4)*rt,-1.5707963267948966+0.6981317007977318*sin(sine*4)*fw)),deltaTime) 
+					RightShoulder.C0=Lerp(RightShoulder.C0,cfMul(cf(1,0.5,0),angles(-0.5235987755982988*sin((sine+0.2)*4),1.5707963267948966-0.3490658503988659*sin(sine*4),0)),deltaTime) 
+					LeftShoulder.C0=Lerp(LeftShoulder.C0,cfMul(cf(-1,0.5,0),angles(0.5235987755982988*sin((sine+0.2)*4),-1.5707963267948966-0.3490658503988659*sin(sine*4),0)),deltaTime) 
+					LeftHip.C0=Lerp(LeftHip.C0,cfMul(cf(-1,-1-0.3*sin((sine + 0.3)*4),0),angles(1.5707963267948966,-1.5707963267948966-0.6981317007977318*sin(sine*4)*rt,1.5707963267948966+0.6981317007977318*sin(sine*4)*fw)),deltaTime) 
+					RootJoint.C0=Lerp(RootJoint.C0,cfMul(cf(0,0.05+0.2*sin((sine + 0.15)*8),0),angles(-1.5707963267948966,0,3.141592653589793)),deltaTime) 
+					--MW_animatorProgressSave: Fedora_Handle,8.657480066176504e-09,0,0,4,-6,0,0,4,-0.15052366256713867,0,0,4,0,0,0,4,-0.010221302509307861,0,0,4,0,0,0,4,Bandana_Handle,3.9362930692732334e-09,0,0,4,0,0,0,4,0.3000001907348633,0,0,4,0,0,0,4,-0.6002722978591919,0,0,4,0,0,0,4,Head,0,0,0,4,-90,5,-0.1,8,1,0,0,4,-0,20,-0.07,4,0,0,0,4,180,-25,-0.4,4,RightLeg,1,0,0,4,90,0,0,4,-1,0.3,0.3,4,90,40,0,4,0,0,0,4,-90,40,0,4,RightArm,1,0,0,4,0,-30,0.2,4,0.5,0,0,4,90,-20,0,4,0,0,0,4,0,0,0,4,LeftArm,-1,0,0,4,0,30,0.2,4,0.5,0,0,4,-90,-20,0,4,0,0,0,4,0,0,0,4,LeftLeg,-1,0,0,4,90,0,0,4,-1,-0.3,0.3,4,-90,-40,0,4,0,0,0,4,90,40,0,4,Torso,0,0,0,4,-90,0,0,4,0.05,0.2,0.15,8,-0,0,0,4,0,0,0,4,180,0,0,4
+				end
+			})
 		end,
-		function(t)
-		end,
+		emptyfunction
 	}
 
 	m.AnimIndex = 1
@@ -988,7 +1285,7 @@ AddModule(function()
 			local i1 = Instance.new("TextLabel") 
 			local i2 = Instance.new("TextButton")
 			i1.Font = Enum.Font.SourceSans
-			i1.FontSize = Enum.FontSize.Size14
+			i1.TextSize = 18
 			i1.Text = txt
 			i1.Position = UDim2.new(0.5, 0, 0.5, 0)
 			i1.TextColor3 = Color3.new(0.0941177, 0.317647, 0.878431)
@@ -996,7 +1293,8 @@ AddModule(function()
 			i1.Parent = i2
 			i2.BackgroundTransparency = 1
 			i2.TextTransparency = 1
-			i2.Size = UDim2.new(1, 0, 0, 14)
+			i2.Size = UDim2.new(1, 0, 0, 18)
+			i2.LayoutOrder = 67
 			i2.Name = RandomString()
 			if f then
 				i2.MouseButton1Click:Connect(f)
@@ -1008,21 +1306,19 @@ AddModule(function()
 			local i1 = Instance.new("TextLabel") 
 			local i2 = Instance.new("Frame")
 			i1.Font = Enum.Font.SourceSans
-			i1.FontSize = Enum.FontSize.Size14
+			i1.TextSize = 18
 			i1.Text = txt
 			i1.Position = UDim2.new(0.5, 0, 0.5, 0)
 			i1.TextColor3 = Color3.new(0.560784, 0.560784, 0.560784)
 			i1.Name = RandomString()
 			i1.Parent = i2
 			i2.BackgroundTransparency = 1
-			i2.TextTransparency = 1
-			i2.Size = UDim2.new(1, 0, 0, 14)
+			i2.Size = UDim2.new(1, 0, 0, 18)
 			i2.Name = RandomString()
+			i2.LayoutOrder = 67
 			i2.Parent = parent
 			return i1
 		end
-		btn("patchma hub lite")
-		lbl("by MyWorld | discord.gg/QMy5f6DrbH")
 		local lbls = {}
 		local update = function()
 			for i=1, #lbls do
@@ -1034,16 +1330,39 @@ AddModule(function()
 			end
 		end
 		local animsel = function(txt)
+			local idx = #lbls + 1
 			table.insert(lbls, {txt, btn(txt, function()
-				m.AnimIndex = #lbls + 1
+				m.AnimIndex = idx
+				update()
 			end)})
 			update()
 		end
+		btn("patchma hub lite")
+		lbl("real patchma hub by MyWorld")
+		lbl("their discord: discord.gg/QMy5f6DrbH")
+		lbl("ported to Uhhhhhh by STEVETHEREALONE")
 		animsel("creepy crawler")
 		animsel("nameless animations V8")
+		lbl("^ my personal favorite right here ^")
 		animsel("nameless animations V7")
 		animsel("nameless animations V6")
+		lbl("Immortality Lord is already added as")
+		lbl("a moveset, as well as Lightning Cannon")
+		lbl("why not use those if ur lookin for em?")
+		animsel("goofy trolus (goofy)")
+		animsel("good cop bad cop animations")
+		lbl("original by shackluster")
+		lbl("the classics never die")
+		animsel("metamorphosis vibe")
+		lbl("INTERWORLD - METAMORPHOSIS")
+		lbl("was listening to ^^ and animating")
+		animsel("empty reanimate (no animations)")
 		lbl("print(\"optimise the optimised\")")
+		lbl("")
+		lbl("hey myworld if u see this can u")
+		lbl("shoot me a pm for whatever quote")
+		lbl("u wanna add here? idk i just think")
+		lbl("u got some ideas/wanna add stuff here")
 	end
 	m.LoadConfig = function(save: any)
 		m.AnimIndex = save.AnimIndex or m.AnimIndex
@@ -1058,14 +1377,34 @@ AddModule(function()
 	rcp.FilterType = Enum.RaycastFilterType.Exclude
 	rcp.RespectCanCollide = true
 	rcp.IgnoreWater = true
+	local function PhysicsRaycast(origin, direction)
+		return workspace:Raycast(origin, direction, rcp)
+	end
 
 	local emptyfunction = function() end
+	local buttonsui = nil
 	local oldanimindex = -1
 	local joints = {}
-	local defaultmode = {}
+	local defaultmode = {
+		idle = emptyfunction,
+		walk = emptyfunction,
+		jump = emptyfunction,
+		fall = emptyfunction,
+	}
 	local modes = {}
 	local currentmode = defaultmode
-	local t = {
+	local onkeypress = function(key)
+		if modes[key] then
+			currentmode.modeLeft()
+			if currentmode == modes[key] then
+				currentmode = defaultmode
+			else
+				currentmode = modes[key]
+			end
+			currentmode.modeEntered()
+		end
+	end
+	local port = {
 		getJoint = function(name)
 			return joints[name] or {}
 		end,
@@ -1086,53 +1425,116 @@ AddModule(function()
 				modes[key].fall = mode.fall or defaultmode.fall or emptyfunction
 				modes[key].modeEntered = mode.modeEntered or emptyfunction
 				modes[key].modeLeft = mode.modeLeft or emptyfunction
+				local mb = Instance.new("Frame", buttonsui)
+				mb.BackgroundTransparency = 1
+				local button = Instance.new("ImageButton", mb)
+				button.Size = UDim2.new(0, 32, 0, 32)
+				button.Image = "https://www.roblox.com/asset/?id=97166444"
+				button.BackgroundTransparency = 1
+				local txt = Instance.new("TextLabel", button)
+				txt.Size = UDim2.new(1, 0, 1, 0)
+				txt.BackgroundTransparency = 1
+				txt.TextSize = 18
+				txt.TextColor3 = Color3.new(1, 1, 1)
+				txt.TextStrokeTransparency = 0
+				txt.TextStrokeColor3 = Color3.new(1, 1, 1)
+				txt.Text = key:upper()
+				button.Activated:Connect(function()
+					onkeypress(key)
+				end)
 			end
 		end,
 	}
 	local resetanim = function(figure)
 		rcp.FilterDescendantsInstances = {figure}
-		local scale = figure:GetScale()
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
 		local torso = figure:FindFirstChild("Torso")
 		if not torso then return end
-		local rj = root:FindFirstChild("RootJoint")
-		local nj = torso:FindFirstChild("Neck")
-		local rsj = torso:FindFirstChild("Right Shoulder")
-		local lsj = torso:FindFirstChild("Left Shoulder")
-		local rhj = torso:FindFirstChild("Right Hip")
-		local lhj = torso:FindFirstChild("Left Hip")
-		t.setWalkSpeed = function(n)
+		port.raycastlegs = function()
+			local scale = figure:GetScale()
+			local rayl = PhysicsRaycast(root.CFrame * Vector3.new(-1, -1, 0) * scale, Vector3.new(0, -2 * scale, 0))
+			local rayr = PhysicsRaycast(root.CFrame * Vector3.new(1, -1, 0) * scale, Vector3.new(0, -2 * scale, 0))
+			if rayl then
+				rayl = (rayl.Position.Y - (root.Position.Y - 3 * scale)) / scale
+			else
+				rayl = 0
+			end
+			if rayr then
+				rayr = (rayr.Position.Y - (root.Position.Y - 3 * scale)) / scale
+			else
+				rayr = 0
+			end
+			return rayr, rayl
+		end
+		port.velbycfrvec = function()
+			local scale = figure:GetScale()
+			return root.CFrame.LookVector:Dot(root.Velocity) / hum.WalkSpeed / scale, root.CFrame.RightVector:Dot(root.Velocity) / hum.WalkSpeed / scale
+		end
+		local lastvel = Vector3.zero
+		local velchg1 = Vector3.zero
+		port.velchgbycfrvec = function()
+			local scale = figure:GetScale()
+			local xzvel = root.Velocity * Vector3.new(1, 0, 1) / scale
+			velchg1 = velchg1 + (lastvel - xzvel)
+			lastvel = xzvel
+			velchg1 = velchg1 * (1 - deltaTime / 2)
+			local fw = root.CFrame.LookVector:Dot(velchg1) / 32
+			local rt = root.CFrame.RightVector:Dot(velchg1) / 32
+			return fw, rt
+		end
+		local lastYvel = 0
+		local velYchg1 = 0
+		port.velYchg = function()
+			local scale = figure:GetScale()
+			local Yvel = root.Velocity.Y / scale
+			velYchg1 = math.clamp(velYchg1 + (lastYvel - Yvel), -50, 50)
+			lastYvel = Yvel
+			velYchg1 = velYchg1 * (1 - deltaTime / 2)
+			return velYchg1
+		end
+		port.setWalkSpeed = function(n)
+			local scale = figure:GetScale()
 			if type(n) ~= "number" then
 				n = 16
 			end
-			hum.WalkSpeed = n
+			hum.WalkSpeed = n * scale
 		end
-		t.setJumpPower = function(n)
+		port.setWalkSpeed()
+		port.setJumpPower = function(n)
+			local scale = figure:GetScale()
 			if type(n) ~= "number" then
 				n = 50
 			end
-			hum.JumpPower = n
+			hum.JumpPower = n * scale
 		end
-		t.setGravity = emptyfunction
-		t.setCfr = function(v)
+		port.setJumpPower()
+		port.setGravity = emptyfunction
+		port.setCfr = function(v)
 			if typeof(v) == "CFrame" then
 				root.CFrame = v
 			elseif typeof(v) == "Vector3" then
 				root.CFrame = root.CFrame.Rotation + v
 			end
 		end
-		t.getVel = function()
-			return root.Velocity
+		port.getVel = function()
+			local scale = figure:GetScale()
+			return root.Velocity / scale
 		end
-		t.getCamCF = function()
+		port.getCamCF = function()
 			if workspace.CurrentCamera then
 				return workspace.CurrentCamera.CFrame
 			end
 			return CFrame.identity
 		end
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
 		joints = {
 			["RootJoint"] = {
 				C0 = CFrame.new(0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0),
@@ -1145,44 +1547,83 @@ AddModule(function()
 				Reference = nj,
 			},
 			["Right Shoulder"] = {
-				C0 = CFrame.new(1, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
-				C1 = CFrame.new(-0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
+				C0 = CFrame.new(1, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
+				C1 = CFrame.new(-0.5, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
 				Reference = rsj,
 			},
 			["Left Shoulder"] = {
-				C0 = CFrame.new(-1, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
-				C1 = CFrame.new(0.5, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
+				C0 = CFrame.new(-1, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
+				C1 = CFrame.new(0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
 				Reference = lsj,
 			},
 			["Right Hip"] = {
-				C0 = CFrame.new(-1, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
-				C1 = CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
+				C0 = CFrame.new(1, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
+				C1 = CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
 				Reference = rhj,
 			},
 			["Left Hip"] = {
-				C0 = CFrame.new(1, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
-				C1 = CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
+				C0 = CFrame.new(-1, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
+				C1 = CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
 				Reference = lhj,
 			},
 		}
-		defaultmode = {}
+		defaultmode = {
+			idle = emptyfunction,
+			walk = emptyfunction,
+			jump = emptyfunction,
+			fall = emptyfunction,
+		}
 		modes = {}
 		currentmode = defaultmode
 	end
+	local uiskeypress = nil
 
 	m.Init = function(figure: Model)
+		if buttonsui then
+			buttonsui = buttonsui:Destroy()
+		end
+		buttonsui = Instance.new("Frame", HiddenGui)
+		buttonsui.BackgroundTransparency = 1
+		buttonsui.Name = RandomString()
+		buttonsui.AnchorPoint = Vector2.new(1, 1)
+		buttonsui.Position = UDim2.new(1, -80, 1, -80)
+		buttonsui.Size = UDim2.new(0, 400, 0, 150)
 		oldanimindex = -1
+		if uiskeypress then
+			uiskeypress:Disconnect()
+		end
+		uiskeypress = UserInputService.InputBegan:Connect(function(input, gpe)
+			if gpe then return end
+			if input.UserInputType == Enum.UserInputType.Keyboard then
+				onkeypress(input.KeyCode.Name:lower())
+			end
+		end)
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock()
 		local i = m.AnimIndex
 		if i ~= oldanimindex then
+			if anims[i] == nil then
+				m.AnimIndex = 1
+				i = 1
+			end
 			oldanimindex = i
 			resetanim(figure)
-			anims[i](t)
+			buttonsui:ClearAllChildren()
+			local grid = Instance.new("UIGridLayout", buttonsui)
+			grid.CellPadding = UDim2.new(0, 0, 0, 0)
+			grid.CellSize = UDim2.new(0, 50, 0, 50)
+			grid.HorizontalAlignment = Enum.HorizontalAlignment.Right
+			grid.VerticalAlignment = Enum.VerticalAlignment.Bottom
+			grid.FillDirection = Enum.FillDirection.Vertical
+			anims[i](port)
+		end
+		local touch = not UserInputService.KeyboardEnabled
+		if buttonsui.Visible ~= touch then
+			buttonsui.Visible = touch
 		end
 		sine = t
-		deltaTime = dt
+		deltaTime = math.min(dt * 10, 1)
 		local scale = figure:GetScale()
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
@@ -1193,7 +1634,7 @@ AddModule(function()
 		local xz = (root.Velocity * Vector3.new(1, 0, 1)).Magnitude
 		local y = root.Velocity.Y
 		if hum.FloorMaterial ~= Enum.Material.Air then
-			if xz > 0 then
+			if xz > 0.1 then
 				currentmode.walk()
 			else
 				currentmode.idle()
@@ -1210,6 +1651,12 @@ AddModule(function()
 		end
 	end
 	m.Destroy = function(figure: Model?)
+		if buttonsui then
+			buttonsui = buttonsui:Destroy()
+		end
+		if uiskeypress then
+			uiskeypress:Disconnect()
+		end
 	end
 	return m
 end)

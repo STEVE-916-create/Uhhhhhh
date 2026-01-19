@@ -2995,7 +2995,7 @@ AddModule(function()
 					hit = cast.Position
 					local part = cast.Instance
 					if part and part.Parent and part.Parent.Parent then
-						local hum = part.Parent:FindFirstChildOfClass("Humanoid") or part.Parent:FindFirstChildOfClass("Humanoid")
+						local hum = part.Parent:FindFirstChildOfClass("Humanoid") or part.Parent.Parent:FindFirstChildOfClass("Humanoid")
 						if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
 							ReanimateFling(part.Parent)
 						end
