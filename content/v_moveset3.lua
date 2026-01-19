@@ -45,6 +45,7 @@ AddModule(function()
 	m.Description = "A port of MyWorld's hub to Uhhhhhh\nsee the configurations to set ur anims"
 	m.Assets = {}
 
+	local emptyfunction = function() end
 	local sine = 0
 	local deltaTime = 0
 	local Lerp = CFrame.identity.Lerp
@@ -62,6 +63,7 @@ AddModule(function()
 	local clamp = math.clamp
 	local round = math.round
 	local cf_0 = CFrame.identity
+	local twait = task.wait
 
 	local anims = {
 		function(t)
@@ -1381,7 +1383,6 @@ AddModule(function()
 		return workspace:Raycast(origin, direction, rcp)
 	end
 
-	local emptyfunction = function() end
 	local buttonsui = nil
 	local oldanimindex = -1
 	local joints = {}
@@ -1432,12 +1433,13 @@ AddModule(function()
 				button.Image = "https://www.roblox.com/asset/?id=97166444"
 				button.BackgroundTransparency = 1
 				local txt = Instance.new("TextLabel", button)
-				txt.Size = UDim2.new(1, 0, 1, 0)
+				txt.Position = UDim2.new(0, 0, 0.25, 0)
+				txt.Size = UDim2.new(1, 0, 0.5, 0)
 				txt.BackgroundTransparency = 1
-				txt.TextSize = 18
+				txt.TextScaled = true
 				txt.TextColor3 = Color3.new(1, 1, 1)
 				txt.TextStrokeTransparency = 0
-				txt.TextStrokeColor3 = Color3.new(1, 1, 1)
+				txt.TextStrokeColor3 = Color3.new(0, 0, 0)
 				txt.Text = key:upper()
 				button.Activated:Connect(function()
 					onkeypress(key)
@@ -1577,6 +1579,7 @@ AddModule(function()
 		currentmode = defaultmode
 	end
 	local uiskeypress = nil
+	local cellsize = 40
 
 	m.Init = function(figure: Model)
 		if buttonsui then
@@ -1586,8 +1589,8 @@ AddModule(function()
 		buttonsui.BackgroundTransparency = 1
 		buttonsui.Name = RandomString()
 		buttonsui.AnchorPoint = Vector2.new(1, 1)
-		buttonsui.Position = UDim2.new(1, -80, 1, -80)
-		buttonsui.Size = UDim2.new(0, 400, 0, 150)
+		buttonsui.Position = UDim2.new(1, -130 + cellsize, 1, -130 + cellsize)
+		buttonsui.Size = UDim2.new(0, cellsize * 20, 0, cellsize * 3)
 		oldanimindex = -1
 		if uiskeypress then
 			uiskeypress:Disconnect()
@@ -1612,7 +1615,7 @@ AddModule(function()
 			buttonsui:ClearAllChildren()
 			local grid = Instance.new("UIGridLayout", buttonsui)
 			grid.CellPadding = UDim2.new(0, 0, 0, 0)
-			grid.CellSize = UDim2.new(0, 50, 0, 50)
+			grid.CellSize = UDim2.new(0, cellsize, 0, cellsize)
 			grid.HorizontalAlignment = Enum.HorizontalAlignment.Right
 			grid.VerticalAlignment = Enum.VerticalAlignment.Bottom
 			grid.FillDirection = Enum.FillDirection.Vertical
