@@ -280,3 +280,35 @@ My code is covered by the MIT license. I made most of it. BUT...
 MOST OF THESE ANIMATIONS AND MUSIC ARE NOT MINE!!!
 
 See THIRD_PARTY for credits, original licenses, and usage notes.
+
+# SHOWCASES
+-- :3 user images brought to you by Awes955
+<p align="center">
+	<img src="./images/" alt="drawing" width="45%"/>
+	<img src="./images/" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/" alt="drawing" width="45%"/>
+	<img src="./images/" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/" alt="drawing" width="45%"/>
+	<img src="./images/" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/" alt="drawing" width="45%"/>
+	<img src="./images/" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/" alt="drawing" width="45%"/>
+	<img src="./images/" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/" alt="drawing" width="45%"/>
+	<img src="./images/" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/" alt="drawing" width="45%"/>
+	<img src="./images/" alt="drawing" width="45%"/>
+</p>
+
