@@ -1436,6 +1436,7 @@ AddModule(function()
 				txt.Position = UDim2.new(0, 0, 0.25, 0)
 				txt.Size = UDim2.new(1, 0, 0.5, 0)
 				txt.BackgroundTransparency = 1
+				txt.Font = Enum.Font.SourceSansBold
 				txt.TextScaled = true
 				txt.TextColor3 = Color3.new(1, 1, 1)
 				txt.TextStrokeTransparency = 0
