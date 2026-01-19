@@ -100,6 +100,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhh
 	<img src="./images/Screenshot_20260118-222711.png" alt="drawing" width="45%"/>
 </p>
 
+- Thats all for now, ill add any images that looks good :D
+  
 ## Contributing
 
 "Can I help? Can I/you add support for my hat?""
