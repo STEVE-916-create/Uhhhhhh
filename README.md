@@ -60,6 +60,45 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhh
    <img src="./images/GiantSkipping.gif" alt="drawing" width="350"/>
    
    The documentation is right below all of whatever these are.
+   
+# SHOWCASES
+-- :3 user images brought to you by Awes955
+<p align="center">
+	<img src="./images/3321822271_7041939546_1768574213001.png" alt="drawing" width="45%"/>
+	<img src="./images/4181218726_6441847031_1768744206674.png" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/4181218726_6441847031_1768755394038.png" alt="drawing" width="45%"/>
+	<img src="./images/4181218726_6441847031_1768825207608.png" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/4181218726_6441847031_1768829759425.png" alt="drawing" width="45%"/>
+	<img src="./images/IMG_0823.png" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/IMG_0843.png" alt="drawing" width="45%"/>
+	<img src="./images/IMG_0847.jpg" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/IMG_20260118_172134_004.png" alt="drawing" width="45%"/>
+	<img src="./images/Screenshot_20260117_205517_Roblox.jpg" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/IMG_20260119_163546_348.png" alt="drawing" width="45%"/>
+	<img src="./images/IMG_4334.png" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/IMG_4335.png" alt="drawing" width="45%"/>
+	<img src="./images/IMG_4336.jpg" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/Screenshot_20260118-165059.png" alt="drawing" width="45%"/>
+	<img src="./images/Screenshot_20260118-192115.png" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/Screenshot_20260118-222617.png" alt="drawing" width="45%"/>
+	<img src="./images/Screenshot_20260118-222711.png" alt="drawing" width="45%"/>
+</p>
 
 ## Contributing
 
@@ -280,43 +319,3 @@ My code is covered by the MIT license. I made most of it. BUT...
 MOST OF THESE ANIMATIONS AND MUSIC ARE NOT MINE!!!
 
 See THIRD_PARTY for credits, original licenses, and usage notes.
-
-# SHOWCASES
--- :3 user images brought to you by Awes955
-<p align="center">
-	<img src="./images/3321822271_7041939546_1768574213001.png" alt="drawing" width="45%"/>
-	<img src="./images/4181218726_6441847031_1768744206674.png" alt="drawing" width="45%"/>
-</p>
-<p align="center">
-	<img src="./images/4181218726_6441847031_1768755394038.png" alt="drawing" width="45%"/>
-	<img src="./images/4181218726_6441847031_1768825207608.png" alt="drawing" width="45%"/>
-</p>
-<p align="center">
-	<img src="./images/4181218726_6441847031_1768829759425.png" alt="drawing" width="45%"/>
-	<img src="./images/IMG_0823.png" alt="drawing" width="45%"/>
-</p>
-<p align="center">
-	<img src="./images/IMG_0843.png" alt="drawing" width="45%"/>
-	<img src="./images/IMG_0847.jpg" alt="drawing" width="45%"/>
-</p>
-<p align="center">
-	<img src="./images/IMG_20260118_172134_004.png" alt="drawing" width="45%"/>
-	<img src="./images/Screenshot_20260117_205517_Roblox.jpg" alt="drawing" width="45%"/>
-</p>
-<p align="center">
-	<img src="./images/IMG_20260119_163546_348.png" alt="drawing" width="45%"/>
-	<img src="./images/IMG_4334.png" alt="drawing" width="45%"/>
-</p>
-<p align="center">
-	<img src="./images/IMG_4335.png" alt="drawing" width="45%"/>
-	<img src="./images/IMG_4336.jpg" alt="drawing" width="45%"/>
-</p>
-<p align="center">
-	<img src="./images/Screenshot_20260118-165059.png" alt="drawing" width="45%"/>
-	<img src="./images/Screenshot_20260118-192115.png" alt="drawing" width="45%"/>
-</p>
-<p align="center">
-	<img src="./images/Screenshot_20260118-222617.png" alt="drawing" width="45%"/>
-	<img src="./images/Screenshot_20260118-222711.png" alt="drawing" width="45%"/>
-</p>
-
