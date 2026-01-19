@@ -923,9 +923,9 @@ AddModule(function()
 		end
 		bulletstate[3] = os.clock()
 	end
-	local function SetGunauraState(hole)
-		gunaurastate[1] = hole
-		gunaurastate[2] = 3
+	local function SetGunauraState(target, ticks)
+		gunaurastate[1] = target
+		gunaurastate[2] = ticks or 3
 	end
 	local function Effect(params)
 		if not torso then return end
@@ -1534,7 +1534,7 @@ AddModule(function()
 					if rootu:IsDescendantOf(workspace) then
 						Attack(toward, 10)
 						if (rootu.Position - toward).Magnitude < 256 then
-							SetGunauraState(toward)
+							SetGunauraState(toward, 20)
 						end
 					end
 					task.wait(3)
