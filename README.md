@@ -280,3 +280,7 @@ My code is covered by the MIT license. I made most of it. BUT...
 MOST OF THESE ANIMATIONS AND MUSIC ARE NOT MINE!!!
 
 See THIRD_PARTY for credits, original licenses, and usage notes.
+
+
+# Hiii
+- this is awes955, ill be showcasing sone of the users screenshots with this product :D
