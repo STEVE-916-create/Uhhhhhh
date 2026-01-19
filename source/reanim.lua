@@ -4193,7 +4193,7 @@ function HatReanimator.Start()
 			else
 				-- world coords
 				if overriden.C0 and overriden.C1 then
-					return Util.ScaleCFrame(overriden.C0, scale) * Util.ScaleCFrame(overriden.C1, hatscale):Inverse(), Vector3.zero
+					return overriden.C0 * Util.ScaleCFrame(overriden.C1, hatscale):Inverse(), Vector3.zero
 				end
 			end
 		end
