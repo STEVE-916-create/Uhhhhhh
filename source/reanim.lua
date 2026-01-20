@@ -751,7 +751,7 @@ if SaveData.MuteUIMusic then
 	end
 end
 
-local Grads = {}
+local StylizedObjs = {}
 local function Stylize(obj, options)
 	options = options or {}
 	Util.Instance("UICorner", obj).CornerRadius = UDim.new(0, 5)
@@ -793,29 +793,112 @@ local function Stylize(obj, options)
 			end
 		end
 	end
-	table.insert(Grads, {
+	table.insert(StylizedObjs, {
 		obj = obj,
 		Out = Out,
-		Glos = Glos
+		Glos = Glos,
+		options = options,
 	})
 end
 local ForceUIColor = nil
+local ForceUIBGColor = nil
 local function GetUIColor(t)
 	if ForceUIColor then
+		local si = math.sin(math.pi * 2 * t / 10)
 		local h, s, v = ForceUIColor:ToHSV()
-		v *= 0.8 + math.sin(math.pi * 2 * t / 10) * 0.2
-		return Color3.fromHSV(h, s, v)
+		if s < 0.2 then
+			v *= 0.8 + si * 0.2
+		else
+			h += si * 0.05
+		end
+		return Util.LoopedHSV(h, s, v)
 	end
 	return Util.LoopedHSV(t / 10, 0.8, 1)
 end
+local function GetUIBGColor(t)
+	if ForceUIBGColor then
+		local si = math.sin(math.pi * 2 * t / 10)
+		local h, s, v = ForceUIBGColor:ToHSV()
+		if s < 0.2 then
+			if v > 0.5 then
+				v *= 0.8 + si * 0.2
+			else
+				v *= 1.25 + si * 0.25
+			end
+		else
+			h += si * 0.05
+		end
+		return Util.LoopedHSV(h, s, v)
+	end
+	return Color3.new(0, 0, 0)
+end
+local function RegisterTextLabel(obj)
+	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+		obj.TextColor3 = UITextColor.Value
+		LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
+			obj.TextColor3 = val
+		end))
+	end
+	if obj:IsA("TextBox") then
+		local h, s, v = UITextColor.Value:ToHSV()
+		obj.TextColor3 = UITextColor.Value
+		obj.PlaceholderColor3 = Color3.new(h, s, 0.5 + (v - 0.5) * 0.4)
+		LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
+			h, s, v = val:ToHSV()
+			obj.TextColor3 = val
+			obj.PlaceholderColor3 = Color3.new(h, s, 0.5 + (v - 0.5) * 0.4)
+		end))
+	end
+end
+local UITextColor = Util.Instance("Color3Value")
+UITextColor.Value = Color3.new(1, 1, 1)
 local function UpdateGrads(t)
 	local c = GetUIColor(t)
-	for _,grad in Grads do
-		local obj, Out, Glos = grad.obj, grad.Out, grad.Glos
+	local bgc = GetUIBGColor(t)
+	local h, s, v = bgc:ToHSV()
+	local bgcd = Color3.fromHSV(h, s, v * 0.7)
+	for _,grad in StylizedObjs do
+		local obj, Out, Glos, options = grad.obj, grad.Out, grad.Glos, options
 		Out.Color = c
+		if options.Depthed then
+			obj.Color = bgc
+		else
+			obj.Color = bgcd
+		end
 		for _,v in Glos do
 			v.ImageColor3 = c
 		end
+	end
+end
+local function SetUITheme(index)
+	local UIThemes = {
+		-- RGB/Default
+		{nil, nil, Color3.new(1, 1, 1)},
+		-- ALONE
+		{Color3.new(1, 1, 1), nil, Color3.new(1, 1, 1)},
+		-- Oxide-like
+		{Color3.fromHex("00DDFF"), Color3.fromHex("006077"), Color3.new(1, 1, 1)},
+		-- Patchma-like
+		{Color3.new(0.0941177, 0.317647, 0.878431), nil, Color3.new(0.560784, 0.560784, 0.560784)},
+		-- Genesis V4 - Neptunian V
+		{Color3.fromHex("7733FF"), Color3.fromHex("161330"), Color3.new(1, 1, 1)},
+		-- Crimson
+		{Color3.new(0.9, 0, 0), Color3.new(0.05, 0, 0), Color3.new(1, 1, 1)},
+		-- r/masterhacker
+		{Color3.new(0, 1, 0), nil, Color3.new(1, 1, 1)},
+		-- Homer simpson
+		{Color3.new(1, 0.95, 0), Color3.new(1, 0.95, 0), Color3.new(0, 0, 0)},
+		-- Immortality Lord
+		{Color3.new(0.1, 0.1, 0.1), nil, Color3.new(1, 1, 1)},
+		-- ALONE LIGHT
+		{nil, Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
+		-- ROSR
+		{Color3.new(1, 0.7, 0), Color3.new(1, 0.7, 0), Color3.new(1, 1, 1)},
+	}
+	if UIThemes[index] then
+		ForceUIColor = UIThemes[index][1]
+		ForceUIBGColor = UIThemes[index][2]
+		UITextColor.Value = UIThemes[index][3]
 	end
 end
 
@@ -887,6 +970,7 @@ local UIMainWindow, WindowContent do
 	TopBarText.TextXAlignment = Enum.TextXAlignment.Left
 	TopBarText.Text = "Uhhhhhh Reanimate | v" .. UhhhhhhVersion
 	TopBarText.RichText = true
+	RegisterTextLabel(TopBarText)
 	if (SaveData.SkipIntro and math.random(2) == 1) or os.date("%m %d") ~= "04 01" then
 		local quotes = {
 			"Ohhhhhh Re-create | v" .. UhhhhhhVersion,
@@ -938,17 +1022,17 @@ local UIMainWindow, WindowContent do
 			if troll == 1 then
 				CracktroFrameText = "Oxide Reanimation V67"
 				quotes = {"<font color=\"#00DDFF\">Oxide</font>   Reanimation"}
-				ForceUIColor = Color3.fromHex("00DDFF")
+				SetUITheme(3)
 			end
 			if troll == 2 then
 				CracktroFrameText = "patchma hub V67"
 				quotes = {"<font color=\"#0000FF\">patchma hub</font> by MyWorld"}
-				ForceUIColor = Color3.fromHex("0000FF")
+				SetUITheme(4)
 			end
 			if troll == 3 then
 				CracktroFrameText = "Genesis V4 but better"
 				quotes = {"<font color=\"#CC11FF\">Genesis V4 - Neptunian V</font>"}
-				ForceUIColor = Color3.fromHex("7733FF")
+				SetUITheme(5)
 			end
 		end
 		TopBarText.Text = quotes[math.random(1, #quotes)]
@@ -972,18 +1056,24 @@ local UIMainWindow, WindowContent do
 		A.Size = UDim2.new(0, 16, 0, 2)
 		A.Rotation = 0
 		A.BackgroundTransparency = 0
-		A.BackgroundColor3 = Color3.new(1, 1, 1)
+		A.BackgroundColor3 = UITextColor.Value
 		A.BorderSizePixel = 0
 		A.Name = "A"
+		UITextColor.Changed:Connect(function(val)
+			A.BackgroundColor3 = val
+		end)
 		A = Util.Instance("Frame", A)
 		A.AnchorPoint = Vector2.new(0.5, 0.5)
 		A.Position = UDim2.new(0.5, 0, 0.5, 0)
 		A.Size = UDim2.new(0, 2, 0, 0)
 		A.Rotation = 0
 		A.BackgroundTransparency = 0
-		A.BackgroundColor3 = Color3.new(1, 1, 1)
+		A.BackgroundColor3 = UITextColor.Value
 		A.BorderSizePixel = 0
 		A.Name = "B"
+		UITextColor.Changed:Connect(function(val)
+			A.BackgroundColor3 = val
+		end)
 	end
 	
 	WindowContent = Util.Instance("Frame", UIMainWindow)
@@ -1112,6 +1202,7 @@ CracktroFrame.ZIndex = 10
 CracktroFrame.ClipsDescendants = true
 AddToRenderStep(function(t)
 	CracktroFrame.BorderColor3 = GetUIColor(t)
+	CracktroFrame.BackgroundColor3 = GetUIBGColor(t)
 end, CracktroFrame)
 
 do -- homepage
@@ -1127,7 +1218,7 @@ do -- homepage
 	Glowy.Size = UDim2.new(0, 260, 0, 260)
 	Glowy.BackgroundTransparency = 1
 	Glowy.Image = Util.GetCDNAsset("lightinursoul.graphic.png")
-	Glowy.ImageColor3 = Color3.new(1, 1, 1)
+	Glowy.ImageColor3 = UITextColor.Value
 	Glowy.ImageTransparency = 0.7
 	Glowy.ZIndex = -2
 
@@ -1165,19 +1256,24 @@ do -- homepage
 	text.Position = UDim2.new(0.5, 0, 1, -25)
 	text.ZIndex = 3
 	text.Parent = CracktroFrame
-	Util.SetTextColor(text, Color3.new(1, 1, 1), 0)
 	local text1 = Util.MakeText("Made by STEVETHEREALONE :" .. (math.random() < 0.333 and "3" or (math.random() < 0.5 and "D" or "P")))
 	text1.AnchorPoint = Vector2.new(0.5, 1)
 	text1.Position = UDim2.new(0.5, 0, 1, -17)
 	text1.ZIndex = 3
 	text1.Parent = CracktroFrame
-	Util.SetTextColor(text1, Color3.new(1, 1, 1), 0)
 	local text2 = Util.MakeText("Click me to start!")
 	text2.AnchorPoint = Vector2.new(0.5, 1)
 	text2.Position = UDim2.new(0.5, 0, 1, -17)
 	text2.ZIndex = 3
 	text2.Parent = CracktroFrame
-	Util.SetTextColor(text2, Color3.new(1, 1, 1), 0)
+	Util.SetTextColor(text, UITextColor.Value, 0)
+	Util.SetTextColor(text1, UITextColor.Value, 0)
+	Util.SetTextColor(text2, UITextColor.Value, 0)
+	UITextColor.Changed:Connect(function(val)
+		Util.SetTextColor(text, val, 0)
+		Util.SetTextColor(text1, val, 0)
+		Util.SetTextColor(text2, val, 0)
+	end)
 
 	local PositionProcessor = {
 		function(i, v, dt, pbl, spike)
@@ -1251,6 +1347,7 @@ do -- homepage
 		if Util.IsGuiVisible(CracktroFrame) then
 			local pp = PositionProcessor[currentprocessor]
 			local CracktroFrameAbsoluteSize = CracktroFrame.AbsoluteSize
+			Glowy.ImageColor3 = UITextColor.Value
 			Glowy.ImageTransparency = 0.75 + math.sin(((os.clock() / 10) % 2) * math.pi) * 0.05
 			local pbl = UISound.Music.PlaybackLoudness
 			local spike = math.max(0, (pbl - oldpbl) - 16)
@@ -1326,6 +1423,7 @@ function UI.CreatePage()
 	Frame.ClipsDescendants = true
 	AddToRenderStep(function(t)
 		Frame.BorderColor3 = GetUIColor(t)
+		Frame.BackgroundColor3 = GetUIBGColor(t)
 	end, Frame)
 	local Padding = Util.Instance("UIPadding", Frame)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -1359,6 +1457,7 @@ function UI.CreateText(parent, text, size, alignment)
 	Text.TextYAlignment = Enum.TextYAlignment.Top
 	Text.TextWrapped = true
 	Text.TextSize = size
+	RegisterTextLabel(Text)
 	local function update()
 		local x = parent.AbsoluteSize.X
 		local size = TextService:GetTextSize(Text.ContentText, Text.TextSize, Text.Font, Vector2.new(x - margin * 2, math.huge))
@@ -1412,6 +1511,7 @@ function UI.CreateButton(parent, text, size)
 	ButtonText.TextYAlignment = Enum.TextYAlignment.Center
 	ButtonText.TextWrapped = true
 	ButtonText.TextSize = size
+	RegisterTextLabel(ButtonText)
 	Stylize(Button)
 	local function update()
 		local x = parent.AbsoluteSize.X
@@ -1450,6 +1550,7 @@ function UI.CreateSwitch(parent, text, value)
 	ButtonText.TextYAlignment = Enum.TextYAlignment.Center
 	ButtonText.TextWrapped = true
 	ButtonText.TextSize = 20
+	RegisterTextLabel(ButtonText)
 	local function update()
 		local x = parent.AbsoluteSize.X
 		local size = TextService:GetTextSize(ButtonText.ContentText, ButtonText.TextSize, ButtonText.Font, Vector2.new(x - margin * 3 - switchsize, math.huge))
@@ -1472,8 +1573,11 @@ function UI.CreateSwitch(parent, text, value)
 	SwitchDot.Position = UDim2.new(0.5, 0, 0.5, 0)
 	SwitchDot.Size = UDim2.new(0, 19, 0, 19)
 	SwitchDot.BackgroundTransparency = 0.2
-	SwitchDot.BackgroundColor3 = Color3.new(1, 1, 1)
+	SwitchDot.BackgroundColor3 = UITextColor.Value
 	SwitchDot.BorderSizePixel = 0
+	LinkDestroyI2C(SwitchDot, UITextColor.Changed:Connect(function(val)
+		SwitchDot.BackgroundColor3 = val
+	end))
 	Util.Instance("UICorner", SwitchDot).CornerRadius = UDim.new(0, 2)
 	local Lever = Util.Instance("BoolValue")
 	Lever.Value = value
@@ -1515,11 +1619,12 @@ function UI.CreateTextbox(parent, text, placeholder, size)
 	BoxText.TextWrapped = true
 	BoxText.TextSize = size
 	BoxText.ClearTextOnFocus = false
+	RegisterTextLabel(BoxText)
 	BoxText.Focused:Connect(function()
 		UISound.Click:Play()
 	end)
 	Stylize(Box, {
-		Rotation = 225
+		Depthed = true,
 	})
 	local function update()
 		local x = parent.AbsoluteSize.X
@@ -1564,6 +1669,7 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 	Text.TextWrapped = true
 	Text.TextSize = 20
 	Text.Text = text
+	RegisterTextLabel(ButtonText)
 	local Box = Util.Instance("Frame", Container)
 	Box.AnchorPoint = Vector2.new(1, 0)
 	Box.Position = UDim2.new(1, -margin, 0, margin)
@@ -1585,11 +1691,12 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 	BoxText.TextWrapped = true
 	BoxText.TextSize = 15
 	BoxText.ClearTextOnFocus = false
+	RegisterTextLabel(BoxText)
 	BoxText.Focused:Connect(function()
 		UISound.Click:Play()
 	end)
 	Stylize(Box, {
-		Rotation = 225
+		Depthed = true,
 	})
 	local SliderC = Util.Instance("TextButton", Container)
 	SliderC.AnchorPoint = Vector2.new(0, 0)
@@ -1613,7 +1720,9 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 	SliderB.BackgroundColor3 = Color3.new(1, 1, 1)
 	SliderB.BorderSizePixel = 0
 	SliderB.ZIndex = 2
-	Stylize(SliderR)
+	Stylize(SliderR, {
+		Depthed = true,
+	})
 	Stylize(SliderB)
 	local range = max - min
 	if step > 0 then
@@ -1717,6 +1826,7 @@ function UI.CreateDropdown(parent, text, array, value)
 	Text.TextYAlignment = Enum.TextYAlignment.Center
 	Text.TextWrapped = true
 	Text.TextSize = 20
+	RegisterTextLabel(ButtonText)
 	local Dropdown = Util.Instance("TextButton", Container)
 	Dropdown.AnchorPoint = Vector2.new(1, 0.5)
 	Dropdown.Position = UDim2.new(1, -margin, 0.5, 0)
@@ -1739,6 +1849,7 @@ function UI.CreateDropdown(parent, text, array, value)
 	DropdownText.TextYAlignment = Enum.TextYAlignment.Center
 	DropdownText.TextWrapped = true
 	DropdownText.TextSize = 15
+	RegisterTextLabel(DropdownText)
 	Stylize(Dropdown)
 	local function update()
 		local x = parent.AbsoluteSize.X
@@ -1803,6 +1914,7 @@ function UI.CreateDropdown(parent, text, array, value)
 		Item.TextXAlignment = Enum.TextXAlignment.Left
 		Item.TextYAlignment = Enum.TextYAlignment.Center
 		Item.TextWrapped = false
+		RegisterTextLabel(Item)
 		if i == value then
 			Item.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
 		end
@@ -1889,7 +2001,7 @@ function UI.CreateCanvas(parent)
 	ListBox.BorderSizePixel = 0
 	ListBox.AutomaticSize = Enum.AutomaticSize.Y
 	Stylize(ListBox, {
-		Rotation = 225
+		Depthed = true,
 	})
 	Padding = Util.Instance("UIPadding", ListBox)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -1930,7 +2042,7 @@ function UI.CreateScrollCanvas(parent, height)
 	ListBox.ScrollBarThickness = 0
 	ListBox.ClipsDescendants = true
 	Stylize(ListBox, {
-		Rotation = 225
+		Depthed = true,
 	})
 	Padding = Util.Instance("UIPadding", ListBox)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -1961,6 +2073,7 @@ function UI.CreateItemListPage()
 	Frame.ClipsDescendants = true
 	AddToRenderStep(function(t)
 		Frame.BorderColor3 = GetUIColor(t)
+		Frame.BackgroundColor3 = GetUIBGColor(t)
 	end, Frame)
 	local Padding = Util.Instance("UIPadding", Frame)
 	Padding.PaddingTop = UDim.new(0, margin)
@@ -1989,6 +2102,7 @@ function UI.CreateItemListPage()
 	BackButtonText.TextWrapped = true
 	BackButtonText.TextSize = 20
 	BackButtonText.Text = "<"
+	RegisterTextLabel(BackButtonText)
 	Stylize(BackButton)
 	local SearchBox = Util.Instance("Frame", Frame)
 	SearchBox.AnchorPoint = Vector2.new(1, 0)
@@ -2015,10 +2129,11 @@ function UI.CreateItemListPage()
 		UISound.Click:Play()
 	end)
 	Stylize(SearchBox, {
-		Rotation = 225
+		Depthed = true,
 	})
 	SearchBoxText.Text = ""
 	SearchBoxText.PlaceholderText = "Seek..."
+	RegisterTextLabel(SearchBoxText)
 	local ListBox = Util.Instance("ScrollingFrame", Frame)
 	ListBox.AnchorPoint = Vector2.new(0, 0)
 	ListBox.Position = UDim2.new(0, 0, 0, 25 + margin)
@@ -2032,7 +2147,7 @@ function UI.CreateItemListPage()
 	ListBox.ScrollBarThickness = 0
 	ListBox.ClipsDescendants = true
 	Stylize(ListBox, {
-		Rotation = 225
+		Depthed = true,
 	})
 	Padding = Util.Instance("UIPadding", ListBox)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -2081,9 +2196,7 @@ function UI.CreateItemListItem(parent)
 	ListBox.BorderSizePixel = 0
 	ListBox.AutomaticSize = Enum.AutomaticSize.Y
 	ListBox.Text = ""
-	Stylize(ListBox, {
-		Rotation = 225
-	})
+	Stylize(ListBox)
 	Padding = Util.Instance("UIPadding", ListBox)
 	Padding.PaddingTop = UDim.new(0, 5)
 	Padding.PaddingBottom = UDim.new(0, 5)
@@ -2118,10 +2231,6 @@ CracktroFrame.InputEnded:Connect(function(input)
 	end
 end)
 local AsciiText = UI.CreateText(MainPage, "", 12, Enum.TextXAlignment.Center)
-AsciiText.TextStrokeTransparency = 0.75
-AddToRenderStep(function(t)
-	AsciiText.TextStrokeColor3 = GetUIColor(t)
-end, AsciiText)
 task.spawn(function()
 	local AsciiTextarts = {
 		{
@@ -2447,27 +2556,6 @@ UI.CreateSwitch(MainPage, "Skip Intro", SaveData.SkipIntro).Changed:Connect(func
 end)
 do
 	SaveData.UITheme = SaveData.UITheme or 1
-	local function updatetheme()
-		if SaveData.UITheme == 1 then
-			ForceUIColor = nil
-		elseif SaveData.UITheme == 2 then
-			ForceUIColor = Color3.new(1, 1, 1)
-		elseif SaveData.UITheme == 3 then
-			ForceUIColor = Color3.fromHex("00DDFF")
-		elseif SaveData.UITheme == 4 then
-			ForceUIColor = Color3.fromHex("0000FF")
-		elseif SaveData.UITheme == 5 then
-			ForceUIColor = Color3.fromHex("7733FF")
-		elseif SaveData.UITheme == 6 then
-			ForceUIColor = Color3.new(0.9, 0, 0)
-		elseif SaveData.UITheme == 7 then
-			ForceUIColor = Color3.new(0, 1, 0)
-		elseif SaveData.UITheme == 8 then
-			ForceUIColor = Color3.new(1, 0.95, 0)
-		elseif SaveData.UITheme == 9 then
-			ForceUIColor = Color3.new(0.1, 0.1, 0.1)
-		end
-	end
 	UI.CreateDropdown(MainPage, "UI Color", {
 		"RGB/Default",
 		"ALONE",
@@ -2480,9 +2568,9 @@ do
 		"Immortality Lord",
 	}, SaveData.UITheme).Changed:Connect(function(val)
 		SaveData.UITheme = val
-		updatetheme()
+		SetUITheme(SaveData.UITheme)
 	end)
-	if ForceUIColor == nil then updatetheme() end
+	if ForceUIColor == nil then SetUITheme(SaveData.UITheme) end
 end
 UI.CreateSeparator(MainPage)
 
