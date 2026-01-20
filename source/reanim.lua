@@ -4418,7 +4418,18 @@ function HatReanimator.Start()
 	table.clear(HatReanimator.FlingTargets)
 	
 	local function SetSimulationRadius()
-		local r = Player.MaximumSimulationRadius--#Players:GetPlayers() * 1000
+		for _,plr in Players:GetPlayers() do
+			local a, b = pcall(compareinstances, plr, Player)
+			if a and not b then
+				pcall(function()
+					plr.SimulationRadius = 0
+				end)
+				pcall(function()
+					sethiddenproperty(plr, "SimulationRadius", 0)
+				end)
+			end
+		end
+		local r = #Players:GetPlayers() * 1000
 		pcall(function()
 			Player.SimulationRadius = r
 		end)
