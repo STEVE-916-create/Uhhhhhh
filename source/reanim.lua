@@ -800,8 +800,14 @@ local function Stylize(obj, options)
 	})
 end
 local ForceUIColor = nil
+local function GetUIColor(t)
+	if ForceUIColor then
+		return ForceUIColor * (0.95 + math.sin(t / 10) * 0.05)
+	end
+	return Util.LoopedHSV(t / 10, 0.8, 1)
+end
 local function UpdateGrads(t)
-	local c = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
+	local c = GetUIColor(t)
 	for _,grad in Grads do
 		local obj, Out, Glos = grad.obj, grad.Out, grad.Glos
 		Out.Color = c
@@ -1103,7 +1109,7 @@ CracktroFrame.BorderColor3 = Color3.new(1, 1, 1)
 CracktroFrame.ZIndex = 10
 CracktroFrame.ClipsDescendants = true
 AddToRenderStep(function(t)
-	CracktroFrame.BorderColor3 = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
+	CracktroFrame.BorderColor3 = GetUIColor(t)
 end, CracktroFrame)
 
 do -- homepage
@@ -1317,7 +1323,7 @@ function UI.CreatePage()
 	Frame.ScrollBarThickness = 0
 	Frame.ClipsDescendants = true
 	AddToRenderStep(function(t)
-		Frame.BorderColor3 = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
+		Frame.BorderColor3 = GetUIColor(t)
 	end, Frame)
 	local Padding = Util.Instance("UIPadding", Frame)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -1952,7 +1958,7 @@ function UI.CreateItemListPage()
 	Frame.ZIndex = 0
 	Frame.ClipsDescendants = true
 	AddToRenderStep(function(t)
-		Frame.BorderColor3 = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
+		Frame.BorderColor3 = GetUIColor(t)
 	end, Frame)
 	local Padding = Util.Instance("UIPadding", Frame)
 	Padding.PaddingTop = UDim.new(0, margin)
@@ -2112,7 +2118,7 @@ end)
 local AsciiText = UI.CreateText(MainPage, "", 12, Enum.TextXAlignment.Center)
 AsciiText.TextStrokeTransparency = 0.75
 AddToRenderStep(function(t)
-	AsciiText.TextStrokeColor3 = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
+	AsciiText.TextStrokeColor3 = GetUIColor(t)
 end, AsciiText)
 task.spawn(function()
 	local AsciiTextarts = {
