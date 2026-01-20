@@ -864,9 +864,9 @@ local function UpdateGrads(t)
 		local obj, Out, Glos, options = grad.obj, grad.Out, grad.Glos, grad.options
 		Out.Color = c
 		if options.Depthed then
-			obj.Color = bgc
+			obj.BackgroundColor3 = bgc
 		else
-			obj.Color = bgcd
+			obj.BackgroundColor3 = bgcd
 		end
 		for _,v in Glos do
 			v.ImageColor3 = c
