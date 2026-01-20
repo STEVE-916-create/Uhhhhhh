@@ -901,7 +901,7 @@ local function SetUITheme(index)
 		-- ALONE LIGHT
 		{nil, Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
 		-- ROSR
-		{Color3.new(0.8, 0.5, 0), Color3.new(1, 0.7, 0), Color3.new(1, 1, 1)},
+		{Color3.new(0.85, 0.55, 0), Color3.new(0.9, 0.65, 0), Color3.new(1, 1, 1)},
 		-- FastTracker II Blue
 		{Color3.fromHex("333780"), Color3.fromHex("666EFF"), Color3.new(1, 1, 1)},
 		-- Cherry Blossom
