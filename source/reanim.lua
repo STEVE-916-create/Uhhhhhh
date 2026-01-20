@@ -824,9 +824,9 @@ local function GetUIBGColor(t)
 		local h, s, v = ForceUIBGColor:ToHSV()
 		if s < 0.2 then
 			if v > 0.5 then
-				v *= 0.8 + si * 0.2
+				v *= 0.95 + si * 0.05
 			else
-				v *= 1.25 + si * 0.25
+				v *= 1.05 + si * 0.05
 			end
 		else
 			h += si * 0.01
