@@ -885,7 +885,7 @@ local function SetUITheme(index)
 		-- ALONE
 		{Color3.new(1, 1, 1), nil, Color3.new(1, 1, 1)},
 		-- Oxide-like
-		{Color3.fromHex("00DDFF"), Color3.fromHex("006077"), Color3.new(1, 1, 1)},
+		{Color3.fromHex("006077"), Color3.fromHex("00DDFF"), Color3.new(1, 1, 1)},
 		-- Patchma-like
 		{Color3.new(0.0941177, 0.317647, 0.878431), nil, Color3.new(0.560784, 0.560784, 0.560784)},
 		-- Genesis V4 - Neptunian V
@@ -893,7 +893,7 @@ local function SetUITheme(index)
 		-- Crimson
 		{Color3.new(0.9, 0, 0), Color3.new(0.05, 0, 0), Color3.new(1, 1, 1)},
 		-- r/masterhacker
-		{Color3.new(0, 1, 0), nil, Color3.new(1, 1, 1)},
+		{Color3.new(0, 1, 0), nil, Color3.new(0, 1, 0)},
 		-- Homer simpson
 		{Color3.new(0, 0, 0), Color3.new(1, 0.95, 0), Color3.new(0, 0, 0)},
 		-- Immortality Lord
@@ -902,11 +902,32 @@ local function SetUITheme(index)
 		{nil, Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
 		-- ROSR
 		{Color3.new(1, 0.7, 0), Color3.new(0.8, 0.5, 0), Color3.new(1, 1, 1)},
+		-- FastTracker II Blue
+		{Color3.fromHex("364780"), Color3.fromHex("698CFF"), Color3.new(1, 1, 1)},
+		-- Cherry Blossom
+		{Color3.fromHex("7A4980"), Color3.fromHex("F491FF"), Color3.new(0.1, 0.1, 0.1)},
+		-- Cherry Blossom Inverted
+		{Color3.fromHex("F491FF"), Color3.fromHex("7A4980"), Color3.new(1, 1, 1)},
 	}
-	if UIThemes[index] then
-		ForceUIColor = UIThemes[index][1]
-		ForceUIBGColor = UIThemes[index][2]
-		UITextColor.Value = UIThemes[index][3]
+	local theme = UIThemes[index]
+	if index == #UIThemes + 1 then
+		theme = {nil, nil, Color3.new(1, 1, 1)}
+		if type(_G.UhhhhhhTheme) == "table" then
+			if typeof(_G.UhhhhhhTheme.Fore) == "Color3" then
+				theme[1] = _G.UhhhhhhTheme.Fore
+			end
+			if typeof(_G.UhhhhhhTheme.Back) == "Color3" then
+				theme[2] = _G.UhhhhhhTheme.Back
+			end
+			if typeof(_G.UhhhhhhTheme.Text) == "Color3" then
+				theme[3] = _G.UhhhhhhTheme.Text
+			end
+		end
+	end
+	if theme then
+		ForceUIColor = theme[1]
+		ForceUIBGColor = theme[2]
+		UITextColor.Value = theme[3]
 	end
 end
 
@@ -2564,7 +2585,7 @@ UI.CreateSwitch(MainPage, "Skip Intro", SaveData.SkipIntro).Changed:Connect(func
 end)
 do
 	SaveData.UITheme = SaveData.UITheme or 1
-	UI.CreateDropdown(MainPage, "UI Color", {
+	UI.CreateDropdown(MainPage, "UI Theme", {
 		"RGB/Default",
 		"ALONE",
 		"Oxide",
@@ -2576,6 +2597,10 @@ do
 		"Immortality Lord",
 		"LIGHT ALONE",
 		"Roserika",
+		"FastTracker II Blue",
+		"Cherry Blossom",
+		"Cherry Blossom Inverted",
+		"User Defined (see README)",
 	}, SaveData.UITheme).Changed:Connect(function(val)
 		SaveData.UITheme = val
 		SetUITheme(SaveData.UITheme)
