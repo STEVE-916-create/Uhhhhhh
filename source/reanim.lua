@@ -832,6 +832,8 @@ local function GetUIBGColor(t)
 	end
 	return Color3.new(0, 0, 0)
 end
+local UITextColor = Util.Instance("Color3Value")
+UITextColor.Value = Color3.new(1, 1, 1)
 local function RegisterTextLabel(obj)
 	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
 		obj.TextColor3 = UITextColor.Value
@@ -850,8 +852,6 @@ local function RegisterTextLabel(obj)
 		end))
 	end
 end
-local UITextColor = Util.Instance("Color3Value")
-UITextColor.Value = Color3.new(1, 1, 1)
 local function UpdateGrads(t)
 	local c = GetUIColor(t)
 	local bgc = GetUIBGColor(t)
