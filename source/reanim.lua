@@ -840,7 +840,7 @@ UITextColor.Value = Color3.new(1, 1, 1)
 local function RegisterTextLabel(obj)
 	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
 		obj.TextColor3 = UITextColor.Value
-		LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
+		Util.LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
 			obj.TextColor3 = val
 		end))
 	end
@@ -848,7 +848,7 @@ local function RegisterTextLabel(obj)
 		local h, s, v = UITextColor.Value:ToHSV()
 		obj.TextColor3 = UITextColor.Value
 		obj.PlaceholderColor3 = Color3.new(h, s, 0.5 + (v - 0.5) * 0.4)
-		LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
+		Util.LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
 			h, s, v = val:ToHSV()
 			obj.TextColor3 = val
 			obj.PlaceholderColor3 = Color3.new(h, s, 0.5 + (v - 0.5) * 0.4)
@@ -1578,7 +1578,7 @@ function UI.CreateSwitch(parent, text, value)
 	SwitchDot.BackgroundTransparency = 0.2
 	SwitchDot.BackgroundColor3 = UITextColor.Value
 	SwitchDot.BorderSizePixel = 0
-	LinkDestroyI2C(SwitchDot, UITextColor.Changed:Connect(function(val)
+	Util.LinkDestroyI2C(SwitchDot, UITextColor.Changed:Connect(function(val)
 		SwitchDot.BackgroundColor3 = val
 	end))
 	Util.Instance("UICorner", SwitchDot).CornerRadius = UDim.new(0, 2)
@@ -2947,7 +2947,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			SeatWeld.Part1 = RCRootPart
 			SeatWeld.C0 = CFrame.new(0, part.Size.Y / 2, 0)
 			SeatWeld.C1 = CFrame.new(0, -1.5 * RC:GetScale(), 0)
-			LinkDestroyI2C(SeatWeld, RCHumanoid:GetPropertyChangedSignal("Jump"):Connect(function()
+			Util.LinkDestroyI2C(SeatWeld, RCHumanoid:GetPropertyChangedSignal("Jump"):Connect(function()
 				if RCHumanoid.Jump then
 					RCHumanoid.Sit = false
 					SeatWeld:Destroy()
