@@ -847,11 +847,11 @@ local function RegisterTextLabel(obj)
 	if obj:IsA("TextBox") then
 		local h, s, v = UITextColor.Value:ToHSV()
 		obj.TextColor3 = UITextColor.Value
-		obj.PlaceholderColor3 = Color3.new(h, s, 0.5 + (v - 0.5) * 0.4)
+		obj.PlaceholderColor3 = Color3.fromHSV(h, s, 0.5 + (v - 0.5) * 0.4)
 		Util.LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
 			h, s, v = val:ToHSV()
 			obj.TextColor3 = val
-			obj.PlaceholderColor3 = Color3.new(h, s, 0.5 + (v - 0.5) * 0.4)
+			obj.PlaceholderColor3 = Color3.fromHSV(h, s, 0.5 + (v - 0.5) * 0.4)
 		end))
 	end
 end
