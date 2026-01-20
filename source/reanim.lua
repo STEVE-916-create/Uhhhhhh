@@ -1103,7 +1103,7 @@ CracktroFrame.BorderColor3 = Color3.new(1, 1, 1)
 CracktroFrame.ZIndex = 10
 CracktroFrame.ClipsDescendants = true
 AddToRenderStep(function(t)
-	CracktroFrame.BorderColor3 = Util.LoopedHSV(t / 10, 0.8, 1)
+	CracktroFrame.BorderColor3 = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
 end, CracktroFrame)
 
 do -- homepage
@@ -1317,7 +1317,7 @@ function UI.CreatePage()
 	Frame.ScrollBarThickness = 0
 	Frame.ClipsDescendants = true
 	AddToRenderStep(function(t)
-		Frame.BorderColor3 = Util.LoopedHSV(t / 10, 0.8, 1)
+		Frame.BorderColor3 = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
 	end, Frame)
 	local Padding = Util.Instance("UIPadding", Frame)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -1952,7 +1952,7 @@ function UI.CreateItemListPage()
 	Frame.ZIndex = 0
 	Frame.ClipsDescendants = true
 	AddToRenderStep(function(t)
-		Frame.BorderColor3 = Util.LoopedHSV(t / 10, 0.8, 1)
+		Frame.BorderColor3 = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
 	end, Frame)
 	local Padding = Util.Instance("UIPadding", Frame)
 	Padding.PaddingTop = UDim.new(0, margin)
@@ -2112,7 +2112,7 @@ end)
 local AsciiText = UI.CreateText(MainPage, "", 12, Enum.TextXAlignment.Center)
 AsciiText.TextStrokeTransparency = 0.75
 AddToRenderStep(function(t)
-	AsciiText.TextStrokeColor3 = Util.LoopedHSV(t / 10, 0.8, 1)
+	AsciiText.TextStrokeColor3 = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
 end, AsciiText)
 task.spawn(function()
 	local AsciiTextarts = {
@@ -2457,7 +2457,7 @@ do
 		elseif SaveData.UITheme == 8 then
 			ForceUIColor = Color3.new(1, 0.95, 0)
 		elseif SaveData.UITheme == 9 then
-			ForceUIColor = Color3.new(0, 0, 0)
+			ForceUIColor = Color3.new(0.1, 0.1, 0.1)
 		end
 	end
 	UI.CreateDropdown(MainPage, "UI Color", {
