@@ -1509,9 +1509,12 @@ function UI.CreateSeparator(parent)
 	Sep.AnchorPoint = Vector2.new(0.5, 0.5)
 	Sep.Position = UDim2.new(0.5, 0, 0.5, 0)
 	Sep.Size = UDim2.new(1, -8, 0, 1)
-	Sep.BackgroundColor3 = Color3.new(1, 1, 1)
+	Sep.BackgroundColor3 = UITextColor.Value
 	Sep.BackgroundTransparency = 0.8
 	Sep.BorderSizePixel = 0
+	Util.LinkDestroyI2C(Sep, UITextColor.Changed:Connect(function(val)
+		Sep.BackgroundColor3 = val
+	end))
 end
 function UI.CreateButton(parent, text, size)
 	local margin = 5
