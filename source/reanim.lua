@@ -884,8 +884,8 @@ local function SetUITheme(index)
 		{nil, nil, Color3.new(1, 1, 1)},
 		-- ALONE
 		{Color3.new(1, 1, 1), nil, Color3.new(1, 1, 1)},
-		-- Oxide-like
-		{Color3.fromHex("006077"), Color3.fromHex("00DDFF"), Color3.new(1, 1, 1)},
+		-- Oxide
+		{Color3.fromRGB(49, 203, 233), Color3.fromRGB(38, 38, 38), Color3.fromRGB(49, 203, 233)},
 		-- Patchma-like
 		{Color3.new(0.0941177, 0.317647, 0.878431), nil, Color3.new(0.560784, 0.560784, 0.560784)},
 		-- Genesis V4 - Neptunian V
