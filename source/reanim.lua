@@ -4802,7 +4802,7 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[5] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -30)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -8)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
