@@ -1007,22 +1007,22 @@ AddModule(function()
 			bigfedora.Name = "bigemofedora"
 			local mbigfedora = Instance.new("SpecialMesh", bigfedora)
 			mbigfedora.MeshType = "FileMesh"
-			mbigfedora.Scale = Vector3.new(5, 5, 5)
+			mbigfedora.Scale = Vector3.new(5, 5, 5) * figure:GetScale()
 			mbigfedora.MeshId = "http://www.roblox.com/asset/?id=1125478"
 			mbigfedora.TextureId = "http://www.roblox.com/asset/?id=1125479"
 			for i=1, 60 do
-				bigfedora.CFrame = bigfedora.CFrame:Lerp(CFrame.new(0, -0.1, 0) + root.Position, 0.09)
+				bigfedora.CFrame = bigfedora.CFrame:Lerp(CFrame.new(0, -0.1 * figure:GetScale(), 0) + root.Position, 0.09)
 				task.wait(1 / 60)
 			end
 			task.wait(0.25)
 			for i=1, 50 do
-				bigfedora.CFrame = bigfedora.CFrame:Lerp(CFrame.new(0, 1.5, 0) + root.Position, 0.05)
+				bigfedora.CFrame = bigfedora.CFrame:Lerp(CFrame.new(0, 1.5 * figure:GetScale(), 0) + root.Position, 0.05)
 				task.wait(1 / 60)
 			end
 			local zmc = 0
 			for i=1, 29 do
 				zmc = zmc + 2
-				mbigfedora.Scale = mbigfedora.Scale - Vector3.new(0.25, 0.25, 0.25)
+				mbigfedora.Scale = mbigfedora.Scale - Vector3.new(0.25, 0.25, 0.25) * figure:GetScale()
 				bigfedora.CFrame = bigfedora.CFrame * CFrame.Angles(0, math.rad(zmc), 0)
 				task.wait(1 / 60)
 			end
@@ -1113,9 +1113,9 @@ AddModule(function()
 				MousePos = workspace.CurrentCamera.CFrame * Vector3.new(0, -10000, 0)
 			end
 			local TranslationVector = (HeadPosition - MousePos).Unit
-			local Pitch = atan(TranslationVector.Y)
+			local Pitch = math.atan(TranslationVector.Y)
 			local Yaw = TranslationVector:Cross(Torso.CFrame.LookVector).Y
-			local Roll = atan(Yaw)
+			local Roll = math.atan(Yaw)
 			local NeckCFrame = CFrame.Angles(Pitch, 0, Yaw)
 			neck.C0 = neck.C0:Lerp(NeckC0 * NeckCFrame, dt * 10)
 		end
