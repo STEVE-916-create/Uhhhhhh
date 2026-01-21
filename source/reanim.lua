@@ -1,7 +1,7 @@
 if _G.UhhhhhhLoaded then return end
 _G.UhhhhhhLoaded = true
 
-local UhhhhhhVersion = "1.0.2"
+local UhhhhhhVersion = "1.0.2 BETA"
 
 cloneref = cloneref or function(o) return o end
 getcustomasset = getcustomasset or getsynasset
