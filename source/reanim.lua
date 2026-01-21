@@ -3060,7 +3060,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		end
 		if gravaff then
 			if Reanimate.ScaleGravity and not RCRootPart:IsGrounded() then
-				RCRootPart.Velocity += Vector3.new(0, -workspace.Gravity * (Reanimate.CharacterScale - 1) * dt, 0)
+				RCRootPart.AssemblyLinearVelocity += Vector3.new(0, -workspace.Gravity * (Reanimate.CharacterScale - 1) * 0.5 * dt, 0)
 			end
 		end
 		if LastJump ~= CJump then
