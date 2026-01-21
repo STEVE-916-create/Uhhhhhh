@@ -6748,19 +6748,17 @@ local function AddDance(m)
 end
 local function AddModule(func)
 	GiveFunctionsToFunction(func)
-	local s, m = pcall(func)
-	if s and m and type(m) == "table" then
+	local m = func()
+	if m and type(m) == "table" then
 		if m.ModuleType == "MOVESET" then
 			AddMoveset(m)
-		end
-		if m.ModuleType == "DANCE" then
+		elseif m.ModuleType == "DANCE" then
 			AddDance(m)
+		else
+			error("Unknown ModuleType for Module!")
 		end
-	elseif not s then
-		warn(m)
-		Util.Notify("A module ran into an error. See console.")
 	else
-		Util.Notify("A module didnt return a table.")
+		error("Module return value is not a table. Got " .. typeof(m) .. " instead.")
 	end
 end
 local function AddModules(list)
