@@ -1116,8 +1116,8 @@ AddModule(function()
 			local Pitch = math.atan(TranslationVector.Y)
 			local Yaw = TranslationVector:Cross(torso.CFrame.LookVector).Y
 			local Roll = math.atan(Yaw)
-			local NeckCFrame = CFrame.Angles(Pitch, 0, Yaw)
-			neck.C0 = neck.C0:Lerp(NeckC0 * NeckCFrame, dt * 10)
+			local NeckCFrame = NeckC0 * CFrame.Angles(Pitch, 0, Yaw)
+			neck.C0 = neck.C0:Lerp(NeckCFrame + NeckCFrame.Position * (scale - 1), dt * 10)
 		end
 	end
 	m.Destroy = function(figure: Model?)
