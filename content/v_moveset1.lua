@@ -202,12 +202,13 @@ AddModule(function()
 			elseif state == "Landed" then
 				pose = "Freefall"
 				canClimb = true
+				local scale = figure:GetScale()
 				local vel = hum.Torso.Velocity
 				local power = -vel.Y / 2
-				if power > 30 then
+				if power > 30 * scale then
 					hum.Torso.Velocity = Vector3.new(vel.X, power, vel.Z)
-					hum.Torso.RotVelocity = rng:NextUnitVector() * power * 0.5
-					if power > 100 then
+					hum.Torso.RotVelocity = rng:NextUnitVector() * power * 0.5 / scale
+					if power > 100 * scale then
 						hum:ChangeState(Enum.HumanoidStateType.Ragdoll)
 					else
 						hum:ChangeState(Enum.HumanoidStateType.Freefall)
@@ -338,7 +339,7 @@ AddModule(function()
 			lh.D = -1.57
 		else
 			hum.AutoRotate = true
-			hum.JumpPower = 50
+			hum.JumpPower = 50 * scale
 
 			local amplitude = 1
 			local frequency = 9

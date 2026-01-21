@@ -7281,7 +7281,7 @@ for _,x in filesofbuiltins_m do
 	end
 	task.wait()
 	xpcall(function()
-		local func, comperr = loadstring(data, Util.RandomString())
+		local func, comperr = loadstring(data, "Uhhhhhh :: VANILLA " .. x)
 		if func then
 			AddModules(func())
 		elseif comperr then
@@ -7298,7 +7298,7 @@ for _,path in listfiles("UhhhhhhReanim/Modules/") do
 	if isfile(path) then
 		--Util.Notify("User: " .. path:sub(23))
 		xpcall(function()
-			local func, comperr = loadstring(readfile(path), RandomString())
+			local func, comperr = loadstring(readfile(path), "Uhhhhhh :: " .. path:sub(23))
 			if func then
 				AddModules(func())
 			elseif comperr then
