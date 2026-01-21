@@ -4784,19 +4784,19 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[2] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -2) * CFrame.Angles(math.pi, 0, 0)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1) * CFrame.Angles(math.pi, 0, 0)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
 	HatCollideMethods[3] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -2) * CFrame.Angles(math.pi * -0.5, 0, 0)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1) * CFrame.Angles(math.pi * -0.5, 0, 0)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
 	HatCollideMethods[4] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -2) * CFrame.Angles(math.pi * 0.5, 0, 0)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1) * CFrame.Angles(math.pi * 0.5, 0, 0)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
