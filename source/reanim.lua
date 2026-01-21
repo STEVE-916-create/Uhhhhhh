@@ -2915,6 +2915,7 @@ SaveData.ClickFlingEnabled = not not SaveData.ClickFlingEnabled
 SaveData.NoSmoothCam = not not SaveData.NoSmoothCam
 SaveData.NoSeatSitEnabled = not SaveData.NoSeatSitEnabled
 SaveData.ToolGrabEnabled = not not SaveData.ToolGrabEnabled
+SaveData.ScaleGravityEnabled = not not SaveData.ScaleGravityEnabled
 SaveData.CharacterScale = SaveData.CharacterScale or 1
 SaveData.P2PCollision = not not SaveData.P2PCollision
 SaveData.NoLoadAnimationHook = not not SaveData.NoLoadAnimationHook
@@ -2941,6 +2942,7 @@ local Reanimate = {
 	SmoothCam = not SaveData.NoSmoothCam,
 	SeatSit = not SaveData.NoSeatSitEnabled,
 	ToolGrab = SaveData.ToolGrabEnabled,
+	ScaleGravity = SaveData.ScaleGravityEnabled,
 	AntiExplosions = true,
 	CharacterScale = SaveData.CharacterScale,
 	P2PCollision = false,
@@ -3025,6 +3027,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	RCP.FilterType = Enum.RaycastFilterType.Exclude
 	RCP.FilterDescendantsInstances = {RC}
 	local noclipStates = {"Running", "Jumping", "Freefall", "Landed", "Climbing", "Swimming"}
+	local fallingStates = {"Jumping", "Freefall", "PlatformStanding", "Physics", "Ragdoll", "GettingUp", "Seated", "Flying", "FallingDown"}
 	local LastSafest = RCRootPart.CFrame
 	Util.LinkDestroyI2C(RC, RunService.PreAnimation:Connect(function(dt)
 		local CMove, CJump = Vector3.zero, false
@@ -3049,9 +3052,15 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		end
 		local RCHumanoidState = RCHumanoid:GetState().Name
 		local clip = not table.find(noclipStates, RCHumanoidState)
+		local gravaff = not not table.find(fallingStates, RCHumanoidState)
 		for _,v in RC:GetChildren() do
 			if v:IsA("BasePart") then
 				v.CanCollide = clip or (not Reanimate.Noclip and v == RCRootPart)
+			end
+		end
+		if gravaff then
+			if Reanimate.ScaleGravity and not RCRootPart:IsGrounded() then
+				RCRootPart.AssemblyLinearVelocity += Vector3.new(0, -workspace.Gravity * (Reanimate.CharacterScale - 1) * dt, 0)
 			end
 		end
 		if LastJump ~= CJump then
@@ -5719,6 +5728,10 @@ do
 	UI.CreateSwitch(MainPage, "Can Pickup Tools", Reanimate.ToolGrab).Changed:Connect(function(val)
 		Reanimate.ToolGrab = val
 		SaveData.ToolGrabEnabled = val
+	end)
+	UI.CreateSwitch(MainPage, "Apply Scale to Gravity", Reanimate.ScaleGravity).Changed:Connect(function(val)
+		Reanimate.ScaleGravity = val
+		SaveData.ScaleGravityEnabled = val
 	end)
 	UI.CreateButton(MainPage, "Force Sit (2x to remove gyro)", 20).Activated:Connect(function()
 		local ch = Reanimate.Character or Player.Character
