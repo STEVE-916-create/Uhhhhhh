@@ -1001,7 +1001,7 @@ AddModule(function()
 		task.spawn(function()
 			local bigfedora = Instance.new("Part", figure)
 			bigfedora.Size = Vector3.new(2, 2, 2)
-			bigfedora.CFrame = root.CFrame * CFrame.new(math.random(-60, 60), -0.2, math.random(-60, 60)) * CFrame.Angles(0, math.rad(math.random(-180, 180)), 0)
+			bigfedora.CFrame = root.CFrame * CFrame.new(math.random(-60, 60) * figure:GetScale(), -0.2 * figure:GetScale(), math.random(-60, 60) * figure:GetScale()) * CFrame.Angles(0, math.rad(math.random(-180, 180)), 0)
 			bigfedora.Anchored = true
 			bigfedora.CanCollide = false
 			bigfedora.Name = "bigemofedora"
@@ -1114,7 +1114,7 @@ AddModule(function()
 			end
 			local TranslationVector = (HeadPosition - MousePos).Unit
 			local Pitch = math.atan(TranslationVector.Y)
-			local Yaw = TranslationVector:Cross(Torso.CFrame.LookVector).Y
+			local Yaw = TranslationVector:Cross(torso.CFrame.LookVector).Y
 			local Roll = math.atan(Yaw)
 			local NeckCFrame = CFrame.Angles(Pitch, 0, Yaw)
 			neck.C0 = neck.C0:Lerp(NeckC0 * NeckCFrame, dt * 10)
