@@ -1315,6 +1315,8 @@ do -- homepage
 		"This script is very \"verbose\".",
 		"Written mostly on a mobile phone.",
 		"I am pretty new in this community! :D",
+		"\"Dreams come true!\"",
+		"Idea originated from a dream.",
 	}
 	local text3 = nil
 	local function changequote()
