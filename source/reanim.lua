@@ -1340,13 +1340,13 @@ do -- homepage
 		text3.Position = UDim2.new(0.5, 0, 1, -17)
 		text3.ZIndex = 3
 		text3.Parent = CracktroFrame
+		Util.SetTextColor(text3, UITextColor.Value, 0)
 		task.delay(15, changequote)
 	end
 	changequote()
 	Util.SetTextColor(text, UITextColor.Value, 0)
 	Util.SetTextColor(text1, UITextColor.Value, 0)
 	Util.SetTextColor(text2, UITextColor.Value, 0)
-	Util.SetTextColor(text3, UITextColor.Value, 0)
 	UITextColor.Changed:Connect(function(val)
 		Util.SetTextColor(text, val, 0)
 		Util.SetTextColor(text1, val, 0)
