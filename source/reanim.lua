@@ -1305,13 +1305,31 @@ do -- homepage
 	text2.Position = UDim2.new(0.5, 0, 1, -17)
 	text2.ZIndex = 3
 	text2.Parent = CracktroFrame
+	local quotes = {
+		"\"EVERY CLIENT ORBITS A SERVER...\"",
+		Player.Name .. ", how is your " .. os.date("%A") .. "?",
+		"A great " .. os.date("%A") .. " today, eh?",
+		"Hello, " .. Player.Name .. ".",
+		"What makes you play at " .. os.date("%I %p") .. "?",
+		"You are going to love Uhhhhhh, I just know it.",
+		"This script is very \"verbose\".",
+		"Written mostly on a mobile phone.",
+		"I am pretty new in this community! :D",
+	}
+	local text3 = Util.MakeText(quotes[math.random(1, #quotes)])
+	text3.AnchorPoint = Vector2.new(0.5, 1)
+	text3.Position = UDim2.new(0.5, 0, 1, -17)
+	text3.ZIndex = 3
+	text3.Parent = CracktroFrame
 	Util.SetTextColor(text, UITextColor.Value, 0)
 	Util.SetTextColor(text1, UITextColor.Value, 0)
 	Util.SetTextColor(text2, UITextColor.Value, 0)
+	Util.SetTextColor(text3, UITextColor.Value, 0)
 	UITextColor.Changed:Connect(function(val)
 		Util.SetTextColor(text, val, 0)
 		Util.SetTextColor(text1, val, 0)
 		Util.SetTextColor(text2, val, 0)
+		Util.SetTextColor(text3, val, 0)
 	end)
 
 	local PositionProcessor = {
@@ -1429,12 +1447,23 @@ do -- homepage
 					v[6] = nzind
 				end
 			end
-			if IsUhhhhhhFullyLoaded and t % 10 >= 5 then
-				text1.Visible = false
-				text2.Visible = true
-			else
+			local textsel = t % 10
+			if IsUhhhhhhFullyLoaded then
+				textsel = t % 15
+			end
+			textsel //= 5
+			if textsel == 0 then
 				text1.Visible = true
 				text2.Visible = false
+				text3.Visible = false
+			elseif textsel == 1 then
+				text1.Visible = false
+				text2.Visible = false
+				text3.Visible = true
+			else
+				text1.Visible = false
+				text2.Visible = true
+				text3.Visible = false
 			end
 		else
 			currentprocessor = math.random(1, #PositionProcessor)
@@ -3349,6 +3378,7 @@ function LimbReanimator.SetRootPartMode(mode)
 	LimbReanimator.Mode = mode
 end
 function LimbReanimator.Config(parent)
+	UI.CreateText(parent, "as mentioned in the README, this only works for SOME games,\nbecause 'modern' games create the Animator automatically which breaks limb reanimation", 10, Enum.TextXAlignment.Center)
 	local dmode = UI.CreateDropdown(parent, "RootPart Mode", {"RootPart in void", "Keep RootPart Streamed", "CurrentAngle Style", "RootPart is Torso"}, LimbReanimator.Mode + 1)
 	local dvel = UI.CreateDropdown(parent, "RootPart Velocity", {"No Velocity", "Follow Character", "Fling-like"}, LimbReanimator.Velocity + 1)
 	local dinit = UI.CreateDropdown(parent, "Init Mode", {"Reset Character", "CDSB + Reset", "CDSB + SSE + Kill"}, LimbReanimator.InitMode + 1)
