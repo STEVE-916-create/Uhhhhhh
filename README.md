@@ -85,6 +85,7 @@ _G.UhhhhhhTheme = {
 	Back = Color3.new(0, 0, 0), -- nil = pure black
 	Text = Color3.new(0, 1, 0),
 }
+-- the Color3s can also be a hex code string e.g.: "DDBB69"
 ```
 
 # SHOWCASES

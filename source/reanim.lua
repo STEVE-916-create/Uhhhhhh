@@ -927,10 +927,23 @@ local function SetUITheme(index)
 			if typeof(t.Text) == "Color3" then
 				theme[3] = t.Text
 			end
+			if typeof(t.Fore) == "string" then
+				theme[1] = Color3.fromHex(t.Fore)
+			end
+			if typeof(t.Back) == "string" then
+				theme[2] = Color3.fromHex(t.Back)
+			end
+			if typeof(t.Text) == "string" then
+				theme[3] = Color3.fromHex(t.Text)
+			end
 		end
 		if type(_G.UhhhhhhTheme) == "table" and getmetatable(_G.UhhhhhhTheme) == nil then
 			processtable(_G.UhhhhhhTheme)
-			SaveData.UIThemeUserDefined = _G.UhhhhhhTheme
+			SaveData.UIThemeUserDefined = {
+				Fore = theme[1] and theme[1]:ToHex(),
+				Back = theme[2] and theme[2]:ToHex(),
+				Text = theme[3] and theme[3]:ToHex() or "FFFFFF",
+			}
 		elseif type(SaveData.UIThemeUserDefined) == "table" then
 			processtable(SaveData.UIThemeUserDefined)
 		end
