@@ -1586,8 +1586,7 @@ AddModule(function()
 			uiskeypress:Disconnect()
 		end
 		uiskeypress = UserInputService.InputBegan:Connect(function(input, gpe)
-			if gpe then return end
-			if input.UserInputType == Enum.UserInputType.Keyboard then
+			if input.UserInputType == Enum.UserInputType.Keyboard and not UserInputService:GetFocusedTextBox() then
 				onkeypress(input.KeyCode.Name:lower())
 			end
 		end)

@@ -6799,6 +6799,8 @@ task.spawn(function()
 end)
 task.spawn(function()
 	local _oldcharacterreference = nil
+	local errorsandwarnings = {}
+	local currenterrorid = 1
 	while true do local dt = RunService.Heartbeat:Wait() xpcall(function(dt)
 		local ReanimCharacter = Reanimate.Character
 		SaveData.MovesetIndex = MovementStyleIndex
@@ -6885,7 +6887,18 @@ task.spawn(function()
 		end
 		_oldcharacterreference = ReanimCharacter
 	end, function(m)
-		warn(debug.traceback("ANIMATION LOOP ERROR :: " .. m))
+		m = debug.traceback("ANIMLOOP :: " .. m)
+		local id = errorsandwarnings[m]
+		if not id then
+			errorsandwarnings[m] = {currenterrorid, 0}
+			currenterrorid += 1
+			warn("ERROR #" .. errorsandwarnings[m][1] .. ": " .. m)
+		else
+			id[2] += 1
+			if id[2] <= 8192 and math.sqrt(id[2]) % 1 == 0 then
+				warn("ERROR #" .. id[1] .. " repeated " .. id[2] .. " times")
+			end
+		end
 	end, dt) end
 end)
 UI.CreateSeparator(MainPage)
