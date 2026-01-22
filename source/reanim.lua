@@ -4749,7 +4749,6 @@ function HatReanimator.Start()
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 25, 0), Vector3.zero
 		end,
 		State1 = function(character, Humanoid, hats)
-			local Humanoid = character:FindFirstChildOfClass("Humanoid")
 			local anim = Instance.new("Animation")
 			anim.AnimationId = "rbxassetid://180436148"
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
@@ -4989,9 +4988,13 @@ function HatReanimator.Start()
 			local hum = character:FindFirstChild("Humanoid")
 			local head = character:FindFirstChild("Head")
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
-			task.wait(0.2)
+			task.wait(0.27)
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
+			end
+			task.wait(0.1)
+			for _,v in hats do
+				SetAccoutrementState(v, BackendAccoutrementState.Equipped)
 			end
 			if head and head:IsDescendantOf(workspace) then
 				head.AncestryChanged:Wait()
