@@ -4995,7 +4995,7 @@ function HatReanimator.Start()
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
-			replicatesignal(Humanoid.ServerBreakJoints)
+			replicatesignal(hum.ServerBreakJoints)
 			if rightleg and rightleg:IsDescendantOf(workspace) then
 				rightleg.AncestryChanged:Wait()
 			end
