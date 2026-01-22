@@ -257,6 +257,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Assumptions"
 	m.Description = "if its the love that you want\nill give my everything\nand if i made the right assumption\ndo you feel the same"
+	m.InternalName = "ASSUME"
 	m.Assets = {"Assumptions.anim", "Assumptions.mp3"}
 
 	m.Config = function(parent: GuiBase2d)

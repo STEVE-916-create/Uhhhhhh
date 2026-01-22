@@ -6797,93 +6797,96 @@ task.spawn(function()
 		end
 	end
 end)
-
-local _oldcharacterreference = nil
-RunService.Heartbeat:Connect(function(dt)
-	local ReanimCharacter = Reanimate.Character
-	SaveData.MovesetIndex = MovementStyleIndex
-	if ReanimCharacter then
-		if _oldcharacterreference ~= ReanimCharacter then
+task.spawn(function()
+	local _oldcharacterreference = nil
+	while true do local dt = RunService.Heartbeat:Wait() xpcall(function(dt)
+		local ReanimCharacter = Reanimate.Character
+		SaveData.MovesetIndex = MovementStyleIndex
+		if ReanimCharacter then
+			if _oldcharacterreference ~= ReanimCharacter then
+				SetOverrideMovesetMusic(nil)
+				SetOverrideDanceMusic(nil)
+				if CurrentMovementStyle then
+					pcall(CurrentMovementStyle.Destroy, nil)
+					CurrentMovementStyle = nil
+				end
+				if _CurrentDance then
+					_CurrentDance.Destroy(nil)
+					_CurrentDance = nil
+				end
+				_MovementStyleIndex = nil
+			end
+			if MovementStyleIndex ~= _MovementStyleIndex then
+				if CurrentMovementStyle then
+					CurrentMovementStyle.Destroy(ReanimCharacter)
+					CurrentMovementStyle = nil
+				end
+				_MovementStyleIndex = MovementStyleIndex
+				CurrentMovementStyle = MovementStyles[MovementStyleIndex]
+				SetOverrideMovesetMusic(nil)
+				if ReanimCharacter:GetAttribute("MovementInit") then
+					Reanimate.CreateCharacter()
+					ReanimCharacter = Reanimate.Character
+				end
+			end
+			if CurrentMovementStyle then
+				if ReanimCharacter:GetAttribute("MovementInit") then
+					CurrentMovementStyle.Update(dt, ReanimCharacter)
+					if CurrentDance ~= _CurrentDance then
+						if _CurrentDance then
+							_CurrentDance.Destroy(ReanimCharacter)
+						end
+						_CurrentDance = CurrentDance
+						ReanimCharacter:SetAttribute("IsDancing", nil)
+						ReanimCharacter:SetAttribute("DanceInternalName", nil)
+						SetOverrideDanceMusic(nil)
+					end
+					if _CurrentDance then
+						if ReanimCharacter:GetAttribute("IsDancing") then
+							_CurrentDance.Update(dt, ReanimCharacter)
+						else
+							if AssetEnsure(_CurrentDance.Assets) then
+								ReanimCharacter:SetAttribute("IsDancing", true)
+								ReanimCharacter:SetAttribute("DanceInternalName", _CurrentDance.InternalName)
+								_CurrentDance.Init(ReanimCharacter)
+							else
+								SetOverrideDanceMusic(nil)
+							end
+						end
+					end
+				else
+					HatReanimator.HatWeldOverride = {}
+					if AssetEnsure(CurrentMovementStyle.Assets) then
+						ReanimCharacter:SetAttribute("MovementInit", true)
+						ReanimCharacter:SetAttribute("MovesetInternalName", CurrentMovementStyle.InternalName)
+						table.clear(HatReanimator.HatCFrameOverride)
+						CurrentMovementStyle.Init(ReanimCharacter)
+					else
+						SetOverrideMovesetMusic(nil)
+					end
+				end
+			else
+				ReanimCharacter:SetAttribute("MovementInit", nil)
+				_MovementStyleIndex = nil
+			end
+		else
+			CurrentDance = nil
+			_MovementStyleIndex = nil
 			SetOverrideMovesetMusic(nil)
 			SetOverrideDanceMusic(nil)
 			if CurrentMovementStyle then
-				pcall(CurrentMovementStyle.Destroy, nil)
+				CurrentMovementStyle.Destroy(nil)
 				CurrentMovementStyle = nil
 			end
 			if _CurrentDance then
 				_CurrentDance.Destroy(nil)
 				_CurrentDance = nil
 			end
-			_MovementStyleIndex = nil
 		end
-		if MovementStyleIndex ~= _MovementStyleIndex then
-			if CurrentMovementStyle then
-				CurrentMovementStyle.Destroy(ReanimCharacter)
-				CurrentMovementStyle = nil
-			end
-			_MovementStyleIndex = MovementStyleIndex
-			CurrentMovementStyle = MovementStyles[MovementStyleIndex]
-			SetOverrideMovesetMusic(nil)
-			if ReanimCharacter:GetAttribute("MovementInit") then
-				Reanimate.CreateCharacter()
-				ReanimCharacter = Reanimate.Character
-			end
-		end
-		if CurrentMovementStyle then
-			if ReanimCharacter:GetAttribute("MovementInit") then
-				CurrentMovementStyle.Update(dt, ReanimCharacter)
-				if CurrentDance ~= _CurrentDance then
-					if _CurrentDance then
-						_CurrentDance.Destroy(ReanimCharacter)
-					end
-					_CurrentDance = CurrentDance
-					ReanimCharacter:SetAttribute("IsDancing", nil)
-					ReanimCharacter:SetAttribute("DanceInternalName", nil)
-					SetOverrideDanceMusic(nil)
-				end
-				if _CurrentDance then
-					if ReanimCharacter:GetAttribute("IsDancing") then
-						_CurrentDance.Update(dt, ReanimCharacter)
-					else
-						if AssetEnsure(_CurrentDance.Assets) then
-							ReanimCharacter:SetAttribute("IsDancing", true)
-							ReanimCharacter:SetAttribute("DanceInternalName", _CurrentDance.InternalName)
-							_CurrentDance.Init(ReanimCharacter)
-						else
-							SetOverrideDanceMusic(nil)
-						end
-					end
-				end
-			else
-				HatReanimator.HatWeldOverride = {}
-				if AssetEnsure(CurrentMovementStyle.Assets) then
-					ReanimCharacter:SetAttribute("MovementInit", true)
-					ReanimCharacter:SetAttribute("MovesetInternalName", CurrentMovementStyle.InternalName)
-					table.clear(HatReanimator.HatCFrameOverride)
-					CurrentMovementStyle.Init(ReanimCharacter)
-				else
-					SetOverrideMovesetMusic(nil)
-				end
-			end
-		else
-			ReanimCharacter:SetAttribute("MovementInit", nil)
-			_MovementStyleIndex = nil
-		end
-	else
-		CurrentDance = nil
-		_MovementStyleIndex = nil
-		SetOverrideMovesetMusic(nil)
-		SetOverrideDanceMusic(nil)
-		if CurrentMovementStyle then
-			CurrentMovementStyle.Destroy(nil)
-			CurrentMovementStyle = nil
-		end
-		if _CurrentDance then
-			_CurrentDance.Destroy(nil)
-			_CurrentDance = nil
-		end
-	end
-	_oldcharacterreference = ReanimCharacter
+		_oldcharacterreference = ReanimCharacter
+	end, function(m)
+		warn(debug.traceback("ANIMATION LOOP ERROR :: " .. m))
+	end, dt)
 end)
 UI.CreateSeparator(MainPage)
 task.wait()
