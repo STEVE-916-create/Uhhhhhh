@@ -4952,7 +4952,7 @@ function HatReanimator.Start()
 		Wait1 = 0.1,
 		Wait2 = 0.15,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 3, 0))
+			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 8, 0))
 			RootPart.CFrame = rootcf
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 30), Vector3.zero
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
@@ -4974,11 +4974,9 @@ function HatReanimator.Start()
 						if v.Name == "RootJoint" then
 							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, -0.25, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 1.5, -40))
-						elseif v.Name == "Right Shoulder" then
 							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 1.5, -20))
 						else
-							Util.SetMotor6DOffset(v, CFrame.new(i * -3, math.random() * 0.05, -2))
+							Util.SetMotor6DOffset(v, CFrame.new(i * -3, math.random() * 0.05, 5))
 							i += 1
 						end
 					end
@@ -4988,16 +4986,14 @@ function HatReanimator.Start()
 		State1 = function(character, Humanoid, hats)
 		end,
 		State2 = function(character, hats)
-			local rightleg = character:FindFirstChild("Right Leg")
 			local hum = character:FindFirstChild("Humanoid")
+			local head = character:FindFirstChild("Head")
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
-			task.wait(0.3)
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
-			replicatesignal(hum.ServerBreakJoints)
-			if rightleg and rightleg:IsDescendantOf(workspace) then
-				rightleg.AncestryChanged:Wait()
+			if head and head:IsDescendantOf(workspace) then
+				head.AncestryChanged:Wait()
 			end
 			task.wait(1.5)
 			return _counthats(hats)

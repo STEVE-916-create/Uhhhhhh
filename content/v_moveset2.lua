@@ -2068,7 +2068,7 @@ AddModule(function()
 		-- animations
 		local sin50 = math.sin(timingsine / 50)
 		local cos50 = math.cos(timingsine / 50)
-		gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(math.rad(180), math.rad(180), 0)
+		gunoff = CFrame.new(0.05, -1, 0.15) * CFrame.Angles(math.rad(180), math.rad(180), 0)
 		if attacking or currentmode == 0 or (currentmode == 1 and sanitysongsync < 8) then
 			if root.Velocity.Magnitude < 8 * scale or attacking then
 				rt = ROOTC0 * CFrame.new(0.5 * cos50, 0, 10 * math.clamp(math.pow(1 - t, 3), 0, 1) - 0.5 * sin50)
