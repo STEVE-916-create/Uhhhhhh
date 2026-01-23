@@ -637,6 +637,8 @@ else
 		"Omega-Skidded Immortality Lord Diddy Blud On The Calculator       ",
 		"all UI music credits to dubmood, zabutom, ogge and 4mat           ",
 		"heres the triforce                and heres my name                              ",
+		"skids are now taking credit of this entire script, meaning its so good           ",
+		"whenever i see hat reanimation nowadays i check to see if they are collidable    ",
 	}
 	scrolltexts = scrolltexts[math.random(1, #scrolltexts)]
 	local fade = TweenService:Create(UIMainFrame, TweenInfo.new(5), {BackgroundTransparency = 0.5})
