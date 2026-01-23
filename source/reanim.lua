@@ -1369,7 +1369,7 @@ do -- homepage
 		text3.ZIndex = 3
 		text3.Parent = CracktroFrame
 		Util.SetTextColor(text3, UITextColor.Value, 0)
-		task.delay(15, changequote)
+		task.delay(12, changequote)
 	end
 	changequote()
 	UITextColor.Changed:Connect(function(val)
