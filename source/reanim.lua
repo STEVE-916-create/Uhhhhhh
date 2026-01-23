@@ -4985,6 +4985,8 @@ function HatReanimator.Start()
 						if v.Name == "RootJoint" then
 							Util.SetMotor6DOffset(v, CFrame.new(0, 0, -20))
 						elseif v.Name == "Neck" then
+							Util.SetMotor6DOffset(v, CFrame.new(0, 0, -1))
+						elseif v.Name == "Right Shoulder" then
 							Util.SetMotor6DOffset(v, CFrame.new(0, 0, -20))
 						else
 							Util.SetMotor6DOffset(v, CFrame.new(i * -3, 0, 10))
@@ -5012,7 +5014,7 @@ function HatReanimator.Start()
 		end,
 		State2 = function(character, hats)
 			local hum = character:FindFirstChild("Humanoid")
-			local head = character:FindFirstChild("Head")
+			local head = character:FindFirstChild("Right Arm")
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
 			task.wait(0.41)
 			for _,v in hats do
