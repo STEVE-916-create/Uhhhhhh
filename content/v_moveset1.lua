@@ -975,7 +975,7 @@ AddModule(function()
 	m.InternalName = "KDRV3"
 	m.Assets = {"KDRV3Idle.anim", "KDRV3Walk.anim", "KDRV3Sprint.anim", "CreoSphere.mp3"}
 
-	m.SimulateLagFromOriginal = true
+	m.SimulateLagFromOriginal = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Insane 7s Lag", m.SimulateLagFromOriginal).Changed:Connect(function(val)
 			m.SimulateLagFromOriginal = val
