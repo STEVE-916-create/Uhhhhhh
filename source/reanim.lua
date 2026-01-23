@@ -1331,6 +1331,7 @@ do -- homepage
 		"I am pretty new in this community! :D",
 		"\"Dreams come true!\"",
 		"Idea originated from a dream.",
+		"If you love this program, join my Discord!",
 	}
 	local text3 = nil
 	local function changequote()
@@ -2464,6 +2465,14 @@ task.spawn(function()
 			"                                                   ",
 			"\"it's not fast it's shit\"                          ",
 			"Believe me friend, its fuckingly fast, you don't ev",
+		},
+		{
+			"Uhhhhhh BUY OUR PRODUCT FOR FREE, NOW!! Uhhhhhh",
+			"Uhhhhhh Uhhhhhh Uhhhhhh Uhhhhhh STEVETHEREALONE",
+			"Uhhhhhh Uhhhhhh Uhhhhhh STEVETHEREALONE Uhhhhhh",
+			"Uhhhhhh Uhhhhhh STEVETHEREALONE Uhhhhhh Uhhhhhh",
+			"Uhhhhhh STEVETHEREALONE Uhhhhhh Uhhhhhh Uhhhhhh",
+			"STEVETHEREALONE Uhhhhhh Uhhhhhh Uhhhhhh Uhhhhhh",
 		},
 	}
 	AsciiText.Text = table.concat(AsciiTextarts[math.random(1, #AsciiTextarts)], "\n")
@@ -4896,15 +4905,15 @@ function HatReanimator.Start()
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 6, 0))
+							Util.SetMotor6DOffset(v, CFrame.new(0, 6, 0))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 3, -3))
+							Util.SetMotor6DOffset(v, CFrame.new(0, 3, -2))
 						elseif v.Name == "Right Shoulder" then
-							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 3 + math.random() * 0.05, 3.5, -3))
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2, 3.5, -2))
 						elseif v.Name == "Left Shoulder" then
-							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 3 + math.random() * 0.05, 0, -3))
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2, 0, -2))
 						elseif v.Name:find("Hip") then
-							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 3 + math.random() * 0.05, -2, -3))
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2, -2, -2))
 						else
 							Util.SetMotor6DTransform(v, CFrame.identity)
 						end
@@ -4920,12 +4929,15 @@ function HatReanimator.Start()
 				if handle then
 					local weld = handle:FindFirstChild("AccessoryWeld")
 					if weld then
-						if weld.Part1 ~= head then
+						if weld.Part0 == handle and weld.Part1 ~= head then
+							continue
+						end
+						if weld.Part1 == handle and weld.Part0 ~= head then
 							continue
 						end
 					end
 				end
-				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
+				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
 		end,
 		State2 = function(character, hats)
@@ -4934,12 +4946,11 @@ function HatReanimator.Start()
 			local head = character:FindFirstChild("Head")
 			local rightarm = character:FindFirstChild("Right Arm") -- this will also reevaluate collisions upon removal (cuz tool)
 			if torso then
-				task.wait(0.31)
-				--task.wait(calculatepartdestroytime(2, 30, workspace.Gravity) + 0.01)
+				task.wait(calculatepartdestroytime(2, 26, workspace.Gravity) - 0.1)
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
+				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
 			if torso and torso.Parent then
 				torso.AncestryChanged:Wait()
