@@ -5018,6 +5018,7 @@ function HatReanimator.Start()
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
+			task.wait(0.4)
 			if head and head:IsDescendantOf(workspace) then
 				head.AncestryChanged:Wait()
 			end
