@@ -5002,7 +5002,7 @@ function HatReanimator.Start()
 						end
 					end
 				end
-				SetAccoutrementState(v, BackendAccoutrementState.None)
+				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 		end,
 		State2 = function(character, hats)
@@ -5011,7 +5011,7 @@ function HatReanimator.Start()
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
 			task.wait(0.41)
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.None)
+				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 			task.wait(0.19)
 			if head and head:IsDescendantOf(workspace) then
