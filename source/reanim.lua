@@ -7,9 +7,13 @@ $$      $$$$$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$
  "YmmMMMM""MMM    YMMMMM    YMMMMM    YMMMMM    YMMMMM    YMMMMM    YMM
        "DREAMS WILL NEVER COME TRUE UNTIL YOU ACTUALLY MAKE IT."       
 
-Code: STEVETHEREALONE
-GFX: STEVETHEREALONE, AALib and some random generators
-Music: Dubmood, 4mat, MASTER BOOT RECORD
+       Code:    STEVETHEREALONE
+       GFX:     STEVETHEREALONE
+                AALib
+                some random generators
+       Music:   Dubmood
+                4mat
+                MASTER BOOT RECORD
 ]]
 
 if _G.UhhhhhhLoaded then return end
@@ -3310,6 +3314,43 @@ Util.SetMotor6DOffset = function(motor, offset)
 	Util.SetMotor6DTransform(motor, motor.C0:Inverse() * offset * motor.C1)
 end
 
+Util.ShowPartHitbox = function(part)
+	local w = Instance.new("WireframeHandleAdornment")
+	w.Name = "TempWireframe"
+	w.Adornee = part
+	w.Size = part.Size
+	w.Color3 = Color3.fromRGB(0, 255, 120)   -- neon green-ish, feel free to change
+	w.Transparency = 0.15
+	w.ZIndex = 10
+	s.AlwaysOnTop = true
+	w.Thickness = 2
+	w.Parent = SCREENGUI
+	local hs = part.Size / 2
+	local verts = {
+		Vector3.new(-hs.X, -hs.Y, -hs.Z),
+		Vector3.new( hs.X, -hs.Y, -hs.Z),
+		Vector3.new( hs.X,  hs.Y, -hs.Z),
+		Vector3.new(-hs.X,  hs.Y, -hs.Z),
+		Vector3.new(-hs.X, -hs.Y,  hs.Z),
+		Vector3.new( hs.X, -hs.Y,  hs.Z),
+		Vector3.new( hs.X,  hs.Y,  hs.Z),
+		Vector3.new(-hs.X,  hs.Y,  hs.Z),
+	}
+	w:AddLine(verts[1], verts[2])
+	w:AddLine(verts[2], verts[3])
+	w:AddLine(verts[3], verts[4])
+	w:AddLine(verts[4], verts[1])
+	w:AddLine(verts[5], verts[6])
+	w:AddLine(verts[6], verts[7])
+	w:AddLine(verts[7], verts[8])
+	w:AddLine(verts[8], verts[5])
+	w:AddLine(verts[1], verts[5])
+	w:AddLine(verts[2], verts[6])
+	w:AddLine(verts[3], verts[7])
+	w:AddLine(verts[4], verts[8])
+	Debris:AddItem(w, 1)
+end
+
 local RIGHTGRIP_C0 = CFrame.new(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0)
 Util.PredictionFling = function(target)
 	if typeof(target) == "Instance" then
@@ -3389,6 +3430,11 @@ LimbReanimator.FlingEnabled = not SaveData.Reanimator.LimbRoleplay
 LimbReanimator.UseNaNFling = SaveData.Reanimator.LimbUseNaNFling
 LimbReanimator.FlingTargets = {}
 LimbReanimator._TempNotFling = {}
+function LimbReanimator.ShowHitboxes()
+	pcall(function()
+		Util.ShowPartHitbox(Player.Character.HumanoidRootPart)
+	end)
+end
 function LimbReanimator.Fling(target, duration)
 	if not LimbReanimator.FlingEnabled then return end
 	if not target then return false end
@@ -3883,19 +3929,7 @@ function HatReanimator.ShowHitboxes()
 				local handle = v:FindFirstChild("Handle")
 				if handle and handle:IsA("BasePart") then
 					if handle:GetAttribute("_Uhhhhhh_HasCollide") then
-						local hitvis = Instance.new("Part")
-						hitvis.Name = Util.RandomString()
-						hitvis.CFrame = handle.CFrame
-						hitvis.Size = handle.Size
-						hitvis.Anchored = true
-						hitvis.CanCollide = false
-						hitvis.CanTouch = false
-						hitvis.Material = Enum.Material.Neon
-						hitvis.Transparency = 0.95
-						hitvis.Color = Color3.new(0, 1, 0)
-						hitvis.CastShadow = false
-						hitvis.Parent = handle
-						game.Debris:AddItem(hitvis, 0.1)
+						Util.ShowPartHitbox(handle)
 					end
 				end
 			end
@@ -5820,6 +5854,10 @@ do
 			ReanimateStartButtonText.Text = "* Deanimate *"
 		end
 		ReanimateStartButton.Interactable = true
+	end)
+	UI.CreateButton(MainPage, "Show Reanimate Hitboxes", 15).Activated:Connect(function()
+		if not Reanimate.Character then return end
+		ReanimateShowHitboxes()
 	end)
 	UI.CreateButton(MainPage, "Refresh Reanimate Character", 10).Activated:Connect(function()
 		if not Reanimate.Character then return end

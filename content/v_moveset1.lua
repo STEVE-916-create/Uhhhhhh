@@ -907,6 +907,7 @@ AddModule(function()
 end)
 
 AddModule(function()
+	-- TODO: Revamp this
 	local m = {}
 	m.ModuleType = "MOVESET"
 	m.Name = "Sans Undertale"
@@ -974,7 +975,11 @@ AddModule(function()
 	m.InternalName = "KDRV3"
 	m.Assets = {"KDRV3Idle.anim", "KDRV3Walk.anim", "KDRV3Sprint.anim", "CreoSphere.mp3"}
 
+	m.SimulateLagFromOriginal = true
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Insane 7s Lag", m.SimulateLagFromOriginal).Changed:Connect(function(val)
+			m.SimulateLagFromOriginal = val
+		end)
 	end
 
 	local NeckC0 = CFrame.new(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
@@ -988,6 +993,9 @@ AddModule(function()
 	local sprinting = false
 	local persistentloadnotif = false -- simulate loadstring sprint load notif
 	m.Init = function(figure: Model)
+		if m.SimulateLagFromOriginal then
+			local lag = os.clock() + 6.5 + math.random() while os.clock() < lag do end
+		end
 		SetOverrideMovesetMusic("", "Level Up sound effect", 1)
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
@@ -1036,9 +1044,9 @@ AddModule(function()
 			bigfedora:Destroy()
 			-- move to force hasmovedsinceinit
 			-- (very bad fix from whoever implemented this in original kdv3)
-			for i=1, 3 do
+			for i=1, 5 do
 				hum:Move(Vector3.new(0, 0, -1))
-				task.wait()
+				task.wait(1 / 30)
 			end
 			if figure:IsDescendantOf(workspace) then
 				-- at this point in time we have already moved anyway
