@@ -3820,7 +3820,7 @@ end
 local HatReanimator = {}
 HatReanimator.Name = "Hats"
 SaveData.Reanimator.HatsCollide = not not SaveData.Reanimator.HatsCollide
-SaveData.Reanimator.HatsCollideMethod = SaveData.Reanimator.HatsCollideMethod or 5
+SaveData.Reanimator.HatsCollideMethod = SaveData.Reanimator.HatsCollideMethod or 6
 SaveData.Reanimator.IWantAllHats = not not SaveData.Reanimator.IWantAllHats
 SaveData.Reanimator.HatsPatchmahub = not not SaveData.Reanimator.HatsPatchmahub
 SaveData.Reanimator.HatsFling = not not SaveData.Reanimator.HatsFling
@@ -3941,14 +3941,13 @@ function HatReanimator.Config(parent)
 	UI.CreateText(parent, "if ur hats get voided when u try to hat collide\nvvv try changing this vvv", 10, Enum.TextXAlignment.Center)
 	UI.CreateDropdown(parent, "Torso Offset", {
 		"1 - ShownApe's method (???)",
-		"2 - STEVE's method V1 (most stable)",
+		"2 - STEVE's method V1 (specific accessories)",
 		"3 - 2 but for back accessories",
 		"4 - 2 but for shoulder accessories",
 		"5 - 2 but for waist accessories",
 		"6 - STEVE's method V2 (kinda stable)",
 		"7 - 6 but further from void (gl getting hatdrop)",
-		"8 - STEVE's method V3 (experimental)",
-		"9 - 8 but modded",
+		"8 - STEVE's method V3 (most stable)",
 	}, HatReanimator.HatCollideMethod + 1).Changed:Connect(function(val)
 		HatReanimator.HatCollideMethod = val - 1
 		SaveData.Reanimator.HatsCollideMethod = val - 1
