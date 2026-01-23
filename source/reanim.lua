@@ -1901,6 +1901,7 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 	return Select
 end
 function UI.CreateDropdown(parent, text, array, value)
+	value = value and math.clamp(value, 1, #array) or 1
 	local margin = 5
 	local Container = Util.Instance("Frame", parent)
 	Container.AnchorPoint = Vector2.new(0.5, 0)
