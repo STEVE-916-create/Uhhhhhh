@@ -42,6 +42,7 @@ AddModule(function()
 	m.FlySpeed = 2
 	m.HitboxScale = 1
 	m.HitboxDebug = true
+	m.UseGun = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Neck Snapping", m.NeckSnap).Changed:Connect(function(val)
 			m.NeckSnap = val
@@ -64,6 +65,9 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
 			m.HitboxDebug = val
 		end)
+		Util_CreateSwitch(parent, "Sword = Gun", m.UseGun).Changed:Connect(function(val)
+			m.UseGun = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Bee = not not save.Bee
@@ -73,6 +77,7 @@ AddModule(function()
 		m.FlySpeed = save.FlySpeed or m.FlySpeed
 		m.HitboxScale = save.HitboxScale or m.HitboxScale
 		m.HitboxDebug = not save.NoHitbox
+		m.UseGun = not not save.UseGun
 	end
 	m.SaveConfig = function()
 		return {
@@ -83,6 +88,7 @@ AddModule(function()
 			FlySpeed = m.FlySpeed,
 			HitboxScale = m.HitboxScale,
 			NoHitbox = not m.HitboxDebug,
+			UseGun = m.UseGun,
 		}
 	end
 
@@ -591,6 +597,11 @@ AddModule(function()
 		end
 		
 		-- sword
+		if m.UseGun then
+			sword.Group = "Gun"
+		else
+			sword.Group = "Sword"
+		end
 		sword.Offset = joints.sw
 		sword.Disable = not not isdancing
 		
