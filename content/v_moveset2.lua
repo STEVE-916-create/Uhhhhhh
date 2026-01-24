@@ -3651,8 +3651,8 @@ AddModule(function()
 				footsteps.Playing = false
 				rt = CFrame.Angles(-1.5707963267948966 + math.clamp(torsovelocityy, -50, 50) * 0.004, 0, 3.141592653589793)
 				nt = CFrame.new(0, 1, 0) * CFrame.Angles(-1.6580627893946132, 0, 3.141592653589793)
-				rst = CFrame.new(0.6, 0.5, -0.1) * CFrame.new(0.2, 0, 0) * CFrame.Angles(0, 2.356194490192345, 1.0471975511965976)
-				lst = CFrame.new(-0.8, 0.5, -0.6) * CFrame.new(0.2, 0, 0) * CFrame.Angles(0, -2.2689280275926285, -0.8726646259971648)
+				rst = CFrame.new(0.6, 0.5, -0.1) * CFrame.Angles(0.08, 0, 0) * CFrame.Angles(0, 2.356194490192345, 1.0471975511965976)
+				lst = CFrame.new(-0.8, 0.5, -0.6) * CFrame.Angles(0.08, 0, 0) * CFrame.Angles(0, -2.2689280275926285, -0.8726646259971648)
 				rht = CFrame.new(1.1, -0.9, -0.2) * CFrame.Angles(0, 1.5707963267948966, -0.3490658503988659)
 				lht = CFrame.new(-1.1, -0.8, -1) * CFrame.Angles(0, -1.4835298641951802, 0.5235987755982988)
 			end
@@ -3745,6 +3745,8 @@ AddModule(function()
 				TweenService:Create(shootline, ti, {Transparency = 1}):Play()
 				TweenService:Create(shootlinem, ti, {Scale = Vector3.new(0.5, 0.5, (hit - hole.Position).Magnitude)}):Play()
 				Debris:AddItem(shootline, 0.5)
+				joints.rs += Vector3.new(0, 0, 0.1)
+				joints.ls += Vector3.new(0, 0, 0.1)
 			end
 			local bulletstate = (os.clock() // 0.05) % 2
 			if bulletstate == 0 then
