@@ -1945,7 +1945,7 @@ AddModule(function()
 				colorcorrect.Brightness = 0
 				colorcorrect.Contrast = 20
 				colorcorrect.Saturation = 0
-				while colorcorrect.Contrast > 0 then
+				while colorcorrect.Contrast > 0 do
 					colorcorrect.Contrast -= task.wait() * 10
 				end
 				colorcorrect:Destroy()
