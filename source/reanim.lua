@@ -4006,13 +4006,14 @@ function HatReanimator.Config(parent)
 	UI.CreateText(parent, "if ur hats get voided when u try to hat collide\nvvv try changing this vvv", 10, Enum.TextXAlignment.Center)
 	UI.CreateDropdown(parent, "Torso Offset", {
 		"1 - ShownApe's method (???)",
-		"2 - STEVE's method V1 (specific accessories)",
+		"2 - STEVE's method V1 (specific)",
 		"3 - 2 but for back accessories",
 		"4 - 2 but for shoulder accessories",
 		"5 - 2 but for waist accessories",
 		"6 - STEVE's method V2 (kinda stable)",
 		"7 - 6 but further from void (gl getting hatdrop)",
 		"8 - STEVE's method V3 (most stable)",
+		"9 - experimental do not use",
 	}, HatReanimator.HatCollideMethod + 1).Changed:Connect(function(val)
 		HatReanimator.HatCollideMethod = val - 1
 		SaveData.Reanimator.HatsCollideMethod = val - 1

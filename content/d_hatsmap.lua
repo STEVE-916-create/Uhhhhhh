@@ -94,6 +94,12 @@ local HatNameDatabase = {
 	{Match = "Accessory (big head)", Offset = CFrame.identity, For = "Head"},
 	{Match = "International Fedora", Offset = CFrame.Angles(1.57, 0, 0), For = "Block"},
 	{Match = "InternationalFedora", Offset = CFrame.Angles(1.57, 0, 0), For = "Block"},
+	{Match = "Accessory (autorig_Head)", Offset = CFrame.identity, For = "Head"},
+	{Match = "Accessory (autorig_Torso)", Offset = CFrame.identity, For = "Torso"},
+	{Match = "Accessory (autorig_LeftArm)", Offset = CFrame.identity, For = "LeftArm"},
+	{Match = "Accessory (autorig_LeftArm)", Offset = CFrame.identity, For = "RightArm"},
+	{Match = "Accessory (autorig_LeftArm)", Offset = CFrame.identity, For = "LeftLeg"},
+	{Match = "Accessory (autorig_LeftArm)", Offset = CFrame.identity, For = "RightLeg"},
 }
 local HatKnownAccessoriesDatabase = {
 	-- Immortality Lord Accessories
