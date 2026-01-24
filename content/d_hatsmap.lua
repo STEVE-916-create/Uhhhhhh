@@ -97,9 +97,9 @@ local HatNameDatabase = {
 	{Match = "Accessory (autorig_Head)", Offset = CFrame.identity, For = "Head"},
 	{Match = "Accessory (autorig_Torso)", Offset = CFrame.identity, For = "Torso"},
 	{Match = "Accessory (autorig_LeftArm)", Offset = CFrame.identity, For = "LeftArm"},
-	{Match = "Accessory (autorig_LeftArm)", Offset = CFrame.identity, For = "RightArm"},
-	{Match = "Accessory (autorig_LeftArm)", Offset = CFrame.identity, For = "LeftLeg"},
-	{Match = "Accessory (autorig_LeftArm)", Offset = CFrame.identity, For = "RightLeg"},
+	{Match = "Accessory (autorig_RightArm)", Offset = CFrame.identity, For = "RightArm"},
+	{Match = "Accessory (autorig_LeftLeg)", Offset = CFrame.identity, For = "LeftLeg"},
+	{Match = "Accessory (autorig_RightLeg)", Offset = CFrame.identity, For = "RightLeg"},
 }
 local HatKnownAccessoriesDatabase = {
 	-- Immortality Lord Accessories
