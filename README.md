@@ -126,6 +126,22 @@ _G.UhhhhhhTheme = {
 	<img src="./images/Screenshot_20260118-222617.png" alt="drawing" width="45%"/>
 	<img src="./images/Screenshot_20260118-222711.png" alt="drawing" width="45%"/>
 </p>
+<p align="center">
+	<img src="./images/4181218726_83560691049285_1769158731388.png" alt="drawing" width="45%"/>
+	<img src="./images/Screenshot_20260122-031656.jpg" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/Screenshot_20260122-031857.jpg" alt="drawing" width="45%"/>
+	<img src="./images/Screenshot_20260123-223246.jpg" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/Screenshot_20260124-174236.png" alt="drawing" width="45%"/>
+	<img src="./images/image.png" alt="drawing" width="45%"/>
+</p>
+<p align="center">
+	<img src="./images/image.webp" alt="drawing" width="45%"/>
+	<img src="./images/Screenshot_20260124-141230.png" alt="drawing" width="45%"/>
+</p>
 
 - Thats all for now, ill add any images that looks good :D
   
