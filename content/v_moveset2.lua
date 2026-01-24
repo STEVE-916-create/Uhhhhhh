@@ -2034,16 +2034,13 @@ AddModule(function()
 						death.Color = Color3.new(1, 1, 1)
 						task.wait(8)
 						CreateSound(death, 9069975578, 0.9)
-						for _=1, 60 do
-							Lightning({Start = death.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
-							task.wait()
-						end
-						CreateSound(death, 168513088, 1.1)
 						for _=1, 10 do
-							Lightning({Start = death.Position + Vector3.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+							Lightning({Start = death.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+							task.wait(0.1)
 						end
 						for _=1, 5 do
-							Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.6, 6, 0.6) * math.random(-1.05, 1.25), SizeEnd = Vector3.new(1.6, 30, 1.6) * math.random(-1.05, 1.25), Transparency = 0, TransparencyEnd = 1, CFrame = death.CFrame * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), Boomerang = 20, BoomerangSize = 35})
+							Lightning({Start = death.Position + Vector3.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+							CreateSound(death, 168513088, 1.1)
 						end
 						task.wait(0.1)
 						death.Transparency = 1
