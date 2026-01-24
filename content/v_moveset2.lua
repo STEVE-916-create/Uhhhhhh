@@ -1849,12 +1849,15 @@ AddModule(function()
 				core.CFrame = hole
 				local d = (os.clock() - s) / 2.8
 				core.Size = Vector3.one * 5 * d
-				local sky = root.Position + (CFrame.new() * Vector3.new(0, 100, math.random(0, 10)))
-				if math.random() < 0.2  * d then
+				local sky = root.Position + (CFrame.new() * Vector3.new(0, 100, math.random(0, 100)))
+				if math.random() < d then
 					Lightning({Start = sky, Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
 					CreateSound(core, 4376217120, 0.5 + math.random())
 					SetBulletState(hole.Position, sky)
 				end
+				Lightning({Start = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
 				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
 				task.wait()
 			until os.clock() - s > 2.8 or not rootu:IsDescendantOf(workspace)
@@ -1875,6 +1878,9 @@ AddModule(function()
 				core.CFrame = hole
 				core.Size = Vector3.one * 5
 				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				Lightning({Start = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
 				task.wait()
 			until os.clock() - s > 3.95 or not rootu:IsDescendantOf(workspace)
 			if not rootu:IsDescendantOf(workspace) then
@@ -1897,6 +1903,9 @@ AddModule(function()
 				core.CFrame = hole
 				core.Size = Vector3.one * 5
 				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				Lightning({Start = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
 				task.wait()
 			until os.clock() - s > 5.4 or not rootu:IsDescendantOf(workspace)
 			if not rootu:IsDescendantOf(workspace) then
@@ -1970,7 +1979,7 @@ AddModule(function()
 				local dist = (target - hole.Position).Magnitude
 				beam.Size = Vector3.new(dist, 5, 5)
 				beam.CFrame = CFrame.lookAt(hole.Position:Lerp(target, 0.5), target) * CFrame.Angles(0, math.rad(90), 0)
-				Lightning({Start = hole.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = hole.Position, Offset = 3.5, Time = 5, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+				Lightning({Start = hole.Position + Vector3.new(math.random(-200, 200), math.random(-200, 200), math.random(-200, 200)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
 				if throt > 0.02 then
 					Lightning({Start = hole.Position, Finish = target, Offset = 7, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
 					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 50})
