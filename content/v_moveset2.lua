@@ -2774,7 +2774,6 @@ AddModule(function()
 
 	m.Init = function(figure)
 		start = os.clock()
-		attacking = false
 		state = 0
 		timingwalk1, timingwalk2 = 0, 0
 		hum = figure:FindFirstChild("Humanoid")
