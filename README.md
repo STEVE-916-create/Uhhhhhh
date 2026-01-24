@@ -14,53 +14,80 @@ Join the [DISCORD](https://discord.gg/NASNUKRBVM) of all my programming shenanig
 **NOTICE:** This is still in development, so things are subject to change and stuff are expected to be missing.
 
 ## Loadstring
+Pick from one of these:
+
+1. raw loadstring (cached by github)
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/source/reanim.lua"))()
 ```
 
+2. api loadstring (bypasses github cache)
+```lua
+local a,b,c,g="/STEVE-916-create/Uhhhhhh/","/source/reanim.lua",".github","https://"local d=request({Url=`{g}api{c}.com/repos{a}contents{b}`,Headers={Accept=`application/vnd{c}.VERSION.raw`}})if d.StatusCode~=200 then d.Body=game:HttpGet(`{g}raw{c}usercontent.com{a}main{b}`)end local e,f=loadstring(d.Body)if not e then warn(f)else e()end
+```
+
 ## Features:
 1. Probably the most stable hatdrop
-   
+
    Uhhhhhh's hatdrop supports most (if not all) hat rigs!
-   
+
    <img src="./images/ILDoesKemusan.gif" alt="drawing" width="350"/>
-   
+
    <img src="./images/WaistRigSupport.gif" alt="drawing" width="350"/>
 
 2. Limb reanimation support
-   
+
    In the case where you are just unable to afford hats, you can use your own limbs instead!
-   
+
    Unfortunately, this only supports a few games.
-   
+
    <img src="./images/LimbReanimation.gif" alt="drawing" width="350"/>
 
 3. Good looking UI
-   
+
    definitely better than genesis
-   
+
    <img src="./images/UserInterface.gif" alt="drawing" width="350"/>
 
 4. Moveset and Dance system
-   
+
    Have old animations, or become Lightning Cannon. Dance anytime!
-   
+
    <img src="./images/IllMakeYouSay.gif" alt="drawing" width="350"/>
 
 5. Takes advantage of random replicate properties
-   
+
    Serversided Physics glue = very accurate (and fast) fling!
-   
+
    <img src="./images/FastestFling.gif" alt="drawing" width="350"/>
 
 6. Modding support
-   
+
    Infinite Yield lets you make plugins. So why not add it to Uhhhhhh too?
-   
+
    <img src="./images/GiantSkipping.gif" alt="drawing" width="350"/>
-   
+
    The documentation is right below all of whatever these are.
-   
+
+7. Themes
+
+   You hate the colors? Change them! Do you want black? Do you want white? Do you want your own? The choice is yours.
+
+   <img src="./images/Theme1.jpg" alt="drawing" width="40%"/>
+   <img src="./images/Theme2.jpg" alt="drawing" width="40%"/>
+   <img src="./images/Theme3.jpg" alt="drawing" width="40%"/>
+   <img src="./images/Theme4.jpg" alt="drawing" width="40%"/>
+
+```lua
+-- example theme
+_G.UhhhhhhTheme = {
+	Fore = Color3.new(0, 1, 0), -- nil = rainbow
+	Back = Color3.new(0, 0, 0), -- nil = pure black
+	Text = Color3.new(0, 1, 0),
+}
+-- the Color3s can also be a hex code string e.g.: "DDBB69"
+```
+
 # SHOWCASES
 -- :3 user images brought to you by Awes955
 <p align="center">
@@ -114,9 +141,6 @@ As for me adding support for your hats (since the hat database is very small), c
 **DISCLAIMER**: Some random quotes made here are *simple jokes* (e.g.: "this script mogs genesis") and should **not** be taken seriously. This also includes *all* the self-glazing quotes. **It's your choice to agree with them or not**, and if you do or don't, **don't come harass/mock any individuals from it.** In the end, a *joke quote* is a *joke quote*.
 
 # Uhhhhhh documentation
-Modules are just luau tables that are created by a function.
-It does impose vulnerabilities, but who cares? Executors already
-execute functions from user strings.
 
 ## Filesystem structure
 Uhhhhhh's filesystem is like this
@@ -124,7 +148,7 @@ Uhhhhhh's filesystem is like this
 Executor's workspace/
 | UhhhhhhReanim/
 | | Assets/ - Contains UI Music
-| | Modules/ - Should contain luau scripts that return a table of functions
+| | Modules/ - YOUR modules
 | | Content/ - Contains module assets
 | | | Anims/ - .anim (usually in STEVE's KeyframeSequence file format)
 | | | Sounds/ - .mp3
@@ -136,6 +160,10 @@ Executor's workspace/
 ```
 
 ## Modules
+Modules are just luau tables that are created by a function.
+It does impose vulnerabilities, but who cares? Executors already
+execute functions from user strings.
+
 Modules are returned by a function from a luau script.
 honestly idk how to document this in an understandable way so
 heres an example, with code comments:
@@ -227,13 +255,15 @@ keyframe structure: `<4 bytes float time> <4 bytes int n> <pose poses, times n>`
 
 main file structure: `<string animation_name> <4 bytes int n> <keyframe keyframes, times n>`
 
+This just explains how this format works. If you don't like it, check the `tools` folder in this repo!
+
 ## Uhhhhhh's env
 Uhhhhhh gives modules whatever it can. Here are all of it!
 ```lua
 RandomString(length) -- Random String function
 
 -- UI Util functions, used for config UI
--- refer to line ~131 for usage
+-- refer to module example code block for usage
 Util_CreateText
 Util_CreateButton
 Util_CreateSwitch
@@ -314,6 +344,14 @@ OnPlayerChatted.Event:Connect(function(player, message) end) -- event when a pla
 HiddenGui -- the reference to the ScreenGui Uhhhhhh uses
 FallenPartsDestroyHeight -- self explanatory
 ```
+
+## "i dont understand all this"
+That's why I have made (in v1.0.3) the stuff that gives Empyrean Reanimate (emper chill lowkirkenuinly) the ability to be used in require script convertions!
+`_G.Uhhhhhh` which contains `.Character` and `.Fling`, but using this might make you rejoin just to stop everything...
+
+So I also made `goodies/convertion.lua`! For all those smarty-pants out there, you may now make your own "moveset" with a couple of changes to the actual source!
+Link your connection disconnections, thread stoppers and instance deconstructions to a singular `OnStopEvent` `BindableEvent`, NOW!
+(not doing so will cause havoc in your threads ;P)
 
 # Uhhhhhh's Licenses
 My code is covered by the MIT license. I made most of it. BUT...

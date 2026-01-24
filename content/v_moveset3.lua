@@ -14,20 +14,6 @@ local ContextActionService = cloneref(game:GetService("ContextActionService"))
 local Player = Players.LocalPlayer
 
 -- utils
-local function ResetC0C1Joints(rj, nj, rsj, lsj, rhj, lhj)
-	rj.C0 = CFrame.new(0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
-	rj.C1 = CFrame.new(0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
-	nj.C0 = CFrame.new(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
-	nj.C1 = CFrame.new(0, -0.5, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
-	lsj.C0 = CFrame.new(-1, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
-	lsj.C1 = CFrame.new(0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
-	rsj.C0 = CFrame.new(1, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
-	rsj.C1 = CFrame.new(-0.5, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
-	lhj.C0 = CFrame.new(-1, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
-	lhj.C1 = CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
-	rhj.C0 = CFrame.new(1, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
-	rhj.C1 = CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
-end
 local function SetC0C1Joint(j, c0, c1, scale)
 	local t = c0 * c1:Inverse()
 	t += t.Position * (scale - 1)
@@ -1563,12 +1549,12 @@ AddModule(function()
 				Reference = lsj,
 			},
 			["Right Hip"] = {
-				C0 = CFrame.new(1, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
+				C0 = CFrame.new(1, -1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
 				C1 = CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
 				Reference = rhj,
 			},
 			["Left Hip"] = {
-				C0 = CFrame.new(-1, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
+				C0 = CFrame.new(-1, -1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
 				C1 = CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
 				Reference = lhj,
 			},
@@ -1600,8 +1586,7 @@ AddModule(function()
 			uiskeypress:Disconnect()
 		end
 		uiskeypress = UserInputService.InputBegan:Connect(function(input, gpe)
-			if gpe then return end
-			if input.UserInputType == Enum.UserInputType.Keyboard then
+			if input.UserInputType == Enum.UserInputType.Keyboard and not UserInputService:GetFocusedTextBox() then
 				onkeypress(input.KeyCode.Name:lower())
 			end
 		end)

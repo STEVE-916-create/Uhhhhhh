@@ -1,4 +1,18 @@
 * Note: This does not include movesets and dances.
+# Version 1.0.3 BETA
+ - Added _G.Uhhhhhh which is STOLEN!1!1!!1! from Empyrean Reanimate
+   (no free advertising for u here, check the damn credits)
+ - more hat collide experimentation from me
+ - Added more client crashes! (because _G usage)
+ - Hat Collide V3 improvements! (it also has been set as default when you fresh start Uhhhhhh)
+ - Added a button that shows your hitboxes (for limb and hat reanim)
+ - Added support for autorig
+# Version 1.0.2 BETA
+ - Added themes: ALONE, Oxide, Patchma, Genesis V4, Crimson, r/masterhacker, etc...
+ - Added option to disable sitting on Seats
+ - Added option to remove downloaded content (to fix your caching issues)
+ - New hat maps
+ - Added option to correctly scale gravity with character
 # Version 1.0.0
 INITIAL RELEASE!
  - Probably the most stable hat collide

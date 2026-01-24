@@ -684,6 +684,7 @@ AddModule(function()
 	m.RainAmount = 5
 	m.IgnoreDancing = false
 	m.SkipSanity = false
+	m.OmegaBlaster = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Bee Wings", m.Bee).Changed:Connect(function(val)
 			m.Bee = val
@@ -740,6 +741,10 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Jump to INSaNiTY", m.SkipSanity).Changed:Connect(function(val)
 			m.SkipSanity = val
 		end)
+		Util_CreateText(parent, "X key attack another variant", 12, Enum.TextXAlignment.Center)
+		Util_CreateSwitch(parent, "Beam is locked in", m.OmegaBlaster).Changed:Connect(function(val)
+			m.OmegaBlaster = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Bee = not not save.Bee
@@ -757,6 +762,7 @@ AddModule(function()
 		m.RainAmount = save.RainAmount or m.RainAmount
 		m.IgnoreDancing = not not save.IgnoreDancing
 		m.SkipSanity = not not save.SkipSanity
+		m.OmegaBlaster = not not save.OmegaBlaster
 	end
 	m.SaveConfig = function()
 		return {
@@ -775,6 +781,7 @@ AddModule(function()
 			RainAmount = m.RainAmount,
 			IgnoreDancing = m.IgnoreDancing,
 			SkipSanity = m.SkipSanity,
+			OmegaBlaster = m.OmegaBlaster,
 		}
 	end
 
@@ -916,16 +923,16 @@ AddModule(function()
 	local function SetBulletState(hole, target)
 		local dist = (target - hole).Magnitude
 		bulletstate[1] = hole
-		if dist > 128 then
-			bulletstate[2] = hole + (target - hole).Unit * 128
+		if dist > 256 then
+			bulletstate[2] = hole + (target - hole).Unit * 256
 		else
 			bulletstate[2] = target
 		end
 		bulletstate[3] = os.clock()
 	end
-	local function SetGunauraState(hole)
-		gunaurastate[1] = hole
-		gunaurastate[2] = 3
+	local function SetGunauraState(target, ticks)
+		gunaurastate[1] = target
+		gunaurastate[2] = ticks or 3
 	end
 	local function Effect(params)
 		if not torso then return end
@@ -1531,7 +1538,12 @@ AddModule(function()
 					end
 					task.wait(0.1)
 					death.Transparency = 1
-					if rootu:IsDescendantOf(workspace) then Attack(toward, 10) end
+					if rootu:IsDescendantOf(workspace) then
+						Attack(toward, 10)
+						if (rootu.Position - toward).Magnitude < 256 then
+							SetGunauraState(toward, 20)
+						end
+					end
 					task.wait(3)
 					death:Destroy()
 				end)
@@ -1647,7 +1659,7 @@ AddModule(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt *= CFrame.Angles(0, 0, math.rad(-60))
 				nt = NECKC0 * CFrame.Angles(0, 0, math.rad(60))
-				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-60)) * RIGHTSHOULDERC0
+				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-90)) * RIGHTSHOULDERC0
 				lst = CFrame.new(-1.25, 0.5, -0.25) * CFrame.Angles(math.rad(95), 0, math.rad(10)) * LEFTSHOULDERC0
 				gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
 				AimTowards(MouseHit())
@@ -1789,6 +1801,271 @@ AddModule(function()
 			attacking = false
 		end)
 	end
+	local function OmegaBlaster()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+			if currentmode == 1 then
+				if sanitysongsync < 8 then return end
+			end
+			if currentmode == 2 then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 0
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt *= CFrame.Angles(0, 0, math.rad(-60))
+				nt = NECKC0 * CFrame.Angles(0, 0, math.rad(60))
+				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(180), math.rad(0), math.rad(0)) * RIGHTSHOULDERC0
+				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), math.rad(-10), math.rad(-5)) * LEFTSHOULDERC0
+				gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			SingularityBeam_ischarging = true
+			notify("THAT IS IT. It's TIME use 20% of MY POWER...", true)
+			local core = Instance.new("Part")
+			core.Massless = true
+			core.Transparency = 0
+			core.Anchored = true
+			core.CanCollide = false
+			core.CanTouch = false
+			core.CanQuery = false
+			core.Name = RandomString()
+			core.Size = Vector3.one * 0.5
+			core.Shape = Enum.PartType.Ball
+			core.Color = Color3.new(1, 1, 1)
+			core.Material = Enum.Material.Neon
+			core.Parent = workspace
+			for _=1, 3 do
+				CreateSound(core, 342793847, 0.4791358024 + 0.1 * math.random())
+			end
+			CreateSound(76356469921578)
+			local s = os.clock()
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, 0) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				core.CFrame = hole
+				local d = (os.clock() - s) / 2.8
+				core.Size = Vector3.one * 5 * d
+				local sky = root.Position + (CFrame.new() * Vector3.new(0, 100, math.random(0, 100)))
+				if math.random() < d then
+					Lightning({Start = sky, Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+					CreateSound(core, 4376217120, 0.5 + math.random())
+					SetBulletState(hole.Position, sky)
+				end
+				Lightning({Start = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 0.1 + d * 0.4, BoomerangSize = 55})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				task.wait()
+			until os.clock() - s > 2.8 or not rootu:IsDescendantOf(workspace)
+			if not rootu:IsDescendantOf(workspace) then
+				core:Destroy()
+				return
+			end
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt *= CFrame.Angles(0, 0, math.rad(30))
+				nt = NECKC0 * CFrame.Angles(math.rad(10), 0, math.rad(-60))
+				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(160), math.rad(-20), math.rad(60)) * RIGHTSHOULDERC0
+				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(40), math.rad(5), math.rad(5)) * LEFTSHOULDERC0
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(1, 2, -2) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				core.CFrame = hole
+				core.Size = Vector3.one * 5
+				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				Lightning({Start = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 0.5, BoomerangSize = 55})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+				task.wait()
+			until os.clock() - s > 3.95 or not rootu:IsDescendantOf(workspace)
+			if not rootu:IsDescendantOf(workspace) then
+				core:Destroy()
+				return
+			end
+			notify("LIGHTNING CANNON'S...", true)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt *= CFrame.Angles(0, 0, math.rad(-60))
+				nt = NECKC0 * CFrame.Angles(0, 0, math.rad(60))
+				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-90)) * RIGHTSHOULDERC0
+				lst = CFrame.new(-1.25, 0.5, -0.25) * CFrame.Angles(math.rad(95), 0, math.rad(10)) * LEFTSHOULDERC0
+				gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
+				AimTowards(MouseHit())
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(0, 0.25, -3) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				core.CFrame = hole
+				core.Size = Vector3.one * 5
+				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				Lightning({Start = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 0.5, BoomerangSize = 55})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.05, 0, 0.05), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+				task.wait()
+			until os.clock() - s > 5.4 or not rootu:IsDescendantOf(workspace)
+			if not rootu:IsDescendantOf(workspace) then
+				core:Destroy()
+				return
+			end
+			notify("OMEGA BLAST!", true)
+			CreateSound(core, 9069975578, 0.4)
+			local colorcorrect = Instance.new("ColorCorrectionEffect")
+			colorcorrect.Enabled = true
+			colorcorrect.Brightness = 0
+			colorcorrect.Contrast = 0
+			colorcorrect.Saturation = 0
+			colorcorrect.Parent = workspace.CurrentCamera
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(0, 0.25, -3) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				core.CFrame = hole
+				core.Size = Vector3.one * 5
+				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				colorcorrect.Contrast = os.clock() - s - 5.4
+				Lightning({Start = hole.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+				task.wait()
+			until os.clock() - s > 8.1 or not rootu:IsDescendantOf(workspace)
+			if not rootu:IsDescendantOf(workspace) then
+				core:Destroy()
+				colorcorrect:Destroy()
+				return
+			end
+			colorcorrect.Brightness = 8
+			colorcorrect.Contrast = 100
+			colorcorrect.Saturation = -1
+			local beam = Instance.new("Part")
+			beam.Massless = true
+			beam.Transparency = 0
+			beam.Anchored = true
+			beam.CanCollide = false
+			beam.CanTouch = false
+			beam.CanQuery = false
+			beam.Name = RandomString()
+			beam.Shape = Enum.PartType.Cylinder
+			beam.Color = Color3.new(1, 1, 1)
+			beam.Material = Enum.Material.Neon
+			beam.Parent = workspace
+			task.spawn(function()
+				for _=1, 4 do
+					CreateSound(beam, 138677306, 1)
+					CreateSound(415700134, 1)
+				end
+				task.wait(0.2)
+				colorcorrect.Brightness = 0
+				colorcorrect.Contrast = 20
+				colorcorrect.Saturation = 0
+				while colorcorrect.Contrast > 0 do
+					colorcorrect.Contrast -= task.wait() * 10
+				end
+				colorcorrect:Destroy()
+				if not rootu:IsDescendantOf(workspace) then return end
+				for _=1, 3 do
+					CreateSound(beam, 138677306, 1)
+					CreateSound(415700134, 1)
+				end
+				task.wait(2.2)
+				if not rootu:IsDescendantOf(workspace) then return end
+				for _=1, 2 do
+					CreateSound(beam, 138677306, 1)
+					CreateSound(415700134, 1)
+				end
+			end)
+			s = os.clock()
+			local throt = 0
+			local dt = 0
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(0, 0.25, -3) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				root.CFrame *= CFrame.new(0, 0, dt * 3 * scale)
+				core.CFrame = hole
+				core.Size = Vector3.one * 5
+				local target = MouseHit()
+				local raycast = PhysicsRaycast(hole.Position, target - hole.Position)
+				if raycast then
+					target = raycast.Position
+				end
+				SetGunauraState(hole.Position)
+				SetBulletState(hole.Position, target)
+				local dist = (target - hole.Position).Magnitude
+				beam.Size = Vector3.new(dist, 5, 5)
+				beam.CFrame = CFrame.lookAt(hole.Position:Lerp(target, 0.5), target) * CFrame.Angles(0, math.rad(90), 0)
+				Lightning({Start = hole.Position + Vector3.new(math.random(-200, 200), math.random(-200, 200), math.random(-200, 200)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+				if throt > 0.02 then
+					Lightning({Start = hole.Position, Finish = target, Offset = 7, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 50})
+					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+					local lod = 5
+					if dist < lod * 10 then
+						for i=0, (dist // 10) + 1 do
+							Attack(hole.Position:Lerp(target, (5 + i * 10) / dist), 10)
+						end
+					else
+						for i=1, lod do
+							Attack(hole.Position:Lerp(target, (i - 0.5) / lod), 10)
+						end
+					end
+					Attack(target, 20)
+					task.spawn(function()
+						local death = Instance.new("Part")
+						death.Massless = true
+						death.Transparency = 0
+						death.Anchored = true
+						death.CanCollide = false
+						death.CanTouch = false
+						death.CanQuery = false
+						death.Name = RandomString()
+						death.CFrame = hole
+						death.Size = Vector3.one * 2.5
+						death.Shape = Enum.PartType.Ball
+						death.Material = Enum.Material.Neon
+						death.Parent = workspace
+						death.CFrame = hole.Rotation + target
+						death.Color = Color3.new(1, 1, 1)
+						task.wait(8)
+						CreateSound(death, 9069975578, 0.9)
+						for _=1, 10 do
+							Lightning({Start = death.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+							task.wait(0.1)
+						end
+						for _=1, 5 do
+							Lightning({Start = death.Position + Vector3.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+							CreateSound(death, 168513088, 1.1)
+						end
+						task.wait(0.1)
+						death.Transparency = 1
+						if rootu:IsDescendantOf(workspace) then
+							Attack(death.Position, 20)
+							if (rootu.Position - death.Position).Magnitude < 256 then
+								SetGunauraState(death.Position, 20)
+							end
+						end
+						task.wait(3)
+						death:Destroy()
+					end)
+					throt = 0
+				end
+				dt = task.wait()
+				throt += dt
+			until os.clock() - s > 8 or not rootu:IsDescendantOf(workspace)
+			core:Destroy()
+			beam:Destroy()
+			if not rootu:IsDescendantOf(workspace) then return end
+			animationOverride = nil
+			hum.WalkSpeed = 50 * scale
+			attacking = false
+		end)
+	end
 	m.Init = function(figure: Model)
 		start = os.clock()
 		flight = false
@@ -1891,7 +2168,11 @@ AddModule(function()
 		ContextActionService:SetPosition("Uhhhhhh_LCDash", UDim2.new(1, -180, 1, -130))
 		ContextActionService:BindAction("Uhhhhhh_LCBigbeam", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
-				SingularityBeam()
+				if m.OmegaBlaster then
+					OmegaBlaster()
+				else
+					SingularityBeam()
+				end
 			end
 		end, true, Enum.KeyCode.X)
 		ContextActionService:SetTitle("Uhhhhhh_LCBigbeam", "X")
@@ -2001,7 +2282,7 @@ AddModule(function()
 		scale = figure:GetScale()
 		curcolor = Color3.fromHSV(os.clock() % 1, 1, 1)
 		isdancing = not not figure:GetAttribute("IsDancing")
-		rcp.FilterDescendantsInstances = {figure}
+		rcp.FilterDescendantsInstances = {figure, Player.Character}
 		
 		-- get vii
 		hum = figure:FindFirstChild("Humanoid")
@@ -2063,7 +2344,7 @@ AddModule(function()
 		-- animations
 		local sin50 = math.sin(timingsine / 50)
 		local cos50 = math.cos(timingsine / 50)
-		gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(math.rad(180), math.rad(180), 0)
+		gunoff = CFrame.new(0.05, -1, 0.15) * CFrame.Angles(math.rad(180), math.rad(180), 0)
 		if attacking or currentmode == 0 or (currentmode == 1 and sanitysongsync < 8) then
 			if root.Velocity.Magnitude < 8 * scale or attacking then
 				rt = ROOTC0 * CFrame.new(0.5 * cos50, 0, 10 * math.clamp(math.pow(1 - t, 3), 0, 1) - 0.5 * sin50)
@@ -2493,7 +2774,7 @@ AddModule(function()
 
 		-- bullet and aura
 		if bulletstate[3] < os.clock() - 0.5 then
-			bullet.CFrame = root.CFrame + Vector3.new(0, -24, 0)
+			bullet.CFrame = root.CFrame + Vector3.new(0, -12 * scale, 0)
 		else
 			local pos = (os.clock() // 0.05) % 2
 			if pos == 0 then
@@ -2507,7 +2788,7 @@ AddModule(function()
 			local angle = (timingsine * m.GunAuraSpinSpeed) % (math.pi * 2)
 			gunaura.CFrame = (root.CFrame.Rotation * CFrame.Angles(-math.pi / 2, angle, 0)) + gunaurastate[1]
 		else
-			gunaura.CFrame = root.CFrame + Vector3.new(0, -24, 0)
+			gunaura.CFrame = root.CFrame + Vector3.new(0, -12 * scale, 0)
 		end
 		
 		-- dance reactions
@@ -2572,6 +2853,7 @@ AddModule(function()
 	m.NoShells = false
 	m.HowBadIsAim = 1
 	m.ShakeValue = 1
+	m.Flipped = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
@@ -2596,6 +2878,9 @@ AddModule(function()
 		Util_CreateSlider(parent, "Shake Amount", m.ShakeValue, 0, 1, 0).Changed:Connect(function(val)
 			m.ShakeValue = val
 		end)
+		Util_CreateSwitch(parent, "Flip Gun", m.Flipped).Changed:Connect(function(val)
+			m.Flipped = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Notifications = not save.NoTextType
@@ -2605,6 +2890,7 @@ AddModule(function()
 		m.NoShells = not not save.NoShells
 		m.HowBadIsAim = save.HowBadIsAim or m.HowBadIsAim
 		m.ShakeValue = save.ShakeValue or m.ShakeValue
+		m.Flipped = not not m.Flipped
 	end
 	m.SaveConfig = function()
 		return {
@@ -2615,6 +2901,7 @@ AddModule(function()
 			NoShells = m.NoShells,
 			HowBadIsAim = m.HowBadIsAim,
 			ShakeValue = m.ShakeValue,
+			Flipped = m.Flipped,
 		}
 	end
 
@@ -2763,7 +3050,6 @@ AddModule(function()
 
 	m.Init = function(figure)
 		start = os.clock()
-		attacking = false
 		state = 0
 		timingwalk1, timingwalk2 = 0, 0
 		hum = figure:FindFirstChild("Humanoid")
@@ -2864,12 +3150,15 @@ AddModule(function()
 		
 		-- joints
 		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
-		local gunoff = CFrame.new(0, -0.5, 0.3) * CFrame.Angles(math.rad(90), math.rad(180), 0)
+		local gunoff = CFrame.new(0, -0.5, 0.3) * CFrame.Angles(math.rad(90), 0, 0)
 		
 		local timingsine = t * 80 -- timing from original
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		-- animations
+		if m.Flipped then
+			gunoff *= CFrame.Angles(0, math.pi, 0)
+		end
 		local torsovelocity = root.Velocity.Magnitude
 		local torsovelocityy = root.Velocity.Y
 		local animationspeed = 11
@@ -2921,7 +3210,7 @@ AddModule(function()
 					lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
 				end
 			end
-			bullet.CFrame = root.CFrame + Vector3.new(0, -12, 0)
+			bullet.CFrame = root.CFrame + Vector3.new(0, -8, 0) * scale
 			if mousedown and not isdancing then
 				state = 1
 				statetime = os.clock()
@@ -2951,22 +3240,24 @@ AddModule(function()
 			if os.clock() - statetime > 0.5 then
 				state = 2
 				statetime = os.clock()
-				if sndshoot then
-					sndshoot:Destroy()
+				if m.Sounds then
+					if sndshoot then
+						sndshoot:Destroy()
+					end
+					sndshoot = Instance.new("Sound", root)
+					sndshoot.SoundId = "rbxassetid://146830885"
+					sndshoot.Volume = 5
+					sndshoot.Looped = true
+					sndshoot.Playing = true
+					if sndspin then
+						sndspin:Destroy()
+					end
+					sndspin = Instance.new("Sound", root)
+					sndspin.SoundId = "rbxassetid://2028334518"
+					sndspin.Volume = 2.5
+					sndspin.Looped = true
+					sndspin.Playing = true
 				end
-				sndshoot = Instance.new("Sound", root)
-				sndshoot.SoundId = "rbxassetid://146830885"
-				sndshoot.Volume = 5
-				sndshoot.Looped = true
-				sndshoot.Playing = true
-				if sndspin then
-					sndspin:Destroy()
-				end
-				sndspin = Instance.new("Sound", root)
-				sndspin.SoundId = "rbxassetid://2028334518"
-				sndspin.Volume = 2.5
-				sndspin.Looped = true
-				sndspin.Playing = true
 			end
 		elseif state == 2 then
 			local hit = MouseHit()
@@ -2997,7 +3288,7 @@ AddModule(function()
 					if part and part.Parent and part.Parent.Parent then
 						local hum = part.Parent:FindFirstChildOfClass("Humanoid") or part.Parent.Parent:FindFirstChildOfClass("Humanoid")
 						if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
-							ReanimateFling(part.Parent)
+							ReanimateFling(hum.Parent)
 						end
 					end
 				else
@@ -3173,6 +3464,396 @@ AddModule(function()
 		if chatconn then
 			chatconn:Disconnect()
 			chatconn = nil
+		end
+		root, torso, hum = nil, nil, nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "AK-47"
+	m.InternalName = "WHATCOMESBEFORE47"
+	m.Description = "\"what comes before 47?\"\n\"AK.\"\nrecreation of genesis' AK-47. lerps made by @scripterguy_1000, reiterations by STEVE\nM1 - Shoot"
+	m.Assets = {}
+
+	m.Sounds = true
+	m.UseSword = false
+	m.BooletsPerSec = 10
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Sounds", m.Sounds).Changed:Connect(function(val)
+			m.Sounds = val
+		end)
+		Util_CreateText(parent, "Use the sword instead of the gun!", 12, Enum.TextXAlignment.Center)
+		Util_CreateSwitch(parent, "Gun = Sword", m.UseSword).Changed:Connect(function(val)
+			m.UseSword = val
+		end)
+		Util_CreateText(parent, "for optimisation reasons, you can only fire max 20 bullets in a frame", 12, Enum.TextXAlignment.Center)
+		Util_CreateSlider(parent, "Bullets Per Second", m.BooletsPerSec, 5, 240, 1).Changed:Connect(function(val)
+			m.BooletsPerSec = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Sounds = not save.Muted
+		m.UseSword = not not save.UseSword
+		m.BooletsPerSec = save.BooletsPerSec or m.BooletsPerSec
+	end
+	m.SaveConfig = function()
+		return {
+			Muted = not m.Sounds,
+			UseSword = m.UseSword,
+			BooletsPerSec = m.BooletsPerSec,
+		}
+	end
+
+	local start = 0
+	local hum, root, torso
+	local scale = 1
+	local rcp = RaycastParams.new()
+	rcp.FilterType = Enum.RaycastFilterType.Exclude
+	rcp.IgnoreWater = true
+	local function PhysicsRaycast(origin, direction)
+		rcp.RespectCanCollide = true
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local function ShootRaycast(origin, direction)
+		rcp.RespectCanCollide = false
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local mouse = Player:GetMouse()
+	local mouselock = false
+	local function MouseHit()
+		local Camera = workspace.CurrentCamera
+		local ray = mouse.UnitRay
+		if mouselock and Camera then
+			local pos = Camera.ViewportSize * Vector2.new(0.5, 0.3)
+			ray = Camera:ViewportPointToRay(pos.X, pos.Y, 1e-6)
+		end
+		local dist = 2000
+		local raycast = ShootRaycast(ray.Origin, ray.Direction * dist)
+		if raycast then
+			return raycast.Position
+		end
+		return ray.Origin + ray.Direction * dist
+	end
+	local function CreateSound(id, pitch, extra)
+		if not m.Sounds then return end
+		if not torso then return end
+		local parent = torso
+		if typeof(id) == "Instance" then
+			parent = id
+			id, pitch = pitch, extra
+		end
+		pitch = pitch or 1
+		local sound = Instance.new("Sound")
+		sound.Name = tostring(id)
+		sound.SoundId = "rbxassetid://" .. id
+		sound.Volume = 1
+		sound.Pitch = pitch
+		sound.EmitterSize = 100
+		sound.Parent = parent
+		sound:Play()
+		sound.Ended:Connect(function()
+			sound:Destroy()
+		end)
+	end
+	local function AimTowards(target)
+		if not root then return end
+		if flight then return end
+		local tcf = CFrame.lookAt(root.Position, target)
+		local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
+		root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
+	end
+	local chatconn
+	local attacking = false
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+		sw = CFrame.identity,
+	}
+	local gun = {}
+	local bullet = {}
+	local mousedown = false
+	local uisbegin, uisend
+	local state = 0
+	local statetime = 0
+	local timingwalk = 0
+	local footsteps = nil
+
+	m.Init = function(figure)
+		start = os.clock()
+		state = 0
+		timingwalk1, timingwalk2 = 0, 0
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		gun = {
+			Group = "Gun",
+			Limb = "Right Arm",
+			Offset = CFrame.identity
+		}
+		bullet = {
+			Group = "Bullet",
+			CFrame = CFrame.identity
+		}
+		table.insert(HatReanimator.HatCFrameOverride, gun)
+		table.insert(HatReanimator.HatCFrameOverride, bullet)
+		mousedown = false
+		if uisbegin then
+			uisbegin:Disconnect()
+		end
+		if uisend then
+			uisend:Disconnect()
+		end
+		local currentclick = nil
+		uisbegin = UserInputService.InputBegan:Connect(function(input, gpe)
+			if gpe then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				mousedown = true
+				mouselock = false
+				currentclick = input
+			end
+		end)
+		ContextActionService:BindAction("Uhhhhhh_AKShoot", function(_, state, input)
+			if state == Enum.UserInputState.Begin then
+				mousedown = true
+				mouselock = true
+				currentclick = input
+			end
+		end, true)
+		ContextActionService:SetTitle("Uhhhhhh_AKShoot", "M1")
+		ContextActionService:SetPosition("Uhhhhhh_AKShoot", UDim2.new(1, -130, 1, -130))
+		uisend = UserInputService.InputEnded:Connect(function(input, gpe)
+			if input == currentclick then
+				mousedown = false
+				currentclick = nil
+			end
+		end)
+		hum.WalkSpeed = 16 * figure:GetScale()
+		footsteps = Instance.new("Sound", root)
+		footsteps.SoundId = "rbxassetid://4776173570"
+		footsteps.Volume = 1
+		footsteps.Pitch = 1.25
+		footsteps.Looped = true
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock() - start
+		scale = figure:GetScale()
+		isdancing = not not figure:GetAttribute("IsDancing")
+		rcp.FilterDescendantsInstances = {figure, Player.Character}
+		
+		-- get vii
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		
+		-- joints
+		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		local gunoff = CFrame.new(0, -1, 0.3) * CFrame.Angles(math.rad(190), math.rad(180), 0)
+		
+		local timingsine = t * 60
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
+		-- animations
+		local torsovelocity = root.Velocity.Magnitude
+		local torsovelocityy = root.Velocity.Y
+		local animationspeed = 16
+		local sin30 = math.sin(timingsine / 30)
+		if onground then
+			if torsovelocity < 1 then
+				footsteps.Playing = false
+				rt = CFrame.new(0, 0.05 * sin30, 0) * CFrame.Angles(-1.5707963267948966, 0, 3.141592653589793)
+				nt = CFrame.new(0, 1, 0) * CFrame.Angles(-1.5707963267948966, 0, 3.141592653589793)
+				rst = CFrame.new(0.6, 0.45 + 0.1 * sin30, 0.2) * CFrame.Angles(0, 2.356194490192345, 1.0471975511965976)
+				lst = CFrame.new(-0.8, 0.45 + 0.1 * sin30, -0.3) * CFrame.Angles(0, -2.2689280275926285, -0.8726646259971648)
+				rht = CFrame.new(1, -1 - 0.05 * sin30, 0.1) * CFrame.Angles(0, 1.3962634015954636, 0)
+				lht = CFrame.new(-1, -1 - 0.05 * sin30, 0.1) * CFrame.Angles(0, -1.3089969389957472, 0)
+			else
+				footsteps.Playing = true
+				local d = (hum:GetMoveVelocity().Magnitude / scale) / 16
+				local rw = root.CFrame.RightVector:Dot(hum.MoveDirection) * d
+				local lw = root.CFrame.LookVector:Dot(hum.MoveDirection) * d
+				timingwalk += dt * d
+				rt = CFrame.new(0, 0.05 * math.sin(timingwalk * 20), 0) * CFrame.Angles(math.rad(-90 - lw * 10), math.rad(rw * 10), math.rad(180))
+				nt = CFrame.new(0, 1, 0) * CFrame.Angles(-1.5707963267948966, 0, 3.141592653589793)
+				rst = CFrame.new(0.6, 0.45 + 0.05 * math.sin((timingwalk + 0.5) * 20), 0.2) * CFrame.Angles(0, 2.356194490192345, 1.0471975511965976)
+				lst = CFrame.new(-0.8, 0.45 + 0.05 * math.sin((timingwalk + 0.5) * 20), -0.3) * CFrame.Angles(0, -2.2689280275926285, -0.8726646259971648)
+				rht = CFrame.new(1 + 0.1 * math.sin((timingwalk - 0.5) * 10) * rw, -1 - 0.05 * math.sin(timingwalk * 20), 0.1 + 0.1 * math.sin((timingwalk - 0.5) * 10) * lw) * CFrame.Angles(0, 1.5707963267948966 - 0.2 * rw, -0.17453292519943295 + 1.0471975511965976 * math.sin((timingwalk + 1) * 10))
+				lht = CFrame.new(-1 + 0.1 * math.sin((timingwalk - 0.5) * 10) * rw, -1 - 0.05 * math.sin(timingwalk * 20), 0.1 + 0.1 * math.sin((timingwalk - 0.5) * 10) * lw) * CFrame.Angles(0, -1.5707963267948966 - 0.2 * rw, 0.17453292519943295 + 1.0471975511965976 * math.sin((timingwalk + 1) * 10))
+			end
+		else
+			footsteps.Playing = false
+			rt = CFrame.Angles(-1.5707963267948966 + math.clamp(torsovelocityy, -50, 50) * 0.004, 0, 3.141592653589793)
+			nt = CFrame.new(0, 1, 0) * CFrame.Angles(-1.6580627893946132, 0, 3.141592653589793)
+			rst = CFrame.new(0.6, 0.5, -0.1) * CFrame.Angles(0.08, 0, 0) * CFrame.Angles(0, 2.356194490192345, 1.0471975511965976)
+			lst = CFrame.new(-0.8, 0.5, -0.6) * CFrame.Angles(0.08, 0, 0) * CFrame.Angles(0, -2.2689280275926285, -0.8726646259971648)
+			rht = CFrame.new(1.1, -0.9, -0.2) * CFrame.Angles(0, 1.5707963267948966, -0.3490658503988659)
+			lht = CFrame.new(-1.1, -0.8, -1) * CFrame.Angles(0, -1.4835298641951802, 0.5235987755982988)
+		end
+		if state == 0 then
+			bullet.CFrame = root.CFrame + Vector3.new(0, -8, 0) * scale
+			if mousedown and not isdancing then
+				state = 1
+				statetime = os.clock()
+			end
+		elseif state == 1 then
+			local hit = MouseHit()
+			AimTowards(hit)
+			footsteps.Playing = false
+			rst = CFrame.new(0.6, 0.05 * sin30, 0.1) * CFrame.Angles(0, 1.7453292519943295, 1.7453292519943295)
+			lst = CFrame.new(-0.4, 0.5 + 0.05 * sin30, -0.7) * CFrame.Angles(0, -2.6179938779914944, -1.3962634015954636)
+			local hole = root.CFrame * CFrame.new(1.5, 0.2, -3)
+			hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+			local dir = (hit - hole.Position).Unit
+			if dir == dir then
+				dir = dir.Unit
+			else
+				dir = Vector3.zAxis
+			end
+			local cast = ShootRaycast(hole.Position, dir * 4096)
+			if cast then
+				hit = cast.Position
+				local part = cast.Instance
+				if part and part.Parent and part.Parent.Parent then
+					local hum = part.Parent:FindFirstChildOfClass("Humanoid") or part.Parent.Parent:FindFirstChildOfClass("Humanoid")
+					if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+						ReanimateFling(part.Parent)
+					end
+				end
+			else
+				hit = hole.Position + dir * 4096
+			end
+			local shots = math.min((os.clock() - statetime) * m.BooletsPerSec, 24)
+			while shots > 1 do
+				shots -= 1
+				local ti = TweenInfo.new(0.1, Enum.EasingStyle.Linear)
+				local shootfx = Instance.new("Part", workspace)
+				shootfx.Name = RandomString()
+				shootfx.Anchored = true
+				shootfx.CanCollide = false
+				shootfx.CanTouch = false
+				shootfx.CanQuery = false
+				shootfx.Color = Color3.new(1, 1, 0)
+				shootfx.CastShadow = false
+				shootfx.Material = "Neon"
+				shootfx.Size = Vector3.zero
+				shootfx.Transparency = 0
+				shootfx.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + hole.Position
+				TweenService:Create(shootfx, ti, {Transparency = 1, Size = Vector3.new(2, 2, 2)}):Play()
+				CreateSound(shootfx, 2476570846, 0.95 + math.random() * 0.1)
+				Debris:AddItem(shootfx, 0.5)
+				shootfx = Instance.new("Part", workspace)
+				shootfx.Name = RandomString()
+				shootfx.Anchored = true
+				shootfx.CanCollide = false
+				shootfx.CanTouch = false
+				shootfx.CanQuery = false
+				shootfx.Color = Color3.new(1, 1, 0)
+				shootfx.CastShadow = false
+				shootfx.Material = "Neon"
+				shootfx.Size = Vector3.zero
+				shootfx.Transparency = 0
+				shootfx.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + hit
+				TweenService:Create(shootfx, ti, {Transparency = 1, Size = Vector3.new(2, 2, 2)}):Play()
+				CreateSound(shootfx, 4427231299, 0.9 + math.random() * 0.2)
+				Debris:AddItem(shootfx, 0.5)
+				local shootline = Instance.new("Part", workspace)
+				shootline.Name = RandomString()
+				shootline.Anchored = true
+				shootline.CanCollide = false
+				shootline.CanTouch = false
+				shootline.CanQuery = false
+				shootline.Color = Color3.new(1, 1, 0)
+				shootline.CastShadow = false
+				shootline.Material = "Neon"
+				shootline.Size = Vector3.new(1, 1, 1)
+				shootline.Transparency = 0
+				shootline.CFrame = CFrame.lookAt(hole.Position:Lerp(hit, 0.5), hit)
+				local shootlinem = Instance.new("SpecialMesh", shootline)
+				shootlinem.MeshType = "Brick"
+				shootlinem.Scale = Vector3.new(0.1, 0.1, (hit - hole.Position).Magnitude)
+				TweenService:Create(shootline, ti, {Transparency = 1}):Play()
+				TweenService:Create(shootlinem, ti, {Scale = Vector3.new(0.5, 0.5, (hit - hole.Position).Magnitude)}):Play()
+				Debris:AddItem(shootline, 0.5)
+				joints.rs += Vector3.new(0, 0, 0.1)
+				joints.ls += Vector3.new(0, 0, 0.1)
+			end
+			local bulletstate = (os.clock() // 0.05) % 2
+			if bulletstate == 0 then
+				bullet.CFrame = hole
+				bullet.LastHit = nil
+			else
+				if not bullet.LastHit then
+					local dir = hit - hole.Position
+					if dir.Magnitude > 256 then
+						dir = dir.Unit * 256
+					end
+					bullet.LastHit = hole.Position + dir
+				end
+				bullet.CFrame = CFrame.new(bullet.LastHit) * CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2)
+			end
+			statetime = os.clock() - shots / m.BooletsPerSec
+			if not mousedown or isdancing then
+				state = 0
+				hum.WalkSpeed = 16 * scale
+			end
+		end
+		
+		-- joints
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		-- interpolation
+		local alpha = math.exp(-animationspeed * dt)
+		joints.r = rt:Lerp(joints.r, alpha)
+		joints.n = nt:Lerp(joints.n, alpha)
+		joints.rs = rst:Lerp(joints.rs, alpha)
+		joints.ls = lst:Lerp(joints.ls, alpha)
+		joints.rh = rht:Lerp(joints.rh, alpha)
+		joints.lh = lht:Lerp(joints.lh, alpha)
+		joints.sw = gunoff:Lerp(joints.sw, alpha)
+		
+		-- apply transforms
+		SetC0C1Joint(rj, joints.r, CFrame.Angles(-1.57, 0, 3.14), scale)
+		SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)), scale)
+		SetC0C1Joint(rsj, joints.rs, CFrame.new(0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		SetC0C1Joint(lsj, joints.ls, CFrame.new(-0.5, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		
+		-- gun
+		if m.UseSword then
+			gun.Group = "Sword"
+		else
+			gun.Group = "Gun"
+		end
+		gun.Offset = joints.sw
+		gun.Disable = not not isdancing
+	end
+	m.Destroy = function(figure: Model?)
+		ContextActionService:UnbindAction("Uhhhhhh_AKShoot")
+		if uisbegin then
+			uisbegin:Disconnect()
+			uisbegin = nil
+		end
+		if uisend then
+			uisend:Disconnect()
+			uisbegin = nil
 		end
 		root, torso, hum = nil, nil, nil
 	end

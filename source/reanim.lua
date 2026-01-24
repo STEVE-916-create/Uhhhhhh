@@ -1,7 +1,25 @@
+--[[
+ ...    :::::        ::        ::        ::        ::        ::        
+ ;;     ;;;;;;       ;;;       ;;;       ;;;       ;;;       ;;;       
+[['     [[[[[[[cc,,. [[[[cc,,. [[[[cc,,. [[[[cc,,. [[[[cc,,. [[[[cc,,. 
+$$      $$$$$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ 
+88    .d888888   "88o888   "88o888   "88o888   "88o888   "88o888   "88o
+ "YmmMMMM""MMM    YMMMMM    YMMMMM    YMMMMM    YMMMMM    YMMMMM    YMM
+       "DREAMS WILL NEVER COME TRUE UNTIL YOU ACTUALLY MAKE IT."       
+
+       Code:    STEVETHEREALONE
+       GFX:     STEVETHEREALONE
+                AALib
+                some random generators
+       Music:   Dubmood
+                4mat
+                MASTER BOOT RECORD
+]]
+
 if _G.UhhhhhhLoaded then return end
 _G.UhhhhhhLoaded = true
 
-local UhhhhhhVersion = "1.0.0 INIT"
+local UhhhhhhVersion = "1.0.3 BETA"
 
 cloneref = cloneref or function(o) return o end
 getcustomasset = getcustomasset or getsynasset
@@ -39,6 +57,9 @@ do
 		Util.Notify("Executor not supported.")
 		_G.UhhhhhhLoaded = nil
 		error("fatal error cant start")
+	end
+	if not request then
+		diefatal()
 	end
 	if not getcustomasset then
 		diefatal()
@@ -226,6 +247,7 @@ UIMainFrame.Size = UDim2.new(1, 0, 1, 0)
 UIMainFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 UIMainFrame.BackgroundTransparency = 1
 UIMainFrame.BorderSizePixel = 0
+UIMainFrame.ZIndex = 2147483647
 
 local SaveData = {}
 do
@@ -615,6 +637,8 @@ else
 		"Omega-Skidded Immortality Lord Diddy Blud On The Calculator       ",
 		"all UI music credits to dubmood, zabutom, ogge and 4mat           ",
 		"heres the triforce                and heres my name                              ",
+		"skids are now taking credit of this entire script, meaning its so good           ",
+		"whenever i see hat reanimation nowadays i check to see if they are collidable    ",
 	}
 	scrolltexts = scrolltexts[math.random(1, #scrolltexts)]
 	local fade = TweenService:Create(UIMainFrame, TweenInfo.new(5), {BackgroundTransparency = 0.5})
@@ -751,7 +775,7 @@ if SaveData.MuteUIMusic then
 	end
 end
 
-local Grads = {}
+local StylizedObjs = {}
 local function Stylize(obj, options)
 	options = options or {}
 	Util.Instance("UICorner", obj).CornerRadius = UDim.new(0, 5)
@@ -793,23 +817,165 @@ local function Stylize(obj, options)
 			end
 		end
 	end
-	table.insert(Grads, {
+	table.insert(StylizedObjs, {
 		obj = obj,
 		Out = Out,
-		Glos = Glos
+		Glos = Glos,
+		options = options,
 	})
 end
 local ForceUIColor = nil
+local ForceUIBGColor = nil
+local function GetUIColor(t)
+	if ForceUIColor then
+		local si = math.sin(math.pi * 2 * t / 10)
+		local h, s, v = ForceUIColor:ToHSV()
+		if s < 0.2 then
+			v *= 0.8 + si * 0.2
+		else
+			h += si * 0.01
+		end
+		return Util.LoopedHSV(h, s, v)
+	end
+	return Util.LoopedHSV(t / 10, 0.8, 1)
+end
+local function GetUIBGColor(t)
+	if ForceUIBGColor then
+		local si = math.sin(math.pi * 2 * t / 10)
+		local h, s, v = ForceUIBGColor:ToHSV()
+		if s < 0.2 then
+			if v > 0.5 then
+				v *= 0.95 + si * 0.05
+			else
+				v *= 1.05 + si * 0.05
+			end
+		else
+			h += si * 0.01
+		end
+		return Util.LoopedHSV(h, s, v)
+	end
+	return Color3.new(0, 0, 0)
+end
+local UITextColor = Util.Instance("Color3Value")
+UITextColor.Value = Color3.new(1, 1, 1)
+local function RegisterTextLabel(obj)
+	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+		obj.TextColor3 = UITextColor.Value
+		Util.LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
+			obj.TextColor3 = val
+		end))
+	end
+	if obj:IsA("TextBox") then
+		local h, s, v = UITextColor.Value:ToHSV()
+		obj.TextColor3 = UITextColor.Value
+		obj.PlaceholderColor3 = Color3.fromHSV(h, s, 0.5 + (v - 0.5) * 0.4)
+		Util.LinkDestroyI2C(obj, UITextColor.Changed:Connect(function(val)
+			h, s, v = val:ToHSV()
+			obj.TextColor3 = val
+			obj.PlaceholderColor3 = Color3.fromHSV(h, s, 0.5 + (v - 0.5) * 0.4)
+		end))
+	end
+end
 local function UpdateGrads(t)
-	local c = ForceUIColor or Util.LoopedHSV(t / 10, 0.8, 1)
-	for _,grad in Grads do
-		local obj, Out, Glos = grad.obj, grad.Out, grad.Glos
+	local c = GetUIColor(t)
+	local bgc = GetUIBGColor(t)
+	local h, s, v = bgc:ToHSV()
+	local bgcd = Color3.fromHSV(h, s, v * 0.9)
+	local h2, s2, v2 = c:ToHSV()
+	local glc = c
+	if v > v2 then
+		glc = bgc
+	end
+	for _,grad in StylizedObjs do
+		local obj, Out, Glos, options = grad.obj, grad.Out, grad.Glos, grad.options
 		Out.Color = c
+		if options.Depthed then
+			obj.BackgroundColor3 = bgcd
+		else
+			obj.BackgroundColor3 = bgc
+		end
 		for _,v in Glos do
-			v.ImageColor3 = c
+			v.ImageColor3 = glc
 		end
 	end
 end
+local function SetUITheme(index)
+	local UIThemes = {
+		-- RGB/Default
+		{nil, nil, Color3.new(1, 1, 1)},
+		-- ALONE
+		{Color3.new(1, 1, 1), nil, Color3.new(1, 1, 1)},
+		-- Oxide
+		{Color3.fromRGB(49, 203, 233), Color3.fromRGB(38, 38, 38), Color3.fromRGB(49, 203, 233)},
+		-- Patchma-like
+		{Color3.new(0.0941177, 0.317647, 0.878431), nil, Color3.new(0.560784, 0.560784, 0.560784)},
+		-- Genesis V4 - Neptunian V
+		{Color3.fromHex("7733FF"), Color3.fromHex("161330"), Color3.new(1, 1, 1)},
+		-- Crimson
+		{Color3.new(0.9, 0, 0), Color3.new(0.05, 0, 0), Color3.new(1, 1, 1)},
+		-- r/masterhacker
+		{Color3.new(0, 1, 0), nil, Color3.new(0, 1, 0)},
+		-- Homer simpson
+		{Color3.new(0, 0, 0), Color3.new(1, 0.95, 0), Color3.new(0, 0, 0)},
+		-- Immortality Lord
+		{Color3.new(0.1, 0.1, 0.1), nil, Color3.new(1, 1, 1)},
+		-- RGB LIGHT
+		{nil, Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
+		-- ALONE LIGHT
+		{Color3.new(0, 0, 0), Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
+		-- ROSR
+		{Color3.new(0, 0, 0), Color3.new(1, 0.6, 0), Color3.new(1, 1, 1)},
+		-- FastTracker II Blue
+		{Color3.fromHex("333780"), Color3.fromHex("666EFF"), Color3.new(1, 1, 1)},
+		-- Cherry Blossom
+		{Color3.fromHex("75284B"), Color3.fromHex("F7ABE8"), Color3.fromHex("75284B")},
+		-- Cherry Blossom Inverted
+		{Color3.fromHex("F7ABE8"), Color3.fromHex("75284B"), Color3.new(1, 1, 1)},
+		-- Tommorow Night 80s
+		{Color3.fromHex("272727"), Color3.fromHex("2D2D2D"), Color3.fromHex("BEBEBE")},
+	}
+	local theme = UIThemes[index]
+	if index == #UIThemes + 1 then
+		theme = {nil, nil, Color3.new(1, 1, 1)}
+		local function processtable(t)
+			if typeof(t.Fore) == "Color3" then
+				theme[1] = t.Fore
+			end
+			if typeof(t.Back) == "Color3" then
+				theme[2] = t.Back
+			end
+			if typeof(t.Text) == "Color3" then
+				theme[3] = t.Text
+			end
+			if typeof(t.Fore) == "string" then
+				theme[1] = Color3.fromHex(t.Fore)
+			end
+			if typeof(t.Back) == "string" then
+				theme[2] = Color3.fromHex(t.Back)
+			end
+			if typeof(t.Text) == "string" then
+				theme[3] = Color3.fromHex(t.Text)
+			end
+		end
+		if type(_G.UhhhhhhTheme) == "table" and getmetatable(_G.UhhhhhhTheme) == nil then
+			processtable(_G.UhhhhhhTheme)
+			SaveData.UIThemeUserDefined = {
+				Fore = theme[1] and theme[1]:ToHex(),
+				Back = theme[2] and theme[2]:ToHex(),
+				Text = theme[3] and theme[3]:ToHex() or "FFFFFF",
+			}
+		elseif type(SaveData.UIThemeUserDefined) == "table" then
+			processtable(SaveData.UIThemeUserDefined)
+		end
+	end
+	if theme then
+		ForceUIColor = theme[1]
+		ForceUIBGColor = theme[2]
+		UITextColor.Value = theme[3]
+	end
+end
+SaveData.UITheme = SaveData.UITheme or 1
+SetUITheme(SaveData.UITheme)
 
 UISound.Click = Util.Instance("Sound", UIMainFrame)
 UISound.Click.SoundId = "rbxassetid://6324790483"
@@ -879,6 +1045,7 @@ local UIMainWindow, WindowContent do
 	TopBarText.TextXAlignment = Enum.TextXAlignment.Left
 	TopBarText.Text = "Uhhhhhh Reanimate | v" .. UhhhhhhVersion
 	TopBarText.RichText = true
+	RegisterTextLabel(TopBarText)
 	if (SaveData.SkipIntro and math.random(2) == 1) or os.date("%m %d") ~= "04 01" then
 		local quotes = {
 			"Ohhhhhh Re-create | v" .. UhhhhhhVersion,
@@ -930,17 +1097,17 @@ local UIMainWindow, WindowContent do
 			if troll == 1 then
 				CracktroFrameText = "Oxide Reanimation V67"
 				quotes = {"<font color=\"#00DDFF\">Oxide</font>   Reanimation"}
-				ForceUIColor = Color3.fromHex("00DDFF")
+				SetUITheme(3)
 			end
 			if troll == 2 then
 				CracktroFrameText = "patchma hub V67"
 				quotes = {"<font color=\"#0000FF\">patchma hub</font> by MyWorld"}
-				ForceUIColor = Color3.fromHex("0000FF")
+				SetUITheme(4)
 			end
 			if troll == 3 then
 				CracktroFrameText = "Genesis V4 but better"
 				quotes = {"<font color=\"#CC11FF\">Genesis V4 - Neptunian V</font>"}
-				ForceUIColor = Color3.fromHex("7733FF")
+				SetUITheme(5)
 			end
 		end
 		TopBarText.Text = quotes[math.random(1, #quotes)]
@@ -964,7 +1131,7 @@ local UIMainWindow, WindowContent do
 		A.Size = UDim2.new(0, 16, 0, 2)
 		A.Rotation = 0
 		A.BackgroundTransparency = 0
-		A.BackgroundColor3 = Color3.new(1, 1, 1)
+		A.BackgroundColor3 = UITextColor.Value
 		A.BorderSizePixel = 0
 		A.Name = "A"
 		A = Util.Instance("Frame", A)
@@ -973,9 +1140,13 @@ local UIMainWindow, WindowContent do
 		A.Size = UDim2.new(0, 2, 0, 0)
 		A.Rotation = 0
 		A.BackgroundTransparency = 0
-		A.BackgroundColor3 = Color3.new(1, 1, 1)
+		A.BackgroundColor3 = UITextColor.Value
 		A.BorderSizePixel = 0
 		A.Name = "B"
+		UITextColor.Changed:Connect(function(val)
+			TopBarClose.A.BackgroundColor3 = val
+			TopBarClose.A.B.BackgroundColor3 = val
+		end)
 	end
 	
 	WindowContent = Util.Instance("Frame", UIMainWindow)
@@ -1103,7 +1274,8 @@ CracktroFrame.BorderColor3 = Color3.new(1, 1, 1)
 CracktroFrame.ZIndex = 10
 CracktroFrame.ClipsDescendants = true
 AddToRenderStep(function(t)
-	CracktroFrame.BorderColor3 = Util.LoopedHSV(t / 10, 0.8, 1)
+	CracktroFrame.BorderColor3 = GetUIColor(t)
+	CracktroFrame.BackgroundColor3 = GetUIBGColor(t)
 end, CracktroFrame)
 
 do -- homepage
@@ -1119,7 +1291,7 @@ do -- homepage
 	Glowy.Size = UDim2.new(0, 260, 0, 260)
 	Glowy.BackgroundTransparency = 1
 	Glowy.Image = Util.GetCDNAsset("lightinursoul.graphic.png")
-	Glowy.ImageColor3 = Color3.new(1, 1, 1)
+	Glowy.ImageColor3 = UITextColor.Value
 	Glowy.ImageTransparency = 0.7
 	Glowy.ZIndex = -2
 
@@ -1157,19 +1329,58 @@ do -- homepage
 	text.Position = UDim2.new(0.5, 0, 1, -25)
 	text.ZIndex = 3
 	text.Parent = CracktroFrame
-	Util.SetTextColor(text, Color3.new(1, 1, 1), 0)
+	local text0 = Util.MakeText("Discord: discord.gg/NASNUKRBVM")
+	text0.AnchorPoint = Vector2.new(0.5, 1)
+	text0.Position = UDim2.new(0.5, 0, 1, -17)
+	text0.ZIndex = 3
+	text0.Parent = CracktroFrame
 	local text1 = Util.MakeText("Made by STEVETHEREALONE :" .. (math.random() < 0.333 and "3" or (math.random() < 0.5 and "D" or "P")))
 	text1.AnchorPoint = Vector2.new(0.5, 1)
 	text1.Position = UDim2.new(0.5, 0, 1, -17)
 	text1.ZIndex = 3
 	text1.Parent = CracktroFrame
-	Util.SetTextColor(text1, Color3.new(1, 1, 1), 0)
 	local text2 = Util.MakeText("Click me to start!")
 	text2.AnchorPoint = Vector2.new(0.5, 1)
 	text2.Position = UDim2.new(0.5, 0, 1, -17)
 	text2.ZIndex = 3
 	text2.Parent = CracktroFrame
-	Util.SetTextColor(text2, Color3.new(1, 1, 1), 0)
+	Util.SetTextColor(text, UITextColor.Value, 0)
+	Util.SetTextColor(text0, UITextColor.Value, 0)
+	Util.SetTextColor(text1, UITextColor.Value, 0)
+	Util.SetTextColor(text2, UITextColor.Value, 0)
+	local quotes = {
+		"\"EVERY CLIENT ORBITS A SERVER...\"",
+		Player.Name .. ", how is your " .. os.date("%A") .. "?",
+		"A great " .. os.date("%A") .. " today, eh?",
+		"Hello, " .. Player.Name .. ".",
+		"What makes you play at " .. os.date("%I %p") .. "?",
+		"You are going to love Uhhhhhh, I just know it.",
+		"This script is very \"verbose\".",
+		"Written mostly on a mobile phone.",
+		"I am pretty new in this community! :D",
+		"\"Dreams come true!\"",
+		"Idea originated from a dream.",
+		"If you love this program, join my Discord!",
+	}
+	local text3 = nil
+	local function changequote()
+		if text3 then text3:Destroy() end
+		text3 = Util.MakeText(quotes[math.random(1, #quotes)])
+		text3.AnchorPoint = Vector2.new(0.5, 1)
+		text3.Position = UDim2.new(0.5, 0, 1, -17)
+		text3.ZIndex = 3
+		text3.Parent = CracktroFrame
+		Util.SetTextColor(text3, UITextColor.Value, 0)
+		task.delay(12, changequote)
+	end
+	changequote()
+	UITextColor.Changed:Connect(function(val)
+		Util.SetTextColor(text, val, 0)
+		Util.SetTextColor(text0, val, 0)
+		Util.SetTextColor(text1, val, 0)
+		Util.SetTextColor(text2, val, 0)
+		Util.SetTextColor(text3, val, 0)
+	end)
 
 	local PositionProcessor = {
 		function(i, v, dt, pbl, spike)
@@ -1243,6 +1454,7 @@ do -- homepage
 		if Util.IsGuiVisible(CracktroFrame) then
 			local pp = PositionProcessor[currentprocessor]
 			local CracktroFrameAbsoluteSize = CracktroFrame.AbsoluteSize
+			Glowy.ImageColor3 = UITextColor.Value
 			Glowy.ImageTransparency = 0.75 + math.sin(((os.clock() / 10) % 2) * math.pi) * 0.05
 			local pbl = UISound.Music.PlaybackLoudness
 			local spike = math.max(0, (pbl - oldpbl) - 16)
@@ -1285,12 +1497,31 @@ do -- homepage
 					v[6] = nzind
 				end
 			end
-			if IsUhhhhhhFullyLoaded and t % 10 >= 5 then
+			local textsel = t % 9
+			if IsUhhhhhhFullyLoaded then
+				textsel = t % 12
+			end
+			textsel //= 3
+			if textsel == 0 then
+				text0.Visible = true
 				text1.Visible = false
-				text2.Visible = true
-			else
+				text2.Visible = false
+				text3.Visible = false
+			elseif textsel == 1 then
+				text0.Visible = false
 				text1.Visible = true
 				text2.Visible = false
+				text3.Visible = false
+			elseif textsel == 2 then
+				text0.Visible = false
+				text1.Visible = false
+				text2.Visible = true
+				text3.Visible = false
+			else
+				text0.Visible = false
+				text1.Visible = false
+				text2.Visible = false
+				text3.Visible = true
 			end
 		else
 			currentprocessor = math.random(1, #PositionProcessor)
@@ -1317,7 +1548,8 @@ function UI.CreatePage()
 	Frame.ScrollBarThickness = 0
 	Frame.ClipsDescendants = true
 	AddToRenderStep(function(t)
-		Frame.BorderColor3 = Util.LoopedHSV(t / 10, 0.8, 1)
+		Frame.BorderColor3 = GetUIColor(t)
+		Frame.BackgroundColor3 = GetUIBGColor(t)
 	end, Frame)
 	local Padding = Util.Instance("UIPadding", Frame)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -1351,6 +1583,7 @@ function UI.CreateText(parent, text, size, alignment)
 	Text.TextYAlignment = Enum.TextYAlignment.Top
 	Text.TextWrapped = true
 	Text.TextSize = size
+	RegisterTextLabel(Text)
 	local function update()
 		local x = parent.AbsoluteSize.X
 		local size = TextService:GetTextSize(Text.ContentText, Text.TextSize, Text.Font, Vector2.new(x - margin * 2, math.huge))
@@ -1371,9 +1604,12 @@ function UI.CreateSeparator(parent)
 	Sep.AnchorPoint = Vector2.new(0.5, 0.5)
 	Sep.Position = UDim2.new(0.5, 0, 0.5, 0)
 	Sep.Size = UDim2.new(1, -8, 0, 1)
-	Sep.BackgroundColor3 = Color3.new(1, 1, 1)
+	Sep.BackgroundColor3 = UITextColor.Value
 	Sep.BackgroundTransparency = 0.8
 	Sep.BorderSizePixel = 0
+	Util.LinkDestroyI2C(Sep, UITextColor.Changed:Connect(function(val)
+		Sep.BackgroundColor3 = val
+	end))
 end
 function UI.CreateButton(parent, text, size)
 	local margin = 5
@@ -1404,6 +1640,7 @@ function UI.CreateButton(parent, text, size)
 	ButtonText.TextYAlignment = Enum.TextYAlignment.Center
 	ButtonText.TextWrapped = true
 	ButtonText.TextSize = size
+	RegisterTextLabel(ButtonText)
 	Stylize(Button)
 	local function update()
 		local x = parent.AbsoluteSize.X
@@ -1442,6 +1679,7 @@ function UI.CreateSwitch(parent, text, value)
 	ButtonText.TextYAlignment = Enum.TextYAlignment.Center
 	ButtonText.TextWrapped = true
 	ButtonText.TextSize = 20
+	RegisterTextLabel(ButtonText)
 	local function update()
 		local x = parent.AbsoluteSize.X
 		local size = TextService:GetTextSize(ButtonText.ContentText, ButtonText.TextSize, ButtonText.Font, Vector2.new(x - margin * 3 - switchsize, math.huge))
@@ -1464,8 +1702,11 @@ function UI.CreateSwitch(parent, text, value)
 	SwitchDot.Position = UDim2.new(0.5, 0, 0.5, 0)
 	SwitchDot.Size = UDim2.new(0, 19, 0, 19)
 	SwitchDot.BackgroundTransparency = 0.2
-	SwitchDot.BackgroundColor3 = Color3.new(1, 1, 1)
+	SwitchDot.BackgroundColor3 = UITextColor.Value
 	SwitchDot.BorderSizePixel = 0
+	Util.LinkDestroyI2C(SwitchDot, UITextColor.Changed:Connect(function(val)
+		SwitchDot.BackgroundColor3 = val
+	end))
 	Util.Instance("UICorner", SwitchDot).CornerRadius = UDim.new(0, 2)
 	local Lever = Util.Instance("BoolValue")
 	Lever.Value = value
@@ -1507,11 +1748,12 @@ function UI.CreateTextbox(parent, text, placeholder, size)
 	BoxText.TextWrapped = true
 	BoxText.TextSize = size
 	BoxText.ClearTextOnFocus = false
+	RegisterTextLabel(BoxText)
 	BoxText.Focused:Connect(function()
 		UISound.Click:Play()
 	end)
 	Stylize(Box, {
-		Rotation = 225
+		Depthed = true,
 	})
 	local function update()
 		local x = parent.AbsoluteSize.X
@@ -1556,6 +1798,7 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 	Text.TextWrapped = true
 	Text.TextSize = 20
 	Text.Text = text
+	RegisterTextLabel(Text)
 	local Box = Util.Instance("Frame", Container)
 	Box.AnchorPoint = Vector2.new(1, 0)
 	Box.Position = UDim2.new(1, -margin, 0, margin)
@@ -1577,11 +1820,12 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 	BoxText.TextWrapped = true
 	BoxText.TextSize = 15
 	BoxText.ClearTextOnFocus = false
+	RegisterTextLabel(BoxText)
 	BoxText.Focused:Connect(function()
 		UISound.Click:Play()
 	end)
 	Stylize(Box, {
-		Rotation = 225
+		Depthed = true,
 	})
 	local SliderC = Util.Instance("TextButton", Container)
 	SliderC.AnchorPoint = Vector2.new(0, 0)
@@ -1605,7 +1849,9 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 	SliderB.BackgroundColor3 = Color3.new(1, 1, 1)
 	SliderB.BorderSizePixel = 0
 	SliderB.ZIndex = 2
-	Stylize(SliderR)
+	Stylize(SliderR, {
+		Depthed = true,
+	})
 	Stylize(SliderB)
 	local range = max - min
 	if step > 0 then
@@ -1690,6 +1936,7 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 	return Select
 end
 function UI.CreateDropdown(parent, text, array, value)
+	value = value and math.clamp(value, 1, #array) or 1
 	local margin = 5
 	local Container = Util.Instance("Frame", parent)
 	Container.AnchorPoint = Vector2.new(0.5, 0)
@@ -1709,6 +1956,7 @@ function UI.CreateDropdown(parent, text, array, value)
 	Text.TextYAlignment = Enum.TextYAlignment.Center
 	Text.TextWrapped = true
 	Text.TextSize = 20
+	RegisterTextLabel(Text)
 	local Dropdown = Util.Instance("TextButton", Container)
 	Dropdown.AnchorPoint = Vector2.new(1, 0.5)
 	Dropdown.Position = UDim2.new(1, -margin, 0.5, 0)
@@ -1731,6 +1979,7 @@ function UI.CreateDropdown(parent, text, array, value)
 	DropdownText.TextYAlignment = Enum.TextYAlignment.Center
 	DropdownText.TextWrapped = true
 	DropdownText.TextSize = 15
+	RegisterTextLabel(DropdownText)
 	Stylize(Dropdown)
 	local function update()
 		local x = parent.AbsoluteSize.X
@@ -1795,17 +2044,11 @@ function UI.CreateDropdown(parent, text, array, value)
 		Item.TextXAlignment = Enum.TextXAlignment.Left
 		Item.TextYAlignment = Enum.TextYAlignment.Center
 		Item.TextWrapped = false
-		if i == value then
-			Item.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-		end
+		RegisterTextLabel(Item)
 		table.insert(items, Item)
 		local size = TextService:GetTextSize(itemname, Item.TextSize, Item.Font, Vector2.new(math.huge, math.huge))
 		sizex = math.max(sizex, size.X + 12)
 		Item.Activated:Connect(function()
-			for _,v in items do
-				v.BackgroundColor3 = Color3.new(0, 0, 0)
-			end
-			Item.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
 			Select.Value = i
 			opened = false
 			interact = true
@@ -1813,6 +2056,7 @@ function UI.CreateDropdown(parent, text, array, value)
 		Item.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				interact = true
+				UISound.Click:Play()
 			end
 		end)
 	end
@@ -1855,6 +2099,15 @@ function UI.CreateDropdown(parent, text, array, value)
 		else
 			Droplist.Visible = false
 		end
+		local i1 = GetUIBGColor(t)
+		local i2 = i1:Lerp(Color3.new(1, 1, 1), 0.1)
+		for i,v in items do
+			if i == Select.Value then
+				v.BackgroundColor3 = i2
+			else
+				v.BackgroundColor3 = i1
+			end
+		end
 	end, Droplist)
 	Util.LinkDestroyI2I(Dropdown, Select)
 	return Select, Text
@@ -1881,7 +2134,7 @@ function UI.CreateCanvas(parent)
 	ListBox.BorderSizePixel = 0
 	ListBox.AutomaticSize = Enum.AutomaticSize.Y
 	Stylize(ListBox, {
-		Rotation = 225
+		Depthed = true,
 	})
 	Padding = Util.Instance("UIPadding", ListBox)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -1922,7 +2175,7 @@ function UI.CreateScrollCanvas(parent, height)
 	ListBox.ScrollBarThickness = 0
 	ListBox.ClipsDescendants = true
 	Stylize(ListBox, {
-		Rotation = 225
+		Depthed = true,
 	})
 	Padding = Util.Instance("UIPadding", ListBox)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -1952,7 +2205,8 @@ function UI.CreateItemListPage()
 	Frame.ZIndex = 0
 	Frame.ClipsDescendants = true
 	AddToRenderStep(function(t)
-		Frame.BorderColor3 = Util.LoopedHSV(t / 10, 0.8, 1)
+		Frame.BorderColor3 = GetUIColor(t)
+		Frame.BackgroundColor3 = GetUIBGColor(t)
 	end, Frame)
 	local Padding = Util.Instance("UIPadding", Frame)
 	Padding.PaddingTop = UDim.new(0, margin)
@@ -1981,6 +2235,7 @@ function UI.CreateItemListPage()
 	BackButtonText.TextWrapped = true
 	BackButtonText.TextSize = 20
 	BackButtonText.Text = "<"
+	RegisterTextLabel(BackButtonText)
 	Stylize(BackButton)
 	local SearchBox = Util.Instance("Frame", Frame)
 	SearchBox.AnchorPoint = Vector2.new(1, 0)
@@ -2007,10 +2262,11 @@ function UI.CreateItemListPage()
 		UISound.Click:Play()
 	end)
 	Stylize(SearchBox, {
-		Rotation = 225
+		Depthed = true,
 	})
 	SearchBoxText.Text = ""
 	SearchBoxText.PlaceholderText = "Seek..."
+	RegisterTextLabel(SearchBoxText)
 	local ListBox = Util.Instance("ScrollingFrame", Frame)
 	ListBox.AnchorPoint = Vector2.new(0, 0)
 	ListBox.Position = UDim2.new(0, 0, 0, 25 + margin)
@@ -2024,7 +2280,7 @@ function UI.CreateItemListPage()
 	ListBox.ScrollBarThickness = 0
 	ListBox.ClipsDescendants = true
 	Stylize(ListBox, {
-		Rotation = 225
+		Depthed = true,
 	})
 	Padding = Util.Instance("UIPadding", ListBox)
 	Padding.PaddingTop = UDim.new(0, 5)
@@ -2073,9 +2329,7 @@ function UI.CreateItemListItem(parent)
 	ListBox.BorderSizePixel = 0
 	ListBox.AutomaticSize = Enum.AutomaticSize.Y
 	ListBox.Text = ""
-	Stylize(ListBox, {
-		Rotation = 225
-	})
+	Stylize(ListBox)
 	Padding = Util.Instance("UIPadding", ListBox)
 	Padding.PaddingTop = UDim.new(0, 5)
 	Padding.PaddingBottom = UDim.new(0, 5)
@@ -2110,10 +2364,6 @@ CracktroFrame.InputEnded:Connect(function(input)
 	end
 end)
 local AsciiText = UI.CreateText(MainPage, "", 12, Enum.TextXAlignment.Center)
-AsciiText.TextStrokeTransparency = 0.75
-AddToRenderStep(function(t)
-	AsciiText.TextStrokeColor3 = Util.LoopedHSV(t / 10, 0.8, 1)
-end, AsciiText)
 task.spawn(function()
 	local AsciiTextarts = {
 		{
@@ -2251,6 +2501,14 @@ task.spawn(function()
 			"                                                   ",
 			"\"it's not fast it's shit\"                          ",
 			"Believe me friend, its fuckingly fast, you don't ev",
+		},
+		{
+			"Uhhhhhh  https://discord.gg/NASNUKRBVM  Uhhhhhh",
+			"Uhhhhhh Uhhhhhh Uhhhhhh Uhhhhhh STEVETHEREALONE",
+			"Uhhhhhh Uhhhhhh Uhhhhhh STEVETHEREALONE Uhhhhhh",
+			"Uhhhhhh Uhhhhhh STEVETHEREALONE Uhhhhhh Uhhhhhh",
+			"Uhhhhhh STEVETHEREALONE Uhhhhhh Uhhhhhh Uhhhhhh",
+			"STEVETHEREALONE Uhhhhhh Uhhhhhh Uhhhhhh Uhhhhhh",
 		},
 	}
 	AsciiText.Text = table.concat(AsciiTextarts[math.random(1, #AsciiTextarts)], "\n")
@@ -2436,6 +2694,28 @@ UI.CreateButton(MainPage, " &lt; Back to cool scene", 20).Activated:Connect(func
 end)
 UI.CreateSwitch(MainPage, "Skip Intro", SaveData.SkipIntro).Changed:Connect(function(value)
 	SaveData.SkipIntro = value
+end)
+UI.CreateDropdown(MainPage, "UI Theme", {
+	"RGB/Default",
+	"ALONE",
+	"Oxide",
+	"Patchma Hub",
+	"Genesis V4",
+	"Crimson",
+	"r/masterhacker",
+	"Homer Simpson",
+	"Immortality Lord",
+	"LIGHT RGB",
+	"LIGHT ALONE",
+	"Roserika",
+	"FastTracker II Blue",
+	"Cherry Blossom",
+	"Sakura",
+	"Tommorow Night 80s", -- my personal IDE theme
+	"User Defined (see README)",
+}, SaveData.UITheme).Changed:Connect(function(val)
+	SaveData.UITheme = val
+	SetUITheme(SaveData.UITheme)
 end)
 UI.CreateSeparator(MainPage)
 
@@ -2731,6 +3011,7 @@ SaveData.ClickFlingEnabled = not not SaveData.ClickFlingEnabled
 SaveData.NoSmoothCam = not not SaveData.NoSmoothCam
 SaveData.NoSeatSitEnabled = not SaveData.NoSeatSitEnabled
 SaveData.ToolGrabEnabled = not not SaveData.ToolGrabEnabled
+SaveData.ScaleGravityEnabled = not not SaveData.ScaleGravityEnabled
 SaveData.CharacterScale = SaveData.CharacterScale or 1
 SaveData.P2PCollision = not not SaveData.P2PCollision
 SaveData.NoLoadAnimationHook = not not SaveData.NoLoadAnimationHook
@@ -2738,6 +3019,12 @@ SaveData.NoPhysicsRepRootPart = not not SaveData.NoPhysicsRepRootPart
 SaveData.NetlessVelocity = SaveData.NetlessVelocity or 25.01
 SaveData.UsePatchmaLikeNetless = not not SaveData.UsePatchmaLikeNetless
 SaveData.UseAngularVelocity = not not SaveData.UseAngularVelocity
+
+-- empyrean-like thing
+local _G_Uhhhhhh = {}
+-- jjsloit didnt have _G, just making sure if 100% unc execs dont have this even
+pcall(function() _G.Uhhhhhh = _G_Uhhhhhh end)
+_G_Uhhhhhh.BindableEvent = Util.Instance("BindableEvent") -- not used 3:
 
 local Reanimate = {
 	Current = nil,
@@ -2757,6 +3044,7 @@ local Reanimate = {
 	SmoothCam = not SaveData.NoSmoothCam,
 	SeatSit = not SaveData.NoSeatSitEnabled,
 	ToolGrab = SaveData.ToolGrabEnabled,
+	ScaleGravity = SaveData.ScaleGravityEnabled,
 	AntiExplosions = true,
 	CharacterScale = SaveData.CharacterScale,
 	P2PCollision = false,
@@ -2780,6 +3068,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		cf = InitCFrame
 	end
 	RC = CreateHumanoidCharacter()
+	RC:ScaleTo(Reanimate.CharacterScale)
 	local RCHumanoid, RCRootPart = RC.Humanoid, RC.HumanoidRootPart
 	local RCHead = RC.Head
 	--[[local Anchor = Instance.new("Part", RCRootPart)
@@ -2809,7 +3098,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			SeatWeld.Part1 = RCRootPart
 			SeatWeld.C0 = CFrame.new(0, part.Size.Y / 2, 0)
 			SeatWeld.C1 = CFrame.new(0, -1.5 * RC:GetScale(), 0)
-			LinkDestroyI2C(SeatWeld, RCHumanoid:GetPropertyChangedSignal("Jump"):Connect(function()
+			Util.LinkDestroyI2C(SeatWeld, RCHumanoid:GetPropertyChangedSignal("Jump"):Connect(function()
 				if RCHumanoid.Jump then
 					RCHumanoid.Sit = false
 					SeatWeld:Destroy()
@@ -2841,6 +3130,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	RCP.FilterType = Enum.RaycastFilterType.Exclude
 	RCP.FilterDescendantsInstances = {RC}
 	local noclipStates = {"Running", "Jumping", "Freefall", "Landed", "Climbing", "Swimming"}
+	local fallingStates = {"Jumping", "Freefall", "PlatformStanding", "Physics", "Ragdoll", "GettingUp", "Seated", "Flying", "FallingDown"}
 	local LastSafest = RCRootPart.CFrame
 	Util.LinkDestroyI2C(RC, RunService.PreAnimation:Connect(function(dt)
 		local CMove, CJump = Vector3.zero, false
@@ -2865,9 +3155,15 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		end
 		local RCHumanoidState = RCHumanoid:GetState().Name
 		local clip = not table.find(noclipStates, RCHumanoidState)
+		local gravaff = not not table.find(fallingStates, RCHumanoidState)
 		for _,v in RC:GetChildren() do
 			if v:IsA("BasePart") then
 				v.CanCollide = clip or (not Reanimate.Noclip and v == RCRootPart)
+			end
+		end
+		if gravaff then
+			if Reanimate.ScaleGravity and not RCRootPart:IsGrounded() then
+				RCRootPart.AssemblyLinearVelocity += Vector3.new(0, -workspace.Gravity * (Reanimate.CharacterScale - 1) * 0.25 * dt, 0)
 			end
 		end
 		if LastJump ~= CJump then
@@ -2891,7 +3187,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			RCHumanoid:Move(MoveCF:VectorToWorldSpace(CMove))
 		end
 		RCHumanoid.Jump = CJump
-		if RCRootPart.Position.Y + RCRootPart.Velocity.Y < FallenPartsDestroyHeight then
+		if RCRootPart.Position.Y < FallenPartsDestroyHeight + 3 * Reanimate.CharacterScale then
 			RCRootPart.CFrame = LastSafest
 			RCRootPart.Velocity = Vector3.new(0, 50, 0)
 			RCRootPart.RotVelocity = Vector3.zero
@@ -2908,10 +3204,12 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		end
 	end))
 	Reanimate.Character = RC
+	_G_Uhhhhhh.Character = RC
 end
 Reanimate.DestroyCharacter = function()
 	if Reanimate.Character then
 		Reanimate.Character = Reanimate.Character:Destroy()
+		_G_Uhhhhhh.Character = nil
 	end
 end
 
@@ -3033,6 +3331,42 @@ Util.SetMotor6DOffset = function(motor, offset)
 	Util.SetMotor6DTransform(motor, motor.C0:Inverse() * offset * motor.C1)
 end
 
+Util.ShowPartHitbox = function(part)
+	local w = Instance.new("WireframeHandleAdornment")
+	w.Name = "TempWireframe"
+	w.Adornee = part
+	w.Color3 = Color3.new(0, 1, 0)
+	w.Transparency = 0
+	w.ZIndex = 10
+	w.AlwaysOnTop = true
+	w.Thickness = 1
+	w.Parent = SCREENGUI
+	local hs = part.Size / 2
+	local verts = {
+		Vector3.new(-hs.X, -hs.Y, -hs.Z),
+		Vector3.new( hs.X, -hs.Y, -hs.Z),
+		Vector3.new( hs.X,  hs.Y, -hs.Z),
+		Vector3.new(-hs.X,  hs.Y, -hs.Z),
+		Vector3.new(-hs.X, -hs.Y,  hs.Z),
+		Vector3.new( hs.X, -hs.Y,  hs.Z),
+		Vector3.new( hs.X,  hs.Y,  hs.Z),
+		Vector3.new(-hs.X,  hs.Y,  hs.Z),
+	}
+	w:AddLine(verts[1], verts[2])
+	w:AddLine(verts[2], verts[3])
+	w:AddLine(verts[3], verts[4])
+	w:AddLine(verts[4], verts[1])
+	w:AddLine(verts[5], verts[6])
+	w:AddLine(verts[6], verts[7])
+	w:AddLine(verts[7], verts[8])
+	w:AddLine(verts[8], verts[5])
+	w:AddLine(verts[1], verts[5])
+	w:AddLine(verts[2], verts[6])
+	w:AddLine(verts[3], verts[7])
+	w:AddLine(verts[4], verts[8])
+	Debris:AddItem(w, 1)
+end
+
 local RIGHTGRIP_C0 = CFrame.new(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0)
 Util.PredictionFling = function(target)
 	if typeof(target) == "Instance" then
@@ -3112,6 +3446,11 @@ LimbReanimator.FlingEnabled = not SaveData.Reanimator.LimbRoleplay
 LimbReanimator.UseNaNFling = SaveData.Reanimator.LimbUseNaNFling
 LimbReanimator.FlingTargets = {}
 LimbReanimator._TempNotFling = {}
+function LimbReanimator.ShowHitboxes()
+	pcall(function()
+		Util.ShowPartHitbox(Player.Character.HumanoidRootPart)
+	end)
+end
 function LimbReanimator.Fling(target, duration)
 	if not LimbReanimator.FlingEnabled then return end
 	if not target then return false end
@@ -3156,6 +3495,7 @@ function LimbReanimator.SetRootPartMode(mode)
 	LimbReanimator.Mode = mode
 end
 function LimbReanimator.Config(parent)
+	UI.CreateText(parent, "as mentioned in the README, this only works for SOME games,\nbecause 'modern' games create the Animator automatically which breaks limb reanimation", 10, Enum.TextXAlignment.Center)
 	local dmode = UI.CreateDropdown(parent, "RootPart Mode", {"RootPart in void", "Keep RootPart Streamed", "CurrentAngle Style", "RootPart is Torso"}, LimbReanimator.Mode + 1)
 	local dvel = UI.CreateDropdown(parent, "RootPart Velocity", {"No Velocity", "Follow Character", "Fling-like"}, LimbReanimator.Velocity + 1)
 	local dinit = UI.CreateDropdown(parent, "Init Mode", {"Reset Character", "CDSB + Reset", "CDSB + SSE + Kill"}, LimbReanimator.InitMode + 1)
@@ -3557,7 +3897,7 @@ end
 local HatReanimator = {}
 HatReanimator.Name = "Hats"
 SaveData.Reanimator.HatsCollide = not not SaveData.Reanimator.HatsCollide
-SaveData.Reanimator.HatsCollideMethod = SaveData.Reanimator.HatsCollideMethod or 5
+SaveData.Reanimator.HatsCollideMethod = SaveData.Reanimator.HatsCollideMethod or 6
 SaveData.Reanimator.IWantAllHats = not not SaveData.Reanimator.IWantAllHats
 SaveData.Reanimator.HatsPatchmahub = not not SaveData.Reanimator.HatsPatchmahub
 SaveData.Reanimator.HatsFling = not not SaveData.Reanimator.HatsFling
@@ -3605,19 +3945,7 @@ function HatReanimator.ShowHitboxes()
 				local handle = v:FindFirstChild("Handle")
 				if handle and handle:IsA("BasePart") then
 					if handle:GetAttribute("_Uhhhhhh_HasCollide") then
-						local hitvis = Instance.new("Part")
-						hitvis.Name = Util.RandomString()
-						hitvis.CFrame = handle.CFrame
-						hitvis.Size = handle.Size
-						hitvis.Anchored = true
-						hitvis.CanCollide = false
-						hitvis.CanTouch = false
-						hitvis.Material = Enum.Material.Neon
-						hitvis.Transparency = 0.95
-						hitvis.Color = Color3.new(0, 1, 0)
-						hitvis.CastShadow = false
-						hitvis.Parent = handle
-						game.Debris:AddItem(hitvis, 0.1)
+						Util.ShowPartHitbox(handle)
 					end
 				end
 			end
@@ -3678,14 +4006,14 @@ function HatReanimator.Config(parent)
 	UI.CreateText(parent, "if ur hats get voided when u try to hat collide\nvvv try changing this vvv", 10, Enum.TextXAlignment.Center)
 	UI.CreateDropdown(parent, "Torso Offset", {
 		"1 - ShownApe's method (???)",
-		"2 - STEVE's method V1 (most stable)",
+		"2 - STEVE's method V1 (specific)",
 		"3 - 2 but for back accessories",
 		"4 - 2 but for shoulder accessories",
 		"5 - 2 but for waist accessories",
 		"6 - STEVE's method V2 (kinda stable)",
 		"7 - 6 but further from void (gl getting hatdrop)",
-		"8 - STEVE's method V3 (experimental)",
-		"9 - 8 but modded",
+		"8 - STEVE's method V3 (most stable)",
+		"9 - experimental do not use",
 	}, HatReanimator.HatCollideMethod + 1).Changed:Connect(function(val)
 		HatReanimator.HatCollideMethod = val - 1
 		SaveData.Reanimator.HatsCollideMethod = val - 1
@@ -4193,7 +4521,7 @@ function HatReanimator.Start()
 			else
 				-- world coords
 				if overriden.C0 and overriden.C1 then
-					return Util.ScaleCFrame(overriden.C0, scale) * Util.ScaleCFrame(overriden.C1, hatscale):Inverse(), Vector3.zero
+					return overriden.C0 * Util.ScaleCFrame(overriden.C1, hatscale):Inverse(), Vector3.zero
 				end
 			end
 		end
@@ -4242,7 +4570,18 @@ function HatReanimator.Start()
 	table.clear(HatReanimator.FlingTargets)
 	
 	local function SetSimulationRadius()
-		local r = Player.MaximumSimulationRadius--#Players:GetPlayers() * 1000
+		for _,plr in Players:GetPlayers() do
+			local a, b = pcall(compareinstances, plr, Player)
+			if a and not b then
+				pcall(function()
+					plr.SimulationRadius = 0
+				end)
+				pcall(function()
+					sethiddenproperty(plr, "SimulationRadius", 0)
+				end)
+			end
+		end
+		local r = #Players:GetPlayers() * 1000
 		pcall(function()
 			Player.SimulationRadius = r
 		end)
@@ -4492,7 +4831,6 @@ function HatReanimator.Start()
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 25, 0), Vector3.zero
 		end,
 		State1 = function(character, Humanoid, hats)
-			local Humanoid = character:FindFirstChildOfClass("Humanoid")
 			local anim = Instance.new("Animation")
 			anim.AnimationId = "rbxassetid://180436148"
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
@@ -4556,7 +4894,7 @@ function HatReanimator.Start()
 						elseif v.Name == "Neck" then
 							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(math.random() * 0.05, 1.5, -20))
 						else
-							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(i * -3, math.random() * 0.05, -2))
+							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(i * -3, math.random() * 0.05, -3))
 							i += 1
 						end
 					end
@@ -4589,25 +4927,25 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[2] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -2) * CFrame.Angles(math.pi, 0, 0)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1) * CFrame.Angles(math.pi, 0, 0)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
 	HatCollideMethods[3] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -2) * CFrame.Angles(math.pi * -0.5, 0, 0)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1) * CFrame.Angles(math.pi * -0.5, 0, 0)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
 	HatCollideMethods[4] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -2) * CFrame.Angles(math.pi * 0.5, 0, 0)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1) * CFrame.Angles(math.pi * 0.5, 0, 0)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
 	HatCollideMethods[5] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -30)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -8)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
@@ -4626,32 +4964,102 @@ function HatReanimator.Start()
 			RootPart.CFrame = rootcf
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 26, 0), Vector3.zero
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
+				-- TODO
+			else
+				-- put the limbs in freefall, make sure they dont touch
+				for _,v in character:GetDescendants() do
+					if v:IsA("Motor6D") then
+						if v.Name == "RootJoint" then
+							Util.SetMotor6DOffset(v, CFrame.new(0, 6, 0))
+						elseif v.Name == "Neck" then
+							Util.SetMotor6DOffset(v, CFrame.new(0, 3, -2))
+						elseif v.Name == "Right Shoulder" then
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2, 3.5, -2))
+						elseif v.Name == "Left Shoulder" then
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2, 0, -2))
+						elseif v.Name:find("Hip") then
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2, -2, -2))
+						else
+							Util.SetMotor6DTransform(v, CFrame.identity)
+						end
+					end
+				end
+			end
+		end,
+		State1 = function(character, Humanoid, hats)
+			HatReanimator.Status.HatCollide = "Hat states set."
+			local head = character:FindFirstChild("Head")
+			for _,v in hats do
+				local handle = v:FindFirstChild("Handle")
+				if handle then
+					local weld = handle:FindFirstChild("AccessoryWeld")
+					if weld then
+						if weld.Part0 == handle and weld.Part1 ~= head then
+							continue
+						end
+						if weld.Part1 == handle and weld.Part0 ~= head then
+							continue
+						end
+					end
+				end
+				SetAccoutrementState(v, BackendAccoutrementState.None)
+			end
+		end,
+		State2 = function(character, hats)
+			-- 3 of the most important instances (rootpart is destroyed after a frame anyway)
+			local torso = character:FindFirstChild("Torso")
+			local head = character:FindFirstChild("Head")
+			local rightarm = character:FindFirstChild("Right Arm") -- this will also reevaluate collisions upon removal (cuz tool)
+			if torso then
+				task.wait(calculatepartdestroytime(2, 26, workspace.Gravity) - 0.1)
+			end
+			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
+			for _,v in hats do
+				SetAccoutrementState(v, BackendAccoutrementState.None)
+			end
+			if torso and torso.Parent then
+				torso.AncestryChanged:Wait()
+			end
+			if head and head.Parent then
+				head.AncestryChanged:Wait()
+			end
+			task.wait(1.5)
+			return _counthats(hats)
+		end,
+	}
+	HatCollideMethods[8] = { -- VERY EXPERIMENTAL, do NOT use.
+		NoAnim = true,
+		Wait1 = 0.1,
+		Wait2 = 0.15,
+		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
+			local rootcf = CFrame.new(RootPosition + Vector3.new(0, -4, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)
+			RootPart.CFrame = rootcf
+			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 30), Vector3.zero
+			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "Root" then
-							Util.SetMotor6DTransform(v, CFrame.new(math.random() * 0.05, 0, 0))
+							Util.SetMotor6DTransform(v, CFrame.new(0, -30, 0))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DTransform(v, CFrame.new(math.random() * 0.05, 10, 0))
-						elseif v.Name:find("Shoulder") then
-							Util.SetMotor6DTransform(v, CFrame.new(math.random() * 0.05, 2.5, -4))
-						elseif v.Name:find("Hip") then
-							Util.SetMotor6DTransform(v, CFrame.new(math.random() * 0.05, 4.5, -2))
+							Util.SetMotor6DOffset(v, CFrame.new(0, 67, 0))
 						else
 							Util.SetMotor6DTransform(v, CFrame.identity)
 						end
 					end
 				end
 			else
+				local i = 1
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 6, 0))
+							Util.SetMotor6DOffset(v, CFrame.new(0, 0, -20))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 40, 0))
-						elseif v.Name:find("Shoulder") or v.Name:find("Hip") then
-							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, 0, -3))
+							Util.SetMotor6DOffset(v, CFrame.new(0, 0, -1))
+						elseif v.Name == "Right Shoulder" then
+							Util.SetMotor6DOffset(v, CFrame.new(0, 0, -20))
 						else
-							Util.SetMotor6DTransform(v, CFrame.identity)
+							Util.SetMotor6DOffset(v, CFrame.new(i * -3, 0, 10))
+							i += 1
 						end
 					end
 				end
@@ -4674,68 +5082,20 @@ function HatReanimator.Start()
 			end
 		end,
 		State2 = function(character, hats)
-			local torso = character:FindFirstChild("Torso")
-			if torso then
-				task.wait(0.1)
-				--task.wait(calculatepartdestroytime(torso.CFrame.Y - FallenPartsDestroyHeight, torso.AssemblyLinearVelocity.Y, workspace.Gravity) + 0.01)
-			end
-			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
-			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
-			end
-			if torso and torso.Parent == character then
-				torso.AncestryChanged:Wait()
-			end
-			task.wait(1.5)
-			return _counthats(hats)
-		end,
-	}
-	HatCollideMethods[8] = { -- VERY EXPERIMENTAL, do NOT use.
-		NoAnim = true,
-		Wait1 = 0.1,
-		Wait2 = 0.15,
-		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 4, 0))
-			RootPart.CFrame = rootcf
-			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 30), Vector3.zero
-			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
-				for _,v in character:GetDescendants() do
-					if v:IsA("Motor6D") then
-						if v.Name == "Root" then
-							Util.SetMotor6DTransform(v, CFrame.new(0, -30, 0))
-						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(0, 67, 0))
-						else
-							Util.SetMotor6DTransform(v, CFrame.identity)
-						end
-					end
-				end
-			else
-				local i = 1
-				for _,v in character:GetDescendants() do
-					if v:IsA("Motor6D") then
-						if v.Name == "RootJoint" then
-							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, -0.25, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)))
-						elseif v.Name == "Right Hip" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 1.5, -20))
-						else
-							Util.SetMotor6DOffset(v, CFrame.new(i * -3, math.random() * 0.05, -2))
-							i += 1
-						end
-					end
-				end
-			end
-		end,
-		State1 = function(character, Humanoid, hats)
-		end,
-		State2 = function(character, hats)
-			local rightleg = character:FindFirstChild("Right Leg")
 			local hum = character:FindFirstChild("Humanoid")
+			local head = character:FindFirstChild("Right Arm")
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
+			task.wait(0.41)
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.None)
+				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
-			rightleg.AncestryChanged:Wait()
+			task.wait(0.19)
+			if head and head:IsDescendantOf(workspace) then
+				head.AncestryChanged:Wait()
+			end
+			for _,v in hats do
+				SetAccoutrementState(v, BackendAccoutrementState.Equipped)
+			end
 			task.wait(1.5)
 			return _counthats(hats)
 		end,
@@ -5443,6 +5803,22 @@ local function ReanimateFling(target, duration)
 	end
 	return false
 end
+-- SetCharacter thing, very empyrean-like system
+_G_Uhhhhhh.Fling = function(part)
+	if part and part.Parent then
+		if part:IsA("BasePart") then
+			part = part.Parent
+			if part:IsA("Accessory") then
+				part = part.Parent
+			end
+		end
+		local hum = part:FindFirstChildOfClass("Humanoid")
+		if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+			return ReanimateFling(part)
+		end
+	end
+end
+
 do
 	SaveData.SelectedReanimator = SaveData.SelectedReanimator or 1
 	local ReanimateMethodSelect = UI.CreateDropdown(MainPage, "Reanimator", {"Limb Reanimator", "Hats Reanimator"}, SaveData.SelectedReanimator)
@@ -5496,6 +5872,10 @@ do
 		end
 		ReanimateStartButton.Interactable = true
 	end)
+	UI.CreateButton(MainPage, "Show Reanimate Hitboxes", 15).Activated:Connect(function()
+		if not Reanimate.Character then return end
+		ReanimateShowHitboxes()
+	end)
 	UI.CreateButton(MainPage, "Refresh Reanimate Character", 10).Activated:Connect(function()
 		if not Reanimate.Character then return end
 		Reanimate.CreateCharacter()
@@ -5524,6 +5904,10 @@ do
 	UI.CreateSwitch(MainPage, "Can Pickup Tools", Reanimate.ToolGrab).Changed:Connect(function(val)
 		Reanimate.ToolGrab = val
 		SaveData.ToolGrabEnabled = val
+	end)
+	UI.CreateSwitch(MainPage, "Apply Scale to Gravity", Reanimate.ScaleGravity).Changed:Connect(function(val)
+		Reanimate.ScaleGravity = val
+		SaveData.ScaleGravityEnabled = val
 	end)
 	UI.CreateButton(MainPage, "Force Sit (2x to remove gyro)", 20).Activated:Connect(function()
 		local ch = Reanimate.Character or Player.Character
@@ -6270,8 +6654,8 @@ KeybindsPage.Back.Activated:Connect(function()
 end)
 
 SaveData.KeybindsEnabled = not not SaveData.KeybindsEnabled
-UI.CreateSwitch(MainPage, "Dance Keybinds Enabled", false).Changed:Connect(function(val)
-	CtrlClickEnabled = val
+UI.CreateSwitch(MainPage, "Dance Keybinds Enabled", SaveData.KeybindsEnabled).Changed:Connect(function(val)
+	SaveData.KeybindsEnabled = val
 end)
 local Keybinds = {}
 local KeybindsPerPage = {"Z", "X", "C", "V", "B", "N", "G", "H", "J", "K", "L", "R", "T", "U", "P"}
@@ -6487,19 +6871,17 @@ local function AddDance(m)
 end
 local function AddModule(func)
 	GiveFunctionsToFunction(func)
-	local s, m = pcall(func)
-	if s and m and type(m) == "table" then
+	local m = func()
+	if m and type(m) == "table" then
 		if m.ModuleType == "MOVESET" then
 			AddMoveset(m)
-		end
-		if m.ModuleType == "DANCE" then
+		elseif m.ModuleType == "DANCE" then
 			AddDance(m)
+		else
+			error("Unknown ModuleType for Module!")
 		end
-	elseif not s then
-		warn(m)
-		Util.Notify("A module ran into an error. See console.")
 	else
-		Util.Notify("A module didnt return a table.")
+		error("Module return value is not a table. Got " .. typeof(m) .. " instead.")
 	end
 end
 local function AddModules(list)
@@ -6537,93 +6919,109 @@ task.spawn(function()
 		end
 	end
 end)
-
-local _oldcharacterreference = nil
-RunService.Heartbeat:Connect(function(dt)
-	local ReanimCharacter = Reanimate.Character
-	SaveData.MovesetIndex = MovementStyleIndex
-	if ReanimCharacter then
-		if _oldcharacterreference ~= ReanimCharacter then
+task.spawn(function()
+	local _oldcharacterreference = nil
+	local errorsandwarnings = {}
+	local currenterrorid = 1
+	while true do local dt = RunService.Heartbeat:Wait() xpcall(function(dt)
+		local ReanimCharacter = Reanimate.Character
+		SaveData.MovesetIndex = MovementStyleIndex
+		if ReanimCharacter then
+			if _oldcharacterreference ~= ReanimCharacter then
+				SetOverrideMovesetMusic(nil)
+				SetOverrideDanceMusic(nil)
+				if CurrentMovementStyle then
+					pcall(CurrentMovementStyle.Destroy, nil)
+					CurrentMovementStyle = nil
+				end
+				if _CurrentDance then
+					_CurrentDance.Destroy(nil)
+					_CurrentDance = nil
+				end
+				_MovementStyleIndex = nil
+			end
+			if MovementStyleIndex ~= _MovementStyleIndex then
+				if CurrentMovementStyle then
+					CurrentMovementStyle.Destroy(ReanimCharacter)
+					CurrentMovementStyle = nil
+				end
+				_MovementStyleIndex = MovementStyleIndex
+				CurrentMovementStyle = MovementStyles[MovementStyleIndex]
+				SetOverrideMovesetMusic(nil)
+				if ReanimCharacter:GetAttribute("MovementInit") then
+					Reanimate.CreateCharacter()
+					ReanimCharacter = Reanimate.Character
+				end
+			end
+			if CurrentMovementStyle then
+				if ReanimCharacter:GetAttribute("MovementInit") then
+					CurrentMovementStyle.Update(dt, ReanimCharacter)
+					if CurrentDance ~= _CurrentDance then
+						if _CurrentDance then
+							_CurrentDance.Destroy(ReanimCharacter)
+						end
+						_CurrentDance = CurrentDance
+						ReanimCharacter:SetAttribute("IsDancing", nil)
+						ReanimCharacter:SetAttribute("DanceInternalName", nil)
+						SetOverrideDanceMusic(nil)
+					end
+					if _CurrentDance then
+						if ReanimCharacter:GetAttribute("IsDancing") then
+							_CurrentDance.Update(dt, ReanimCharacter)
+						else
+							if AssetEnsure(_CurrentDance.Assets) then
+								ReanimCharacter:SetAttribute("IsDancing", true)
+								ReanimCharacter:SetAttribute("DanceInternalName", _CurrentDance.InternalName)
+								_CurrentDance.Init(ReanimCharacter)
+							else
+								SetOverrideDanceMusic(nil)
+							end
+						end
+					end
+				else
+					HatReanimator.HatWeldOverride = {}
+					if AssetEnsure(CurrentMovementStyle.Assets) then
+						ReanimCharacter:SetAttribute("MovementInit", true)
+						ReanimCharacter:SetAttribute("MovesetInternalName", CurrentMovementStyle.InternalName)
+						table.clear(HatReanimator.HatCFrameOverride)
+						CurrentMovementStyle.Init(ReanimCharacter)
+					else
+						SetOverrideMovesetMusic(nil)
+					end
+				end
+			else
+				ReanimCharacter:SetAttribute("MovementInit", nil)
+				_MovementStyleIndex = nil
+			end
+		else
+			CurrentDance = nil
+			_MovementStyleIndex = nil
 			SetOverrideMovesetMusic(nil)
 			SetOverrideDanceMusic(nil)
 			if CurrentMovementStyle then
-				pcall(CurrentMovementStyle.Destroy, nil)
+				CurrentMovementStyle.Destroy(nil)
 				CurrentMovementStyle = nil
 			end
 			if _CurrentDance then
 				_CurrentDance.Destroy(nil)
 				_CurrentDance = nil
 			end
-			_MovementStyleIndex = nil
 		end
-		if MovementStyleIndex ~= _MovementStyleIndex then
-			if CurrentMovementStyle then
-				CurrentMovementStyle.Destroy(ReanimCharacter)
-				CurrentMovementStyle = nil
-			end
-			_MovementStyleIndex = MovementStyleIndex
-			CurrentMovementStyle = MovementStyles[MovementStyleIndex]
-			SetOverrideMovesetMusic(nil)
-			if ReanimCharacter:GetAttribute("MovementInit") then
-				Reanimate.CreateCharacter()
-				ReanimCharacter = Reanimate.Character
-			end
-		end
-		if CurrentMovementStyle then
-			if ReanimCharacter:GetAttribute("MovementInit") then
-				CurrentMovementStyle.Update(dt, ReanimCharacter)
-				if CurrentDance ~= _CurrentDance then
-					if _CurrentDance then
-						_CurrentDance.Destroy(ReanimCharacter)
-					end
-					_CurrentDance = CurrentDance
-					ReanimCharacter:SetAttribute("IsDancing", nil)
-					ReanimCharacter:SetAttribute("DanceInternalName", nil)
-					SetOverrideDanceMusic(nil)
-				end
-				if _CurrentDance then
-					if ReanimCharacter:GetAttribute("IsDancing") then
-						_CurrentDance.Update(dt, ReanimCharacter)
-					else
-						if AssetEnsure(_CurrentDance.Assets) then
-							ReanimCharacter:SetAttribute("IsDancing", true)
-							ReanimCharacter:SetAttribute("DanceInternalName", _CurrentDance.InternalName)
-							_CurrentDance.Init(ReanimCharacter)
-						else
-							SetOverrideDanceMusic(nil)
-						end
-					end
-				end
-			else
-				HatReanimator.HatWeldOverride = {}
-				if AssetEnsure(CurrentMovementStyle.Assets) then
-					ReanimCharacter:SetAttribute("MovementInit", true)
-					ReanimCharacter:SetAttribute("MovesetInternalName", CurrentMovementStyle.InternalName)
-					table.clear(HatReanimator.HatCFrameOverride)
-					CurrentMovementStyle.Init(ReanimCharacter)
-				else
-					SetOverrideMovesetMusic(nil)
-				end
-			end
+		_oldcharacterreference = ReanimCharacter
+	end, function(m)
+		m = debug.traceback("ANIMLOOP :: " .. m)
+		local id = errorsandwarnings[m]
+		if not id then
+			errorsandwarnings[m] = {currenterrorid, 0}
+			currenterrorid += 1
+			warn("ERROR #" .. errorsandwarnings[m][1] .. ": " .. m)
 		else
-			ReanimCharacter:SetAttribute("MovementInit", nil)
-			_MovementStyleIndex = nil
+			id[2] += 1
+			if id[2] <= 8192 and math.sqrt(id[2]) % 1 == 0 then
+				warn("ERROR #" .. id[1] .. " repeated " .. id[2] .. " times")
+			end
 		end
-	else
-		CurrentDance = nil
-		_MovementStyleIndex = nil
-		SetOverrideMovesetMusic(nil)
-		SetOverrideDanceMusic(nil)
-		if CurrentMovementStyle then
-			CurrentMovementStyle.Destroy(nil)
-			CurrentMovementStyle = nil
-		end
-		if _CurrentDance then
-			_CurrentDance.Destroy(nil)
-			_CurrentDance = nil
-		end
-	end
-	_oldcharacterreference = ReanimCharacter
+	end, dt) end
 end)
 UI.CreateSeparator(MainPage)
 task.wait()
@@ -6800,6 +7198,25 @@ UI.CreateText(CreditsPage, "hamoun, baze, luacope, 2024, 2023 and 2022 me", 12, 
 UI.CreateText(CreditsPage, "scout, edge, shownape, index, blackhole/whitehole", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "zero from iwbtc for no reason, presidentanvil, mech/catlover", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "return from fishstrap, erika, skeltoun", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "<font color=\"#4444FF\">Empyrean Reanimate (he lowk chill)</font>", 12, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		Util.Notify("Link copied!")
+		pcall(setclipboard, "https://discord.gg/UJ7YtqadPJ")
+		pcall(request, {
+			Url = "http://127.0.0.1:6463/rpc?v=1",
+			Method = "POST",
+			Headers = {
+				["Content-Type"] = 'application/json',
+				["Origin"] = "https://discord.com",
+			},
+			Body = HttpService:JSONEncode({
+				cmd = "INVITE_BROWSER",
+				nonce = HttpService:GenerateGUID(false),
+				args = {code = "UJ7YtqadPJ"},
+			}),
+		})
+	end
+end)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "<font weight=\"heavy\">* Very random quotes *</font>", 15, Enum.TextXAlignment.Center)
 do
@@ -6817,7 +7234,6 @@ do
 		"headcanon: \"Lightning Cannon is a top.\"",
 		"\"dont bpt ples\" \"brick portationtele?\"",
 		"WHO CARES IF A FEW TREES ARE DYING!?",
-		"okay so you know why i put my discord link to the bottom of the credits? so skids can use Uhhhhhh without ads! :D",
 		"while i was in mwtp, someone said \"leak the hatdrop script\"",
 		"i was in fencing, then someone said \"its the genesis killer\"",
 		"STEVE, THE DANCING IMMORTALITY LORD!",
@@ -6838,7 +7254,7 @@ UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "DISCLAIMER: Some random quotes made here are jokes (e.g.: 'this script mogs genesis') and should not be taken seriously. This also includes all the self-glazing quotes. It's your choice to agree with them or not, and if you do or don't, don't come harass/mock any individuals from it. In the end, a joke quote is a joke quote.", 15, Enum.TextXAlignment.Center)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "This \"software\" is FREE, meaning YOU SHOULD NOT REDISTRIBUTE WITH RENUMERATIVE INTENT!!", 15, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances or Movesets, go to <font color=\"#0000FF\">this thing</font>.", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
+UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances or Movesets, go to <font color=\"#4444FF\">this thing</font>.", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		Util.Notify("Link copied!")
 		pcall(setclipboard, "https://github.com/STEVE-916-create/Uhhhhhh/")
@@ -6846,8 +7262,8 @@ UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances o
 end)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "<font weight=\"heavy\">(C) 2026 STEVETHEREALONE</font>", 14, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "all rights reserved i think", 14, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "<font color=\"#0000FF\">[ Discord invite ]</font>", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
+UI.CreateText(CreditsPage, "all rights reserved", 14, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "<font color=\"#4444FF\">[ Discord invite ]</font>", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		Util.Notify("Link copied!")
 		pcall(setclipboard, "https://discord.gg/NASNUKRBVM")
@@ -7022,7 +7438,7 @@ for _,x in filesofbuiltins_m do
 	end
 	task.wait()
 	xpcall(function()
-		local func, comperr = loadstring(data, Util.RandomString())
+		local func, comperr = loadstring(data, "Uhhhhhh :: VANILLA " .. x)
 		if func then
 			AddModules(func())
 		elseif comperr then
@@ -7039,7 +7455,7 @@ for _,path in listfiles("UhhhhhhReanim/Modules/") do
 	if isfile(path) then
 		--Util.Notify("User: " .. path:sub(23))
 		xpcall(function()
-			local func, comperr = loadstring(readfile(path), RandomString())
+			local func, comperr = loadstring(readfile(path), "Uhhhhhh :: " .. path:sub(23))
 			if func then
 				AddModules(func())
 			elseif comperr then
