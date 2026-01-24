@@ -1935,10 +1935,6 @@ AddModule(function()
 				task.wait()
 				colorcorrect:Destroy()
 			end)
-			for _=1, 4 do
-				CreateSound(beam, 138677306, 1)
-				CreateSound(415700134, 1)
-			end
 			local beam = Instance.new("Part")
 			beam.Massless = true
 			beam.Transparency = 0
@@ -1951,6 +1947,10 @@ AddModule(function()
 			beam.Color = Color3.new(1, 1, 1)
 			beam.Material = Enum.Material.Neon
 			beam.Parent = workspace
+			for _=1, 4 do
+				CreateSound(beam, 138677306, 1)
+				CreateSound(415700134, 1)
+			end
 			s = os.clock()
 			local throt = 0
 			local dt = 0
@@ -1994,7 +1994,7 @@ AddModule(function()
 				end
 				dt = task.wait()
 				throt += dt
-			until os.clock() - s > m.BeamDuration or not rootu:IsDescendantOf(workspace)
+			until os.clock() - s > 3 or not rootu:IsDescendantOf(workspace)
 			core:Destroy()
 			beam:Destroy()
 			if not rootu:IsDescendantOf(workspace) then
