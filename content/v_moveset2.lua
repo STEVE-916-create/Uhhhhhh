@@ -1941,6 +1941,10 @@ AddModule(function()
 			colorcorrect.Contrast = 100
 			colorcorrect.Saturation = -1
 			task.spawn(function()
+				for _=1, 4 do
+					CreateSound(beam, 138677306, 1)
+					CreateSound(415700134, 1)
+				end
 				task.wait(0.2)
 				colorcorrect.Brightness = 0
 				colorcorrect.Contrast = 20
@@ -1949,6 +1953,17 @@ AddModule(function()
 					colorcorrect.Contrast -= task.wait() * 10
 				end
 				colorcorrect:Destroy()
+				if not rootu:IsDescendantOf(workspace) then return end
+				for _=1, 3 do
+					CreateSound(beam, 138677306, 1)
+					CreateSound(415700134, 1)
+				end
+				task.wait(2.2)
+				if not rootu:IsDescendantOf(workspace) then return end
+				for _=1, 2 do
+					CreateSound(beam, 138677306, 1)
+					CreateSound(415700134, 1)
+				end
 			end)
 			local beam = Instance.new("Part")
 			beam.Massless = true
@@ -1962,10 +1977,6 @@ AddModule(function()
 			beam.Color = Color3.new(1, 1, 1)
 			beam.Material = Enum.Material.Neon
 			beam.Parent = workspace
-			for _=1, 4 do
-				CreateSound(beam, 138677306, 1)
-				CreateSound(415700134, 1)
-			end
 			s = os.clock()
 			local throt = 0
 			local dt = 0
@@ -2007,14 +2018,52 @@ AddModule(function()
 					Attack(target, 20)
 					throt = 0
 				end
+				task.spawn(function()
+					local death = Instance.new("Part")
+					death.Massless = true
+					death.Transparency = 0
+					death.Anchored = true
+					death.CanCollide = false
+					death.CanTouch = false
+					death.CanQuery = false
+					death.Name = RandomString()
+					death.CFrame = hole
+					death.Size = Vector3.one * 2.5
+					death.Shape = Enum.PartType.Ball
+					death.Material = Enum.Material.Neon
+					death.Parent = workspace
+					death.CFrame = hole.Rotation + target
+					death.Color = Color3.new(1, 1, 1)
+					task.wait(8)
+					CreateSound(death, 9069975578, 0.9)
+					for _=1, 60 do
+						Lightning({Start = death.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+						task.wait()
+					end
+					CreateSound(death, 168513088, 1.1)
+					for _=1, 10 do
+						Lightning({Start = death.Position + Vector3.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+					end
+					for _=1, 5 do
+						Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.6, 6, 0.6) * math.random(-1.05, 1.25), SizeEnd = Vector3.new(1.6, 30, 1.6) * math.random(-1.05, 1.25), Transparency = 0, TransparencyEnd = 1, CFrame = death.CFrame * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), Boomerang = 20, BoomerangSize = 35})
+					end
+					task.wait(0.1)
+					death.Transparency = 1
+					if rootu:IsDescendantOf(workspace) then
+						Attack(toward, 20)
+						if (rootu.Position - toward).Magnitude < 256 then
+							SetGunauraState(toward, 20)
+						end
+					end
+					task.wait(3)
+					death:Destroy()
+				end)
 				dt = task.wait()
 				throt += dt
-			until os.clock() - s > 3 or not rootu:IsDescendantOf(workspace)
+			until os.clock() - s > 8 or not rootu:IsDescendantOf(workspace)
 			core:Destroy()
 			beam:Destroy()
-			if not rootu:IsDescendantOf(workspace) then
-				return
-			end
+			if not rootu:IsDescendantOf(workspace) then return end
 			animationOverride = nil
 			hum.WalkSpeed = 50 * scale
 			attacking = false
@@ -3576,15 +3625,15 @@ AddModule(function()
 				currentclick = input
 			end
 		end)
-		ContextActionService:BindAction("Uhhhhhh_MGShoot", function(_, state, input)
+		ContextActionService:BindAction("Uhhhhhh_AKShoot", function(_, state, input)
 			if state == Enum.UserInputState.Begin then
 				mousedown = true
 				mouselock = true
 				currentclick = input
 			end
 		end, true)
-		ContextActionService:SetTitle("Uhhhhhh_MGShoot", "M1")
-		ContextActionService:SetPosition("Uhhhhhh_MGShoot", UDim2.new(1, -130, 1, -130))
+		ContextActionService:SetTitle("Uhhhhhh_AKShoot", "M1")
+		ContextActionService:SetPosition("Uhhhhhh_AKShoot", UDim2.new(1, -130, 1, -130))
 		uisend = UserInputService.InputEnded:Connect(function(input, gpe)
 			if input == currentclick then
 				mousedown = false
@@ -3614,7 +3663,7 @@ AddModule(function()
 		
 		-- joints
 		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
-		local gunoff = CFrame.new(0, -1, -0.3) * CFrame.Angles(math.rad(190), math.rad(180), 0)
+		local gunoff = CFrame.new(0, -1, 0.3) * CFrame.Angles(math.rad(190), math.rad(180), 0)
 		
 		local timingsine = t * 60
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
