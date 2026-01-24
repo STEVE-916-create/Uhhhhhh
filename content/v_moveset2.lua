@@ -1849,7 +1849,7 @@ AddModule(function()
 				core.CFrame = hole
 				local d = (os.clock() - s) / 2.8
 				core.Size = Vector3.one * 5 * d
-				local sky = root.Position + (CFrame.new() * Vector3.new(0, 100, math.random(0, 100)))
+				local sky = root.Position + (CFrame.Angles(0, math.random() * math.pi * 2, 0) * Vector3.new(0, 100, math.random(0, 100)))
 				if math.random() < d then
 					Lightning({Start = sky, Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
 					CreateSound(core, 4376217120, 0.5 + math.random())
