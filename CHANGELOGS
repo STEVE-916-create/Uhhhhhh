@@ -6,6 +6,7 @@
  - Added more client crashes! (because _G usage)
  - Hat Collide V3 improvements! (it also has been set as default when you fresh start Uhhhhhh)
  - Added a button that shows your hitboxes (for limb and hat reanim)
+ - Added support for autorig
 # Version 1.0.2 BETA
  - Added themes: ALONE, Oxide, Patchma, Genesis V4, Crimson, r/masterhacker, etc...
  - Added option to disable sitting on Seats
