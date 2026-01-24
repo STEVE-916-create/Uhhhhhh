@@ -2577,6 +2577,7 @@ AddModule(function()
 	m.NoShells = false
 	m.HowBadIsAim = 1
 	m.ShakeValue = 1
+	m.Flipped = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
@@ -2601,6 +2602,9 @@ AddModule(function()
 		Util_CreateSlider(parent, "Shake Amount", m.ShakeValue, 0, 1, 0).Changed:Connect(function(val)
 			m.ShakeValue = val
 		end)
+		Util_CreateSwitch(parent, "Flip Gun", m.Flipped).Changed:Connect(function(val)
+			m.Flipped = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Notifications = not save.NoTextType
@@ -2610,6 +2614,7 @@ AddModule(function()
 		m.NoShells = not not save.NoShells
 		m.HowBadIsAim = save.HowBadIsAim or m.HowBadIsAim
 		m.ShakeValue = save.ShakeValue or m.ShakeValue
+		m.Flipped = not not m.Flipped
 	end
 	m.SaveConfig = function()
 		return {
@@ -2620,6 +2625,7 @@ AddModule(function()
 			NoShells = m.NoShells,
 			HowBadIsAim = m.HowBadIsAim,
 			ShakeValue = m.ShakeValue,
+			Flipped = m.Flipped,
 		}
 	end
 
@@ -2875,6 +2881,9 @@ AddModule(function()
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		-- animations
+		if m.Flipped then
+			gunoff *= CFrame.Angles(0, math.pi, 0)
+		end
 		local torsovelocity = root.Velocity.Magnitude
 		local torsovelocityy = root.Velocity.Y
 		local animationspeed = 11
