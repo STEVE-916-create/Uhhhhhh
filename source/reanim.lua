@@ -44,6 +44,24 @@ local ContextActionService = cloneref(game:GetService("ContextActionService"))
 
 local Util = {}
 
+Util.RandomString = function(length)
+	length = length or math.random(32, 256)
+	local str = ""
+	for _=1, length do
+		str ..= string.char(math.random(32, 126))
+	end
+	return str
+end
+Util.DeepcopyTable = function(t)
+	local c = {}
+	for k, v in pairs(t) do
+		if type(v) == "table" then
+			v = Util.DeepcopyTable(v)
+		end
+		c[k] = v
+	end
+	return c
+end
 Util.Notify = function(text)
 	StarterGui:SetCore("SendNotification", {
 		Title = "Uhhhhhh",
@@ -91,6 +109,18 @@ do
 	if not loadstringreturn then
 		diefatal()
 	end
+	if isfile then
+		local s, e = pcall(isfile, Util.RandomString(32))
+		if s and e then
+			-- stupid executor
+			isfile = function(path)
+				local s, e = pcall(readfile, path)
+				return not not (s and e)
+			end
+		end
+	else
+		diefatal()
+	end
 end
 
 b_getfenv = loadstring("return getfenv")()
@@ -125,24 +155,6 @@ Util.GetScreenSize = function()
 		_scrsiz = Camera.ViewportSize
 	end
 	return _scrsiz
-end
-Util.RandomString = function()
-	local length = math.random(32, 256)
-	local str = ""
-	for _=1, length do
-		str ..= string.char(math.random(32, 126))
-	end
-	return str
-end
-Util.DeepcopyTable = function(t)
-	local c = {}
-	for k, v in pairs(t) do
-		if type(v) == "table" then
-			v = Util.DeepcopyTable(v)
-		end
-		c[k] = v
-	end
-	return c
 end
 Util.LoopedHSV = function(h, s, v)
 	h %= 1
@@ -7331,9 +7343,25 @@ task.spawn(function()
 end)
 UI.CreateText(MainPage, "\n\n\n<font weight=\"heavy\">DANGER ZONE</font>", 15, Enum.TextXAlignment.Center)
 local clearcontenthash, clearcontenthashtext = UI.CreateButton(MainPage, "CLEAR ALL DOWNLOADED CONTENT", 15)
+local clearcontenthashclicks = 0
 clearcontenthash.Activated:Connect(function()
-	SaveData.ContentHash = nil
-	clearcontenthashtext.Text = "Cleared, now rejoin to apply"
+	clearcontenthashclicks += 1
+	if clearcontenthashclicks == 1 then
+		clearcontenthashtext.Text = "ARE YOU SURE ABOUT THAT!?"
+		task.wait(1)
+		if clearcontenthashclicks == 1 then
+			clearcontenthashclicks = 0
+		end
+	elseif clearcontenthashclicks == 2 then
+		clearcontenthashtext.Text = "VERY SURE??????"
+		task.wait(1)
+		if clearcontenthashclicks == 2 then
+			clearcontenthashclicks = 0
+		end
+	elseif clearcontenthashclicks == 3 then
+		SaveData.ContentHash = nil
+		clearcontenthashtext.Text = "Cleared, now rejoin to apply"
+	end
 end)
 task.wait()
 Util.Notify("Checking SHA1 Hashes...")
