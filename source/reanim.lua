@@ -3911,6 +3911,7 @@ HatReanimator.Name = "Hats"
 SaveData.Reanimator.HatsCollide = not not SaveData.Reanimator.HatsCollide
 SaveData.Reanimator.HatsCollideMethod = SaveData.Reanimator.HatsCollideMethod or 6
 SaveData.Reanimator.IWantAllHats = not not SaveData.Reanimator.IWantAllHats
+SaveData.Reanimator.IWantHatCollide = SaveData.Reanimator.IWantHatCollide or 3
 SaveData.Reanimator.HatsPatchmahub = not not SaveData.Reanimator.HatsPatchmahub
 SaveData.Reanimator.HatsFling = not not SaveData.Reanimator.HatsFling
 SaveData.Reanimator.HatsSpin = not not SaveData.Reanimator.HatsSpin
@@ -3927,6 +3928,7 @@ HatReanimator.HatCollideMethod = SaveData.Reanimator.HatsCollideMethod
 -- 6 - experimental
 -- 7 - idk honestly but this is just modified heavily for now
 HatReanimator.IWantAllHats = SaveData.Reanimator.IWantAllHats
+HatReanimator.IWantHatCollide = SaveData.Reanimator.IWantHatCollide
 HatReanimator.Permadeath = not SaveData.Reanimator.HatsPatchmahub
 HatReanimator.HatFling = SaveData.Reanimator.HatsFling
 HatReanimator.HatSpin = SaveData.Reanimator.HatsSpin
@@ -4033,6 +4035,16 @@ function HatReanimator.Config(parent)
 	UI.CreateSwitch(parent, "Ensure All Hats", HatReanimator.IWantAllHats).Changed:Connect(function(val)
 		HatReanimator.IWantAllHats = val
 		SaveData.Reanimator.IWantAllHats = val
+	end)
+	UI.CreateDropdown(parent, "Ensure Hat Collide", {
+		"Off",
+		"Atleast one",
+		"Atleast #hats - 2",
+		"Atleast #hats - 1",
+		"ALL",
+	}, HatReanimator.IWantHatCollide + 1).Changed:Connect(function(val)
+		HatReanimator.IWantHatCollide = val - 1
+		SaveData.Reanimator.IWantHatCollide = val - 1
 	end)
 	UI.CreateText(parent, "vvv this is risky for slower devices/laggy asf emulators vvv", 10, Enum.TextXAlignment.Center)
 	UI.CreateSwitch(parent, "Hat Fling", HatReanimator.HatFling).Changed:Connect(function(val)
@@ -5368,7 +5380,20 @@ function HatReanimator.Start()
 			task.spawn(function()
 				local collidable = selhatcol.State2(character, CharHats)
 				stateunlocked = true
-				if hatcols and (collidable == 0 or (HatReanimator.IWantAllHats and collidable < (#CharHats - 1))) then
+				local atleast = 0
+				if SaveData.Reanimator.IWantHatCollide == 1 then
+					atleast = 1
+				end
+				if SaveData.Reanimator.IWantHatCollide == 2 then
+					atleast = #CharHats - 3
+				end
+				if SaveData.Reanimator.IWantHatCollide == 3 then
+					atleast = #CharHats - 2
+				end
+				if SaveData.Reanimator.IWantHatCollide == 4 then
+					atleast = #CharHats - 1
+				end
+				if hatcols and collidable <= atleast then
 					if perma then
 						HatReanimator.Status.Permadeath = "No hat collide. Fired CDSB Signal!"
 						replicatesignal(Player.ConnectDiedSignalBackend)
