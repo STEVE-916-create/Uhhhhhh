@@ -5025,7 +5025,7 @@ function HatReanimator.Start()
 				-- TODO
 			else
 				-- put the limbs in freefall, make sure they dont touch
-				local headheight = 4 + currentping * 5
+				local headheight = 3
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
