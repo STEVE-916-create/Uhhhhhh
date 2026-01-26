@@ -4048,16 +4048,18 @@ function HatReanimator.Config(parent)
 		HatReanimator.IWantHatCollide = val - 1
 		SaveData.Reanimator.IWantHatCollide = val - 1
 	end)
-	UI.CreateText(parent, "vvv this is risky for slower devices/laggy asf emulators vvv", 10, Enum.TextXAlignment.Center)
+	UI.CreateText(parent, "vvv dont use these two options with target fling... vvv", 10, Enum.TextXAlignment.Center)
 	UI.CreateSwitch(parent, "Hat Fling", HatReanimator.HatFling).Changed:Connect(function(val)
 		HatReanimator.HatFling = val
 		SaveData.Reanimator.HatsFling = val
 	end)
+	UI.CreateText(parent, "^^^ ...unless you want to walkfling or... ^^^", 10, Enum.TextXAlignment.Center)
 	UI.CreateSwitch(parent, "Hat Spin Fling", HatReanimator.HatSpin).Changed:Connect(function(val)
 		HatReanimator.HatSpin = val
 		SaveData.Reanimator.HatsSpin = val
 	end)
-	UI.CreateText(parent, "vvv all hats is recommended for weak devices vvv", 10, Enum.TextXAlignment.Center)
+	UI.CreateText(parent, "^^^ ...unless you want to look glitchy ^^^", 10, Enum.TextXAlignment.Center)
+	UI.CreateText(parent, "vvv dont use tool fling with physics glue btw vvv", 10, Enum.TextXAlignment.Center)
 	UI.CreateDropdown(parent, "Target Fling Method", {
 		"Disabled (RP)",
 		"Classic Respawn",
