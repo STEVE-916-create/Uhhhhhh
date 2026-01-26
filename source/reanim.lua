@@ -3812,7 +3812,7 @@ function LimbReanimator.Start()
 					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 					local bx, by, bz = RCRootPart.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ)
-					RCRootPart.CFrame = tcf
+					RCRootPart.CFrame = tcf + RCRootPart.CFrame.Position
 				end
 				local t = os.clock()
 				local flingtarget = LimbReanimator.FlingTargets[1]
@@ -3901,6 +3901,15 @@ function LimbReanimator.Start()
 					pcall(sethiddenproperty, Humanoid, "NetworkHumanoidState", Enum.HumanoidStateType.Freefall)
 				else
 					pcall(sethiddenproperty, Humanoid, "NetworkHumanoidState", Enum.HumanoidStateType[({"Running", "PlatformStanding", "Jumping", "Ragdoll", "Seated", "Physics"})[math.random(1, 6)]])
+				end
+				if Reanimate.Shiftlocked then
+					RunService.PreRender:Wait()
+					local ocf = RCRootPart.CFrame
+					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
+					local bx, by, bz = ocf:ToEulerAngles(Enum.RotationOrder.YXZ)
+					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ) + ocf.Position
+					RootPart.CFrame = tcf:ToWorldSpace(ocf:ToObjectSpace(RootPart.CFrame))
+					RCRootPart.CFrame = tcf
 				end
 			end
 		end
@@ -4687,8 +4696,8 @@ function HatReanimator.Start()
 
 	-- Credits to MyWorld for helping with netless
 	local function SetUACFrameNetless(handle, dt, newcf, tvel, fling, spin)
-		if dt <= 0 then return end
-		if not (handle:IsA("BasePart") and handle:IsDescendantOf(workspace)) then return end
+		if dt <= 0 then return false end
+		if not (handle:IsA("BasePart") and handle:IsDescendantOf(workspace)) then return false end
 		local timing = os.clock()
 		local idlerv = Vector3.new(
 			math.sin(timing * 14), math.sin(timing * 15 + 1.0472), math.sin(timing * 16 + 2.0944)
@@ -4706,6 +4715,7 @@ function HatReanimator.Start()
 		if handle.Parent:IsA("Tool") then
 			netless = 0
 		end
+		local aligned = false
 		local lastcf = handle:GetAttribute("_Uhhhhhh_LastPosition")
 		local claimtime = handle:GetAttribute("_Uhhhhhh_ClaimTime")
 		if typeof(lastcf) ~= "CFrame" then lastcf = handle.CFrame end
@@ -4742,12 +4752,7 @@ function HatReanimator.Start()
 						vel = vel.Unit * netless
 					end
 					if fling then
-						if vel.Magnitude > 1 then
-							vel = vel.Unit
-							handle.AssemblyLinearVelocity = Vector3.new(16384, 16384, 16384)
-						else
-							handle.AssemblyLinearVelocity = Vector3.new(16384, 16384, 16384)
-						end
+						handle.AssemblyLinearVelocity = Vector3.new(16384, 16384, 16384)
 					else
 						if Reanimate.UsePatchmaLikeNetless then
 							handle.AssemblyLinearVelocity = Vector3.new(vel.X * 10, netless, vel.Z * 10)
@@ -4762,7 +4767,7 @@ function HatReanimator.Start()
 			end
 			handle.CFrame = newcf
 			if spin then
-				handle.AssemblyAngularVelocity = Vector3.one * 16384
+				handle.AssemblyAngularVelocity = Vector3.new(16384, 16384, 16384)
 			else
 				if Reanimate.UseAngularVelocity then
 					handle.AssemblyAngularVelocity = rvel + idleoff
@@ -4770,12 +4775,14 @@ function HatReanimator.Start()
 					handle.AssemblyAngularVelocity = idleoff
 				end
 			end
+			aligned = true
 		else
 			claimtime = nil
 			lastcf = handle.CFrame
 		end
 		handle:SetAttribute("_Uhhhhhh_LastPosition", lastcf)
 		handle:SetAttribute("_Uhhhhhh_ClaimTime", claimtime)
+		return aligned
 	end
 
 	local BaseParts = {}
@@ -5058,12 +5065,13 @@ function HatReanimator.Start()
 			end
 		end,
 		State2 = function(character, hats)
+			local ping = Player:GetNetworkPing()
 			-- 3 of the most important instances (rootpart is destroyed after a frame anyway)
 			local torso = character:FindFirstChild("Torso")
 			local head = character:FindFirstChild("Head")
 			local rightarm = character:FindFirstChild("Right Arm") -- this will also reevaluate collisions upon removal (cuz tool)
 			if torso then
-				task.wait(calculatepartdestroytime(2, 26, workspace.Gravity) - 0.1)
+				task.wait(calculatepartdestroytime(2, 26, workspace.Gravity) + 0.1 - ping)
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
 			for _,v in hats do
@@ -5599,7 +5607,7 @@ function HatReanimator.Start()
 					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 					local bx, by, bz = RCRootPart.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ)
-					RCRootPart.CFrame = tcf
+					RCRootPart.CFrame = tcf + RCRootPart.CFrame.Position
 				end
 				local rightarm = ReanimCharacter:FindFirstChild("Right Arm") or RCRootPart
 				local rightgrip = Util.ScaleCFrame(RIGHTGRIP_C0, Reanimate.CharacterScale)
@@ -5608,6 +5616,7 @@ function HatReanimator.Start()
 				local toolactivate = false
 				local toolactivated = nil
 				local handlethese = {}
+				local slocked = {}
 				for _,v in tools do
 					local handle = v:FindFirstChild("Handle")
 					if handle and handle:IsA("BasePart") then
@@ -5780,13 +5789,17 @@ function HatReanimator.Start()
 									local tcf, tvel = GetHatCFrame(hat)
 									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
 									tvel = tvel or Vector3.zero
-									SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
+									if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
+										table.insert(slocked, handle)
+									end
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 								end
 							end
 						end
 						for handle, cf in handlethese do
-							SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin)
+							if SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin) then
+								table.insert(slocked, handle)
+							end
 						end
 					end
 					if HatReanimator.FlingMethod == 2 then
@@ -5812,13 +5825,17 @@ function HatReanimator.Start()
 									local tcf, tvel = GetHatCFrame(hat)
 									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
 									tvel = tvel or Vector3.zero
-									SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
+									if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
+										table.insert(slocked, handle)
+									end
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 								end
 							end
 						end
 						for handle, cf in handlethese do
-							SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin)
+							if SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin) then
+								table.insert(slocked, handle)
+							end
 						end
 					end
 					if HatReanimator.FlingMethod == 3 then
@@ -5832,7 +5849,9 @@ function HatReanimator.Start()
 									local tcf, tvel = GetHatCFrame(hat)
 									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
 									tvel = tvel or Vector3.zero
-									SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
+									if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
+										table.insert(slocked, handle)
+									end
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 								end
 							end
@@ -5853,14 +5872,29 @@ function HatReanimator.Start()
 								local tcf, tvel = GetHatCFrame(hat)
 								tcf = tcf or RCRootPart	.CFrame * CFrame.new(0, 5, 0)
 								tvel = tvel or Vector3.zero
-								SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
+								if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
+									table.insert(slocked, handle)
+								end
 								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 							end
 						end
 					end
 					for handle, cf in handlethese do
-						SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin)
+						if SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin) then
+							table.insert(slocked, handle)
+						end
 					end
+				end
+				if Reanimate.Shiftlocked then
+					RunService.PreRender:Wait()
+					local ocf = RCRootPart.CFrame
+					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
+					local bx, by, bz = ocf:ToEulerAngles(Enum.RotationOrder.YXZ)
+					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ) + ocf.Position
+					for _,handle in slocked do
+						handle.CFrame = tcf:ToWorldSpace(ocf:ToObjectSpace(handle.CFrame))
+					end
+					RCRootPart.CFrame = tcf
 				end
 			end
 			tools = nil

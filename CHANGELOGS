@@ -8,7 +8,7 @@
  - Added a button that shows your hitboxes (for limb and hat reanim)
  - Added support for autorig
  - Better tool ownership from Empyrean Reanimate
- - Added shiftlock
+ - Fixed shiftlock and first person
 # Version 1.0.2 BETA
  - Added themes: ALONE, Oxide, Patchma, Genesis V4, Crimson, r/masterhacker, etc...
  - Added option to disable sitting on Seats
