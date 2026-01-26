@@ -3062,6 +3062,7 @@ local Reanimate = {
 	AntiExplosions = true,
 	CharacterScale = SaveData.CharacterScale,
 	P2PCollision = false,
+	Shiftlocked = GameSettings.RotationType == Enum.RotationType.CameraRelative,
 }
 Reanimate.CreateCharacter = function(InitCFrame)
 	local RC = Reanimate.Character
@@ -3226,6 +3227,11 @@ Reanimate.DestroyCharacter = function()
 		_G_Uhhhhhh.Character = nil
 	end
 end
+GameSettings.Changed:Connect(function(prop)
+	if prop == "RotationType" then
+		Reanimate.Shiftlocked = GameSettings.RotationType == Enum.RotationType.CameraRelative
+	end
+end)
 
 do
 	local AntiflingHumanoids = {}
@@ -3802,6 +3808,12 @@ function LimbReanimator.Start()
 			end
 			if Character and Humanoid and RootPart then
 				RunService.Heartbeat:Wait()
+				if Reanimate.Shiftlocked then
+					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
+					local bx, by, bz = RCRootPart.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
+					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ)
+					RCRootPart.CFrame = tcf
+				end
 				local t = os.clock()
 				local flingtarget = LimbReanimator.FlingTargets[1]
 				if flingtarget then
@@ -5581,9 +5593,15 @@ function HatReanimator.Start()
 					v.LocalTransparencyModifier = ltm
 				end
 			end
-			local RootPart = ReanimCharacter and ReanimCharacter:FindFirstChild("HumanoidRootPart")
-			if RootPart then
-				local rightarm = ReanimCharacter:FindFirstChild("Right Arm") or RootPart
+			local RCRootPart = ReanimCharacter and ReanimCharacter:FindFirstChild("HumanoidRootPart")
+			if RCRootPart then
+				if Reanimate.Shiftlocked then
+					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
+					local bx, by, bz = RCRootPart.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
+					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ)
+					RCRootPart.CFrame = tcf
+				end
+				local rightarm = ReanimCharacter:FindFirstChild("Right Arm") or RCRootPart
 				local rightgrip = Util.ScaleCFrame(RIGHTGRIP_C0, Reanimate.CharacterScale)
 				local claimoverride = nil
 				local toolequipped = false
@@ -5635,7 +5653,7 @@ function HatReanimator.Start()
 						local RightGrip = Instance.new("Weld")
 						RightGrip.Name = "RightGrip"
 						RightGrip.Parent = FakeToolHandle
-						RightGrip.Part0 = ReanimCharacter:FindFirstChild("Right Arm")
+						RightGrip.Part0 = rightarm
 						RightGrip.Part1 = FakeToolHandle
 						RightGrip.C0 = RIGHTGRIP_C0
 						Util.LinkDestroyI2C(FakeTool, FakeTool:GetPropertyChangedSignal("Grip"):Connect(function()
@@ -5760,7 +5778,7 @@ function HatReanimator.Start()
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 								else
 									local tcf, tvel = GetHatCFrame(hat)
-									tcf = tcf or RootPart.CFrame * CFrame.new(0, 5, 0)
+									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
 									tvel = tvel or Vector3.zero
 									SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
@@ -5792,7 +5810,7 @@ function HatReanimator.Start()
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 								else
 									local tcf, tvel = GetHatCFrame(hat)
-									tcf = tcf or RootPart.CFrame * CFrame.new(0, 5, 0)
+									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
 									tvel = tvel or Vector3.zero
 									SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
@@ -5812,7 +5830,7 @@ function HatReanimator.Start()
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 								else
 									local tcf, tvel = GetHatCFrame(hat)
-									tcf = tcf or RootPart.CFrame * CFrame.new(0, 5, 0)
+									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
 									tvel = tvel or Vector3.zero
 									SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
@@ -5833,7 +5851,7 @@ function HatReanimator.Start()
 								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 							else
 								local tcf, tvel = GetHatCFrame(hat)
-								tcf = tcf or RootPart.CFrame * CFrame.new(0, 5, 0)
+								tcf = tcf or RCRootPart	.CFrame * CFrame.new(0, 5, 0)
 								tvel = tvel or Vector3.zero
 								SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
 								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)

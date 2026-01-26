@@ -1286,11 +1286,13 @@ def main():
 	else:
 		asset_id = input("Enter Roblox AssetID: ")
 	url = f"https://assetdelivery.roblox.com/v2/assetId/{asset_id}"
-	response = requests.get(url)
+	response = requests.get(url, headers={
+		"Cookie": ".ROBLOSECURITY=" + os.environ.get("ROBLOSECURITY", "")
+	})
 	assert response.status_code == 200, f"Failed to fetch asset: {response.status_code}"
-	raw = response.content
-	print(raw)
-	insts = RBXModel.parse(raw)
+	response = response.json()
+	response = requests.get(response["locations"][0]["location"])
+	insts = RBXModel.parse(response.content)
 	assert len(insts) > 0, "Empty RBXM"
 	for inst in insts:
 		for desc in inst.GetDescendants():
