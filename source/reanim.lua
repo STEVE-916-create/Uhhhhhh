@@ -5331,6 +5331,8 @@ function HatReanimator.Start()
 		NumHats = #CharHats
 		selhatcol.State1(character, Humanoid, CharHats)
 		Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
+		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, claimarea.Y + 4), claimarea.Z)
 		local backpack = Player:FindFirstChildOfClass("Backpack")
 		local tools = GetTools()
 		if perma and backpack then
@@ -5349,8 +5351,6 @@ function HatReanimator.Start()
 			end
 			Humanoid:UnequipTools()
 		end
-		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
-		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, claimarea.Y + 4), claimarea.Z)
 		task.wait(selhatcol.Wait1 or 0.1)
 		if not character:IsDescendantOf(workspace) then
 			lgloop:Disconnect()
