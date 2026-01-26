@@ -4671,6 +4671,7 @@ function HatReanimator.Start()
 		end
 	end
 
+	-- Credits to MyWorld for helping with netless
 	local function SetUACFrameNetless(handle, dt, newcf, tvel, fling, spin)
 		if dt <= 0 then return end
 		if not (handle:IsA("BasePart") and handle:IsDescendantOf(workspace)) then return end
@@ -4683,6 +4684,14 @@ function HatReanimator.Start()
 		if newcf.Y < ylimit then
 			newcf += Vector3.new(0, ylimit - newcf.Y, 0)
 		end
+		local speedlimit = 16384
+		if fling then
+			speedlimit = math.huge
+		end
+		local netless = Reanimate.NetlessVelocity
+		if handle.Parent:IsA("Tool") then
+			netless = 0
+		end
 		local lastcf = handle:GetAttribute("_Uhhhhhh_LastPosition")
 		local claimtime = handle:GetAttribute("_Uhhhhhh_ClaimTime")
 		if typeof(lastcf) ~= "CFrame" then lastcf = handle.CFrame end
@@ -4693,8 +4702,8 @@ function HatReanimator.Start()
 			local vel = (newpos - lastpos) / dt
 			if vel.Magnitude < 0.12 then
 				newcf += idleoff
-			elseif vel.Magnitude > 16384 then
-				vel = vel.Unit * 16384
+			elseif vel.Magnitude > speedlimit then
+				vel = vel.Unit * speedlimit
 				newpos = lastpos + vel * dt
 				newcf = newcf.Rotation + newpos
 			end
@@ -4711,31 +4720,31 @@ function HatReanimator.Start()
 					handle.CustomPhysicalProperties = PhysicalProperties.new(0.01, 0, 0, 0, 0)
 				end
 				if timing - claimtime < 0.51 then
-					handle.AssemblyLinearVelocity = Vector3.new(0, 50.02, 0)
+					handle.AssemblyLinearVelocity = Vector3.new(0, netless * 2, 0)
 				else
 					vel = vel + tvel
 					vel *= Vector3.new(1, 0, 1)
-					if vel.Magnitude > 25 then
-						vel = vel.Unit * 25
+					if vel.Magnitude > netless then
+						vel = vel.Unit * netless
 					end
 					if fling then
 						if vel.Magnitude > 1 then
 							vel = vel.Unit
-							handle.AssemblyLinearVelocity = Vector3.new(vel.X * 16384, 16384, vel.Z * 16384)
+							handle.AssemblyLinearVelocity = Vector3.new(16384, 16384, 16384)
 						else
-							handle.AssemblyLinearVelocity = Vector3.new(0, 16384, 0)
+							handle.AssemblyLinearVelocity = Vector3.new(16384, 16384, 16384)
 						end
 					else
 						if Reanimate.UsePatchmaLikeNetless then
-							handle.AssemblyLinearVelocity = Vector3.new(vel.X * 10, Reanimate.NetlessVelocity, vel.Z * 10)
+							handle.AssemblyLinearVelocity = Vector3.new(vel.X * 10, netless, vel.Z * 10)
 						else
-							handle.AssemblyLinearVelocity = Vector3.new(vel.X, math.max(vel.Y, Reanimate.NetlessVelocity), vel.Z)
+							handle.AssemblyLinearVelocity = Vector3.new(vel.X, math.max(vel.Y, netless), vel.Z)
 						end
 					end
 				end
 			else
 				claimtime = timing
-				handle.AssemblyLinearVelocity = Vector3.new(0, 250, 0)
+				handle.AssemblyLinearVelocity = Vector3.new(0, netless * 2, 0)
 			end
 			handle.CFrame = newcf
 			if spin then
@@ -5337,6 +5346,7 @@ function HatReanimator.Start()
 		local backpack = Player:FindFirstChildOfClass("Backpack")
 		local tools = GetTools()
 		if perma and backpack then
+			-- Credits to Empyrean as reference for this snippet
 			for _,tool in tools do
 				tool.Parent = character
 				local handle = tool:FindFirstChild("Handle")
@@ -5423,6 +5433,7 @@ function HatReanimator.Start()
 			for _,tool in tools do
 				tool.Parent = character
 			end
+			Humanoid:UnequipTools()
 		end
 		lgloop:Disconnect()
 		if perma then task.wait(1) end
@@ -5453,7 +5464,6 @@ function HatReanimator.Start()
 		end
 		pcall(function() Player.ReplicationFocus = nil end)
 		CurrentCharacter = character
-		Humanoid:UnequipTools()
 	end
 
 	local CharConn = Player.CharacterAdded:Connect(OnCharacter)
@@ -7248,15 +7258,7 @@ UI.CreateText(CreditsPage, "expose more backend functions for me like a good boy
 UI.CreateText(CreditsPage, "<font weight=\"heavy\">rqz's Genesis FE</font>", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "ill be taking ALL your convertions >:D", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "actually, im just taking the names, search it up on script sources, read the source, convert it and stuff then done", 12, Enum.TextXAlignment.Center)
-UI.CreateSeparator(CreditsPage)
-UI.CreateText(CreditsPage, "<font weight=\"heavy\">* Greetings to *</font>", 15, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "fev, inno, rqz, mry7zz, theo, redactedre, colon", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "terminal, guinwah, kasil, hamza, nexus, hoster", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "hamoun, baze, luacope, 2024, 2023 and 2022 me", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "scout, edge, shownape, index, blackhole/whitehole", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "zero from iwbtc for no reason, presidentanvil, mech/catlover", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "return from fishstrap, erika, skeltoun", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "<font color=\"#4444FF\">Empyrean Reanimate (he lowk chill)</font>", 12, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
+UI.CreateText(CreditsPage, "<font color=\"#4444FF\">Empyrean Reanimate (click for Discord)</font>", 12, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		Util.Notify("Link copied!")
 		pcall(setclipboard, "https://discord.gg/UJ7YtqadPJ")
@@ -7275,6 +7277,15 @@ UI.CreateText(CreditsPage, "<font color=\"#4444FF\">Empyrean Reanimate (he lowk 
 		})
 	end
 end)
+UI.CreateText(CreditsPage, "your tool fling is great reference!", 12, Enum.TextXAlignment.Center)
+UI.CreateSeparator(CreditsPage)
+UI.CreateText(CreditsPage, "<font weight=\"heavy\">* Greetings to *</font>", 15, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "fev, inno, rqz, mry7zz, theo, redactedre, colon", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "terminal, guinwah, kasil, hamza, nexus, hoster", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "hamoun, baze, luacope, 2024, 2023 and 2022 me", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "scout, edge, shownape, index, blackhole/whitehole", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "zero from iwbtc for no reason, presidentanvil, mech/catlover", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "return from fishstrap, erika, skeltoun", 12, Enum.TextXAlignment.Center)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "<font weight=\"heavy\">* Very random quotes *</font>", 15, Enum.TextXAlignment.Center)
 do
