@@ -5071,7 +5071,7 @@ function HatReanimator.Start()
 			local head = character:FindFirstChild("Head")
 			local rightarm = character:FindFirstChild("Right Arm") -- this will also reevaluate collisions upon removal (cuz tool)
 			if torso then
-				task.wait(calculatepartdestroytime(2, 26, workspace.Gravity) + 0.1 - ping)
+				task.wait(calculatepartdestroytime(2, 26, workspace.Gravity) - 0.1 - ping)
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
 			for _,v in hats do
