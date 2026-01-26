@@ -1582,7 +1582,7 @@ AddModule(function()
 				nt = NECKC0 * CFrame.Angles(math.rad(25), 0, math.rad(-20))
 				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(35), math.rad(-35), math.rad(20)) * RIGHTSHOULDERC0
 				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-20), math.rad(-5), math.rad(-10)) * LEFTSHOULDERC0
-				gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(math.rad((os.clock() * 120 * 22) % 360), 0, 0)
+				gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(-math.rad((os.clock() * 120 * 22) % 360), 0, 0)
 				return rt, nt, rst, lst, rht, lht, gunoff
 			end
 			task.wait(0.5)
