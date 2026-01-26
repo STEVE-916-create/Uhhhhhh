@@ -5330,7 +5330,25 @@ function HatReanimator.Start()
 		HatReanimator.Status.ReanimState = "Reanimate State: 1"
 		NumHats = #CharHats
 		selhatcol.State1(character, Humanoid, CharHats)
-		Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+		Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+		local backpack = Player:FindFirstChildOfClass("Backpack")
+		local tools = GetTools()
+		if perma and backpack then
+			for _,tool in tools do
+				tool.Parent = character
+				local handle = tool:FindFirstChild("Handle")
+				if handle and handle:IsA("BasePart") then
+					table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
+						if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
+							handle.CFrame = CFrame.new(claimarea) + Vector3.new(5, 0, 0)
+							handle.Velocity = Vector3.new(0, 32.67, 0)
+							handle.RotVelocity = Vector3.new(0, 0, 0)
+						end
+					end))
+				end
+			end
+			Humanoid:UnequipTools()
+		end
 		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
 		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, claimarea.Y + 4), claimarea.Z)
 		task.wait(selhatcol.Wait1 or 0.1)
@@ -5346,7 +5364,7 @@ function HatReanimator.Start()
 			if handle and handle:IsA("BasePart") then
 				table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
 					if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
-						handle.CFrame = CFrame.new(claimarea) + Vector3.new(0, 2, 0)
+						handle.CFrame = CFrame.new(claimarea)
 						handle.Velocity = Vector3.new(0, 32.67, 0)
 						handle.RotVelocity = Vector3.new(0, 0, 0)
 					end
@@ -5354,26 +5372,6 @@ function HatReanimator.Start()
 				handle:BreakJoints()
 				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
 			end
-		end
-		local backpack = Player:FindFirstChildOfClass("Backpack")
-		local tools = GetTools()
-		if perma and backpack then
-			for _,tool in tools do
-				tool.Parent = character
-				local handle = tool:FindFirstChild("Handle")
-				if handle and handle:IsA("BasePart") then
-					table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
-						if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
-							handle.CFrame = CFrame.new(claimarea)
-							handle.Velocity = Vector3.new(0, 32.67, 0)
-							handle.RotVelocity = Vector3.new(0, 0, 0)
-						end
-					end))
-					handle:BreakJoints()
-					handle:SetAttribute("_Uhhhhhh_HasCollide", false)
-				end
-			end
-			Humanoid:UnequipTools()
 		end
 		Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
 		task.wait(selhatcol.Wait2 or 0.15)
@@ -5392,11 +5390,6 @@ function HatReanimator.Start()
 		readystate = 3
 		HatReanimator.Status.ReanimState = "Reanimate State: 3"
 		IsRespawning = false
-		if perma and backpack then
-			for _,tool in tools do
-				tool.Parent = character
-			end
-		end
 		if hatcols then
 			local stateunlocked = false
 			task.spawn(function()
@@ -5425,6 +5418,11 @@ function HatReanimator.Start()
 			end)
 			repeat task.wait() until stateunlocked or not character:IsDescendantOf(workspace)
 			task.wait(0.25)
+		end
+		if perma and backpack then
+			for _,tool in tools do
+				tool.Parent = character
+			end
 		end
 		lgloop:Disconnect()
 		if perma then task.wait(1) end
