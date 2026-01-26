@@ -14,6 +14,8 @@ $$      $$$$$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$
        Music:   Dubmood
                 4mat
                 MASTER BOOT RECORD
+
+Thou shalth not steal. Point at this source if you used a snippet here.
 ]]
 
 if _G.UhhhhhhLoaded then return end
@@ -4671,6 +4673,7 @@ function HatReanimator.Start()
 
 	local function SetUACFrameNetless(handle, dt, newcf, tvel, fling, spin)
 		if dt <= 0 then return end
+		if not (handle:IsA("BasePart") and handle:IsDescendantOf(workspace)) then return end
 		local timing = os.clock()
 		local idlerv = Vector3.new(
 			math.sin(timing * 14), math.sin(timing * 15 + 1.0472), math.sin(timing * 16 + 2.0944)
@@ -4782,6 +4785,7 @@ function HatReanimator.Start()
 			end
 		end
 	end
+	local currentping = 0
 	local function _counthats(hats)
 		local collidable = 0
 		local exists = 0
@@ -4991,14 +4995,15 @@ function HatReanimator.Start()
 				-- TODO
 			else
 				-- put the limbs in freefall, make sure they dont touch
+				local headheight = 4 + currentping * 5
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
 							Util.SetMotor6DOffset(v, CFrame.new(0, 6, 0))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(0, 3, -2))
+							Util.SetMotor6DOffset(v, CFrame.new(0, headheight, -2))
 						elseif v.Name == "Right Shoulder" then
-							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2, 3.5, -2))
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2, headheight + 0.5, -2))
 						elseif v.Name == "Left Shoulder" then
 							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2, 0, -2))
 						elseif v.Name:find("Hip") then
@@ -5132,6 +5137,7 @@ function HatReanimator.Start()
 			RunService.PreAnimation:Wait()
 			Camera.CFrame = camcfr
 		end)
+		currentping = Player:GetNetworkPing()
 		table.clear(BaseParts)
 		table.clear(CharHats)
 		character.DescendantAdded:Connect(CharOnDesc)
@@ -5274,26 +5280,6 @@ function HatReanimator.Start()
 		pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", nil)
 		HatReanimator.Status.RespawnFling = "Done."
 		local lgloop
-		local tools = GetTools()
-		local backpack = Player:FindFirstChildOfClass("Backpack")
-		if perma and backpack then
-			HatReanimator.Status.ReanimState = "Setting Tool ownership..."
-			lgloop = RunService.Heartbeat:Connect(function(dt)
-				RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 1000, 0))
-				RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 67, 0), Vector3.zero
-			end)
-			for _,v in tools do
-				v.Parent = backpack
-			end
-			task.wait(0.5)
-			for _,v in tools do
-				v.Parent = character
-			end
-			for _,v in tools do
-				v.Parent = backpack
-			end
-			lgloop:Disconnect()
-		end
 		local readystate = 0
 		lgloop = RunService.Heartbeat:Connect(function(dt)
 			selhatcol.HRPTP(dt, character, Humanoid, RootPosition, RootPart, readystate)
@@ -5348,6 +5334,10 @@ function HatReanimator.Start()
 		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
 		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, claimarea.Y + 4), claimarea.Z)
 		task.wait(selhatcol.Wait1 or 0.1)
+		if not character:IsDescendantOf(workspace) then
+			lgloop:Disconnect()
+			return
+		end
 		readystate = 2
 		HatReanimator.Status.ReanimState = "Reanimate State: 2"
 		local bringconns = {}
@@ -5356,7 +5346,7 @@ function HatReanimator.Start()
 			if handle and handle:IsA("BasePart") then
 				table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
 					if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
-						handle.CFrame = CFrame.new(claimarea)
+						handle.CFrame = CFrame.new(claimarea) + Vector3.new(0, 2, 0)
 						handle.Velocity = Vector3.new(0, 32.67, 0)
 						handle.RotVelocity = Vector3.new(0, 0, 0)
 					end
@@ -5365,8 +5355,35 @@ function HatReanimator.Start()
 				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
 			end
 		end
+		local backpack = Player:FindFirstChildOfClass("Backpack")
+		local tools = GetTools()
+		if perma and backpack then
+			for _,tool in tools do
+				tool.Parent = character
+				local handle = tool:FindFirstChild("Handle")
+				if handle and handle:IsA("BasePart") then
+					table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
+						if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
+							handle.CFrame = CFrame.new(claimarea)
+							handle.Velocity = Vector3.new(0, 32.67, 0)
+							handle.RotVelocity = Vector3.new(0, 0, 0)
+						end
+					end))
+					handle:BreakJoints()
+					handle:SetAttribute("_Uhhhhhh_HasCollide", false)
+				end
+			end
+			Humanoid:UnequipTools()
+		end
 		Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
 		task.wait(selhatcol.Wait2 or 0.15)
+		if not character:IsDescendantOf(workspace) then
+			lgloop:Disconnect()
+			for _,c in bringconns do
+				c:Disconnect()
+			end
+			return
+		end
 		replicatesignal(Humanoid.ServerBreakJoints)
 		Humanoid.BreakJointsOnDeath = true
 		Humanoid.Health = 0
@@ -5375,6 +5392,11 @@ function HatReanimator.Start()
 		readystate = 3
 		HatReanimator.Status.ReanimState = "Reanimate State: 3"
 		IsRespawning = false
+		if perma and backpack then
+			for _,tool in tools do
+				tool.Parent = character
+			end
+		end
 		if hatcols then
 			local stateunlocked = false
 			task.spawn(function()
@@ -5433,6 +5455,7 @@ function HatReanimator.Start()
 		end
 		pcall(function() Player.ReplicationFocus = nil end)
 		CurrentCharacter = character
+		Humanoid:UnequipTools()
 	end
 
 	local CharConn = Player.CharacterAdded:Connect(OnCharacter)

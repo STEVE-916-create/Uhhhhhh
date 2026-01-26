@@ -1285,10 +1285,11 @@ def main():
 		asset_id = sys.argv[1]
 	else:
 		asset_id = input("Enter Roblox AssetID: ")
-	url = f"https://assetdelivery.roblox.com/v1/asset?id={asset_id}"
+	url = f"https://assetdelivery.roblox.com/v2/assetId/{asset_id}"
 	response = requests.get(url)
 	assert response.status_code == 200, f"Failed to fetch asset: {response.status_code}"
 	raw = response.content
+	print(raw)
 	insts = RBXModel.parse(raw)
 	assert len(insts) > 0, "Empty RBXM"
 	for inst in insts:
