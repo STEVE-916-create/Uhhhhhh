@@ -5279,7 +5279,8 @@ function HatReanimator.Start()
 		end
 		pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", nil)
 		HatReanimator.Status.RespawnFling = "Done."
-		local lgloop
+		local lgloop = nil
+		local bringconns = {}
 		local readystate = 0
 		lgloop = RunService.Heartbeat:Connect(function(dt)
 			selhatcol.HRPTP(dt, character, Humanoid, RootPosition, RootPart, readystate)
@@ -5358,7 +5359,6 @@ function HatReanimator.Start()
 		end
 		readystate = 2
 		HatReanimator.Status.ReanimState = "Reanimate State: 2"
-		local bringconns = {}
 		for _,hat in CharHats do
 			local handle = hat:FindFirstChild("Handle")
 			if handle and handle:IsA("BasePart") then
