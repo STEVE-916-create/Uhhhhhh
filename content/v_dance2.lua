@@ -308,4 +308,63 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Jitterbug"
+	m.Description = "animator: @maybewasangery\nno hes not the Animator instance\ni meant a literal animator\nguy who makes animation"
+	m.Assets = {"Jitterbug.anim", "JitterbugA.mp3", "JitterbugB.mp3"}
+
+	m.TobyFox = false
+	m.MoveSideToSide = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Toby Fox", m.TobyFox).Changed:Connect(function(val)
+			m.TobyFox = val
+		end)
+		Util_CreateSwitch(parent, "left right", m.MoveSideToSide).Changed:Connect(function(val)
+			m.MoveSideToSide = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.TobyFox = not not save.TobyFox
+		m.MoveSideToSide = not not save.MoveSideToSide
+	end
+	m.SaveConfig = function()
+		return {
+			TobyFox = m.TobyFox,
+			MoveSideToSide = m.MoveSideToSide
+		}
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		if m.TobyFox then
+			SetOverrideDanceMusic(AssetGetContentId("JitterbugB.mp3"), "Deltarune - The 'Ol Jitterbug", 1)
+		else
+			SetOverrideDanceMusic(AssetGetContentId("JitterbugA.mp3"), "very original tune", 1)
+		end
+		start = os.clock()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.speed = 1
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Jitterbug.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock()
+		animator:Step(t - start)
+		local rj = figure:FindFirstChild("HumanoidRootPart") and figure.HumanoidRootPart:FindFirstChild("RootJoint")
+		if rj then
+			if m.MoveSideToSide then
+				rj.Transform += Vector3.new(math.sin((t - start) * 3), 0, 0) * figure:GetScale()
+			end
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
