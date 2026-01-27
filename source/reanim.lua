@@ -5339,6 +5339,26 @@ function HatReanimator.Start()
 		lgloop = RunService.Heartbeat:Connect(function(dt)
 			selhatcol.HRPTP(dt, character, Humanoid, RootPosition, RootPart, readystate)
 		end)
+		task.wait(1)
+		local backpack = Player:FindFirstChildOfClass("Backpack")
+		local tools = GetTools()
+		if perma and backpack then
+			-- Credits to Empyrean as reference for this snippet
+			for _,tool in tools do
+				tool.Parent = character
+				local handle = tool:FindFirstChild("Handle")
+				if handle and handle:IsA("BasePart") then
+					table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
+						if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
+							handle.CFrame = CFrame.new(claimarea) + Vector3.new(5, 0, 0)
+							handle.Velocity = Vector3.new(0, 67, 0)
+							handle.RotVelocity = Vector3.new(0, 0, 0)
+						end
+					end))
+				end
+				tool.Parent = backpack
+			end
+		end
 		HatReanimator.Status.ReanimState = "Loading Permadeath."
 		if perma then
 			if RejectCharacterDeletionsDisabled then
@@ -5390,25 +5410,6 @@ function HatReanimator.Start()
 		selhatcol.State1(character, Humanoid, CharHats)
 		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
 		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, claimarea.Y + 4), claimarea.Z)
-		local backpack = Player:FindFirstChildOfClass("Backpack")
-		local tools = GetTools()
-		if perma and backpack then
-			-- Credits to Empyrean as reference for this snippet
-			for _,tool in tools do
-				tool.Parent = character
-				local handle = tool:FindFirstChild("Handle")
-				if handle and handle:IsA("BasePart") then
-					table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
-						if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
-							handle.CFrame = CFrame.new(claimarea) + Vector3.new(5, 0, 0)
-							handle.Velocity = Vector3.new(0, 67, 0)
-							handle.RotVelocity = Vector3.new(0, 0, 0)
-						end
-					end))
-				end
-			end
-			Humanoid:UnequipTools()
-		end
 		task.wait(selhatcol.Wait1 or 0.1)
 		if not character:IsDescendantOf(workspace) then
 			lgloop:Disconnect()
