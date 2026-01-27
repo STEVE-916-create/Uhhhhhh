@@ -4969,7 +4969,7 @@ function HatReanimator.Start()
 			HatReanimator.Status.HatCollide = #hats .. " hats states ERADICATED!"
 		end,
 		State2 = function(character, hats)
-			local torso = character:FindFirstChild("Head")
+			local torso = character:FindFirstChild("Torso")
 			if torso then
 				torso.AncestryChanged:Wait()
 			end
@@ -5012,6 +5012,7 @@ function HatReanimator.Start()
 		State2 = HatCollideMethods[1].State2,
 	}
 	HatCollideMethods[7] = {
+		ColLimb = true,
 		NoAnim = true,
 		Wait1 = 0.1,
 		Wait2 = 0.15,
@@ -5136,7 +5137,7 @@ function HatReanimator.Start()
 						end
 					end
 				end
-				--SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
+				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 		end,
 		State2 = function(character, hats)
@@ -5145,6 +5146,7 @@ function HatReanimator.Start()
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
 			task.wait(0.41)
 			for _,v in hats do
+				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
 				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 			task.wait(0.19)
@@ -5210,8 +5212,10 @@ function HatReanimator.Start()
 				stupid:Destroy()
 			end
 		end
-		Humanoid:ChangeState(Enum.HumanoidStateType.Swimming)
-		Humanoid.EvaluateStateMachine = false
+		if selhatcol.ColLimb then
+			Humanoid.EvaluateStateMachine = false
+			Humanoid:ChangeState(Enum.HumanoidStateType.Swimming)
+		end
 		local RootPart = character:WaitForChild("HumanoidRootPart", 10)
 		if not RootPart then return end
 		local RootPosition = Vector3.new(RootPart.Position.X, FallenPartsDestroyHeight, RootPart.Position.Z)
@@ -5360,6 +5364,9 @@ function HatReanimator.Start()
 		end
 		readystate = 1
 		HatReanimator.Status.ReanimState = "Reanimate State: 1"
+		if not selhatcol.ColLimb then
+			Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+		end
 		NumHats = #CharHats
 		selhatcol.State1(character, Humanoid, CharHats)
 		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
