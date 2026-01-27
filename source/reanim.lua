@@ -4298,7 +4298,10 @@ function HatReanimator.Start()
 		return nil
 	end
 
+	local BaseParts = {}
+	local CharTools = {}
 	local CharHats = {}
+
 	local HatMap = {}
 	local HatMapCopy = {}
 	local function RefreshHatMap(Character)
@@ -4785,7 +4788,6 @@ function HatReanimator.Start()
 		return aligned
 	end
 
-	local BaseParts = {}
 	local CharOnDesc = function(v)
 		if v:IsA("BasePart") and not v:FindFirstAncestorWhichIsA("Tool") then
 			if not table.find(BaseParts, v) then
@@ -4806,10 +4808,22 @@ function HatReanimator.Start()
 		elseif v:IsA("Accessory") and v.Parent == Player.Character then
 			if not table.find(CharHats, v) then
 				table.insert(CharHats, v)
-				v.AncestryChanged:Connect(function()
+				local conn = nil
+				conn = v.AncestryChanged:Connect(function()
 					if v.Parent ~= Player.Character then
 						local i = table.find(CharHats, v)
 						if i then table.remove(CharHats, i) end
+					end
+				end)
+			end
+		elseif v:IsA("Tool") and v.Parent == Player.Character then
+			if not table.find(CharTools, v) then
+				table.insert(CharTools, v)
+				local conn = nil
+				conn = v.AncestryChanged:Connect(function()
+					if v.Parent ~= Player.Character then
+						local i = table.find(CharTools, v)
+						if i then table.remove(CharTools, i) end
 					end
 				end)
 			end
@@ -5190,6 +5204,7 @@ function HatReanimator.Start()
 		currentping = Player:GetNetworkPing()
 		table.clear(BaseParts)
 		table.clear(CharHats)
+		table.clear(CharTools)
 		character.DescendantAdded:Connect(CharOnDesc)
 		for _,v in character:GetDescendants() do
 			CharOnDesc(v)
@@ -5616,12 +5631,6 @@ function HatReanimator.Start()
 			if HatReanimator.RebuildRequired then
 				RefreshHatMap(Character)
 			end
-			local tools = {}
-			for _,v in Character:GetChildren() do
-				if v:IsA("Tool") and v:FindFirstChild("Handle") and v.Handle:IsA("BasePart") then
-					table.insert(tools, v)
-				end
-			end
 			for _,v in BaseParts do
 				v.CanCollide = false
 				if not v:FindFirstAncestorWhichIsA("Tool") then
@@ -5644,7 +5653,7 @@ function HatReanimator.Start()
 				local toolactivated = nil
 				local handlethese = {}
 				local slocked = {}
-				for _,v in tools do
+				for _,v in CharTools do
 					local handle = v:FindFirstChild("Handle")
 					if handle and handle:IsA("BasePart") then
 						handlethese[handle] = rightarm.CFrame * rightgrip * v.Grip:Inverse()
@@ -5673,7 +5682,7 @@ function HatReanimator.Start()
 					v.RequiresHandle = false
 					v.ManualActivationOnly = false
 				end
-				if #tools > 0 then
+				if #CharTools > 0 then
 					local FakeTool = ReanimCharacter:FindFirstChildOfClass("Tool")
 					if not FakeTool then
 						toolequipped = true
@@ -5924,7 +5933,6 @@ function HatReanimator.Start()
 					RCRootPart.CFrame = tcf
 				end
 			end
-			tools = nil
 		else
 			if CurrentCharacter then
 				CurrentCharacter = nil
