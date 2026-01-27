@@ -4905,7 +4905,7 @@ function HatReanimator.Start()
 			for _,v in hats do
 				table.insert(shownapehatdrop_lock, v.Changed:Connect(function(p)
 					if p == "BackendAccoutrementState" then
-						SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
+						SetAccoutrementState(v, BackendAccoutrementState.None)
 					end
 				end))
 				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
@@ -4924,13 +4924,17 @@ function HatReanimator.Start()
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.Equipped)
 			end
+			torso = character:FindFirstChild("Head")
+			if torso then
+				torso.AncestryChanged:Wait()
+			end
 			task.wait(0.5)
 			return _counthats(hats)
 		end,
 	}
 	local function hatcol_hrptpstab(torsooffset)
 		return function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			local rootcf = CFrame.new(RootPosition + Vector3.new(8, -0.25 - torsooffset.Z, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)
+			local rootcf = CFrame.new(RootPosition + Vector3.new(8, -8, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)
 			if readystate > 0 then
 				RootPart.CFrame = rootcf
 				RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 26, 0), Vector3.zero
@@ -4942,7 +4946,7 @@ function HatReanimator.Start()
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "Root" then
-							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, -0.25, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0) * torsooffset))
+							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, 0.75, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0) * torsooffset))
 						elseif v.Name == "Neck" then
 							Util.SetMotor6DOffset(v, torsooffset.Rotation:Inverse() * CFrame.new(math.random() * 0.05, 1.5, -10))
 						elseif v.Name:FindFirstChild("Shoulder") or v.Name:FindFirstChild("Hip") then
@@ -4971,10 +4975,11 @@ function HatReanimator.Start()
 	end
 	HatCollideMethods[1] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, 0)),
 		State1 = function(character, Humanoid, hats)
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
+				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
+				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
 			HatReanimator.Status.HatCollide = #hats .. " hats states ERADICATED!"
 		end,
@@ -4987,25 +4992,29 @@ function HatReanimator.Start()
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.Equipped)
 			end
+			torso = character:FindFirstChild("Head")
+			if torso then
+				torso.AncestryChanged:Wait()
+			end
 			task.wait(0.5)
 			return _counthats(hats)
 		end,
 	}
 	HatCollideMethods[2] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1) * CFrame.Angles(math.pi, 0, 0)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, 0) * CFrame.Angles(math.pi, 0, 0)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
 	HatCollideMethods[3] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1) * CFrame.Angles(math.pi * -0.5, 0, 0)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, 0) * CFrame.Angles(math.pi * -0.5, 0, 0)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
 	HatCollideMethods[4] = {
 		NoAnim = true,
-		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1) * CFrame.Angles(math.pi * 0.5, 0, 0)),
+		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, 0) * CFrame.Angles(math.pi * 0.5, 0, 0)),
 		State1 = HatCollideMethods[1].State1,
 		State2 = HatCollideMethods[1].State2,
 	}
@@ -5070,7 +5079,7 @@ function HatReanimator.Start()
 						end
 					end
 				end
-				SetAccoutrementState(v, BackendAccoutrementState.None)
+				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
 			end
 		end,
 		State2 = function(character, hats)
@@ -5080,11 +5089,11 @@ function HatReanimator.Start()
 			local head = character:FindFirstChild("Head")
 			local rightarm = character:FindFirstChild("Right Arm") -- this will also reevaluate collisions upon removal (cuz tool)
 			if torso then
-				task.wait(calculatepartdestroytime(2, 26, workspace.Gravity) - 0.1 - ping)
+				task.wait(calculatepartdestroytime(2, 26, workspace.Gravity) - 0.1)
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.None)
+				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
 			end
 			if torso and torso.Parent then
 				torso.AncestryChanged:Wait()
@@ -5392,7 +5401,7 @@ function HatReanimator.Start()
 					table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
 						if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
 							handle.CFrame = CFrame.new(claimarea) + Vector3.new(5, 0, 0)
-							handle.Velocity = Vector3.new(0, 32.67, 0)
+							handle.Velocity = Vector3.new(0, 67, 0)
 							handle.RotVelocity = Vector3.new(0, 0, 0)
 						end
 					end))
@@ -5413,7 +5422,7 @@ function HatReanimator.Start()
 				table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
 					if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
 						handle.CFrame = CFrame.new(claimarea)
-						handle.Velocity = Vector3.new(0, 32.67, 0)
+						handle.Velocity = Vector3.new(0, 67, 0)
 						handle.RotVelocity = Vector3.new(0, 0, 0)
 					end
 				end))
