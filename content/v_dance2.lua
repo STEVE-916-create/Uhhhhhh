@@ -313,7 +313,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Jitterbug"
 	m.Description = "animator: @maybewasangery\nno hes not the Animator instance\ni meant a literal animator\nguy who makes animation"
-	m.Assets = {"Jitterbug.anim", "JitterbugA.mp3", "JitterbugB.mp3"}
+	m.Assets = {"Jitterbug.anim", "Jitterbug1.mp3", "Jitterbug2.mp3"}
 
 	m.TobyFox = false
 	m.MoveSideToSide = false
@@ -340,9 +340,9 @@ AddModule(function()
 	local start = 0
 	m.Init = function(figure: Model)
 		if m.TobyFox then
-			SetOverrideDanceMusic(AssetGetContentId("JitterbugB.mp3"), "Deltarune - The 'Ol Jitterbug", 1)
+			SetOverrideDanceMusic(AssetGetContentId("Jitterbug2.mp3"), "Deltarune - The 'Ol Jitterbug", 1)
 		else
-			SetOverrideDanceMusic(AssetGetContentId("JitterbugA.mp3"), "very original tune", 1)
+			SetOverrideDanceMusic(AssetGetContentId("Jitterbug1.mp3"), "very original tune", 1)
 		end
 		start = os.clock()
 		animator = AnimLib.Animator.new()
