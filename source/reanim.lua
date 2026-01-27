@@ -4886,13 +4886,12 @@ function HatReanimator.Start()
 			else
 				RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, -0.25, 0))
 			end
-			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 25, 0), Vector3.zero
+			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 12, 0), Vector3.zero
 		end,
 		State1 = function(character, Humanoid, hats)
 			local anim = Instance.new("Animation")
 			anim.AnimationId = "rbxassetid://180436148"
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
-				Humanoid:ChangeState(16)
 				anim.AnimationId = "rbxassetid://507767968"
 			end
 			local track = Humanoid:LoadAnimation(anim)
@@ -4970,10 +4969,9 @@ function HatReanimator.Start()
 			HatReanimator.Status.HatCollide = #hats .. " hats states ERADICATED!"
 		end,
 		State2 = function(character, hats)
-			local torso = character:FindFirstChild("Torso")
+			local torso = character:FindFirstChild("Head")
 			if torso then
 				torso.AncestryChanged:Wait()
-				--task.wait(calculatepartdestroytime(torso.CFrame.Y - FallenPartsDestroyHeight, torso.AssemblyLinearVelocity.Y, workspace.Gravity) + 0.01)
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, state unlocked."
 			for _,v in hats do
@@ -5138,7 +5136,7 @@ function HatReanimator.Start()
 						end
 					end
 				end
-				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
+				--SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 		end,
 		State2 = function(character, hats)
@@ -5212,6 +5210,8 @@ function HatReanimator.Start()
 				stupid:Destroy()
 			end
 		end
+		Humanoid:ChangeState(Enum.HumanoidStateType.Swimming)
+		Humanoid.EvaluateStateMachine = false
 		local RootPart = character:WaitForChild("HumanoidRootPart", 10)
 		if not RootPart then return end
 		local RootPosition = Vector3.new(RootPart.Position.X, FallenPartsDestroyHeight, RootPart.Position.Z)
@@ -5362,7 +5362,6 @@ function HatReanimator.Start()
 		HatReanimator.Status.ReanimState = "Reanimate State: 1"
 		NumHats = #CharHats
 		selhatcol.State1(character, Humanoid, CharHats)
-		Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
 		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
 		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, claimarea.Y + 4), claimarea.Z)
 		local backpack = Player:FindFirstChildOfClass("Backpack")
@@ -5415,6 +5414,7 @@ function HatReanimator.Start()
 			return
 		end
 		replicatesignal(Humanoid.ServerBreakJoints)
+		Humanoid.EvaluateStateMachine = true
 		Humanoid.BreakJointsOnDeath = true
 		Humanoid.Health = 0
 		Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
