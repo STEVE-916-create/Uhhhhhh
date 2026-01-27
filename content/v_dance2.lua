@@ -357,7 +357,7 @@ AddModule(function()
 		local rj = figure:FindFirstChild("HumanoidRootPart") and figure.HumanoidRootPart:FindFirstChild("RootJoint")
 		if rj then
 			if m.MoveSideToSide then
-				rj.Transform += Vector3.new(math.sin((t - start) * 3), 0, 0) * figure:GetScale()
+				rj.Transform += Vector3.new(math.sin((t - start) * 5), 0, 0) * figure:GetScale()
 			end
 		end
 	end
