@@ -4878,6 +4878,7 @@ function HatReanimator.Start()
 		State1 = function() end,
 		State2 = function() return 0 end,
 	}
+	local shownapehatdrop_lock = {}
 	HatCollideMethods[0] = {
 		NoAnim = false,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
@@ -4886,7 +4887,7 @@ function HatReanimator.Start()
 			else
 				RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, -0.25, 0))
 			end
-			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 12, 0), Vector3.zero
+			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 25, 0), Vector3.zero
 		end,
 		State1 = function(character, Humanoid, hats)
 			local anim = Instance.new("Animation")
@@ -4900,8 +4901,14 @@ function HatReanimator.Start()
 			track:AdjustSpeed(1)
 			track:AdjustWeight(1)
 			track.TimePosition = 0.1
+			table.clear(shownapehatdrop_lock)
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.None)
+				table.insert(shownapehatdrop_lock, v.Changed:Connect(function(p)
+					if p == "BackendAccoutrementState" then
+						SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
+					end
+				end))
+				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 			HatReanimator.Status.HatCollide = #hats .. " hats states ERADICATED!"
 		end,
@@ -4911,6 +4918,9 @@ function HatReanimator.Start()
 				torso.AncestryChanged:Wait()
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, state unlocked."
+			for _,v in shownapehatdrop_lock do
+				v:Disconnect()
+			end
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.Equipped)
 			end
@@ -4964,7 +4974,7 @@ function HatReanimator.Start()
 		HRPTP = hatcol_hrptpstab(CFrame.new(0, 0, -1)),
 		State1 = function(character, Humanoid, hats)
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.None)
+				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 			HatReanimator.Status.HatCollide = #hats .. " hats states ERADICATED!"
 		end,
