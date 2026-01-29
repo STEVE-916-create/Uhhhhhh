@@ -3860,4 +3860,1267 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "Sin Dragon (TESTING)"
+	m.InternalName = "SINEWAVETREXDINOSAR"
+	m.Description = "no hat support yet, just the rig for now\nM1 - Punches\nZ - Barrage (cancellable)\nX - Smash Down!\nC - Firin ma lazar (cancellable)\nV - Punch, rage and throw air\n    (cant grab lol)\nB - \"Yummy\"\nG - Roarrrr!!"
+	m.Assets = {}
+
+	m.Notifications = true
+	m.Sounds = true
+	m.ShakeValue = 1
+	m.SkipIntro = false
+	m.HitboxDebug = false
+	m.NoCooldown = false
+	m.BlastCharge = 150
+	m.BlastDuration = 200
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
+			m.Notifications = val
+		end)
+		Util_CreateSwitch(parent, "Sounds", m.Sounds).Changed:Connect(function(val)
+			m.Sounds = val
+		end)
+		Util_CreateSlider(parent, "Shake Amount", m.ShakeValue, 0, 1, 0).Changed:Connect(function(val)
+			m.ShakeValue = val
+		end)
+		Util_CreateText(parent, "Skip the intro of Sin Dragon just like for Genesis FE", 12, Enum.TextXAlignment.Center)
+		Util_CreateSwitch(parent, "Skip Intro", m.SkipIntro).Changed:Connect(function(val)
+			m.SkipIntro = val
+		end)
+		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
+			m.HitboxDebug = val
+		end)
+		Util_CreateSeparator(parent)
+		Util_CreateText(parent, "Random configs for the non-programmers that want to tweak the moveset >:D", 15, Enum.TextXAlignment.Center)
+		Util_CreateText(parent, "No cooldowns, lets you spam attacks. Lag warning though!", 12, Enum.TextXAlignment.Center)
+		Util_CreateSwitch(parent, "Turbo mode", m.NoCooldown).Changed:Connect(function(val)
+			m.NoCooldown = val
+		end)
+		Util_CreateText(parent, "the configs below are in ticks, where 1 tick is 60th of a second!", 12, Enum.TextXAlignment.Center)
+		Util_CreateSlider(parent, "Laser Charge", m.BlastCharge, 10, 150, 1).Changed:Connect(function(val)
+			m.BlastCharge = val
+		end)
+		Util_CreateSlider(parent, "Laser Duration", m.BlastDuration, 10, 150, 1).Changed:Connect(function(val)
+			m.BlastDuration = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Notifications = not save.NoTextType
+		m.Sounds = not save.Muted
+		m.ShakeValue = save.ShakeValue or m.ShakeValue
+		m.SkipIntro = not not save.SkipIntro
+		m.HitboxDebug = not not save.HitboxDebug
+		m.NoCooldown = not not save.NoCooldown
+		m.BlastCharge = save.BlastCharge or m.BlastCharge
+		m.BlastDuration = save.BlastDuration or m.BlastDuration
+	end
+	m.SaveConfig = function()
+		return {
+			NoTextType = not m.Notifications,
+			Muted = not m.Sounds,
+			ShakeValue = m.ShakeValue,
+			SkipIntro = m.SkipIntro,
+			HitboxDebug = m.HitboxDebug,
+			NoCooldown = m.NoCooldown,
+			BlastCharge = m.BlastCharge,
+			BlastDuration = m.BlastDuration,
+		}
+	end
+
+	local start = 0
+	local hum, root, torso
+	local maincolor = Color3.new(0.385, 0.146, 0.820)
+	local rcp = RaycastParams.new()
+	rcp.FilterType = Enum.RaycastFilterType.Exclude
+	rcp.IgnoreWater = true
+	local function PhysicsRaycast(origin, direction)
+		rcp.RespectCanCollide = true
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local function ShootRaycast(origin, direction)
+		rcp.RespectCanCollide = false
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local mouse = Player:GetMouse()
+	local function MouseHit()
+		local ray = mouse.UnitRay
+		local dist = 2000
+		local raycast = ShootRaycast(ray.Origin, ray.Direction * dist)
+		if raycast then
+			return raycast.Position
+		end
+		return ray.Origin + ray.Direction * dist
+	end
+	local function notify(message, cps)
+		if not m.Notifications then return end
+		if not root or not torso then return end
+		local dialog = torso:FindFirstChild("NOTIFICATION")
+		if dialog then
+			dialog:Destroy()
+		end
+		dialog = Instance.new("BillboardGui", torso)
+		dialog.Size = UDim2.new(50 * scale, 0, 2 * scale, 0)
+		dialog.StudsOffset = Vector3.new(0, 5 * scale, -5 * scale)
+		dialog.Adornee = torso
+		dialog.Name = "NOTIFICATION"
+		local text = Instance.new("TextLabel", dialog)
+		text.BackgroundTransparency = 1
+		text.BorderSizePixel = 0
+		text.Text = ""
+		text.Font = Enum.Font.Garamond
+		text.TextScaled = true
+		text.TextStrokeTransparency = 0
+		text.Size = UDim2.new(1, 0, 1, 0)
+		text.TextColor3 = Color3.new(0, 0, 0)
+		text.TextStrokeColor3 = maincolor
+		task.spawn(function()
+			local function update()
+				text.Position = UDim2.new(math.random() * 0.05 * (2 / 50), 0, 0, math.random() * 0.05)
+			end
+			if cps then
+				cps = #message / cps
+			else
+				cps = 20
+			end
+			local t = os.clock()
+			local ll = 0
+			repeat
+				task.wait()
+				local l = math.floor((os.clock() - t) * cps)
+				if l > ll then
+					ll = l
+				end
+				update()
+				text.Text = string.sub(message, 1, l)
+			until ll >= #message
+			text.Text = message
+			t = os.clock()
+			repeat
+				task.wait()
+				update()
+			until os.clock() - t > 1
+			t = os.clock()
+			repeat
+				task.wait()
+				local a = os.clock() - t
+				text.Position = UDim2.new(0, math.random(-45, 45) + math.random(-a, a) * 100, 0, math.random(-5, 5) + math.random(-a, a) * 40)
+				text.TextTransparency = a
+				text.TextStrokeTransparency = a
+			until os.clock() - t > 1
+			dialog:Destroy()
+		end)
+	end
+	local function randomdialog(arr)
+		notify(arr[math.random(1, #arr)])
+	end
+	local function CreateSound(id, pitch, extra)
+		if not m.Sounds then return end
+		if not torso then return end
+		local parent = torso
+		if typeof(id) == "Instance" then
+			parent = id
+			id, pitch = pitch, extra
+		end
+		pitch = pitch or 1
+		local sound = Instance.new("Sound")
+		sound.Name = tostring(id)
+		sound.SoundId = "rbxassetid://" .. id
+		sound.Volume = 1
+		sound.Pitch = pitch
+		sound.EmitterSize = 100
+		sound.Parent = parent
+		sound:Play()
+		sound.Ended:Connect(function()
+			sound:Destroy()
+		end)
+	end
+	local chatconn
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+		dh = CFrame.identity,
+		dl = CFrame.identity,
+		dr = CFrame.identity,
+	}
+	local rng = Random.new(math.random(-65536, 65536))
+	local attacking = false
+	local dancereact = {}
+	local dragonhead = {}
+	local dragonclawl = {}
+	local dragonclawr = {}
+	local dragonheadm = ""
+	local dragonclawlm = ""
+	local dragonclawrm = ""
+	local insts = {}
+	local state = 0
+	local statetime = 0
+	local statem1 = 0
+	local animationinstant = false
+	local ROOTC0 = CFrame.Angles(-1.57, 0, 3.14)
+	local NECKC0 = CFrame.new(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
+	local NECKC1 = CFrame.new(0, -0.5, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
+	local LHC0 = CFrame.new(-1, -1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
+	local LHC1 = CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
+	local RHC0 = CFrame.new(1, -1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
+	local RHC1 = CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
+	local OFF_DragonClawL = CFrame.new(-6.74455023, 0.843135834, 3.31332064, 0.866820872, 0.000393055088, -0.498619556, 0.129048944, -0.966104209, 0.223582461, -0.481630623, -0.258152217, -0.837489963)
+	local OFF_DragonClawR = CFrame.new(6.65693045, 1.66835713, 2.9684639, 0.866025746, 0.129405379, 0.482963592, -3.67555799e-06, -0.965926409, 0.258817136, 0.499999553, -0.224144042, -0.836516559)
+	local OFF_DragonHead = CFrame.new(-2.22326851, -3.5562191, -0.038143158, 0, 0, 1, 0, 1, 0, -1, 0, 0)
+	local footsteps = nil
+
+	local function createhatmap(mlist, tbl)
+		table.clear(tbl)
+		for _,v in string.split(mlist, "|") do
+			if #v > 0 then
+				local w = string.split(v, ":")
+				if #w == 13 then
+					local ref = {
+						MeshId = w[1], TextureId = "",
+						C0 = CFrame.identity,
+						C1 = CFrame.new(
+							tonumber(w[2]),
+							tonumber(w[3]),
+							tonumber(w[4]),
+							tonumber(w[5]),
+							tonumber(w[6]),
+							tonumber(w[7]),
+							tonumber(w[8]),
+							tonumber(w[9]),
+							tonumber(w[10]),
+							tonumber(w[11]),
+							tonumber(w[12]),
+							tonumber(w[13])
+						)
+					}
+					table.insert(HatReanimator.HatCFrameOverride, ref)
+					table.insert(tbl, ref)
+				end
+			end
+		end
+	end
+	local function sethatmaplimbname(tbl, limbname)
+		for _,v in tbl do
+			v.Limb = limbname
+		end
+	end
+	local function sethatmapcframe(tbl, cf)
+		for _,v in tbl do
+			v.C0 = cf
+		end
+	end
+
+	local function CreatePart(transparency, brickcolor, size)
+		local p = Instance.new("Part")
+		p.Anchored = true
+		p.CanCollide = false
+		p.CanQuery = false
+		p.CanTouch = false
+		p.Massless = true
+		p.CastShadow = false
+		if brickcolor == "Alder" then
+			p.Color = maincolor
+		else
+			p.BrickColor = BrickColor.new(brickcolor)
+		end
+		p.Transparency = transparency
+		p.Name = RandomString()
+		p.Size = size
+		p.Material = Enum.Material.Neon
+		p.Parent = workspace
+		return p
+	end
+	local function CreateMesh(class, part, meshtype, meshid, offset, scale)
+		local m = Instance.new(class) 
+		m.Parent = part
+		if class == "SpecialMesh" then
+			m.MeshType = meshtype
+			if meshid then
+				m.MeshId = "rbxassetid://" .. meshid
+			end
+		end
+		m.Offset = offset
+		m.Scale = scale
+		return m
+	end
+	local function MagicCircle(brickcolor, pos, ssize, esize, delay)
+		local p = CreatePart(0, brickcolor, Vector3.one * 0.5)
+		p.CFrame = CFrame.new(pos)
+		local m = CreateMesh("SpecialMesh", p, "Sphere", nil, Vector3.zero, ssize)
+		local ticks = 1 / delay
+		TweenService:Create(p, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Transparency = 1,
+		}):Play()
+		TweenService:Create(m, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Scale = ssize + esize * ticks,
+		}):Play()
+		Debris:AddItem(p, ticks / 60)
+	end
+	local function MagicRing(brickcolor, pos, ssize, esize)
+		local p = CreatePart(0, brickcolor, Vector3.one * 0.5)
+		p.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + pos
+		local m = CreateMesh("SpecialMesh", p, "FileMesh", 3270017, Vector3.zero, ssize)
+		local ticks = 1 / 0.03
+		TweenService:Create(p, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Transparency = 1,
+		}):Play()
+		TweenService:Create(m, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Scale = ssize + esize * ticks,
+		}):Play()
+		Debris:AddItem(p, ticks / 60)
+	end
+	local function BlastEffect(brickcolor, pos, ssize, esize)
+		local p = CreatePart(0, brickcolor, Vector3.one * 0.5)
+		p.CFrame = CFrame.Angles(0, math.random() * math.pi * 2, 0) + pos
+		local m = CreateMesh("SpecialMesh", p, "FileMesh", 20329976, Vector3.zero, ssize)
+		local ticks = 1 / 0.05
+		TweenService:Create(p, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Transparency = 1,
+		}):Play()
+		TweenService:Create(m, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Scale = ssize + esize * ticks,
+		}):Play()
+		Debris:AddItem(p, ticks / 60)
+	end
+	local function MagicBlock(brickcolor, pos, ssize, esize, delay)
+		local p = CreatePart(0, brickcolor, Vector3.one * 0.5)
+		p.CFrame = CFrame.new(pos)
+		local m = CreateMesh("BlockMesh", p, nil, nil, Vector3.zero, ssize)
+		local ticks = 1 / delay
+		TweenService:Create(p, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Transparency = 1,
+		}):Play()
+		TweenService:Create(m, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Scale = ssize + esize * ticks,
+		}):Play()
+		task.spawn(function()
+			while p:IsDescendantOf(workspace) do
+				p.CFrame *= CFrame.Angles(math.random(0, 360), math.random(0, 360), math.random(0, 360))
+				task.wait()
+			end
+		end)
+		Debris:AddItem(p, ticks / 60)
+	end
+
+	local function Attack(position, radius)
+		if m.HitboxDebug then
+			local hitvis = Instance.new("Part")
+			hitvis.Name = RandomString()
+			hitvis.CastShadow = false
+			hitvis.Material = Enum.Material.ForceField
+			hitvis.Anchored = true
+			hitvis.CanCollide = false
+			hitvis.CanTouch = false
+			hitvis.CanQuery = false
+			hitvis.Shape = Enum.PartType.Ball
+			hitvis.Color = Color3.new(1, 1, 1)
+			hitvis.Size = Vector3.one * radius * 2
+			hitvis.CFrame = CFrame.new(position)
+			hitvis.Parent = workspace
+			Debris:AddItem(hitvis, 1)
+		end
+		local parts = workspace:GetPartBoundsInRadius(position, radius)
+		for _,part in parts do
+			if part.Parent then
+				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
+				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+					if ReanimateFling(hum.Parent) then
+						if math.random() < 0.1 then
+							notify(hum.Parent.Name .. " just tried to mess with my remotes.")
+						end
+					end
+				end
+			end
+		end
+	end
+	local function PunchingPart(part, duration)
+		if not root or not hum or not torso then return end
+		local rootu = root
+		local e = os.clock() + duration
+		local old = part.CFrame.Position
+		while os.clock() < e do
+			task.wait()
+			if not rootu:IsDescendantOf(workspace) then return end
+			local new = part.CFrame.Position
+			local mag = (old - new).Magnitude
+			if mag >= 2 then
+				local mid = (old + new) / 2
+				local x = CreatePart(0, "Alder", Vector3.new(0.2, mag, 0.2))
+				x.CFrame = CFrame.lookAt(mid, new) * CFrame.Angles(math.pi / 2, 0, 0)
+				Instance.new("BlockMesh", x).Scale = Vector3.new(1, 1, 1)
+				local m = Instance.new("CylinderMesh", x)
+				m.Scale = Vector3.new(20, 1, 20)
+				old = new
+				task.spawn(function()
+					local dur = 0.16
+					local s = os.clock()
+					while true do
+						task.wait()
+						if os.clock() > s + dur then break end
+						local a = (os.clock() - s) / dur
+						x.Transparency = a
+						local b = 1 - a * a
+						m.Scale = Vector3.new(20 * b, 1, 20 * b)
+					end
+					x:Destroy()
+				end)
+			end
+			Attack(new, 3)
+		end
+	end
+	local function AttackOne()
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		local typ = statem1
+		statem1 = (statem1 + 1) % 3
+		randomdialog({
+			"Rah!", "Wah!", "Yah!", "Ha!", "Ho!",
+		})
+		task.spawn(function()
+			if typ == 0 then
+				task.spawn(PunchingPart, insts.ClawLPart, 0.36)
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+					rt = ROOTC0 * CFrame.Angles(math.rad(-5), 0, 0)
+					nt = NECKC0 * CFrame.Angles(math.rad(5), 0, math.rad(10))
+					rst = CFrame.new(1, 0.5, -0.5) * CFrame.Angles(0.5, 1.8, 1.5)
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(2), math.rad(25), math.rad(-15))
+					drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(-5), 0, 0)
+					drleft = CFrame.new(-3, 1, 2) * CFrame.Angles(math.rad(90), 0, 0)
+					drrite = CFrame.identity
+					return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+				end
+				task.wait(0.2)
+				if not rootu:IsDescendantOf(workspace) then return end
+				CreateSound(231917758)
+				CreateSound(159972643)
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+					rt = ROOTC0 * CFrame.Angles(math.rad(10), 0, math.rad(20))
+					nt = NECKC0 * CFrame.Angles(0, 0, math.rad(-20))
+					rst = CFrame.new(1, 0.5, -0.5) * CFrame.Angles(80, 1.8, 1.5)
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(2), math.rad(25), math.rad(-15))
+					drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(-5), 0, 0)
+					drleft = CFrame.new(-4, 1, -8) * CFrame.Angles(math.rad(-85), 0, 0)
+					drrite = CFrame.identity
+					return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+				end
+				task.wait(0.16)
+			end
+			if typ == 1 then
+				task.spawn(PunchingPart, insts.ClawRPart, 0.36)
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+					rt = ROOTC0 * CFrame.Angles(0, 0, math.rad(20))
+					nt = NECKC0 * CFrame.Angles(0, 0, math.rad(-20))
+					rst = CFrame.new(1, 0.5, -0.5) * CFrame.Angles(math.rad(-2), math.rad(-25), math.rad(15))
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(-30, 0, -20)
+					drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(-5), 0, 0)
+					drleft = CFrame.identity
+					drrite = CFrame.new(-5, 1, -5) * CFrame.Angles(0, 0, math.rad(20))
+					return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+				end
+				task.wait(0.2)
+				if not rootu:IsDescendantOf(workspace) then return end
+				CreateSound(231917758)
+				CreateSound(159972627)
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+					rt = ROOTC0 * CFrame.Angles(0, 0, math.rad(-20))
+					nt = NECKC0 * CFrame.Angles(0, 0, math.rad(20))
+					rst = CFrame.new(1, 0.5, -0.5) * CFrame.Angles(math.rad(-2), math.rad(-25), math.rad(15))
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(-30, 0, 20)
+					drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(-5), 0, 0)
+					drleft = CFrame.identity
+					drrite = CFrame.new(10, 1, -5) * CFrame.Angles(0, math.rad(-80), math.rad(20))
+					return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+				end
+				task.wait(0.16)
+			end
+			if typ == 2 then
+				task.spawn(PunchingPart, insts.ClawLPart, 0.53)
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+					rt = ROOTC0 * CFrame.Angles(math.rad(10), 0, 0)
+					nt = NECKC0
+					rst = CFrame.new(1, 0.5, -0.5) * CFrame.Angles(0.5, -1.3, -0.1)
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(2), math.rad(25), math.rad(-15))
+					drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(-5), 0, 0)
+					drleft = CFrame.new(3, 7, -1) * CFrame.Angles(math.rad(20), 0, math.rad(-120))
+					drrite = CFrame.identity
+					return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+				end
+				task.wait(0.2)
+				if not rootu:IsDescendantOf(workspace) then return end
+				CreateSound(231917758)
+				CreateSound(159882477)
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+					rt = ROOTC0 * CFrame.Angles(math.rad(-5), 0, 0)
+					nt = NECKC0 * CFrame.Angles(math.rad(5), 0, 0)
+					rst = CFrame.new(1, 0.5, -0.5) * CFrame.Angles(2, -1.3, 0.1)
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(2), math.rad(25), math.rad(-15))
+					drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(-5), 0, 0)
+					drleft = CFrame.new(2, 4, -3) * CFrame.Angles(math.rad(120), 0, math.rad(-120))
+					drrite = CFrame.identity
+					return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+				end
+				task.wait(0.33)
+			end
+			if not rootu:IsDescendantOf(workspace) then return end
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = 50 * scale
+		end)
+	end
+	local barraging = false
+	local function Mudada()
+		if barraging then
+			barraging = false
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		barraging = true
+		randomdialog({
+			"SUNLIGHT YELLO OVRDRIV", "MUDAMUDAMUDAMUDAMUDAMUDAMUDAA!",
+		})
+		CreateSound(159882584)
+		hum.WalkSpeed = 16 * scale
+		task.spawn(function()
+			task.spawn(PunchingPart, insts.ClawLPart, 0.2)
+			task.spawn(PunchingPart, insts.ClawRPart, 0.2)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+				rt = ROOTC0 * CFrame.Angles(math.rad(5), 0, 0)
+				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.5, 1, 0) * CFrame.Angles(math.rad(90), math.rad(90), 0)
+				lst = CFrame.new(-1.5, 1, 0) * CFrame.Angles(math.rad(90), math.rad(-90), 0)
+				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(-20), 0, 0)
+				drleft = CFrame.new(4, 2, 10)
+				drrite = CFrame.new(-4, 2, 10)
+				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+			end
+			task.wait(0.2)
+			if not rootu:IsDescendantOf(workspace) then
+				barraging = false
+				return
+			end
+			if not barraging then
+				animationOverride = nil
+				attacking = false
+				return
+			end
+			local bar = -1
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+				rt = ROOTC0 * CFrame.Angles(math.rad(5), 0, 0)
+				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.5, 1, -bar * 2) * CFrame.Angles(math.rad(90), math.rad(90), 0)
+				lst = CFrame.new(-1.5, 1, bar * 2) * CFrame.Angles(math.rad(90), math.rad(-90), 0)
+				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(-20), 0, 0)
+				drleft = CFrame.new(math.random(-10, 10), math.random(0, 4), -bar * 20)
+				drrite = CFrame.new(math.random(-10, 10), math.random(0, 4), bar * 20)
+				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+			end
+			for _=1, 40 do
+				task.spawn(PunchingPart, insts.ClawLPart, 0.08)
+				task.spawn(PunchingPart, insts.ClawRPart, 0.08)
+				CreateSound(231917758)
+				task.wait(0.08)
+				if not rootu:IsDescendantOf(workspace) then
+					barraging = false
+					return
+				end
+				if not barraging then
+					animationOverride = nil
+					attacking = false
+					return
+				end
+				bar = -bar
+			end
+			barraging = false
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = 50 * scale
+		end)
+	end
+	local function SmashDown()
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		randomdialog({
+			"Dodge this!", "Watch your step!", "Smash down!", "Sin Dragon smash!",
+		})
+		hum.WalkSpeed = 0
+		task.spawn(function()
+			task.spawn(PunchingPart, insts.ClawLPart, 0.41)
+			task.spawn(PunchingPart, insts.ClawRPart, 0.41)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+				rt = ROOTC0 * CFrame.Angles(math.rad(-5), 0, 0)
+				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.5, 1, 0) * CFrame.Angles(math.rad(180), 0, 0)
+				lst = CFrame.new(-1.5, 1, 0) * CFrame.Angles(math.rad(180), 0, 0)
+				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(50), 0, 0)
+				drleft = CFrame.new(4, 30, 10) * CFrame.Angles(math.rad(35), 0, math.rad(-90))
+				drrite = CFrame.new(-4, 30, 10) * CFrame.Angles(math.rad(35), 0, math.rad(90))
+				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+			end
+			task.wait(0.2)
+			if not rootu:IsDescendantOf(workspace) then return end
+			CreateSound(231917758)
+			CreateSound(159882584)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+				rt = ROOTC0 * CFrame.Angles(math.rad(5), 0, 0)
+				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.5, 1, 0) * CFrame.Angles(math.rad(90), 0, 0)
+				lst = CFrame.new(-1.5, 1, 0) * CFrame.Angles(math.rad(90), 0, 0)
+				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(-10), 0, 0)
+				drleft = CFrame.new(4, 6, -10) * CFrame.Angles(math.rad(-35), 0, math.rad(-90))
+				drrite = CFrame.new(-4, 6, -10) * CFrame.Angles(math.rad(-35), 0, math.rad(90))
+				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+			end
+			task.wait(0.2)
+			if not rootu:IsDescendantOf(workspace) then return end
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = 50 * scale
+			local looky = rootu.CFrame * CFrame.new(Vector3.new(0, -2.5, -10) * scale)
+			for i=0, 9 do
+				local ref = CreatePart(1, "Alder", Vector3.zero)
+				ref.CFrame = looky * CFrame.new(0, 0, -10 * i)
+				BlastEffect("White", ref.Position, Vector3.new(1, 0.2, 1), Vector3.new(1, 0, 1))
+				BlastEffect("White", ref.Position, Vector3.new(5, 1, 0.5), Vector3.new(0.1, 2, 0.1))
+				Attack(ref.Position, 8)
+				CreateSound(ref, 178452221)
+				CreateSound(ref, 192410084)
+				Debris:AddItem(ref, 2)
+				task.wait(0.08)
+				if not rootu:IsDescendantOf(workspace) then return end
+			end
+		end)
+	end
+	local firingmalazar = false
+	local function FirinLaser()
+		if firingmalazar then
+			firingmalazar = false
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		firingmalazar = true
+		randomdialog({
+			"IMMA FIRIN MA LAZAR", "Kame... hame...",
+		})
+		hum.WalkSpeed = 16
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+				rt = ROOTC0
+				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(-30, 0, -20)
+				lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(-30, 0, 20)
+				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(50), 0, 0)
+				drleft = CFrame.new(4, 0, 0) * CFrame.Angles(0, math.rad(-30), 0)
+				drrite = CFrame.new(-4, 0, 0) * CFrame.Angles(0, math.rad(30), 0)
+				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+			end
+			task.wait(0.08)
+			if not rootu:IsDescendantOf(workspace) then
+				firingmalazar = false
+				return
+			end
+			animationinstant = true
+			for _=1, 5 do
+				local blast = Instance.new("Part")
+				blast.Size = Vector3.one
+				blast.Color = maincolor
+				blast.Material = "Neon"
+				blast.Anchored = false
+				blast.CanCollide = false
+				blast.CanQuery = false
+				blast.CanTouch = false
+				blast.Transparency = 1
+				blast.Name = RandomString()
+				local weld = Instance.new("Weld", blast)
+				weld.Part0 = insts.HeadPart
+				weld.Part1 = blast
+				weld.C0 = CFrame.new(-8, 0, 0)
+				weld.C1 = CFrame.fromEulerAnglesXYZ(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10))
+				local m = Instance.new("BlockMesh", blast)
+				m.Scale = Vector3.new(6, 6, 6)
+				blast.Parent = workspace
+				TweenService:Create(blast, TweenInfo.new(0.16, Enum.EasingStyle.Linear), {
+					Transparency = 0.2
+				}):Play()
+				task.spawn(function()
+					while firingmalazar do
+						weld.C1 *= CFrame.fromEulerAnglesXYZ(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10))
+						task.wait()
+					end
+					TweenService:Create(blast, TweenInfo.new(0.33, Enum.EasingStyle.Linear), {
+						Transparency = 1
+					}):Play()
+					task.wait(0.33)
+					blast:Destroy()
+				end)
+			end
+			local sound = Instance.new("Sound", insts.HeadPart)
+			sound.SoundId = "rbxassetid://864314263"
+			sound.Volume = 1
+			sound.EmitterSize = 100
+			sound:Play()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+				rt = ROOTC0
+				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(-30, 0, -20)
+				lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(-30, 0, 20)
+				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(50), 0, 0)
+				drleft = CFrame.new(4, 0, 0) * CFrame.Angles(0, math.rad(-30), 0)
+				drrite = CFrame.new(-4, 0, 0) * CFrame.Angles(0, math.rad(30), 0)
+				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+			end
+			local ticks = os.clock() + m.BlastCharge / 60
+			while os.clock() < ticks and firingmalazar do
+				MagicRing("Alder", insts.HeadPart.CFrame * Vector3.new(-8, 0, 0), Vector3.new(20, 20, 2), Vector3.new(-1, -1, 0))
+				task.wait()
+				if not rootu:IsDescendantOf(workspace) then
+					firingmalazar = false
+					return
+				end
+			end
+			if not firingmalazar then
+				animationOverride = nil
+				attacking = false
+				animationinstant = false
+				hum.WalkSpeed = 50 * scale
+				TweenService:Create(sound, TweenInfo.new(0.33, Enum.EasingStyle.Linear), {
+					Volume = 0
+				}):Play()
+				Debris:AddItem(sound, 0.33)
+				return
+			end
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+				rt = ROOTC0
+				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.5, 1, 0) * CFrame.Angles(math.rad(180), 0, 0)
+				lst = CFrame.new(-1.5, 1, 0) * CFrame.Angles(math.rad(180), 0, 0)
+				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				drhead = CFrame.new(math.random(-1, 1), math.random(5, 7), math.random(6, 8)) * CFrame.Angles(math.rad(-5), 0, 0)
+				drleft = CFrame.new(4, 0, 0) * CFrame.Angles(0, math.rad(-30), 0)
+				drrite = CFrame.new(-4, 0, 0) * CFrame.Angles(0, math.rad(30), 0)
+				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+			end
+			task.wait(0.08)
+			if not rootu:IsDescendantOf(workspace) then
+				firingmalazar = false
+				return
+			end
+			sound:Destroy()
+			CreateSound(insts.HeadPart, 162246701)
+			sound = Instance.new("Sound", insts.HeadPart)
+			sound.SoundId = "rbxassetid://162246683"
+			sound.Looped = true
+			sound.Volume = 1
+			sound:Play()
+			local blast = Instance.new("Part")
+			blast.Color = maincolor
+			blast.Material = "Neon"
+			blast.Anchored = false
+			blast.CanCollide = false
+			blast.CanQuery = false
+			blast.CanTouch = false
+			blast.Name = RandomString()
+			local mesh = Instance.new("BlockMesh", blast)
+			mesh.Scale = Vector3.new(5, 5, 1)
+			blast.Parent = workspace
+			ticks = os.clock() + m.BlastDuration / 60
+			while os.clock() < ticks and firingmalazar do
+				local hole = insts.HeadPart.CFrame * Vector3.new(-8, 0, 0)
+				local hit = MouseHit()
+				Attack(hit, 10)
+				blast.Size = Vector3.new(1, 1, (hit - hole).Magnitude)
+				blast.CFrame = CFrame.lookAt((hit + hole) / 2, hit)
+				MagicBlock("Alder", hit, Vector3.one, Vector3.one * 6, 0.1)
+				task.wait()
+				if not rootu:IsDescendantOf(workspace) then
+					firingmalazar = false
+					return
+				end
+			end
+			if firingmalazar then
+				firingmalazar = false
+			end
+			TweenService:Create(sound, TweenInfo.new(0.33, Enum.EasingStyle.Linear), {
+				Volume = 0
+			}):Play()
+			TweenService:Create(blast, TweenInfo.new(0.33, Enum.EasingStyle.Linear), {
+				Transparency = 1
+			}):Play()
+			task.wait(0.33)
+			sound:Destroy()
+			blast:Destroy()
+			animationinstant = false
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = 50 * scale
+		end)
+	end
+
+	m.Init = function(figure)
+		start = os.clock()
+		attacking = true
+		state = 0
+		statetime = 0
+		if m.SkipIntro then
+			state = 3
+			attacking = false
+		end
+		statem1 = 0
+		animationinstant = false
+		animationOverride = nil
+		scale = figure:GetScale()
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		randomdialog({
+			"I'm not just sinful. I am SIN himself.",
+			"Hey big guy, you hungry today? Let's beat up some fresh meat.",
+			"Time to commit some sins. Are you ready, buddy?",
+		})
+		createhatmap(dragonheadm, dragonhead)
+		createhatmap(dragonclawlm, dragonclawl)
+		createhatmap(dragonclawrm, dragonclawr)
+		sethatmaplimbname(dragonhead, "HumanoidRootPart")
+		sethatmaplimbname(dragonclawl, "HumanoidRootPart")
+		sethatmaplimbname(dragonclawr, "HumanoidRootPart")
+		sethatmapcframe(dragonhead, CFrame.new(0, 0, 0))
+		sethatmapcframe(dragonclawl, CFrame.new(0, 0, 0))
+		sethatmapcframe(dragonclawr, CFrame.new(0, 0, 0))
+		joints.dh = CFrame.new(0, -16, 0)
+		joints.dl = CFrame.new(0, -16, 0)
+		joints.dr = CFrame.new(0, -16, 0)
+		ContextActionService:BindAction("Uhhhhhh_SDPunch", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				AttackOne()
+			end
+		end, true, Enum.UserInputType.MouseButton1)
+		ContextActionService:SetTitle("Uhhhhhh_SDPunch", "M1")
+		ContextActionService:SetPosition("Uhhhhhh_SDPunch", UDim2.new(1, -130, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_SDMudad", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				Mudada()
+			end
+		end, true, Enum.KeyCode.Z)
+		ContextActionService:SetTitle("Uhhhhhh_SDMudad", "Z")
+		ContextActionService:SetPosition("Uhhhhhh_SDMudad", UDim2.new(1, -180, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_SDSmash", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				SmashDown()
+			end
+		end, true, Enum.KeyCode.X)
+		ContextActionService:SetTitle("Uhhhhhh_SDSmash", "X")
+		ContextActionService:SetPosition("Uhhhhhh_SDSmash", UDim2.new(1, -230, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_SDLazer", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				FirinLaser()
+			end
+		end, true, Enum.KeyCode.C)
+		ContextActionService:SetTitle("Uhhhhhh_SDLazer", "C")
+		ContextActionService:SetPosition("Uhhhhhh_SDLazer", UDim2.new(1, -280, 1, -130))
+		if chatconn then
+			chatconn:Disconnect()
+		end
+		chatconn = OnPlayerChatted.Event:Connect(function(plr, msg)
+			if plr == Player then
+				notify(msg)
+			end
+		end)
+		hum.WalkSpeed = 0
+
+		local function CreateStuffUtil(class, parent, name, properties)
+			local o = Instance.new(class)
+			for k, v in (properties or {}) do o[k] = v end
+			o.Name = name
+			o.Parent = parent
+			return o
+		end
+		insts.ClawL = CreateStuffUtil("Model", figure, "sin dragon claw L")
+		insts.ClawR = CreateStuffUtil("Model", figure, "sin dragon claw R")
+		insts.Head = CreateStuffUtil("Model", figure, "sin dragon head")
+		insts.ClawLPart = CreatePart(1, "Really Black", Vector3.new(4, 4, 1))
+		insts.ClawLPart.Name = "Handle"
+		insts.ClawLPart.Anchored = false
+		insts.ClawRPart = CreatePart(1, "Really Black", Vector3.new(4, 4, 1))
+		insts.ClawRPart.Name = "Handle"
+		insts.ClawRPart.Anchored = false
+		insts.HeadPart = CreatePart(1, "Really Black", Vector3.new(1, 6, 6))
+		insts.HeadPart.Name = "Handle"
+		insts.HeadPart.Anchored = false
+		insts.ClawLPart.Parent = insts.ClawL
+		insts.ClawRPart.Parent = insts.ClawR
+		insts.HeadPart.Parent = insts.Head
+
+		local lol = CreateStuffUtil("Part", insts.ClawL, "Claw", {BrickColor = BrickColor.new("Really black"), Size = Vector3.new(5, 7, 5), CanCollide = false, Massless = true})
+		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Offset = Vector3.new(0, 0, -1), Scale = Vector3.new(25, 25, 25), MeshId = "rbxassetid://92052865", MeshType = Enum.MeshType.FileMesh})
+		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.ClawLPart, C0 = CFrame.new(0, 0, 0, 0, -1, 0, 0, 0, 1, -1, 0, 0), C1 = CFrame.new(0, 0, 3, 1, 0, 0, 0, -1, 0, 0, 0, -1)})
+		lol = CreateStuffUtil("Part", insts.ClawR, "Claw", {BrickColor = BrickColor.new("Really black"), Size = Vector3.new(5, 7, 5), CanCollide = false, Massless = true})
+		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Offset = Vector3.new(0, 0, -1), Scale = Vector3.new(25, 25, 25), MeshId = "rbxassetid://92053026", MeshType = Enum.MeshType.FileMesh})
+		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.ClawRPart, C0 = CFrame.new(0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0), C1 = CFrame.new(0, 0, 3, 1, 0, 0, 0, -1, 0, 0, 0, -1)})
+		lol = CreateStuffUtil("Part", insts.Head, "DragonHead", {BrickColor = BrickColor.new("Really black"), Material = Enum.Material.SmoothPlastic, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(5, 5, 5), MeshId = "rbxassetid://420164161", MeshType = Enum.MeshType.FileMesh})
+		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4, 0, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
+		lol = CreateStuffUtil("Part", insts.Head, "EyePart", {Color = maincolor, Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(1, 1, 2), MeshType = Enum.MeshType.Sphere})
+		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4, 3, 2.5, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
+		lol = CreateStuffUtil("Part", insts.Head, "EyePart", {Color = maincolor, Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(1, 1, 2), MeshType = Enum.MeshType.Sphere})
+		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4, 3, -2.5, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
+		lol = CreateStuffUtil("Part", insts.Head, "EyePartBlack", {BrickColor = BrickColor.new("Really black"), Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(0.9, 0.9, 0.5), MeshType = Enum.MeshType.Sphere})
+		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4.5, 3, 2.5, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
+		lol = CreateStuffUtil("Part", insts.Head, "EyePartBlack", {BrickColor = BrickColor.new("Really black"), Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(0.9, 0.9, 0.5), MeshType = Enum.MeshType.Sphere})
+		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4.5, 3, -2.5, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
+
+		local smoke = CreateStuffUtil("ParticleEmitter", nil, "Smoke", {
+			Color = ColorSequence.new(Color3.new(0.5, 0, 1)),
+			Lifetime = NumberRange.new(1),
+			Acceleration = Vector3.new(0, 20, 0),
+			EmissionDirection = "Front",
+			Size = NumberSequence.new(1, 0),
+			Speed = NumberRange.new(10),
+			LightEmission = 1,
+			Rate = 500,
+			Rotation = NumberRange.new(0, 360),
+			RotSpeed = NumberRange.new(150),
+			Texture = "rbxasset://textures/particles/smoke_main.dds",
+			Enabled = m.SkipIntro,
+		})
+		lol = smoke:Clone()
+		lol.Parent = insts.ClawLPart
+		lol = smoke:Clone()
+		lol.Parent = insts.ClawRPart
+		lol = smoke:Clone()
+		lol.Parent = insts.HeadPart
+		lol.EmissionDirection = "Right"
+		lol.Rate = 1000
+
+		insts.ClawL:ScaleTo(scale)
+		insts.ClawR:ScaleTo(scale)
+		insts.Head:ScaleTo(scale)
+
+		insts.ClawLWeld = CreateStuffUtil("Weld", insts.ClawLPart, "Weld", {Part0 = root, Part1 = insts.ClawLPart, C1 = OFF_DragonClawL + OFF_DragonClawL.Position * (scale - 1)})
+		insts.ClawRWeld = CreateStuffUtil("Weld", insts.ClawRPart, "Weld", {Part0 = root, Part1 = insts.ClawRPart, C1 = OFF_DragonClawR + OFF_DragonClawR.Position * (scale - 1)})
+		insts.HeadWeld = CreateStuffUtil("Weld", insts.HeadPart, "Weld", {Part0 = root, Part1 = insts.HeadPart, C1 = OFF_DragonHead + OFF_DragonHead.Position * (scale - 1)})
+
+		lol = Instance.new("PointLight", torso)
+		lol.Color = maincolor
+		lol.Brightness = 5
+		lol.Range = 15
+		lol.Enabled = false
+		lol.Name = "Lighting"
+
+		footsteps = Instance.new("Sound", torso)
+		footsteps.SoundId = "rbxassetid://142665235"
+		footsteps.Looped = true
+		footsteps.Pitch = 1
+		footsteps.Volume = 0.4
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock() - start
+		scale = figure:GetScale()
+		isdancing = not not figure:GetAttribute("IsDancing")
+		rcp.FilterDescendantsInstances = {figure, Player.Character}
+		
+		-- get vii
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		
+		-- joints
+		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		local drhead = CFrame.identity
+		local drleft = CFrame.identity
+		local drrite = CFrame.identity
+		
+		local timingsine = t * 60 -- timing from original
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
+		-- animations
+		local animationspeed = 21.4
+		if state < 3 then
+			attacking = true
+			hum.WalkSpeed = 0
+			animationspeed = 99999
+			rt = ROOTC0
+			nt = NECKC0 * CFrame.Angles(math.rad(-20), 0, 0)
+			rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(70))
+			lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(-70))
+			rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+			drhead = CFrame.new(0, -16, 0)
+			drleft = CFrame.new(0, -16, 0)
+			drrite = CFrame.new(0, -16, 0)
+			if state == 0 then
+				-- calling the dragon
+				animationspeed = 21.4
+				if timingsine - statetime < 80 then
+					rt = ROOTC0
+					nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+					rst = CFrame.new(1.4, 0.5, -0.2) * CFrame.Angles(math.rad(20), 0, math.rad(-4))
+					lst = CFrame.new(-1.4, 0.5, -0.2) * CFrame.Angles(math.rad(20), 0, math.rad(4))
+					rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+					lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				end
+				if timingsine - statetime > 100 then
+					state = 1
+					statetime = 100
+					CreateSound(136007472)
+				end
+			end
+			if state == 1 then
+				-- summoning the dragon
+				local o = timingsine - statetime
+				if o >= 30 and o <= 60 then
+					MagicRing("Alder", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.new(60, 60, 6) * scale, Vector3.new(-3, -3, 0) * scale)
+					MagicRing("Alder", root.CFrame * (Vector3.new(-12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
+					MagicRing("Alder", root.CFrame * (Vector3.new(12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
+				end
+				if o > 240 then
+					state = 2
+					statetime = 340
+					CreateSound(233096557, 1)
+					CreateSound(233091205, 1)
+					CreateSound(150829983, 0.9)
+					MagicCircle("Alder", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.new(20, 20, 20) * scale, Vector3.one * scale, 0.01)
+					MagicCircle("Alder", root.CFrame * (Vector3.new(-12, 0, 0) * scale), Vector3.new(10, 10, 10) * scale, Vector3.one * scale, 0.01)
+					MagicCircle("Alder", root.CFrame * (Vector3.new(12, 0, 0) * scale), Vector3.new(10, 10, 10) * scale, Vector3.one * scale, 0.01)
+					torso.Lighting.Enabled = true
+					insts.ClawLPart.Smoke.Enabled = true
+					insts.ClawRPart.Smoke.Enabled = true
+					insts.HeadPart.Smoke.Enabled = true
+				end
+			end
+			if state == 2 then
+				-- summon roar
+				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(50), 0, 0)
+				drleft = CFrame.new(4, 0, 0) * CFrame.Angles(0, math.rad(-30), 0)
+				drrite = CFrame.new(-4, 0, 0) * CFrame.Angles(0, math.rad(30), 0)
+				if timingsine - statetime > 300 then
+					state = 3
+					statetime = timingsine
+					attacking = false
+				end
+			end
+		elseif state == 3 then
+			-- regular
+			if not attacking and not isdancing then
+				hum.WalkSpeed = 50 * scale
+			end
+			if animationinstant then
+				animationspeed = 99999
+			end
+			if onground then
+				if root.Velocity.Magnitude > 2 then
+					footsteps.Playing = true
+					rt = ROOTC0 * CFrame.new(0, 0, 0.1 * math.cos(timingsine / 2.5)) * CFrame.Angles(math.rad(20 + math.cos(timingsine / 2.5)), 0, 0)
+					nt = NECKC0 * CFrame.Angles(math.rad(-11.5 + 4.3 * math.cos(timingsine / 2.5)), 0, 0)
+					rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-40), 0, math.rad(24))
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-40), 0, math.rad(-24))
+					rht = CFrame.new(1, -1 - 0.1 * math.cos(timingsine / 5), -0.5 * math.cos(timingsine / 5)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-5), 0, math.rad(70 * math.cos(timingsine / 5)))
+					lht = CFrame.new(-1, -1 + 0.1 * math.cos(timingsine / 5), 0.5 * math.cos(timingsine / 5)) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-5), 0, math.rad(70 * math.cos(timingsine / 5)))
+					drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(-5), 0, 0)
+					drleft = CFrame.new(4 - 0.5 * math.cos(timingsine / 30), 0, 0 -0.5 * math.cos(timingsine / 30)) * CFrame.Angles(math.rad(math.cos(timingsine / 30)), math.rad(-60), math.rad(-math.cos(timingsine / 30)))
+					drrite  = CFrame.new(-4 + 0.5 * math.cos(timingsine / 36), 0, 0.5 * math.cos(timingsine / 36)) * CFrame.Angles(math.rad(-3 * math.cos(timingsine / 36)), math.rad(60), math.rad(-3 * math.cos(timingsine / 36)))
+				else
+					footsteps.Playing = false
+					local timingsine = timingsine * 0.5
+					rt = ROOTC0 * CFrame.Angles(math.rad(6), 0, 0)
+					nt = NECKC0 * CFrame.Angles(math.rad(3 + 3 * math.cos(timingsine / 36)), 0, 0)
+					rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(10), 0, math.rad(16 - 6 * math.cos(timingsine / 28)))
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(10), 0, math.rad(-16 + 6 * math.cos(timingsine / 28)))
+					rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-5), 0, math.rad(16))
+					lht = CFrame.new(-1, -1.1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-5), 0, math.rad(24))
+					drhead = CFrame.new(-math.cos(timingsine / 40), 6 - 0.5 * math.cos(timingsine / 20), 7) * CFrame.Angles(math.rad(-5 + 5 * math.cos(timingsine / 20)), 0, 0)
+					drleft = CFrame.new(4 - math.cos(timingsine / 30), 0, -math.cos(timingsine / 30)) * CFrame.Angles(math.rad(8 * math.cos(timingsine / 30)), 0, math.rad(-8 * math.cos(timingsine / 30)))
+					drrite = CFrame.new(-4 + math.cos(timingsine / 36), 0, math.cos(timingsine / 36)) * CFrame.Angles(math.rad(-12 * math.cos(timingsine / 36)), 0, math.rad(-12 * math.cos(timingsine / 36)))
+				end
+			else
+				if root.Velocity.Y > -1 then
+					footsteps.Playing = false
+					rt = ROOTC0
+					nt = NECKC0 * CFrame.Angles(math.rad(-11.5), 0, 0)
+					rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-14.3), 0, math.rad(28.6))
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-14.3), 0, math.rad(-28.6))
+					rht = CFrame.new(1, -1, -0.75) * CFrame.Angles(math.rad(-28.6), math.rad(90), 0)
+					lht = CFrame.new(-1, -1, -0.3) * CFrame.Angles(math.rad(-28.6), math.rad(-90), 0)
+					drhead = CFrame.new(-1 * math.cos(timingsine / 40), 6 - 0.5 * math.cos(timingsine / 20), 7) * CFrame.Angles(math.rad(-5 + 5 * math.cos(timingsine / 20)), 0, 0)
+					drleft = CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(20), math.rad(20), 0)
+					drrite = CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(20), math.rad(-20), 0)
+				else
+					footsteps.Playing = false
+					rt = ROOTC0
+					nt = NECKC0 * CFrame.Angles(math.rad(17.2), 0, 0)
+					rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(5.7), 0, math.rad(57.3))
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(5.7), 0, math.rad(-57.3))
+					rht = CFrame.new(1, -1, 0) * CFrame.Angles(math.rad(34.4), math.rad(90), 0)
+					lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-45.8), math.rad(-90), 0)
+					drhead = CFrame.new(-1 * math.cos(timingsine / 40), 6 - 0.5 * math.cos(timingsine / 20), 7)
+					drleft = CFrame.new(-4, -1, 0) * CFrame.Angles(math.rad(20), math.rad(-10), 0)
+					drrite = CFrame.new(4, -1, 0) * CFrame.Angles(math.rad(20), math.rad(10), 0)
+				end
+			end
+		end
+		if animationOverride then
+			rt, nt, rst, lst, rht, lht, drhead, drleft, drrite = animationOverride(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+		end
+		
+		-- joints
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		-- interpolation
+		local alpha = math.exp(-animationspeed * dt)
+		joints.r = rt:Lerp(joints.r, alpha)
+		joints.n = nt:Lerp(joints.n, alpha)
+		joints.rs = rst:Lerp(joints.rs, alpha)
+		joints.ls = lst:Lerp(joints.ls, alpha)
+		joints.rh = rht:Lerp(joints.rh, alpha)
+		joints.lh = lht:Lerp(joints.lh, alpha)
+		joints.dh = drhead:Lerp(joints.dh, alpha)
+		joints.dl = drleft:Lerp(joints.dl, alpha)
+		joints.dr = drrite:Lerp(joints.dr, alpha)
+		
+		-- dance reactions
+		if isdancing then
+			local name = figure:GetAttribute("DanceInternalName")
+			if name == "RAGDOLL" then
+				dancereact.Ragdoll = dancereact.Ragdoll or 0
+				if t - dancereact.Ragdoll > 1 then
+					randomdialog({
+						"HELP ME BIG GUYYYY",
+						"WHAATTATTTT THIS ISNT CANONNNNNNNN",
+						"TS AINT MEEEE DAWHGGGGG :skull:",
+						"BUDDYYYYYYY :sob: HELLEPPPLDLP",
+						"AKSJSKKWWSJKSKSKSSKKAKASSKKAKSK",
+					}, 1.25)
+				end
+				dancereact.Ragdoll = t
+			elseif name == "ASSUME" then
+				dancereact.Assumption = dancereact.Assumption or 0
+				if t - dancereact.Assumption > 60 then
+					notify("They think they got me? They're all making... assumptions!")
+				end
+				dancereact.Assumption = t
+			elseif name == "KEMUSAN" then
+				dancereact.SocialCredits = dancereact.SocialCredits or 0
+				if t - dancereact.SocialCredits > 1 then
+					task.spawn(function()
+						local root = root
+						notify("jian qi jiang hu en yuan", 1)
+						task.wait(1.7)
+						if not root:IsDescendantOf(workspace) then return end
+						notify("fu xiu zhao ming yue", 1)
+						task.wait(1.7)
+						if not root:IsDescendantOf(workspace) then return end
+						notify("xi feng ye lua hua xie", 1)
+						task.wait(1.7)
+						if not root:IsDescendantOf(workspace) then return end
+						notify("zhen dao jian nan mian", 1)
+						task.wait(1.7)
+						if not root:IsDescendantOf(workspace) then return end
+						notify("ru wei shan he guo ke", 1)
+						task.wait(1.7)
+						if not root:IsDescendantOf(workspace) then return end
+						notify("que zong chang tan shang li bie", 1)
+						task.wait(1.7)
+						if not root:IsDescendantOf(workspace) then return end
+						notify("bin ru shuang yi bei nong lie", 1)
+					end)
+				end
+				dancereact.SocialCredits = t
+			else
+				dancereact.any = dancereact.any or 0
+				if t - dancereact.any > 1 then
+					randomdialog({
+						"Watch this, big guy. Match my vibe.",
+						"Check out these moves!",
+						"I may be sinful, but I am a smooth sinful guy.",
+						"They cannot try to copy me.",
+					})
+				end
+				dancereact.any = t
+			end
+			local rt = rj:GetAttribute("Transform") or CFrame.identity
+			local nt = nj:GetAttribute("Transform") or CFrame.identity
+			local rst = rsj:GetAttribute("Transform") or CFrame.identity
+			local lst = lsj:GetAttribute("Transform") or CFrame.identity
+			--local rt = CFrame.identity
+			--local nt = CFrame.identity
+			--local rst = CFrame.identity
+			--local lst = CFrame.identity
+			local dscale = 2
+			local dtorso = CFrame.new(-math.cos(timingsine / 40), 4 - 0.5 * math.cos(timingsine / 20), 6) * ROOTC0 * (rt + rt.Position * 2) * ROOTC0:Inverse()
+			local dhead = dtorso * CFrame.new(0, 2 * dscale, 0) * ROOTC0 * (nt + nt.Position * 2) * ROOTC0:Inverse() * CFrame.new(0, 1 * dscale, 0)
+			local dlarm = dtorso * CFrame.new(-2 * dscale, 1 * dscale, 0) * CFrame.Angles(0, -1.57, 0) * (lst + lst.Position * 2) * CFrame.Angles(0, 1.57, 0) * CFrame.new(-1 * dscale, -1 * dscale, 0)
+			local drarm = dtorso * CFrame.new(2 * dscale, 1 * dscale, 0) * CFrame.Angles(0, 1.57, 0) * (rst + rst.Position * 2) * CFrame.Angles(0, -1.57, 0) * CFrame.new(1 * dscale, -1 * dscale, 0)
+			joints.dh = dhead * CFrame.new(0, 0, 2) * CFrame.Angles(0, -1.57, 0) * OFF_DragonHead
+			joints.dl = dlarm * CFrame.new(3, 0, 0) * CFrame.Angles(1.57, 0, 0) * OFF_DragonClawL
+			joints.dr = drarm * CFrame.new(-3, 0, 0) * CFrame.Angles(1.57, 0, 0) * OFF_DragonClawR
+		end
+		
+		-- apply transforms
+		SetC0C1Joint(rj, joints.r, ROOTC0, scale)
+		SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)), scale)
+		SetC0C1Joint(rsj, joints.rs, CFrame.new(0, 0.5, 0), scale)
+		SetC0C1Joint(lsj, joints.ls, CFrame.new(0, 0.5, 0), scale)
+		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		sethatmapcframe(dragonhead, joints.dh * OFF_DragonHead:Inverse())
+		sethatmapcframe(dragonclawl, joints.dl * OFF_DragonClawL:Inverse())
+		sethatmapcframe(dragonclawr, joints.dr * OFF_DragonClawR:Inverse())
+		insts.HeadWeld.C0 = joints.dh + joints.dh.Position * (scale - 1)
+		insts.ClawLWeld.C0 = joints.dl + joints.dl.Position * (scale - 1)
+		insts.ClawRWeld.C0 = joints.dr + joints.dr.Position * (scale - 1)
+	end
+	m.Destroy = function(figure: Model?)
+		ContextActionService:UnbindAction("Uhhhhhh_SDPunch")
+		ContextActionService:UnbindAction("Uhhhhhh_SDMudad")
+		ContextActionService:UnbindAction("Uhhhhhh_SDSmash")
+		ContextActionService:UnbindAction("Uhhhhhh_SDLazer")
+		if chatconn then
+			chatconn:Disconnect()
+			chatconn = nil
+		end
+		root, torso, hum = nil, nil, nil
+	end
+	return m
+end)
+
 return modules

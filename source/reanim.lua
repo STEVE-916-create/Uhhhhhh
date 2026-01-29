@@ -1529,13 +1529,13 @@ do -- homepage
 			elseif textsel == 2 then
 				text0.Visible = false
 				text1.Visible = false
-				text2.Visible = true
-				text3.Visible = false
+				text2.Visible = false
+				text3.Visible = true
 			else
 				text0.Visible = false
 				text1.Visible = false
-				text2.Visible = false
-				text3.Visible = true
+				text2.Visible = true
+				text3.Visible = false
 			end
 		else
 			currentprocessor = math.random(1, #PositionProcessor)
@@ -2941,23 +2941,11 @@ local function CreateHumanoidCharacter()
 		motor.Part1 = p1
 		motor.C0 = c0
 		motor.C1 = c1
-		local iskeeping = false
-		motor:GetPropertyChangedSignal("Transform"):Connect(function()
-			if iskeeping then return end
-			iskeeping = true
-			local tran = motor.Transform
-			RunService.PreRender:Wait()
-			motor.Transform = tran
-			RunService.RenderStepped:Wait()
-			motor.Transform = tran
-			RunService.PreAnimation:Wait()
-			motor.Transform = tran
-			RunService.PreSimulation:Wait()
-			motor.Transform = tran
-			RunService.PostSimulation:Wait()
-			motor.Transform = tran
-			iskeeping = false
-		end)
+		motor.MaxVelocity = 0
+		Util.LinkDestroyI2C(motor, RunService.PreRender:Connect(function()
+			motor:SetAttribute("Transform", motor.Transform)
+			motor.Transform = motor:GetAttribute("Transform") or CFrame.identity
+		end))
 	end
 
 	makeMotor(
