@@ -2943,8 +2943,9 @@ local function CreateHumanoidCharacter()
 		motor.C1 = c1
 		motor.MaxVelocity = 0
 		Util.LinkDestroyI2C(motor, RunService.PreRender:Connect(function()
-			motor:SetAttribute("Transform", motor.Transform)
-			motor.Transform = motor:GetAttribute("Transform") or CFrame.identity
+			local scale = char:GetScale()
+			motor:SetAttribute("Transform", Util.ScaleCFrame(motor.Transform, 1 / scale))
+			motor.Transform = Util.ScaleCFrame(motor:GetAttribute("Transform") or CFrame.identity, scale)
 		end))
 	end
 
