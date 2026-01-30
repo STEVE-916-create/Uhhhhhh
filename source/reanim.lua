@@ -21,7 +21,7 @@ Thou shalth not steal. Point at this source if you used a snippet here.
 if _G.UhhhhhhLoaded then return end
 _G.UhhhhhhLoaded = true
 
-local UhhhhhhVersion = "1.0.3 BETA"
+local UhhhhhhVersion = "1.0.4 BETA"
 
 cloneref = cloneref or function(o) return o end
 getcustomasset = getcustomasset or getsynasset
