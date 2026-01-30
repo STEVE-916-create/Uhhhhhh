@@ -3285,6 +3285,13 @@ do
 			if UserInputService.MouseBehavior ~= targetMouseBehavior then
 				UserInputService.MouseBehavior = targetMouseBehavior
 			end
+			local targetMouseIcon = ""
+			if Reanimate.Shiftlocked then
+				targetMouseIcon = "rbxasset://textures/Cursors/CrossMouseIcon.png"
+			end
+			if UserInputService.MouseIcon ~= targetMouseIcon then
+				UserInputService.MouseIcon = targetMouseIcon
+			end
 			if GameSettings.RotationType ~= Enum.RotationType.MovementRelative then
 				GameSettings.RotationType = Enum.RotationType.MovementRelative
 			end
