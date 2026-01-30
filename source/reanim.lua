@@ -6387,9 +6387,10 @@ do
 	end)
 	local Maus = Player:GetMouse()
 	local HoldingCtrl = UI.CreateSwitch(MainPage, "Ctrl Key Held", false)
+	local _lastclick = nil
+	local _lastclickgpe = false
 	local _lastclicktick = 0
 	local _lastclickpos = Vector3.zero
-	local _lastclick = nil
 	UserInputService.InputBegan:Connect(function(input, guiprocessed)
 		if input.UserInputType == Enum.UserInputType.Keyboard then
 			if input.KeyCode == Enum.KeyCode.LeftControl then
@@ -6397,8 +6398,8 @@ do
 			end
 		end
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			if guiprocessed then return end
 			_lastclick = input
+			_lastclickgpe = gpe
 			_lastclicktick = os.clock()
 			_lastclickpos = input.Position
 		end
@@ -6417,7 +6418,7 @@ do
 						return
 					end
 				end
-				if Reanimate.ClickFling then
+				if Reanimate.ClickFling and not _lastclickgpe then
 					if Maus.Target and Maus.Target.Parent then 
 						local target = Maus.Target.Parent
 						if target:IsA("Accessory") then
