@@ -3139,7 +3139,7 @@ do
 		if GuiService.MenuIsOpen then return end
 		if UserInputService:GetFocusedTextBox() then return end
 		if input.UserInputType == Enum.UserInputType.Keyboard then
-			if input.KeyCode == Enum.KeyCode.LeftShift then
+			if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
 				Reanimate.Shiftlocked = Reanimate.ShiftlockEnabled and not Reanimate.Shiftlocked
 			end
 			if input.KeyCode == Enum.KeyCode.Left then
@@ -3267,6 +3267,9 @@ do
 			Reanimate.LocalTransparencyModifier = math.min(1, Reanimate.LocalTransparencyModifier + dt * 3)
 		else
 			Reanimate.LocalTransparencyModifier = math.max(0, Reanimate.LocalTransparencyModifier - dt * 3)
+		end
+		if not Reanimate.ShiftlockEnabled and Reanimate.Shiftlocked then
+			Reanimate.Shiftlocked = false
 		end
 		if Reanimate.Character then
 			local targetMouseBehavior = Enum.MouseBehavior.Default
