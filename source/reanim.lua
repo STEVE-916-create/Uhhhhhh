@@ -3259,10 +3259,10 @@ do
 	end)
 	RunService:BindToRenderStep("Uhhhhhh_Camera", Enum.RenderPriority.Camera.Value + 1, function(dt)
 		if self.Inputs.KB.Left then
-			self:OnInput(Vector2.new(math.rad(-120) * dt, 0))
+			self:OnPanInput(Vector2.new(math.rad(-120) * dt, 0), true)
 		end
 		if self.Inputs.KB.Right then
-			self:OnInput(Vector2.new(math.rad(120) * dt, 0))
+			self:OnPanInput(Vector2.new(math.rad(120) * dt, 0), true)
 		end
 		if self:IsFirstPerson() then
 			Reanimate.LocalTransparencyModifier = math.min(1, Reanimate.LocalTransparencyModifier + dt * 3)
