@@ -6410,7 +6410,7 @@ do
 				HoldingCtrl.Value = false
 			end
 		end
-		if _lastclick and _lastclick == input then
+		if _lastclick and _lastclick == input and not _lastclickgpe then
 			if os.clock() - _lastclicktick < 0.3 and (input.Position - _lastclickpos).Magnitude < 10 then
 				if Reanimate.CtrlClick and HoldingCtrl.Value then
 					if Maus.Target and Maus.Target.Parent then
@@ -6418,7 +6418,7 @@ do
 						return
 					end
 				end
-				if Reanimate.ClickFling and not _lastclickgpe then
+				if Reanimate.ClickFling then
 					if Maus.Target and Maus.Target.Parent then 
 						local target = Maus.Target.Parent
 						if target:IsA("Accessory") then
