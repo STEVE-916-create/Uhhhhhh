@@ -3064,6 +3064,7 @@ local Reanimate = {
 		OnReset = function(self)
 			self.Zoom = (self.Focus.Position - self.CFrame.Position).Magnitude
 			self._Zoom = self.Zoom
+			self.Inputs:Reset()
 		end,
 		OnPanInput = function(self, vec, accum)
 			if accum then
