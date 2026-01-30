@@ -3165,9 +3165,8 @@ do
 	UserInputService.InputChanged:Connect(function(input, gpe)
 		if GuiService.MenuIsOpen then return end
 		if input.UserInputType == Enum.UserInputType.MouseMovement then
-			local delta = input.Delta
 			if self:IsMousePanning() then
-				self:OnPanInput(delta * Vector2.new(1, 0.77) * math.rad(0.5), false)
+				self:OnPanInput(Vector2.new(input.Delta.X, input.Delta.Y) * Vector2.new(1, 0.77) * math.rad(0.5), false)
 			end
 		end
 		if input.UserInputType == Enum.UserInputType.MouseWheel then
