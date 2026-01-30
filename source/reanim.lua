@@ -3171,7 +3171,7 @@ do
 			end
 		end
 		if input.UserInputType == Enum.UserInputType.MouseWheel then
-			if gpe then return end
+			if gpe and not self:IsMousePanning() then return end
 			local zoom = math.clamp(-input.Position.Z, -1, 1)
 			self:OnZoomInput(zoom)
 		end
