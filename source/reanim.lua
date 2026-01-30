@@ -3271,6 +3271,21 @@ do
 			Reanimate.LocalTransparencyModifier = math.max(0, Reanimate.LocalTransparencyModifier - dt * 3)
 		end
 		if Reanimate.Character then
+			local targetMouseBehavior = Enum.MouseBehavior.Default
+			if self:IsMousePanning() then
+				if self:IsMouseLocked() then
+					if UserInputService.TouchEnabled then
+						targetMouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+					else
+						targetMouseBehavior = Enum.MouseBehavior.LockCenter
+					end
+				else
+					targetMouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+				end
+			end
+			if UserInputService.MouseBehavior ~= targetMouseBehavior then
+				UserInputService.MouseBehavior = targetMouseBehavior
+			end
 			if GameSettings.RotationType ~= Enum.RotationType.MovementRelative then
 				GameSettings.RotationType = Enum.RotationType.MovementRelative
 			end
@@ -6366,26 +6381,27 @@ do
 	local HoldingCtrl = UI.CreateSwitch(MainPage, "Ctrl Key Held", false)
 	local _lastclicktick = 0
 	local _lastclickpos = Vector3.zero
+	local _lastclick = nil
 	UserInputService.InputBegan:Connect(function(input, guiprocessed)
-		if guiprocessed then return end
 		if input.UserInputType == Enum.UserInputType.Keyboard then
 			if input.KeyCode == Enum.KeyCode.LeftControl then
 				HoldingCtrl.Value = true
 			end
 		end
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			if guiprocessed then return end
+			_lastclick = input
 			_lastclicktick = os.clock()
 			_lastclickpos = input.Position
 		end
 	end)
 	UserInputService.InputEnded:Connect(function(input, guiprocessed)
-		if guiprocessed then return end
 		if input.UserInputType == Enum.UserInputType.Keyboard then
 			if input.KeyCode == Enum.KeyCode.LeftControl then
 				HoldingCtrl.Value = false
 			end
 		end
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		if _lastclick and _lastclick == input then
 			if os.clock() - _lastclicktick < 0.3 and (input.Position - _lastclickpos).Magnitude < 10 then
 				if Reanimate.CtrlClick and HoldingCtrl.Value then
 					if Maus.Target and Maus.Target.Parent then
