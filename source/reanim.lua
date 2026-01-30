@@ -3244,8 +3244,8 @@ do
 	local MobileShiftlock = Instance.new("ImageButton")
 	MobileShiftlock.Parent = SCREENGUI
 	MobileShiftlock.BackgroundTransparency = 1
-	MobileShiftlock.Position = UDim2.new(1, -50, 1, -130)
-	MobileShiftlock.Size = UDim2.new(0, 30, 0, 30)
+	MobileShiftlock.Position = UDim2.new(1, -190, 1, -60)
+	MobileShiftlock.Size = UDim2.new(0, 40, 0, 40)
 	MobileShiftlock.Image = states[false]
 	local state = false
 	AddToRenderStep(function()
@@ -6296,6 +6296,10 @@ do
 	UI.CreateSwitch(MainPage, "Smooth Camera", Reanimate.SmoothCam).Changed:Connect(function(val)
 		Reanimate.SmoothCam = val
 		SaveData.NoSmoothCam = not val
+	end)
+	UI.CreateSwitch(MainPage, "Allow Shiftlock", Reanimate.ShiftlockEnabled).Changed:Connect(function(val)
+		Reanimate.ShiftlockEnabled = val
+		SaveData.ShiftlockDisabled = not val
 	end)
 	UI.CreateSwitch(MainPage, "Can Sit on Seats", Reanimate.SeatSit).Changed:Connect(function(val)
 		Reanimate.SeatSit = val
