@@ -3065,14 +3065,14 @@ local Reanimate = {
 			self.Zoom = (self.Focus.Position - self.CFrame.Position).Magnitude
 			self._Zoom = self.Zoom
 		end,
-		OnPanInput(self, vec, accum)
+		OnPanInput = function(self, vec, accum)
 			if accum then
 				self.Input += Vector3.new(vec.X, vec.Y, 0)
 			else
 				self.Input = Vector3.new(vec.X, vec.Y, self.Input)
 			end
 		end,
-		OnZoomInput(self, zoom)
+		OnZoomInput = function(self, zoom)
 			self.Input += Vector3.new(0, 0, zoom)
 		end,
 		Inputs = {
