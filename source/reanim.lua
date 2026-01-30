@@ -6381,19 +6381,53 @@ do
 		Reanimate.ClickFling = val
 		SaveData.ClickFlingEnabled = val
 	end)
-	UI.CreateSwitch(MainPage, "Ctrl+Click Teleport", Reanimate.CtrlClick).Changed:Connect(function(val)
+	UI.CreateSwitch(MainPage, "Key+Click Teleport", Reanimate.CtrlClick).Changed:Connect(function(val)
 		Reanimate.CtrlClick = val
 		SaveData.CtrlClickEnabled = val
 	end)
+	local selectedkey = Enum.KeyCode.LeftControl
+	SaveData.CtrlClickKey = SaveData.CtrlClickKey or 1
+	local function updatekey()
+		local val = SaveData.CtrlClickKey
+		if val == 1 then
+			selectedkey = Enum.KeyCode.LeftControl
+		end
+		if val == 2 then
+			selectedkey = Enum.KeyCode.RightBracket
+		end
+		if val == 3 then
+			selectedkey = Enum.KeyCode.Tab
+		end
+		if val == 4 then
+			selectedkey = Enum.KeyCode.Z
+		end
+		if val == 5 then
+			selectedkey = Enum.KeyCode.X
+		end
+		if val == 6 then
+			selectedkey = Enum.KeyCode.F
+		end
+		if val == 7 then
+			selectedkey = Enum.KeyCode.T
+		end
+	end
+	updatekey()
+	UI.CreateDropdown(MainPage, "TP Key", {
+		"Left Ctrl (default)", "inno's pick (']')", "Tab (idk)",
+		"Z", "X (i like this one on pc)", "F", "T",
+	}, SaveData.CtrlClickKey).Changed:Connect(function(val)
+		SaveData.CtrlClickKey = val
+		updatekey()
+	end)
 	local Maus = Player:GetMouse()
-	local HoldingCtrl = UI.CreateSwitch(MainPage, "Ctrl Key Held", false)
+	local HoldingCtrl = UI.CreateSwitch(MainPage, "TP Key Held", false)
 	local _lastclick = nil
 	local _lastclickgpe = false
 	local _lastclicktick = 0
 	local _lastclickpos = Vector3.zero
 	UserInputService.InputBegan:Connect(function(input, guiprocessed)
 		if input.UserInputType == Enum.UserInputType.Keyboard then
-			if input.KeyCode == Enum.KeyCode.LeftControl then
+			if input.KeyCode == selectedkey then
 				HoldingCtrl.Value = true
 			end
 		end
@@ -6406,7 +6440,7 @@ do
 	end)
 	UserInputService.InputEnded:Connect(function(input, guiprocessed)
 		if input.UserInputType == Enum.UserInputType.Keyboard then
-			if input.KeyCode == Enum.KeyCode.LeftControl then
+			if input.KeyCode == selectedkey then
 				HoldingCtrl.Value = false
 			end
 		end
