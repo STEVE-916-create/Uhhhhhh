@@ -3065,16 +3065,15 @@ local Reanimate = {
 			self.Zoom = (self.Focus.Position - self.CFrame.Position).Magnitude
 			self._Zoom = self.Zoom
 		end,
-		OnInput = function(self, vec)
-			if typeof(vec) == "Vector2" then
+		OnPanInput(self, vec, accum)
+			if accum then
 				self.Input += Vector3.new(vec.X, vec.Y, 0)
-				return
+			else
+				self.Input = Vector3.new(vec.X, vec.Y, self.Input)
 			end
-			if typeof(vec) == "number" then
-				self.Input += Vector3.new(0, 0, vec)
-				return
-			end
-			self.Input += vec
+		end,
+		OnZoomInput(self, zoom)
+			self.Input += Vector3.new(0, 0, zoom)
 		end,
 		Inputs = {
 			KB = {
@@ -3168,13 +3167,13 @@ do
 		if input.UserInputType == Enum.UserInputType.MouseMovement then
 			local delta = input.Delta
 			if self:IsMousePanning() then
-				self:OnInput(delta * Vector2.new(1, 0.77) * math.rad(0.5))
+				self:OnPanInput(delta * Vector2.new(1, 0.77) * math.rad(0.5), false)
 			end
 		end
 		if input.UserInputType == Enum.UserInputType.MouseWheel then
 			if gpe then return end
 			local zoom = math.clamp(-input.Position.Z, -1, 1)
-			self:OnInput(zoom)
+			self:OnZoomInput(zoom)
 		end
 		if input.UserInputType == Enum.UserInputType.Touch then
 			if self.Inputs.TC.DJ == input then
@@ -3186,14 +3185,14 @@ do
 			end
 			if #touches == 1 then
 				if touches[1] == input then
-					self:OnInput(Vector2.new(input.Delta.X, input.Delta.Y) * Vector2.new(1, 0.66) * math.rad(1))
+					self:OnPanInput(Vector2.new(input.Delta.X, input.Delta.Y) * Vector2.new(1, 0.66) * math.rad(1), true)
 				end
 			end
 			if #touches == 2 then
 				local pinch = (touches[1].Position - touches[2].Position).Magnitude
 				if self.Inputs.TC.LP then
 					local zoom = (self.Inputs.TC.LP - pinch) * 0.04
-					self:OnInput(zoom)
+					self:OnZoomInput(zoom)
 				end
 				self.Inputs.TC.LP = pinch
 			else
@@ -3226,8 +3225,8 @@ do
 	end)
 	UserInputService.PointerAction:Connect(function(wheel, pan, pinch, gpe)
 		if not gpe then
-			self:OnInput(pan * Vector2.new(1, 0.77) * math.rad(7))
-			self:OnInput(-wheel - pinch)
+			self:OnPanInput(pan * Vector2.new(1, 0.77) * math.rad(7), false)
+			self:OnZoomInput(-wheel - pinch)
 		end
 	end)
 	local function resetInputDevices()
