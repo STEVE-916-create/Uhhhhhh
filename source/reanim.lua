@@ -3252,8 +3252,8 @@ do
 		if state ~= Reanimate.Shiftlocked then
 			state = Reanimate.Shiftlocked
 			MobileShiftlock.Image = states[state]
-			MobileShiftlock.Visible = not not (Reanimate.Character and UserInputService.TouchEnabled)
 		end
+		MobileShiftlock.Visible = not not (Reanimate.Character and UserInputService.TouchEnabled)
 	end)
 	MobileShiftlock.Activated:Connect(function()
 		Reanimate.Shiftlocked = Reanimate.ShiftlockEnabled and not Reanimate.Shiftlocked
