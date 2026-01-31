@@ -4505,6 +4505,14 @@ function HatReanimator.Start()
 					mapdata.Scale = m1 / m2
 				end
 			end
+			-- dont map explicitly overriden hats
+			for _,data in HatReanimator.HatCFrameOverride do
+				if data.MeshId and data.TextureId then
+					if AssetIdMatch(mesh, data.MeshId) and AssetIdMatch(tex, data.TextureId) then
+						return mapdata, "Unknown", 4
+					end
+				end
+			end
 			for _,data in HatKnownAccessoriesDatabase do
 				if AssetIdMatch(mesh, data.MeshId) and AssetIdMatch(tex, data.TextureId) then
 					mapdata.C0 = data.C0
