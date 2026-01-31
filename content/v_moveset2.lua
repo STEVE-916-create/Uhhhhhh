@@ -4095,10 +4095,9 @@ AddModule(function()
 				local w = string.split(v, ":")
 				if #w == 13 then
 					local ref = {
-						MeshId = w[1], TextureId = "",
+						MeshId = w[1]:gsub("^%s*(.-)%s*$", "%1"), TextureId = w[2]:gsub("^%s*(.-)%s*$", "%1"),
 						C0 = CFrame.identity,
 						C1 = CFrame.new(
-							tonumber(w[2]),
 							tonumber(w[3]),
 							tonumber(w[4]),
 							tonumber(w[5]),
@@ -4109,7 +4108,8 @@ AddModule(function()
 							tonumber(w[10]),
 							tonumber(w[11]),
 							tonumber(w[12]),
-							tonumber(w[13])
+							tonumber(w[13]),
+							tonumber(w[14])
 						)
 					}
 					table.insert(HatReanimator.HatCFrameOverride, ref)
