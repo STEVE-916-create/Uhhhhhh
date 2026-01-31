@@ -3863,19 +3863,21 @@ end)
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
-	m.Name = "Sin Dragon (TESTING)"
+	m.Name = "Sin Dragon"
 	m.InternalName = "SINEWAVETREXDINOSAR"
-	m.Description = "no hat support yet, just the rig for now\nM1 - Punches\nZ - Barrage (cancellable)\nX - Smash Down!\nC - Firin ma lazar (cancellable)\nV - Punch, rage and throw air\n    (cant grab lol)\nB - \"Yummy\"\nG - Roarrrr!!"
-	m.Assets = {}
+	m.Description = "sin dragon if he was CHINESE\nnow in the latest color: MURASAKI!!\nor, you can change the color yourself!\nM1 - Punches\nZ - Barrage (cancellable)\nX - Smash Down!\nC - Firin ma lazar (cancellable)\nG - Roarrrr!!"
+	m.Assets = {"SinDragonTheme.mp3"}
 
 	m.Notifications = true
 	m.Sounds = true
 	m.ShakeValue = 1
 	m.SkipIntro = false
+	m.ClientsideDragon = true
 	m.HitboxDebug = false
 	m.NoCooldown = false
 	m.BlastCharge = 150
 	m.BlastDuration = 200
+	m.RoarDuration = 300
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
@@ -3890,6 +3892,9 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Skip Intro", m.SkipIntro).Changed:Connect(function(val)
 			m.SkipIntro = val
 		end)
+		Util_CreateSwitch(parent, "Clientside Dragon Model", m.ClientsideDragon).Changed:Connect(function(val)
+			m.ClientsideDragon = val
+		end)
 		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
 			m.HitboxDebug = val
 		end)
@@ -3903,8 +3908,11 @@ AddModule(function()
 		Util_CreateSlider(parent, "Laser Charge", m.BlastCharge, 10, 150, 1).Changed:Connect(function(val)
 			m.BlastCharge = val
 		end)
-		Util_CreateSlider(parent, "Laser Duration", m.BlastDuration, 10, 150, 1).Changed:Connect(function(val)
+		Util_CreateSlider(parent, "Laser Duration", m.BlastDuration, 30, 300, 1).Changed:Connect(function(val)
 			m.BlastDuration = val
+		end)
+		Util_CreateSlider(parent, "Roar Duration", m.RoarDuration, 60, 600, 1).Changed:Connect(function(val)
+			m.RoarDuration = val
 		end)
 	end
 	m.LoadConfig = function(save: any)
@@ -3912,10 +3920,12 @@ AddModule(function()
 		m.Sounds = not save.Muted
 		m.ShakeValue = save.ShakeValue or m.ShakeValue
 		m.SkipIntro = not not save.SkipIntro
+		m.ClientsideDragon = not save.NoClientsideDragon
 		m.HitboxDebug = not not save.HitboxDebug
 		m.NoCooldown = not not save.NoCooldown
 		m.BlastCharge = save.BlastCharge or m.BlastCharge
 		m.BlastDuration = save.BlastDuration or m.BlastDuration
+		m.RoarDuration = save.RoarDuration or m.RoarDuration
 	end
 	m.SaveConfig = function()
 		return {
@@ -3923,10 +3933,12 @@ AddModule(function()
 			Muted = not m.Sounds,
 			ShakeValue = m.ShakeValue,
 			SkipIntro = m.SkipIntro,
+			NoClientsideDragon = not m.ClientsideDragon,
 			HitboxDebug = m.HitboxDebug,
 			NoCooldown = m.NoCooldown,
 			BlastCharge = m.BlastCharge,
 			BlastDuration = m.BlastDuration,
+			RoarDuration = m.RoarDuration,
 		}
 	end
 
@@ -3963,7 +3975,7 @@ AddModule(function()
 		end
 		dialog = Instance.new("BillboardGui", torso)
 		dialog.Size = UDim2.new(50 * scale, 0, 2 * scale, 0)
-		dialog.StudsOffset = Vector3.new(0, 5 * scale, -5 * scale)
+		dialog.StudsOffset = Vector3.new(0, 5 * scale, 5 * scale)
 		dialog.Adornee = torso
 		dialog.Name = "NOTIFICATION"
 		local text = Instance.new("TextLabel", dialog)
@@ -3974,8 +3986,8 @@ AddModule(function()
 		text.TextScaled = true
 		text.TextStrokeTransparency = 0
 		text.Size = UDim2.new(1, 0, 1, 0)
-		text.TextColor3 = Color3.new(0, 0, 0)
-		text.TextStrokeColor3 = maincolor
+		text.TextColor3 = maincolor
+		text.TextStrokeColor3 = Color3.new(0, 0, 0)
 		task.spawn(function()
 			local function update()
 				text.Position = UDim2.new(math.random() * 0.05 * (2 / 50), 0, 0, math.random() * 0.05)
@@ -4013,8 +4025,8 @@ AddModule(function()
 			dialog:Destroy()
 		end)
 	end
-	local function randomdialog(arr)
-		notify(arr[math.random(1, #arr)])
+	local function randomdialog(arr, cps)
+		notify(arr[math.random(1, #arr)], cps)
 	end
 	local function CreateSound(id, pitch, extra)
 		if not m.Sounds then return end
@@ -4062,6 +4074,7 @@ AddModule(function()
 	local state = 0
 	local statetime = 0
 	local statem1 = 0
+	local lastfx = 0
 	local animationinstant = false
 	local ROOTC0 = CFrame.Angles(-1.57, 0, 3.14)
 	local NECKC0 = CFrame.new(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
@@ -4079,12 +4092,13 @@ AddModule(function()
 		table.clear(tbl)
 		for _,v in string.split(mlist, "|") do
 			if #v > 0 then
-				local w = string.split(v, ",")
-				if #w == 14 then
+				local w = string.split(v, ":")
+				if #w == 13 then
 					local ref = {
-						MeshId = w[1], TextureId = w[2],
+						MeshId = w[1], TextureId = "",
 						C0 = CFrame.identity,
 						C1 = CFrame.new(
+							tonumber(w[2]),
 							tonumber(w[3]),
 							tonumber(w[4]),
 							tonumber(w[5]),
@@ -4095,8 +4109,7 @@ AddModule(function()
 							tonumber(w[10]),
 							tonumber(w[11]),
 							tonumber(w[12]),
-							tonumber(w[13]),
-							tonumber(w[14])
+							tonumber(w[13])
 						)
 					}
 					table.insert(HatReanimator.HatCFrameOverride, ref)
@@ -4208,7 +4221,7 @@ AddModule(function()
 		Debris:AddItem(p, ticks / 60)
 	end
 
-	local function Attack(position, radius)
+	local function Attack(position, radius, ispunch)
 		if m.HitboxDebug then
 			local hitvis = Instance.new("Part")
 			hitvis.Name = RandomString()
@@ -4225,16 +4238,26 @@ AddModule(function()
 			hitvis.Parent = workspace
 			Debris:AddItem(hitvis, 1)
 		end
+		local hithrp = {}
 		local parts = workspace:GetPartBoundsInRadius(position, radius)
 		for _,part in parts do
 			if part.Parent then
 				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
 				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
 					if ReanimateFling(hum.Parent) then
+						hithrp[hum.RootPart] = true
 						if math.random() < 0.1 then
 							notify(hum.Parent.Name .. " just tried to mess with my remotes.")
 						end
 					end
+				end
+			end
+		end
+		if ispunch then
+			for root,exist in hithrp do
+				if exist then
+					CreateSound(root, 386946017, 0.8 + math.random() * 0.4)
+					MagicCircle("Alder", root.Position, Vector3.one, Vector3.one, 0.05)
 				end
 			end
 		end
@@ -4255,7 +4278,7 @@ AddModule(function()
 				x.CFrame = CFrame.lookAt(mid, new) * CFrame.Angles(math.pi / 2, 0, 0)
 				Instance.new("BlockMesh", x).Scale = Vector3.new(1, 1, 1)
 				local m = Instance.new("CylinderMesh", x)
-				m.Scale = Vector3.new(20, 1, 20)
+				m.Scale = Vector3.new(20 * scale, 1, 20 * scale)
 				old = new
 				task.spawn(function()
 					local dur = 0.16
@@ -4266,17 +4289,18 @@ AddModule(function()
 						local a = (os.clock() - s) / dur
 						x.Transparency = a
 						local b = 1 - a * a
-						m.Scale = Vector3.new(20 * b, 1, 20 * b)
+						m.Scale = Vector3.new(20 * scale * b, 1, 20 * scale * b)
 					end
 					x:Destroy()
 				end)
 			end
-			Attack(new, 3)
+			Attack(new, 3 * scale, true)
 		end
 	end
 	local function AttackOne()
 		if attacking and not m.NoCooldown then return end
 		if not root or not hum or not torso then return end
+		if isdancing then return end
 		local rootu = root
 		attacking = true
 		local typ = statem1
@@ -4382,13 +4406,12 @@ AddModule(function()
 		end
 		if attacking and not m.NoCooldown then return end
 		if not root or not hum or not torso then return end
+		if isdancing then return end
 		local rootu = root
 		attacking = true
 		barraging = true
-		randomdialog({
-			"SUNLIGHT YELLO OVRDRIV", "MUDAMUDAMUDAMUDAMUDAMUDAMUDAA!",
-		})
-		CreateSound(159882584)
+		notify("SUNLIGHTO YELLO OVERDRIVUHHHHHH")
+		CreateSound(624164065)
 		hum.WalkSpeed = 16 * scale
 		task.spawn(function()
 			task.spawn(PunchingPart, insts.ClawLPart, 0.2)
@@ -4428,6 +4451,7 @@ AddModule(function()
 				drrite = CFrame.new(math.random(-10, 10), math.random(0, 4), bar * 20)
 				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
 			end
+			CreateSound(159882584)
 			for _=1, 40 do
 				task.spawn(PunchingPart, insts.ClawLPart, 0.08)
 				task.spawn(PunchingPart, insts.ClawRPart, 0.08)
@@ -4453,6 +4477,7 @@ AddModule(function()
 	local function SmashDown()
 		if attacking and not m.NoCooldown then return end
 		if not root or not hum or not torso then return end
+		if isdancing then return end
 		local rootu = root
 		attacking = true
 		randomdialog({
@@ -4501,7 +4526,7 @@ AddModule(function()
 				ref.CFrame = looky * CFrame.new(0, 0, -10 * i)
 				BlastEffect("White", ref.Position, Vector3.new(1, 0.2, 1), Vector3.new(1, 0, 1))
 				BlastEffect("White", ref.Position, Vector3.new(5, 1, 0.5), Vector3.new(0.1, 2, 0.1))
-				Attack(ref.Position, 8)
+				Attack(ref.Position, 8, true)
 				CreateSound(ref, 178452221)
 				CreateSound(ref, 192410084)
 				Debris:AddItem(ref, 2)
@@ -4517,6 +4542,7 @@ AddModule(function()
 		end
 		if attacking and not m.NoCooldown then return end
 		if not root or not hum or not torso then return end
+		if isdancing then return end
 		local rootu = root
 		attacking = true
 		firingmalazar = true
@@ -4528,8 +4554,8 @@ AddModule(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
 				rt = ROOTC0
 				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
-				rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(-30, 0, -20)
-				lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(-30, 0, 20)
+				rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(70))
+				lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(-70))
 				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(50), 0, 0)
@@ -4557,7 +4583,7 @@ AddModule(function()
 				local weld = Instance.new("Weld", blast)
 				weld.Part0 = insts.HeadPart
 				weld.Part1 = blast
-				weld.C0 = CFrame.new(-8, 0, 0)
+				weld.C0 = CFrame.new(-8 * scale, 0, 0)
 				weld.C1 = CFrame.fromEulerAnglesXYZ(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10))
 				local m = Instance.new("BlockMesh", blast)
 				m.Scale = Vector3.new(6, 6, 6)
@@ -4585,8 +4611,8 @@ AddModule(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
 				rt = ROOTC0
 				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
-				rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(-30, 0, -20)
-				lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(-30, 0, 20)
+				rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(70))
+				lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(-70))
 				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(50), 0, 0)
@@ -4596,7 +4622,10 @@ AddModule(function()
 			end
 			local ticks = os.clock() + m.BlastCharge / 60
 			while os.clock() < ticks and firingmalazar do
-				MagicRing("Alder", insts.HeadPart.CFrame * Vector3.new(-8, 0, 0), Vector3.new(20, 20, 2), Vector3.new(-1, -1, 0))
+				if os.clock() > lastfx then
+					lastfx = os.clock() + 1 / 600
+					MagicRing("Alder", insts.HeadPart.CFrame * Vector3.new(-8 * scale, 0, 0), Vector3.new(20, 20, 2), Vector3.new(-1, -1, 0))
+				end
 				task.wait()
 				if not rootu:IsDescendantOf(workspace) then
 					firingmalazar = false
@@ -4617,8 +4646,8 @@ AddModule(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
 				rt = ROOTC0
 				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
-				rst = CFrame.new(1.5, 1, 0) * CFrame.Angles(math.rad(180), 0, 0)
-				lst = CFrame.new(-1.5, 1, 0) * CFrame.Angles(math.rad(180), 0, 0)
+				rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(70))
+				lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(-70))
 				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				drhead = CFrame.new(math.random(-1, 1), math.random(5, 7), math.random(6, 8)) * CFrame.Angles(math.rad(-5), 0, 0)
@@ -4632,9 +4661,9 @@ AddModule(function()
 				return
 			end
 			sound:Destroy()
-			CreateSound(insts.HeadPart, 162246701)
+			CreateSound(insts.HeadPart, 1906350651, 0.75)
 			sound = Instance.new("Sound", insts.HeadPart)
-			sound.SoundId = "rbxassetid://162246683"
+			sound.SoundId = "rbxassetid://122892602795552"
 			sound.Looped = true
 			sound.Volume = 1
 			sound:Play()
@@ -4651,12 +4680,15 @@ AddModule(function()
 			blast.Parent = workspace
 			ticks = os.clock() + m.BlastDuration / 60
 			while os.clock() < ticks and firingmalazar do
-				local hole = insts.HeadPart.CFrame * Vector3.new(-8, 0, 0)
+				local hole = insts.HeadPart.CFrame * Vector3.new(-8 * scale, 0, 0)
 				local hit = MouseHit()
-				Attack(hit, 10)
 				blast.Size = Vector3.new(1, 1, (hit - hole).Magnitude)
 				blast.CFrame = CFrame.lookAt((hit + hole) / 2, hit)
-				MagicBlock("Alder", hit, Vector3.one, Vector3.one * 6, 0.1)
+				if os.clock() > lastfx then
+					lastfx = os.clock() + 1 / 60
+					MagicBlock("Alder", hit, Vector3.one, Vector3.one * 6, 0.1)
+					Attack(hit, 10, false)
+				end
 				task.wait()
 				if not rootu:IsDescendantOf(workspace) then
 					firingmalazar = false
@@ -4681,6 +4713,65 @@ AddModule(function()
 			hum.WalkSpeed = 50 * scale
 		end)
 	end
+	local function RawrX3()
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		if isdancing then return end
+		local rootu = root
+		attacking = true
+		randomdialog({
+			"ROARRRRRRR", "RAAAAHHHHHHHH",
+		})
+		hum.WalkSpeed = 16
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+				rt = ROOTC0
+				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(70))
+				lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(-70))
+				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(50), 0, 0)
+				drleft = CFrame.new(4, 0, 0) * CFrame.Angles(0, math.rad(-30), 0)
+				drrite = CFrame.new(-4, 0, 0) * CFrame.Angles(0, math.rad(30), 0)
+				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+			end
+			task.wait(0.08)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationinstant = true
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
+				rt = ROOTC0
+				nt = NECKC0 * CFrame.Angles(math.rad(20), 0, 0)
+				rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(70))
+				lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(-70))
+				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(50), 0, 0)
+				drleft = CFrame.new(4, 0, 0) * CFrame.Angles(0, math.rad(-30), 0)
+				drrite = CFrame.new(-4, 0, 0) * CFrame.Angles(0, math.rad(30), 0)
+				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
+			end
+			CreateSound(150829983, 0.9)
+			local ticks = os.clock() + m.RoarDuration / 60
+			while os.clock() < ticks do
+				if os.clock() > lastfx then
+					lastfx = os.clock() + 1 / 60
+					BlastEffect("White", root.CFrame * Vector3.new(0, -2 * scale, 0), Vector3.new(1, 0.2, 1), Vector3.new(2, 0, 2))
+					Attack(root.Position, 30, false)
+				end
+				task.wait()
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+			end
+			animationinstant = false
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = 50 * scale
+		end)
+	end
 
 	m.Init = function(figure)
 		start = os.clock()
@@ -4694,6 +4785,7 @@ AddModule(function()
 		statem1 = 0
 		animationinstant = false
 		animationOverride = nil
+		SetOverrideMovesetMusic(AssetGetContentId("SinDragonTheme.mp3"), "Radiarc - Chaos Arranged", 1)
 		scale = figure:GetScale()
 		hum = figure:FindFirstChild("Humanoid")
 		root = figure:FindFirstChild("HumanoidRootPart")
@@ -4745,7 +4837,14 @@ AddModule(function()
 			end
 		end, true, Enum.KeyCode.C)
 		ContextActionService:SetTitle("Uhhhhhh_SDLazer", "C")
-		ContextActionService:SetPosition("Uhhhhhh_SDLazer", UDim2.new(1, -280, 1, -130))
+		ContextActionService:SetPosition("Uhhhhhh_SDLazer", UDim2.new(1, -130, 1, -180))
+		ContextActionService:BindAction("Uhhhhhh_SDRawrr", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				RawrX3()
+			end
+		end, true, Enum.KeyCode.G)
+		ContextActionService:SetTitle("Uhhhhhh_SDRawrr", "G")
+		ContextActionService:SetPosition("Uhhhhhh_SDRawrr", UDim2.new(1, -180, 1, -180))
 		if chatconn then
 			chatconn:Disconnect()
 		end
@@ -4766,38 +4865,41 @@ AddModule(function()
 		insts.ClawL = CreateStuffUtil("Model", figure, "sin dragon claw L")
 		insts.ClawR = CreateStuffUtil("Model", figure, "sin dragon claw R")
 		insts.Head = CreateStuffUtil("Model", figure, "sin dragon head")
-		insts.ClawLPart = CreatePart(1, "Really Black", Vector3.new(4, 4, 1))
+		insts.ClawLPart = CreatePart(1, "Really Black", Vector3.new(2, 2, 1))
 		insts.ClawLPart.Name = "Handle"
 		insts.ClawLPart.Anchored = false
-		insts.ClawRPart = CreatePart(1, "Really Black", Vector3.new(4, 4, 1))
+		insts.ClawRPart = CreatePart(1, "Really Black", Vector3.new(2, 2, 1))
 		insts.ClawRPart.Name = "Handle"
 		insts.ClawRPart.Anchored = false
-		insts.HeadPart = CreatePart(1, "Really Black", Vector3.new(1, 6, 6))
+		insts.HeadPart = CreatePart(1, "Really Black", Vector3.new(1, 3, 3))
 		insts.HeadPart.Name = "Handle"
 		insts.HeadPart.Anchored = false
 		insts.ClawLPart.Parent = insts.ClawL
 		insts.ClawRPart.Parent = insts.ClawR
 		insts.HeadPart.Parent = insts.Head
+		insts.ClawLModel = CreateStuffUtil("Model", figure, "client model")
+		insts.ClawRModel = CreateStuffUtil("Model", figure, "client model")
+		insts.HeadModel = CreateStuffUtil("Model", figure, "client model")
 
-		local lol = CreateStuffUtil("Part", insts.ClawL, "Claw", {BrickColor = BrickColor.new("Really black"), Size = Vector3.new(5, 7, 5), CanCollide = false, Massless = true})
+		local lol = CreateStuffUtil("Part", insts.ClawLModel, "Claw", {BrickColor = BrickColor.new("Really black"), Size = Vector3.new(5, 7, 5), CanCollide = false, Massless = true})
 		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Offset = Vector3.new(0, 0, -1), Scale = Vector3.new(25, 25, 25), MeshId = "rbxassetid://92052865", MeshType = Enum.MeshType.FileMesh})
 		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.ClawLPart, C0 = CFrame.new(0, 0, 0, 0, -1, 0, 0, 0, 1, -1, 0, 0), C1 = CFrame.new(0, 0, 3, 1, 0, 0, 0, -1, 0, 0, 0, -1)})
-		lol = CreateStuffUtil("Part", insts.ClawR, "Claw", {BrickColor = BrickColor.new("Really black"), Size = Vector3.new(5, 7, 5), CanCollide = false, Massless = true})
+		lol = CreateStuffUtil("Part", insts.ClawRModel, "Claw", {BrickColor = BrickColor.new("Really black"), Size = Vector3.new(5, 7, 5), CanCollide = false, Massless = true})
 		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Offset = Vector3.new(0, 0, -1), Scale = Vector3.new(25, 25, 25), MeshId = "rbxassetid://92053026", MeshType = Enum.MeshType.FileMesh})
 		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.ClawRPart, C0 = CFrame.new(0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0), C1 = CFrame.new(0, 0, 3, 1, 0, 0, 0, -1, 0, 0, 0, -1)})
-		lol = CreateStuffUtil("Part", insts.Head, "DragonHead", {BrickColor = BrickColor.new("Really black"), Material = Enum.Material.SmoothPlastic, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		lol = CreateStuffUtil("Part", insts.HeadModel, "DragonHead", {BrickColor = BrickColor.new("Really black"), Material = Enum.Material.SmoothPlastic, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
 		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(5, 5, 5), MeshId = "rbxassetid://420164161", MeshType = Enum.MeshType.FileMesh})
 		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4, 0, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
-		lol = CreateStuffUtil("Part", insts.Head, "EyePart", {Color = maincolor, Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		lol = CreateStuffUtil("Part", insts.HeadModel, "EyePart", {Color = maincolor, Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
 		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(1, 1, 2), MeshType = Enum.MeshType.Sphere})
 		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4, 3, 2.5, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
-		lol = CreateStuffUtil("Part", insts.Head, "EyePart", {Color = maincolor, Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		lol = CreateStuffUtil("Part", insts.HeadModel, "EyePart", {Color = maincolor, Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
 		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(1, 1, 2), MeshType = Enum.MeshType.Sphere})
 		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4, 3, -2.5, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
-		lol = CreateStuffUtil("Part", insts.Head, "EyePartBlack", {BrickColor = BrickColor.new("Really black"), Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		lol = CreateStuffUtil("Part", insts.HeadModel, "EyePartBlack", {BrickColor = BrickColor.new("Really black"), Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
 		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(0.9, 0.9, 0.5), MeshType = Enum.MeshType.Sphere})
 		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4.5, 3, 2.5, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
-		lol = CreateStuffUtil("Part", insts.Head, "EyePartBlack", {BrickColor = BrickColor.new("Really black"), Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
+		lol = CreateStuffUtil("Part", insts.HeadModel, "EyePartBlack", {BrickColor = BrickColor.new("Really black"), Material = Enum.Material.Neon, Size = Vector3.new(1, 1, 1), CanCollide = false, Massless = true})
 		CreateStuffUtil("SpecialMesh", lol, "Mesh", {Scale = Vector3.new(0.9, 0.9, 0.5), MeshType = Enum.MeshType.Sphere})
 		CreateStuffUtil("Weld", lol, "Weld", {Part0 = lol, Part1 = insts.HeadPart, C1 = CFrame.new(-4.5, 3, -2.5, 0, 0, 1, 0, 1, 0, -1, 0, 0)})
 
@@ -4819,7 +4921,7 @@ AddModule(function()
 		lol.Parent = insts.ClawLPart
 		lol = smoke:Clone()
 		lol.Parent = insts.ClawRPart
-		lol = smoke:Clone()
+		lol = smoke
 		lol.Parent = insts.HeadPart
 		lol.EmissionDirection = "Right"
 		lol.Rate = 1000
@@ -4904,9 +5006,12 @@ AddModule(function()
 				-- summoning the dragon
 				local o = timingsine - statetime
 				if o >= 30 and o <= 60 then
-					MagicRing("Alder", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.new(60, 60, 6) * scale, Vector3.new(-3, -3, 0) * scale)
-					MagicRing("Alder", root.CFrame * (Vector3.new(-12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
-					MagicRing("Alder", root.CFrame * (Vector3.new(12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
+					if os.clock() > lastfx then
+						lastfx = os.clock() + 1 / 60
+						MagicRing("Alder", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.new(60, 60, 6) * scale, Vector3.new(-3, -3, 0) * scale)
+						MagicRing("Alder", root.CFrame * (Vector3.new(-12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
+						MagicRing("Alder", root.CFrame * (Vector3.new(12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
+					end
 				end
 				if o > 240 then
 					state = 2
@@ -5085,14 +5190,14 @@ AddModule(function()
 			--local nt = CFrame.identity
 			--local rst = CFrame.identity
 			--local lst = CFrame.identity
-			local dscale = 2
+			local dscale = 4
 			local dtorso = CFrame.new(-math.cos(timingsine / 40), 4 - 0.5 * math.cos(timingsine / 20), 6) * ROOTC0 * (rt + rt.Position * 2) * ROOTC0:Inverse()
 			local dhead = dtorso * CFrame.new(0, 2 * dscale, 0) * ROOTC0 * (nt + nt.Position * 2) * ROOTC0:Inverse() * CFrame.new(0, 1 * dscale, 0)
 			local dlarm = dtorso * CFrame.new(-2 * dscale, 1 * dscale, 0) * CFrame.Angles(0, -1.57, 0) * (lst + lst.Position * 2) * CFrame.Angles(0, 1.57, 0) * CFrame.new(-1 * dscale, -1 * dscale, 0)
 			local drarm = dtorso * CFrame.new(2 * dscale, 1 * dscale, 0) * CFrame.Angles(0, 1.57, 0) * (rst + rst.Position * 2) * CFrame.Angles(0, -1.57, 0) * CFrame.new(1 * dscale, -1 * dscale, 0)
-			joints.dh = dhead * CFrame.new(0, 0, 2) * CFrame.Angles(0, -1.57, 0) * OFF_DragonHead
-			joints.dl = dlarm * CFrame.new(3, 0, 0) * CFrame.Angles(1.57, 0, 0) * OFF_DragonClawL
-			joints.dr = drarm * CFrame.new(-3, 0, 0) * CFrame.Angles(1.57, 0, 0) * OFF_DragonClawR
+			joints.dh = dhead * CFrame.new(0, 0, 2 * scale) * CFrame.Angles(0, -1.57, 0) * OFF_DragonHead
+			joints.dl = dlarm * CFrame.new(3 * scale, -1 * scale, 0) * CFrame.Angles(1.57, 0, 0) * OFF_DragonClawL
+			joints.dr = drarm * CFrame.new(-3 * scale, -1 * scale, 0) * CFrame.Angles(1.57, 0, 0) * OFF_DragonClawR
 		end
 		
 		-- apply transforms
@@ -5108,12 +5213,25 @@ AddModule(function()
 		insts.HeadWeld.C0 = joints.dh + joints.dh.Position * (scale - 1)
 		insts.ClawLWeld.C0 = joints.dl + joints.dl.Position * (scale - 1)
 		insts.ClawRWeld.C0 = joints.dr + joints.dr.Position * (scale - 1)
+		
+		-- client model appearance
+		local transp = m.ClientsideDragon and 0 or 1
+		for _,v in insts.ClawLModel:GetChildren() do
+			if v:IsA("BasePart") then v.Transparency = transp end
+		end
+		for _,v in insts.ClawRModel:GetChildren() do
+			if v:IsA("BasePart") then v.Transparency = transp end
+		end
+		for _,v in insts.HeadModel:GetChildren() do
+			if v:IsA("BasePart") then v.Transparency = transp end
+		end
 	end
 	m.Destroy = function(figure: Model?)
 		ContextActionService:UnbindAction("Uhhhhhh_SDPunch")
 		ContextActionService:UnbindAction("Uhhhhhh_SDMudad")
 		ContextActionService:UnbindAction("Uhhhhhh_SDSmash")
 		ContextActionService:UnbindAction("Uhhhhhh_SDLazer")
+		ContextActionService:UnbindAction("Uhhhhhh_SDRawrr")
 		if chatconn then
 			chatconn:Disconnect()
 			chatconn = nil
