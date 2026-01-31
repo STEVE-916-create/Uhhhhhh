@@ -126,7 +126,7 @@ do
 	end
 end
 
-b_getfenv = loadstring("return getfenv")()
+b_getfenv = getfenv -- "loadstring marks the env unsafe"
 
 local Player = Players.LocalPlayer
 
