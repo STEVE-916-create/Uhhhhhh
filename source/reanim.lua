@@ -313,7 +313,7 @@ do
 end
 
 do
-	local CDNVersion = 1
+	local CDNVersion = 2
 	local AllFileNames = {
 		"dm_afterburner.ft2.mp3",
 		"4m_brokenheart.ft2.mp3",
@@ -339,6 +339,7 @@ do
 		"dm_reztro4.ft2.mp3",
 		"dm_robotadventure.ft2.mp3",
 		"dm_unaseraariccione.ft2.mp3",
+		"fr_keygen31.ft2.mp3",
 		"lightinursoul.graphic.png",
 		"letriangul.graphic.png",
 	}
@@ -575,6 +576,7 @@ MusicPlayer.Database = {
 	{"dm_keygen23.ft2.mp3", "Dubmood - Keygen 23"},
 	{"dm_keygen30.ft2.mp3", "Dubmood - Keygen 30"},
 	{"dm_keygen31.ft2.mp3", "Dubmood - Keygen 31"},
+	{"fr_keygen31.ft2.mp3", "Hoster's FR - Alternate Keygen 31"},
 	{"dm_laparade.ft2.mp3", "Dubmood & MBR - La Parade"},
 	{"dm_reztro4.ft2.mp3", "Dubmood - Rez Cracktro #4"},
 	{"dm_unaseraariccione.ft2.mp3", "Dubmood - Una Sera A Riccione"},
@@ -4904,24 +4906,11 @@ function HatReanimator.Start()
 		for _,plr in Players:GetPlayers() do
 			local a, b = pcall(compareinstances, plr, Player)
 			if a and not b then
-				pcall(function()
-					plr.SimulationRadius = 0
-				end)
-				pcall(function()
-					sethiddenproperty(plr, "SimulationRadius", 0)
-				end)
+				pcall(sethiddenproperty, plr, "SimulationRadius", 0)
 			end
 		end
 		local r = #Players:GetPlayers() * 1000
-		pcall(function()
-			Player.SimulationRadius = r
-		end)
-		pcall(function()
-			sethiddenproperty(Player, "SimulationRadius", r)
-		end)
-		pcall(function()
-			replicatesignal(Player.SimulationRadiusChanged, r)
-		end)
+		pcall(sethiddenproperty, Player, "SimulationRadius", r)
 	end
 	local function IsNetworkOwner(part)
 		if isnetworkowner then
