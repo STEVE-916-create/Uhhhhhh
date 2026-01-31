@@ -4087,13 +4087,31 @@ AddModule(function()
 	local OFF_DragonClawR = CFrame.new(6.65693045, 1.66835713, 2.9684639, 0.866025746, 0.129405379, 0.482963592, -3.67555799e-06, -0.965926409, 0.258817136, 0.499999553, -0.224144042, -0.836516559)
 	local OFF_DragonHead = CFrame.new(-2.22326851, -3.5562191, -0.038143158, 0, 0, 1, 0, 1, 0, -1, 0, 0)
 	local footsteps = nil
+	local bullet = {}
+	local bulletstate = {Vector3.zero, Vector3.zero, 0}
+	local gunaura = {}
+	local gunaurastate = {Vector3.zero, 0}
+	local function SetBulletState(hole, target)
+		local dist = (target - hole).Magnitude
+		bulletstate[1] = hole
+		if dist > 256 then
+			bulletstate[2] = hole + (target - hole).Unit * 256
+		else
+			bulletstate[2] = target
+		end
+		bulletstate[3] = os.clock()
+	end
+	local function SetGunauraState(target, ticks)
+		gunaurastate[1] = target
+		gunaurastate[2] = ticks or 3
+	end
 
 	local function createhatmap(mlist, tbl)
 		table.clear(tbl)
 		for _,v in string.split(mlist, "|") do
 			if #v > 0 then
-				local w = string.split(v, ":")
-				if #w == 13 then
+				local w = string.split(v, ",")
+				if #w == 14 then
 					local ref = {
 						MeshId = w[1]:gsub("^%s*(.-)%s*$", "%1"), TextureId = w[2]:gsub("^%s*(.-)%s*$", "%1"),
 						C0 = CFrame.identity,
@@ -4242,12 +4260,14 @@ AddModule(function()
 		local parts = workspace:GetPartBoundsInRadius(position, radius)
 		for _,part in parts do
 			if part.Parent then
-				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
-				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
-					if ReanimateFling(hum.Parent) then
-						hithrp[hum.RootPart] = true
+				local hum2 = part.Parent:FindFirstChildOfClass("Humanoid")
+				if hum2 and hum2.RootPart and not hum2.RootPart:IsGrounded() then
+					if hum2 == hum then continue end
+					if hum2.Parent == Player.Character then continue end
+					hithrp[hum.RootPart] = true
+					if ReanimateFling(hum2.Parent) then
 						if math.random() < 0.1 then
-							notify(hum.Parent.Name .. " just tried to mess with my remotes.")
+							notify(hum2.Parent.Name .. " just tried to mess with my remotes.")
 						end
 					end
 				end
@@ -4530,6 +4550,7 @@ AddModule(function()
 				CreateSound(ref, 178452221)
 				CreateSound(ref, 192410084)
 				Debris:AddItem(ref, 2)
+				SetGunauraState(ref.Position)
 				task.wait(0.08)
 				if not rootu:IsDescendantOf(workspace) then return end
 			end
@@ -4626,6 +4647,7 @@ AddModule(function()
 					lastfx = os.clock() + 1 / 600
 					MagicRing("Alder", insts.HeadPart.CFrame * Vector3.new(-8 * scale, 0, 0), Vector3.new(20, 20, 2), Vector3.new(-1, -1, 0))
 				end
+				SetGunauraState(insts.HeadPart.CFrame * Vector3.new(-8 * scale, 0, 0))
 				task.wait()
 				if not rootu:IsDescendantOf(workspace) then
 					firingmalazar = false
@@ -4689,6 +4711,8 @@ AddModule(function()
 					MagicBlock("Alder", hit, Vector3.one, Vector3.one * 6, 0.1)
 					Attack(hit, 10, false)
 				end
+				SetBulletState(insts.HeadPart.CFrame * Vector3.new(-8 * scale, 0, 0), hit)
+				SetGunauraState(insts.HeadPart.CFrame * Vector3.new(-8 * scale, 0, 0))
 				task.wait()
 				if not rootu:IsDescendantOf(workspace) then
 					firingmalazar = false
@@ -4807,6 +4831,16 @@ AddModule(function()
 		sethatmapcframe(dragonhead, CFrame.new(0, 0, 0))
 		sethatmapcframe(dragonclawl, CFrame.new(0, 0, 0))
 		sethatmapcframe(dragonclawr, CFrame.new(0, 0, 0))
+		bullet = {
+			Group = "Bullet",
+			CFrame = CFrame.identity
+		}
+		gunaura = {
+			Group = "GunAura",
+			CFrame = CFrame.identity
+		}
+		table.insert(HatReanimator.HatCFrameOverride, bullet)
+		table.insert(HatReanimator.HatCFrameOverride, gunaura)
 		joints.dh = CFrame.new(0, -16, 0)
 		joints.dl = CFrame.new(0, -16, 0)
 		joints.dr = CFrame.new(0, -16, 0)
@@ -5213,6 +5247,25 @@ AddModule(function()
 		insts.HeadWeld.C0 = joints.dh + joints.dh.Position * (scale - 1)
 		insts.ClawLWeld.C0 = joints.dl + joints.dl.Position * (scale - 1)
 		insts.ClawRWeld.C0 = joints.dr + joints.dr.Position * (scale - 1)
+
+		-- bullet and aura
+		if bulletstate[3] < os.clock() - 0.5 then
+			bullet.CFrame = root.CFrame + Vector3.new(0, -12 * scale, 0)
+		else
+			local pos = (os.clock() // 0.05) % 2
+			if pos == 0 then
+				bullet.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + bulletstate[1]
+			else
+				bullet.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + bulletstate[2]
+			end
+		end
+		if gunaurastate[2] > 0 then
+			gunaurastate[2] -= 1
+			local angle = (timingsine * 600) % (math.pi * 2)
+			gunaura.CFrame = (root.CFrame.Rotation * CFrame.Angles(-math.pi / 2, angle, 0)) + gunaurastate[1]
+		else
+			gunaura.CFrame = root.CFrame + Vector3.new(0, -12 * scale, 0)
+		end
 		
 		-- client model appearance
 		local transp = m.ClientsideDragon and 0 or 1
