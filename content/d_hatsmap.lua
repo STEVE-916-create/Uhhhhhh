@@ -283,6 +283,15 @@ local HatKnownAccessoriesDatabase = {
 			GunAttachment = CFrame.new(0, -0.5, -0.52, 1, 0, 0, 0, -1, 0, 0, 0, -1),
 		}
 	},
+	{ -- 6470135113
+		MeshId = "6449532798", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(40)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1, 0),
+		C1 = CFrame.new(0, -1.375, -7.62939e-06, 0, 0, -1, 0, 1, 0, 1, 0, 0),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(-0.375, 1.375, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
+		}
+	},
 	
 	-- Bullets
 	{ -- 4504231783

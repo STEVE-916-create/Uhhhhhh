@@ -4055,9 +4055,9 @@ AddModule(function()
 	local dragonhead = {}
 	local dragonclawl = {}
 	local dragonclawr = {}
-	local dragonheadm = ""
-	local dragonclawlm = ""
-	local dragonclawrm = ""
+	local dragonheadm = "14125138528, 14124704530, 1.62502, -3.875, -7.62939e-06, 0, 0, 1, 0, 1, 0, -1, 0, 0|14124079275, 14124325282, 0, -4.375, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1|17201999027, 81729827287328, 0, -4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1|17201999027, 138410453456308, 0, -3.875, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1|13455103072, 13455284034, 0, -4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1|"
+	local dragonclawlm = "14500656581, 14500658147, -0.274017, -0.416981, -6.76048, -0.465541, -0.340719, -0.816812, -0.196175, 0.939693, -0.280166, 0.863011, 0.029809, -0.504306"
+	local dragonclawrm = "14500686852, 14500688203, 0.274033, -0.417015, -6.7605, -0.46554, 0.34072, 0.816813, 0.196172, 0.939692, -0.28017, -0.863012, 0.0298058, -0.504304"
 	local insts = {}
 	local state = 0
 	local statetime = 0
@@ -4079,13 +4079,12 @@ AddModule(function()
 		table.clear(tbl)
 		for _,v in string.split(mlist, "|") do
 			if #v > 0 then
-				local w = string.split(v, ":")
-				if #w == 13 then
+				local w = string.split(v, ",")
+				if #w == 14 then
 					local ref = {
-						MeshId = w[1], TextureId = "",
+						MeshId = w[1], TextureId = w[2],
 						C0 = CFrame.identity,
 						C1 = CFrame.new(
-							tonumber(w[2]),
 							tonumber(w[3]),
 							tonumber(w[4]),
 							tonumber(w[5]),
@@ -4096,7 +4095,8 @@ AddModule(function()
 							tonumber(w[10]),
 							tonumber(w[11]),
 							tonumber(w[12]),
-							tonumber(w[13])
+							tonumber(w[13]),
+							tonumber(w[14])
 						)
 					}
 					table.insert(HatReanimator.HatCFrameOverride, ref)
