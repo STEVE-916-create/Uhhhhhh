@@ -4784,7 +4784,7 @@ AddModule(function()
 				drrite = CFrame.new(-4, 0, 0) * CFrame.Angles(0, math.rad(30), 0)
 				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
 			end
-			CreateSound(150829983, 0.9)
+			for _=1, 3 do CreateSound(150829983, 0.9) end
 			local ticks = os.clock() + m.RoarDuration / 60
 			while os.clock() < ticks do
 				if os.clock() > lastfx then
@@ -5059,7 +5059,7 @@ AddModule(function()
 					statetime = 340
 					CreateSound(233096557, 1)
 					CreateSound(233091205, 1)
-					CreateSound(150829983, 0.9)
+					for _=1, 3 do CreateSound(150829983, 0.9) end
 					MagicCircle("Alder", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.new(20, 20, 20) * scale, Vector3.one * scale, 0.01)
 					MagicCircle("Alder", root.CFrame * (Vector3.new(-12, 0, 0) * scale), Vector3.new(10, 10, 10) * scale, Vector3.one * scale, 0.01)
 					MagicCircle("Alder", root.CFrame * (Vector3.new(12, 0, 0) * scale), Vector3.new(10, 10, 10) * scale, Vector3.one * scale, 0.01)
