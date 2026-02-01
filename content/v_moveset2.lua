@@ -6,6 +6,7 @@ local Debris = cloneref(game:GetService("Debris"))
 local Players = cloneref(game:GetService("Players"))
 local RunService = cloneref(game:GetService("RunService"))
 local StarterGui = cloneref(game:GetService("StarterGui"))
+local GuiService = cloneref(game:GetService("GuiService"))
 local HttpService = cloneref(game:GetService("HttpService"))
 local TextService = cloneref(game:GetService("TextService"))
 local TweenService = cloneref(game:GetService("TweenService"))
@@ -5065,13 +5066,18 @@ AddModule(function()
 
 		-- haha get it
 		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenGui, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, Visible = false})
-		insts.ImpactFrame1 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame1.png"), Visible = false})
-		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = false})
-		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = false})
-		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = false})
-		insts.ImpactFrame5 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame5.png"), Visible = false})
+		insts.ImpactFrame1 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame1.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame5 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame5.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		local loadhack = insts.ImpactFrame:Clone()
+		loadhack.Parent = HiddenGui
+		loadhack.Size = UDim2.fromOffset(2, 2)
+		loadhack.Position = UDim2.fromScale(0, 0)
 		local cps = game:GetService("ContentProvider")
-		task.spawn(cps.PreloadAsync, cps, {insts.ImpactFrame})
+		task.spawn(cps.PreloadAsync, cps, loadhack:GetChildren())
+		Debris:AddItem(loadhack, 5)
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock() - start
@@ -5300,11 +5306,12 @@ AddModule(function()
 			local if2 = UDim2.fromScale(1, 1)
 			local Camera = workspace.CurrentCamera
 			if Camera then
-				local top = game:GetService("GuiService"):GetGuiInset()
+				local top = GuiService:GetGuiInset()
+				local topy = GuiService.TopbarInset.Height
 				local hi1 = Camera:WorldToViewportPoint(root.CFrame * Vector3.new(34, 25.5, -4))
 				local hi2 = Camera:WorldToViewportPoint(root.CFrame * Vector3.new(-34, -10.5, -4))
-				if1 = UDim2.fromOffset(hi1.X + top.X, hi1.Y + top.Y)
-				if2 = UDim2.fromOffset(hi2.X + top.X, hi2.Y + top.Y)
+				if1 = UDim2.fromOffset(hi1.X + top.X, hi1.Y + top.Y - topy)
+				if2 = UDim2.fromOffset(hi2.X + top.X, hi2.Y + top.Y - topy)
 			end
 			if2 -= if1
 			insts.ImpactFrame1.Position, insts.ImpactFrame1.Size = if1, if2
