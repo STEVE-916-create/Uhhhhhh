@@ -5070,6 +5070,8 @@ AddModule(function()
 		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = false})
 		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = false})
 		insts.ImpactFrame5 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame5.png"), Visible = false})
+		local cps = game:GetService("ContentProvider")
+		task.spawn(cps.PreloadAsync, cps, {insts.ImpactFrame})
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock() - start
