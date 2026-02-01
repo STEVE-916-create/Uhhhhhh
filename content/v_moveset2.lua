@@ -5270,6 +5270,10 @@ AddModule(function()
 				CreateSound(233096557, 1)
 				CreateSound(233091205, 1)
 				for _=1, 3 do CreateSound(150829983, 0.9) end
+				torso.Lighting.Enabled = true
+				insts.ClawLPart.Smoke.Enabled = true
+				insts.ClawRPart.Smoke.Enabled = true
+				insts.HeadPart.Smoke.Enabled = true
 			elseif state == 12 and o > 12.5 then
 				state = 13
 				SetOverrideMovesetMusic(AssetGetContentId("SinDragonTheme.mp3"), "Radiarc - Chaos Arranged", 1)
