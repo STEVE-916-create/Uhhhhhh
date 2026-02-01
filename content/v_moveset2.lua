@@ -5293,7 +5293,7 @@ AddModule(function()
 				ReanimCamera.CFrame = root.CFrame * (CFrame.new(0, 0.5, -5) * CFrame.Angles(math.rad(10), 0, 0)):Lerp(CFrame.new(0, 5.5, -50), a) * CFrame.Angles(0, math.pi, 0)
 				ReanimCamera.FieldOfView = 70
 			elseif o < 7 + (5 / 24) then
-				local a = TweenService:GetValue(o - 4.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+				local a = TweenService:GetValue((o - 4.5) / 1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 5.5, -50) * CFrame.Angles(0, math.pi, 0)
 				ReanimCamera.FieldOfView = 70 - 40 * a
 			elseif o < 12 then
