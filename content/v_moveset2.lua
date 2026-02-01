@@ -5072,15 +5072,15 @@ AddModule(function()
 
 		-- haha get it
 		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenGui, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, Visible = false, ClipsDescendants = true})
-		insts.ImpactFrame1 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame1.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
-		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 2", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
-		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 3", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
-		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 4", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame1 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame1.png"), Visible = true, Size = UDim2.fromOffset(1, 0.2)})
+		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 2", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = true, Size = UDim2.fromOffset(1, 0.4)})
+		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 3", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = true, Size = UDim2.fromOffset(1, 0.6)})
+		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 4", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = true, Size = UDim2.fromOffset(1, 0.8)})
 		insts.ImpactFrame5 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 5", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame5.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
 		insts.ImpactFrame6 = CreateStuffUtil("TextLabel", insts.ImpactFrame, "sin dragon", {BackgroundTransparency = 1, TextScaled = true, Text = "SIN DRAGON", Font = Enum.Font.Antique, TextColor3 = maincolor, Visible = true, Size = UDim2.fromScale(1, 0.3), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5)})
 		local loadhack = insts.ImpactFrame:Clone()
 		loadhack.Parent = HiddenGui
-		loadhack.Size = UDim2.fromOffset(2, 2)
+		loadhack.Size = UDim2.fromOffset(2, 10)
 		loadhack.Position = UDim2.fromScale(0, 0)
 		loadhack.Visible = true
 		local cps = game:GetService("ContentProvider")
@@ -5340,6 +5340,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = false
+				insts.ImpactFrame6.Visible = false
 			elseif o < 7 + (2 / 24) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -5348,6 +5349,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = false
+				insts.ImpactFrame6.Visible = false
 			elseif o < 7 + (3 / 24) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -5356,6 +5358,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = true
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = false
+				insts.ImpactFrame6.Visible = false
 			elseif o < 7 + (4 / 24) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -5364,6 +5367,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = true
 				insts.ImpactFrame5.Visible = false
+				insts.ImpactFrame6.Visible = false
 			elseif o < 7 + (5 / 24) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -5372,6 +5376,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = true
+				insts.ImpactFrame6.Visible = false
 			elseif o < 12 then
 				insts.ImpactFrame.Visible = false
 			elseif o < 12.5 then
