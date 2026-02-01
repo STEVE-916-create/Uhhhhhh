@@ -4431,7 +4431,11 @@ AddModule(function()
 		attacking = true
 		barraging = true
 		notify("SUNLIGHTO YELLO OVERDRIVUHHHHHH")
-		CreateSound(624164065)
+		local sound = Instance.new("Sound", root)
+		sound.SoundId = "rbxassetid://624164065"
+		sound.Volume = 3
+		sound.EmitterSize = 100
+		sound:Play()
 		hum.WalkSpeed = 16 * scale
 		task.spawn(function()
 			task.spawn(PunchingPart, insts.ClawLPart, 0.2)
@@ -4456,6 +4460,7 @@ AddModule(function()
 			if not barraging then
 				animationOverride = nil
 				attacking = false
+				sound:Destroy()
 				return
 			end
 			local bar = -1
@@ -4467,12 +4472,12 @@ AddModule(function()
 				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(-20), 0, 0)
-				drleft = CFrame.new(math.random(-10, 10), math.random(0, 4), -bar * 20)
-				drrite = CFrame.new(math.random(-10, 10), math.random(0, 4), bar * 20)
+				drleft = CFrame.new(math.random(-10, 20), math.random(-4, 8), -bar * 20)
+				drrite = CFrame.new(math.random(-20, 10), math.random(-4, 8), bar * 20)
 				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
 			end
 			CreateSound(159882584)
-			for _=1, 40 do
+			for _=1, 80 do
 				task.spawn(PunchingPart, insts.ClawLPart, 0.08)
 				task.spawn(PunchingPart, insts.ClawRPart, 0.08)
 				CreateSound(231917758)
@@ -4491,6 +4496,7 @@ AddModule(function()
 			barraging = false
 			animationOverride = nil
 			attacking = false
+			sound:Destroy()
 			hum.WalkSpeed = 50 * scale
 		end)
 	end
