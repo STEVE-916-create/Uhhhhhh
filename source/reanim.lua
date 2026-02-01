@@ -4093,7 +4093,7 @@ function LimbReanimator.Start()
 			end
 			if Character and Humanoid and RootPart then
 				RunService.Heartbeat:Wait()
-				if Reanimate.Shiftlocked then
+				if Reanimate:ShouldRotationType() then
 					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 					local bx, by, bz = RCRootPart.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ)
@@ -5926,7 +5926,7 @@ function HatReanimator.Start()
 			end
 			local RCRootPart = ReanimCharacter and ReanimCharacter:FindFirstChild("HumanoidRootPart")
 			if RCRootPart then
-				if Reanimate.Shiftlocked then
+				if Reanimate:ShouldRotationType() then
 					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 					local bx, by, bz = RCRootPart.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ)
