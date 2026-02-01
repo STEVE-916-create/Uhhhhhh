@@ -4264,7 +4264,7 @@ AddModule(function()
 				if hum2 and hum2.RootPart and not hum2.RootPart:IsGrounded() then
 					if hum2 == hum then continue end
 					if hum2.Parent == Player.Character then continue end
-					hithrp[hum.RootPart] = true
+					hithrp[hum2.RootPart] = true
 					if ReanimateFling(hum2.Parent) then
 						if math.random() < 0.1 then
 							notify(hum2.Parent.Name .. " just tried to mess with my remotes.")
