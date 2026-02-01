@@ -3059,7 +3059,7 @@ local Reanimate = {
 	ShiftlockEnabled = not SaveData.ShiftlockDisabled,
 	Shiftlocked = false,
 	ShouldRotationType = function(self)
-		if self.Camera:IsMouseLocked() and self.Character then
+		if self.Camera:IsMouseLocked() and not self.Camera.Scriptable and self.Character then
 			local hum = self.Character:FindFirstChildOfClass("Humanoid")
 			if hum and hum.AutoRotate and hum.RootPart and not hum.RootPart:IsGrounded() then
 				local state = hum:GetState().Name
