@@ -3116,7 +3116,7 @@ local Reanimate = {
 	LocalTransparencyModifier = 0,
 }
 Reanimate.Camera.IsFirstPerson = function(self)
-	return self.Zoom < 1
+	return self.Zoom < 0.75
 end
 Reanimate.Camera.IsMouseLocked = function(self)
 	return self:IsFirstPerson() or Reanimate.Shiftlocked
@@ -3278,10 +3278,20 @@ do
 		if self.Inputs.KB.Right then
 			self:OnPanInput(Vector2.new(math.rad(120) * dt, 0), true)
 		end
+		local ltm = Reanimate.LocalTransparencyModifier
+		local tltm = 0
+		local sltm = dt * 3
 		if self:IsFirstPerson() then
-			Reanimate.LocalTransparencyModifier = math.min(1, Reanimate.LocalTransparencyModifier + dt * 3)
+			tltm = 1
+		elseif self.Zoom < 1.5 * Reanimate.CharacterScale then
+			tltm = 0.5
+		end
+		if math.abs(ltm - tltm) <= sltm then
+			ltm = tltm
+		elseif ltm < tltm then
+			ltm += sltm
 		else
-			Reanimate.LocalTransparencyModifier = math.max(0, Reanimate.LocalTransparencyModifier - dt * 3)
+			ltm -= sltm
 		end
 		if not Reanimate.ShiftlockEnabled and Reanimate.Shiftlocked then
 			Reanimate.Shiftlocked = false
@@ -3374,6 +3384,29 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	Reanimate.Camera.CFrame, Reanimate.Camera.Focus = Camera.CFrame, Camera.Focus
 	Reanimate.Camera:OnReset()
 	RC = CreateHumanoidCharacter()
+	local ltmparts = {}
+	local function OnDescendant(v)
+		local exist = pcall(function()
+			return v.LocalTransparencyModifier
+		end)
+		if exist then
+			table.insert(ltmparts, v)
+			local conn = nil
+			conn = v.AncestryChanged:Connect(function()
+				if not v:IsDescendantOf(RC) then
+					local i = table.find(ltmparts, v)
+					if i then
+						table.remove(ltmparts, i)
+					end
+					conn:Disconnect()
+				end
+			end)
+		end
+	end
+	RC.DescendantAdded:Connect(OnDescendant)
+	for _,v in RC:GetDescendants() do
+		task.spawn(OnDescendant, v)
+	end
 	RC:ScaleTo(Reanimate.CharacterScale)
 	local RCHumanoid, RCRootPart = RC.Humanoid, RC.HumanoidRootPart
 	local RCHead = RC.Head
@@ -3507,6 +3540,9 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		end
 		if safe then
 			LastSafest = RCRootPart.CFrame
+		end
+		for _,v in ltmparts do
+			v.LocalTransparencyModifier = Reanimate.LocalTransparencyModifier
 		end
 	end))
 	Reanimate.Character = RC
