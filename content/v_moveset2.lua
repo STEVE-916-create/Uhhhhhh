@@ -3873,7 +3873,7 @@ AddModule(function()
 	m.Sounds = true
 	m.ShakeValue = 1
 	m.SkipIntro = false
-	m.AltIntro = Player.Name == "STEVETheReal916"
+	m.AltIntro = false
 	m.ClientsideDragon = true
 	m.HitboxDebug = false
 	m.NoCooldown = false
@@ -3893,6 +3893,10 @@ AddModule(function()
 		Util_CreateText(parent, "Skip the intro of Sin Dragon just like for Genesis FE", 12, Enum.TextXAlignment.Center)
 		Util_CreateSwitch(parent, "Skip Intro", m.SkipIntro).Changed:Connect(function(val)
 			m.SkipIntro = val
+		end)
+		Util_CreateText(parent, "make the intro lock in (impact frames drawn by STEVE ofc)", 12, Enum.TextXAlignment.Center)
+		Util_CreateSwitch(parent, "Alternate Intro", m.AltIntro).Changed:Connect(function(val)
+			m.AltIntro = val
 		end)
 		Util_CreateSwitch(parent, "Clientside Dragon Model", m.ClientsideDragon).Changed:Connect(function(val)
 			m.ClientsideDragon = val
@@ -3922,6 +3926,7 @@ AddModule(function()
 		m.Sounds = not save.Muted
 		m.ShakeValue = save.ShakeValue or m.ShakeValue
 		m.SkipIntro = not not save.SkipIntro
+		m.AltIntro = not not save.AltIntro
 		m.ClientsideDragon = not save.NoClientsideDragon
 		m.HitboxDebug = not not save.HitboxDebug
 		m.NoCooldown = not not save.NoCooldown
@@ -3935,6 +3940,7 @@ AddModule(function()
 			Muted = not m.Sounds,
 			ShakeValue = m.ShakeValue,
 			SkipIntro = m.SkipIntro,
+			AltIntro = m.AltIntro,
 			NoClientsideDragon = not m.ClientsideDragon,
 			HitboxDebug = m.HitboxDebug,
 			NoCooldown = m.NoCooldown,
@@ -5065,20 +5071,20 @@ AddModule(function()
 		footsteps.Volume = 0.4
 
 		-- haha get it
-		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenGui, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, Visible = false})
+		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenGui, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, Visible = false, ClipDescendants = true})
 		insts.ImpactFrame1 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame1.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
 		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 2", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
 		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 3", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
 		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 4", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
 		insts.ImpactFrame5 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 5", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame5.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
-		insts.ImpactFrame6 = CreateStuffUtil("TextLabel", insts.ImpactFrame, "sin dragon", {BackgroundTransparency = 1, TextScaled = true, Text = "SIN DRAGON", Font = Enum.Font.Antique, TextColor3 = maincolor, Visible = false, Size = UDim2.fromScale(1, 0.3), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5)})
+		insts.ImpactFrame6 = CreateStuffUtil("TextLabel", insts.ImpactFrame, "sin dragon", {BackgroundTransparency = 1, TextScaled = true, Text = "SIN DRAGON", Font = Enum.Font.Antique, TextColor3 = maincolor, Visible = true, Size = UDim2.fromScale(1, 0.3), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5)})
 		local loadhack = insts.ImpactFrame:Clone()
 		loadhack.Parent = HiddenGui
 		loadhack.Size = UDim2.fromOffset(2, 2)
 		loadhack.Position = UDim2.fromScale(0, 0)
 		loadhack.Visible = true
 		local cps = game:GetService("ContentProvider")
-		task.spawn(cps.PreloadAsync, cps, loadhack:GetChildren())
+		for _,v in loadhack:GetChildren() do if v:IsA("ImageLabel") then task.spawn(cps.PreloadAsync, cps, {v.Image}) end end
 		Debris:AddItem(loadhack, 5)
 	end
 	m.Update = function(dt: number, figure: Model)
@@ -5290,7 +5296,7 @@ AddModule(function()
 				local a = TweenService:GetValue((o - 1.9) / 2, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
 				ReanimCamera.CFrame = root.CFrame * (CFrame.new(0, 0.5, -5) * CFrame.Angles(math.rad(10), 0, 0)):Lerp(CFrame.new(0, 5.5, -50), a) * CFrame.Angles(0, math.pi, 0)
 				ReanimCamera.FieldOfView = 70
-			elseif o < 7.1 then
+			elseif o < 7 + (5 / 24) then
 				local a = TweenService:GetValue(o - 4.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 5.5, -50) * CFrame.Angles(0, math.pi, 0)
 				ReanimCamera.FieldOfView = 70 - 40 * a
