@@ -3036,6 +3036,7 @@ _G_Uhhhhhh.BindableEvent = Util.Instance("BindableEvent") -- not used 3:
 local Reanimate = {
 	Current = nil,
 	Character = nil,
+	CharacterLTMs = {},
 	Starting = false,
 	Stopping = false,
 	UseLoadAnimationHook = not SaveData.NoLoadAnimationHook,
@@ -3361,6 +3362,9 @@ do
 				self.CFrame, self.Focus = newCameraCFrame, newCameraFocus
 				Camera.CFrame, Camera.Focus = self.CFrame, self.Focus
 			end
+			for _,v in Reanimate.CharacterLTMs do
+				v.LocalTransparencyModifier = ltm
+			end
 		end
 	end)
 end
@@ -3385,7 +3389,8 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	Reanimate.Camera.CFrame, Reanimate.Camera.Focus = Camera.CFrame, Camera.Focus
 	Reanimate.Camera:OnReset()
 	RC = CreateHumanoidCharacter()
-	local ltmparts = {}
+	local ltmparts = Reanimate.CharacterLTMs
+	table.clear(ltmparts)
 	local function OnDescendant(v)
 		local exist = pcall(function()
 			return v.LocalTransparencyModifier
@@ -3541,9 +3546,6 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		end
 		if safe then
 			LastSafest = RCRootPart.CFrame
-		end
-		for _,v in ltmparts do
-			v.LocalTransparencyModifier = Reanimate.LocalTransparencyModifier
 		end
 	end))
 	Reanimate.Character = RC
