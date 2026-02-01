@@ -3073,7 +3073,9 @@ local Reanimate = {
 	Camera = {
 		CFrame = CFrame.identity,
 		Focus = CFrame.identity,
+		Scriptable = false,
 		Zoom = 16,
+		FieldOfView = 70,
 		Input = Vector3.zero,
 		_Zoom = 16,
 		OnReset = function(self)
@@ -3282,10 +3284,12 @@ do
 		local ltm = Reanimate.LocalTransparencyModifier
 		local tltm = 0
 		local sltm = dt * 3
-		if self:IsFirstPerson() then
-			tltm = 1
-		elseif self.Zoom < 1.5 * Reanimate.CharacterScale then
-			tltm = 0.5
+		if not self.Scriptable then
+			if self:IsFirstPerson() then
+				tltm = 1
+			elseif self.Zoom < 1.5 * Reanimate.CharacterScale then
+				tltm = 0.5
+			end
 		end
 		if math.abs(ltm - tltm) <= sltm then
 			ltm = tltm
@@ -3327,39 +3331,46 @@ do
 			local Humanoid = Reanimate.Character:FindFirstChildOfClass("Humanoid")
 			local RootPart = Reanimate.Character:FindFirstChild("HumanoidRootPart")
 			if Humanoid and RootPart and Camera.CameraSubject == Humanoid then
-				local newCameraCFrame, newCameraFocus = self.CFrame, self.Focus
-				local subjectPosition = RootPart.Position + RootPart.CFrame.UpVector * 1.5
-				subjectPosition += RootPart.CFrame.Rotation * Humanoid.CameraOffset
-				local input = self.Input * Vector3.new(1, GameSettings:GetCameraYInvertValue(), 1)
-				self.Input = Vector3.zero
-				local zoomDelta = input.Z
-				if math.abs(zoomDelta) > 0 then
-					if zoomDelta > 0 then
-						self.Zoom += zoomDelta * (1 + self.Zoom * 0.5)
-					else
-						self.Zoom = (self.Zoom + zoomDelta) / (1 - zoomDelta * 0.5)
+				if self.Scriptable then
+					Camera.FieldOfView = self.FieldOfView
+					Camera.FieldOfViewMode = "Vertical"
+				else
+					Camera.FieldOfView = 70
+					Camera.FieldOfViewMode = "Vertical"
+					local newCameraCFrame, newCameraFocus = self.CFrame, self.Focus
+					local subjectPosition = RootPart.Position + RootPart.CFrame.UpVector * 1.5
+					subjectPosition += RootPart.CFrame.Rotation * Humanoid.CameraOffset
+					local input = self.Input * Vector3.new(1, GameSettings:GetCameraYInvertValue(), 1)
+					self.Input = Vector3.zero
+					local zoomDelta = input.Z
+					if math.abs(zoomDelta) > 0 then
+						if zoomDelta > 0 then
+							self.Zoom += zoomDelta * (1 + self.Zoom * 0.5)
+						else
+							self.Zoom = (self.Zoom + zoomDelta) / (1 - zoomDelta * 0.5)
+						end
 					end
-				end
-				if self.Zoom < 0.5 then
-					self.Zoom = 0.5
-				end
-				self._Zoom = self.Zoom + (self._Zoom - self.Zoom) * math.exp(-32 * dt)
-				local currLookVector = suppliedLookVector or newCameraCFrame.LookVector
-				local currPitchAngle = math.asin(currLookVector.Y)
-				local constrainedRotateInput = Vector2.new(input.X, math.clamp(input.Y, math.rad(-80) + currPitchAngle, math.rad(80) + currPitchAngle))
-				local startCFrame = CFrame.lookAt(Vector3.zero, currLookVector)
-				local newLookCFrame = CFrame.Angles(0, -constrainedRotateInput.X, 0) * startCFrame * CFrame.Angles(-constrainedRotateInput.Y, 0, 0)
-				local newLookVector = newLookCFrame.LookVector
-				if self:IsMouseLocked() and not self:IsFirstPerson() then
-					local cameraRelativeOffset = newLookCFrame * Vector3.new(1.7, 0, 0)
-					if cameraRelativeOffset == cameraRelativeOffset then
-						subjectPosition += cameraRelativeOffset
+					if self.Zoom < 0.5 then
+						self.Zoom = 0.5
 					end
+					self._Zoom = self.Zoom + (self._Zoom - self.Zoom) * math.exp(-32 * dt)
+					local currLookVector = suppliedLookVector or newCameraCFrame.LookVector
+					local currPitchAngle = math.asin(currLookVector.Y)
+					local constrainedRotateInput = Vector2.new(input.X, math.clamp(input.Y, math.rad(-80) + currPitchAngle, math.rad(80) + currPitchAngle))
+					local startCFrame = CFrame.lookAt(Vector3.zero, currLookVector)
+					local newLookCFrame = CFrame.Angles(0, -constrainedRotateInput.X, 0) * startCFrame * CFrame.Angles(-constrainedRotateInput.Y, 0, 0)
+					local newLookVector = newLookCFrame.LookVector
+					if self:IsMouseLocked() and not self:IsFirstPerson() then
+						local cameraRelativeOffset = newLookCFrame * Vector3.new(1.7, 0, 0)
+						if cameraRelativeOffset == cameraRelativeOffset then
+							subjectPosition += cameraRelativeOffset
+						end
+					end
+					newCameraFocus = CFrame.new(subjectPosition)
+					local cameraFocusP = newCameraFocus.Position
+					newCameraCFrame = CFrame.lookAt(cameraFocusP - newLookVector * self._Zoom, cameraFocusP)
+					self.CFrame, self.Focus = newCameraCFrame, newCameraFocus
 				end
-				newCameraFocus = CFrame.new(subjectPosition)
-				local cameraFocusP = newCameraFocus.Position
-				newCameraCFrame = CFrame.lookAt(cameraFocusP - newLookVector * self._Zoom, cameraFocusP)
-				self.CFrame, self.Focus = newCameraCFrame, newCameraFocus
 				Camera.CFrame, Camera.Focus = self.CFrame, self.Focus
 			end
 			for _,v in Reanimate.CharacterLTMs do
@@ -7050,6 +7061,7 @@ local function GiveFunctionsToFunction(func)
 	env.Util_CreateCanvas = UI.CreateCanvas
 	env.Util_CreateScrollCanvas = UI.CreateScrollCanvas
 	env.Util_CreateSeparator = UI.CreateSeparator
+	env.ReanimCamera = Reanimate.Camera
 	env.LimbReanimator = LimbReanimator
 	env.HatReanimator = HatReanimator
 	env.ReanimateShowHitboxes = ReanimateShowHitboxes

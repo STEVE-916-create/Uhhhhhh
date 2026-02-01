@@ -3866,12 +3866,13 @@ AddModule(function()
 	m.Name = "Sin Dragon"
 	m.InternalName = "SINEWAVETREXDINOSAR"
 	m.Description = "sin dragon if he was CHINESE\nnow in the latest color: MURASAKI!!\nor, you can change the color yourself!\nM1 - Punches\nZ - Barrage (cancellable)\nX - Smash Down!\nC - Firin ma lazar (cancellable)\nG - Roarrrr!!"
-	m.Assets = {"SinDragonTheme.mp3"}
+	m.Assets = {"SinDragonTheme.mp3", "SinDragonIntro.anim", "SinDragonImpactFrame1.png", "SinDragonImpactFrame2.png", "SinDragonImpactFrame3.png", "SinDragonImpactFrame4.png", "SinDragonImpactFrame5.png"}
 
 	m.Notifications = true
 	m.Sounds = true
 	m.ShakeValue = 1
 	m.SkipIntro = false
+	m.AltIntro = Player.Name == "STEVETheReal916"
 	m.ClientsideDragon = true
 	m.HitboxDebug = false
 	m.NoCooldown = false
@@ -4049,6 +4050,33 @@ AddModule(function()
 			sound:Destroy()
 		end)
 	end
+	local function sincosPerlin(seed, x)
+		local sum = 0
+		local amplitude = 1.0
+		local frequency = 1.0
+		for octave = 1, 6 do
+			local baseIndex = (octave - 1) * 3 + 1
+			local freq = seed[baseIndex + 0]
+			local phase = seed[baseIndex + 1]
+			local ampMult = seed[baseIndex + 2]
+			local wave
+			if octave % 2 == 1 then
+				wave = math.sin(x * frequency * freq + phase)
+			else
+				wave = math.cos(x * frequency * freq + phase)
+			end
+			sum = sum + wave * amplitude * ampMult
+			amplitude = amplitude * 0.51
+			frequency = frequency * 2.17
+		end
+		return sum
+	end
+	local sincosseed1 = {1.03, 0.8, 1.00, 2.09, 4.2, 0.51, 4.28, 1.4, 0.26, 8.41, 5.9, 0.13, 15.2, 3.1, 0.065, 24.1, 7.3, 0.033}
+	local sincosseed2 = {0.98, 2.1, 1.00, 2.16, 5.7, 0.49, 4.39, 0.9, 0.25, 8.94, 6.4, 0.125, 14.8, 2.8, 0.063, 23.7, 8.6, 0.032}
+	local sincosseed3 = {1.05, 6.3, 0.99, 2.04, 1.8, 0.52, 4.51, 7.2, 0.27, 9.12, 3.5, 0.135, 16.3, 0.4, 0.068, 25.9, 4.7, 0.034}
+	local sincosseed4 = {1.00, 3.9, 1.00, 2.22, 0.5, 0.50, 4.18, 8.1, 0.24, 8.76, 4.6, 0.12, 15.7, 1.9, 0.06, 24.4, 6.2, 0.03}
+	local sincosseed5 = {0.96, 1.2, 1.00, 2.27, 6.8, 0.48, 4.62, 2.7, 0.245, 9.38, 7.5, 0.122, 17.1, 3.8, 0.061, 26.3, 0.7, 0.031}
+	local sincosseed6 = {1.02, 4.6, 0.99, 2.11, 3.3, 0.51, 4.34, 9.4, 0.26, 8.59, 1.6, 0.13, 14.9, 5.2, 0.066, 23.8, 2.5, 0.033}
 	local chatconn
 	local joints = {
 		r = CFrame.identity,
@@ -4203,6 +4231,19 @@ AddModule(function()
 	end
 	local function MagicCircle(brickcolor, pos, ssize, esize, delay)
 		local p = CreatePart(0, brickcolor, Vector3.one * 0.5)
+		p.CFrame = CFrame.new(pos)
+		local m = CreateMesh("SpecialMesh", p, "Sphere", nil, Vector3.zero, ssize)
+		local ticks = 1 / delay
+		TweenService:Create(p, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Transparency = 1,
+		}):Play()
+		TweenService:Create(m, TweenInfo.new(ticks / 60, Enum.EasingStyle.Linear), {
+			Scale = ssize + esize * ticks,
+		}):Play()
+		Debris:AddItem(p, ticks / 60)
+	end
+	local function MagicCircle2(brickcolor, pos, ssize, esize, delay)
+		local p = CreatePart(0.9, brickcolor, Vector3.one * 0.5)
 		p.CFrame = CFrame.new(pos)
 		local m = CreateMesh("SpecialMesh", p, "Sphere", nil, Vector3.zero, ssize)
 		local ticks = 1 / delay
@@ -4825,6 +4866,7 @@ AddModule(function()
 		end)
 	end
 
+	local animator = nil
 	m.Init = function(figure)
 		start = os.clock()
 		attacking = true
@@ -4833,11 +4875,15 @@ AddModule(function()
 		if m.SkipIntro then
 			state = 3
 			attacking = false
+		elseif m.AltIntro then
+			state = 4
+		end
+		if not m.AltIntro and not m.SkipIntro then
+			SetOverrideMovesetMusic(AssetGetContentId("SinDragonTheme.mp3"), "Radiarc - Chaos Arranged", 1)
 		end
 		statem1 = 0
 		animationinstant = false
 		animationOverride = nil
-		SetOverrideMovesetMusic(AssetGetContentId("SinDragonTheme.mp3"), "Radiarc - Chaos Arranged", 1)
 		scale = figure:GetScale()
 		hum = figure:FindFirstChild("Humanoid")
 		root = figure:FindFirstChild("HumanoidRootPart")
@@ -4916,6 +4962,11 @@ AddModule(function()
 			end
 		end)
 		hum.WalkSpeed = 0
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = false
+		animator.speed = 1
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SinDragonIntro.anim"))
 
 		local function CreateStuffUtil(class, parent, name, properties)
 			local o = Instance.new(class)
@@ -4924,6 +4975,7 @@ AddModule(function()
 			o.Parent = parent
 			return o
 		end
+
 		insts.ClawL = CreateStuffUtil("Model", figure, "sin dragon claw L")
 		insts.ClawR = CreateStuffUtil("Model", figure, "sin dragon claw R")
 		insts.Head = CreateStuffUtil("Model", figure, "sin dragon head")
@@ -5008,6 +5060,14 @@ AddModule(function()
 		footsteps.Looped = true
 		footsteps.Pitch = 1
 		footsteps.Volume = 0.4
+
+		-- haha get it
+		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenUI, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, Visible = false})
+		insts.ImpactFrame1 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame1.png"), Visible = false})
+		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = false})
+		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = false})
+		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = false})
+		insts.ImpactFrame5 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame5.png"), Visible = false})
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock() - start
@@ -5159,6 +5219,154 @@ AddModule(function()
 					drrite = CFrame.new(4, -1, 0) * CFrame.Angles(math.rad(20), math.rad(10), 0)
 				end
 			end
+		else
+			ReanimCamera.Scriptable = true
+			attacking = true
+			hum.WalkSpeed = 0
+			animationspeed = 0
+			drhead = CFrame.new(0, -16, 0)
+			drleft = CFrame.new(0, -16, 0)
+			drrite = CFrame.new(0, -16, 0)
+			local o = timingsine / 60
+			if state == 4 and o > 0 then
+				state = 5
+				CreateSound(99564490958733)
+			elseif state == 5 and o > 0.6 then
+				state = 6
+				CreateSound(9113541700, 0.9 + math.random() * 0.1)
+			elseif state == 6 and o > 0.9 then
+				state = 7
+				CreateSound(121238985608899)
+			elseif state == 7 and o > 1.53 then
+				state = 8
+				CreateSound(9113541700, 0.9 + math.random() * 0.1)
+			elseif state == 8 and o > 1.9 then
+				state = 9
+				CreateSound(132090367979537)
+			elseif state == 9 and o > 3.17 then
+				state = 10
+				CreateSound(137269250717966, 0.8)
+			elseif state == 10 and o > 4.5 then
+				state = 11
+				CreateSound(136007472, 0.8)
+			elseif state == 11 and o > 6 + (5 / 30) then
+				state = 12
+				CreateSound(233096557, 1)
+				CreateSound(233091205, 1)
+				for _=1, 3 do CreateSound(150829983, 0.9) end
+			elseif state == 12 and o > 10 then
+				state = 3
+				statetime = timingsine
+				attacking = false
+				SetOverrideMovesetMusic(AssetGetContentId("SinDragonTheme.mp3"), "Radiarc - Chaos Arranged", 1)
+				ReanimCamera.Scriptable = false
+			end
+			if o < 1.9 then
+				local a = CFrame.Angles(0.78 * math.cos(timingsine / 30)), 0.1 * math.sin(timingsine / 8)), 0.3 * math.sin(timingsine / 20)))
+				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5) * CFrame.Angles(0, math.pi, 0) * a:Lerp(CFrame.Angles(math.rad(10), 0, 0), math.min(1, o))
+				ReanimCamera.FieldOfView = 70
+			elseif o < 2.9 then
+				local a = TweenService:GetValue(o - 0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+				local b = TweenService:GetValue(o - 4.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5):Lerp(CFrame.new(0, 5.5, -50), a) * CFrame.Angles(0, math.pi, 0)
+				ReanimCamera.FieldOfView = 70 - 40 * b
+			elseif o < 6.1 then
+				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 5.5, -50) * CFrame.Angles(0, math.pi, 0)
+				ReanimCamera.FieldOfView = 30
+			elseif o < 10 then
+				local a = TweenService:GetValue(o - 6.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 5.5, -50):Lerp(CFrame.new(
+					sincosPerlin(sincosseed1, o * 2) * 0.05,
+					5.5 + sincosPerlin(sincosseed2, o * 2) * 0.05,
+					-40 + sincosPerlin(sincosseed3, o * 2) * 0.05
+				) * CFrame.Angles(
+					sincosPerlin(sincosseed4, o * 2) * 0.05,
+					sincosPerlin(sincosseed5, o * 2) * 0.05,
+					0.1 + sincosPerlin(sincosseed6, o * 2) * 0.05
+				), a) * CFrame.Angles(0, math.pi, 0)
+				ReanimCamera.FieldOfView = 30 + 50 * a
+			end
+			local if1 = UDim2.fromScale(0, 0)
+			local if2 = UDim2.fromScale(1, 1)
+			local Camera = workspace.CurrentCamera
+			if Camera then
+				local hi1 = Camera:WorldToScreenPoint(root.CFrame * Vector3.new(34, 31.5, -4))
+				local hi2 = Camera:WorldToScreenPoint(root.CFrame * Vector3.new(-34, -4.5, -4))
+				if1 = UDim2.fromOffset(hi1.X, hi1.Y)
+				if2 = UDim2.fromOffset(hi2.X, hi2.Y)
+			end
+			if2 -= if1
+			insts.ImpactFrame1.Position, insts.ImpactFrame1.Size = if1, if2
+			insts.ImpactFrame2.Position, insts.ImpactFrame2.Size = if1, if2
+			insts.ImpactFrame3.Position, insts.ImpactFrame3.Size = if1, if2
+			insts.ImpactFrame4.Position, insts.ImpactFrame4.Size = if1, if2
+			insts.ImpactFrame5.Position, insts.ImpactFrame5.Size = if1, if2
+			if o < 6 then
+				insts.ImpactFrame.Visible = false
+			elseif o < 6 + (1 / 40) then
+				insts.ImpactFrame.Visible = true
+				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+				insts.ImpactFrame1.Visible = true
+				insts.ImpactFrame2.Visible = false
+				insts.ImpactFrame3.Visible = false
+				insts.ImpactFrame4.Visible = false
+				insts.ImpactFrame5.Visible = false
+			elseif o < 6 + (2 / 40) then
+				insts.ImpactFrame.Visible = true
+				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+				insts.ImpactFrame1.Visible = false
+				insts.ImpactFrame2.Visible = true
+				insts.ImpactFrame3.Visible = false
+				insts.ImpactFrame4.Visible = false
+				insts.ImpactFrame5.Visible = false
+			elseif o < 6 + (3 / 40) then
+				insts.ImpactFrame.Visible = true
+				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+				insts.ImpactFrame1.Visible = false
+				insts.ImpactFrame2.Visible = false
+				insts.ImpactFrame3.Visible = true
+				insts.ImpactFrame4.Visible = false
+				insts.ImpactFrame5.Visible = false
+			elseif o < 6 + (4 / 40) then
+				insts.ImpactFrame.Visible = true
+				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+				insts.ImpactFrame1.Visible = false
+				insts.ImpactFrame2.Visible = false
+				insts.ImpactFrame3.Visible = false
+				insts.ImpactFrame4.Visible = true
+				insts.ImpactFrame5.Visible = false
+			elseif o < 6 + (5 / 40) then
+				insts.ImpactFrame.Visible = true
+				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+				insts.ImpactFrame1.Visible = false
+				insts.ImpactFrame2.Visible = false
+				insts.ImpactFrame3.Visible = false
+				insts.ImpactFrame4.Visible = false
+				insts.ImpactFrame5.Visible = true
+			else
+				insts.ImpactFrame.Visible = false
+			end
+			if o >= 6.1 then
+				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(50), 0, 0)
+				drleft = CFrame.new(4, 0, 0) * CFrame.Angles(0, math.rad(-30), 0)
+				drrite = CFrame.new(-4, 0, 0) * CFrame.Angles(0, math.rad(30), 0)
+			end
+			if o >= 4.5 and o <= 5 then
+				if os.clock() > lastfx then
+					lastfx = os.clock() + 1 / 60
+					MagicRing("Alder", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.new(60, 60, 6) * scale, Vector3.new(-3, -3, 0) * scale)
+					MagicRing("Alder", root.CFrame * (Vector3.new(-12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
+					MagicRing("Alder", root.CFrame * (Vector3.new(12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
+				end
+			end
+			if o >= 6.1 and o <= 10 then
+				if os.clock() > lastfx then
+					lastfx = os.clock() + 1 / 15
+					MagicCircle2("Really black", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.zero, Vector3.one * 3 * scale, 0.03)
+					BlastEffect("White", root.CFrame * Vector3.new(0, -2 * scale, 0), Vector3.new(1, 0.2, 1), Vector3.new(2, 0, 2))
+				end
+			end
+			animator:Step(o)
 		end
 		if animationOverride then
 			rt, nt, rst, lst, rht, lht, drhead, drleft, drrite = animationOverride(timingsine, rt, nt, rst, lst, rht, lht, drhead, drleft, drrite)
@@ -5263,12 +5471,14 @@ AddModule(function()
 		end
 		
 		-- apply transforms
-		SetC0C1Joint(rj, joints.r, ROOTC0, scale)
-		SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)), scale)
-		SetC0C1Joint(rsj, joints.rs, CFrame.new(0, 0.5, 0), scale)
-		SetC0C1Joint(lsj, joints.ls, CFrame.new(0, 0.5, 0), scale)
-		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
-		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		if state <= 3 then
+			SetC0C1Joint(rj, joints.r, ROOTC0, scale)
+			SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)), scale)
+			SetC0C1Joint(rsj, joints.rs, CFrame.new(0, 0.5, 0), scale)
+			SetC0C1Joint(lsj, joints.ls, CFrame.new(0, 0.5, 0), scale)
+			SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+			SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		end
 		sethatmapcframe(dragonhead, joints.dh)
 		sethatmapcframe(dragonclawl, joints.dl)
 		sethatmapcframe(dragonclawr, joints.dr)
@@ -5318,6 +5528,7 @@ AddModule(function()
 			chatconn = nil
 		end
 		root, torso, hum = nil, nil, nil
+		for _,v in insts do v:Destroy() end
 	end
 	return m
 end)
