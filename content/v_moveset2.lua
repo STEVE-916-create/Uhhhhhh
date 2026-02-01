@@ -5300,10 +5300,11 @@ AddModule(function()
 			local if2 = UDim2.fromScale(1, 1)
 			local Camera = workspace.CurrentCamera
 			if Camera then
+				local top = game:GetService("GuiService"):GetGuiInset()
 				local hi1 = Camera:WorldToViewportPoint(root.CFrame * Vector3.new(34, 25.5, -4))
 				local hi2 = Camera:WorldToViewportPoint(root.CFrame * Vector3.new(-34, -10.5, -4))
-				if1 = UDim2.fromOffset(hi1.X, hi1.Y)
-				if2 = UDim2.fromOffset(hi2.X, hi2.Y)
+				if1 = UDim2.fromOffset(hi1.X + top.X, hi1.Y + top.Y)
+				if2 = UDim2.fromOffset(hi2.X + top.X, hi2.Y + top.Y)
 			end
 			if2 -= if1
 			insts.ImpactFrame1.Position, insts.ImpactFrame1.Size = if1, if2
@@ -5369,7 +5370,7 @@ AddModule(function()
 					MagicRing("Alder", root.CFrame * (Vector3.new(12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
 				end
 			end
-			if o >= 7.1 and o <= 10 then
+			if o >= 7.1 and o <= 12 then
 				if os.clock() > lastfx then
 					lastfx = os.clock() + 1 / 15
 					MagicCircle2("Really black", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.zero, Vector3.one * 5 * scale, 0.03)
