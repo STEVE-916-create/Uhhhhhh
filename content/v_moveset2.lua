@@ -5071,7 +5071,7 @@ AddModule(function()
 		footsteps.Volume = 0.4
 
 		-- haha get it
-		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenGui, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromOffset(2, 20), BorderSizePixel = 0, Visible = true})
+		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenGui, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromOffset(2, 20), BorderSizePixel = 0, Visible = true, ClipsDescendants = true})
 		insts.ImpactFrame1 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame1.png"), Visible = true, Size = UDim2.fromScale(1, 0.2), ZIndex = 5})
 		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 2", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = true, Size = UDim2.fromScale(1, 0.4), ZIndex = 4})
 		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 3", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = true, Size = UDim2.fromScale(1, 0.6), ZIndex = 3})
