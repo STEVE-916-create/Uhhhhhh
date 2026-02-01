@@ -13,6 +13,7 @@ local HatMeshDatabase = {
 	{MeshId = "13831073174", TextureId = "", Offset = CFrame.new(0.017, 0, -0.23) * CFrame.Angles(-1.48, -0.57, 2.2), For = "LeftArm"},
 	{MeshId = "13839903766", TextureId = "", Offset = CFrame.new(0, -0.62, -0.01) * CFrame.Angles(1.66, 0.57, -2.2), For = "RightArm"},
 	{MeshId = "125405780718494", TextureId = "", Offset = CFrame.Angles(1.57, 0, 1.57), For = "LeftArm"},
+	{MeshId = "105263225400272", TextureId = "", Offset = CFrame.Angles(0, 0, 1.57), For = "LeftArm"},
 
 	-- Legs
 	{MeshId = "11159370334", TextureId = "11159285454", Offset = CFrame.Angles(1.57, 0, 1.57), For = "LeftLeg"},
@@ -20,6 +21,7 @@ local HatMeshDatabase = {
 	{MeshId = "14768684979", TextureId = "", Offset = CFrame.Angles(0, 0, 1.57), For = "LeftLeg"},
 	{MeshId = "17387586286", TextureId = "", Offset = CFrame.Angles(1.57, 0, 1.57), For = "LeftLeg"},
 	{MeshId = "125405780718494", TextureId = "", Offset = CFrame.Angles(1.57, 0, 1.57), For = "LeftLeg"},
+	{MeshId = "83395427313429", TextureId = "", Offset = CFrame.Angles(0, 0, 1.57), For = "LeftLeg"},
 
 	-- Torsos
 	{MeshId = "14768666349", TextureId = "", Offset = CFrame.identity, For = "Torso"},
@@ -28,6 +30,7 @@ local HatMeshDatabase = {
 	{MeshId = "110684113028749", TextureId = "", Offset = CFrame.identity, For = "Torso"},
 	{MeshId = "4819720316", TextureId = "4819722776", Offset = CFrame.Angles(0, 0, 0.26), For = "Torso"},
 	{MeshId = "126825022897778", TextureId = "", Offset = CFrame.identity, For = "Torso"},
+	{MeshId = "139792224823925", TextureId = "", Offset = CFrame.identity, For = "Torso"},
 
 	-- Fur body + R15 Arms + Smiley Legs Rig
 	{MeshId = "13953154391", TextureId = "", Offset = CFrame.identity, For = "Head"},
