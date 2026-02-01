@@ -5061,6 +5061,7 @@ function HatReanimator.Start()
 		if handle.Parent:IsA("Tool") then
 			netless = 0
 		end
+		netless += (math.sin(timing * 0.5) + 1) / 2
 		local aligned = false
 		local lastcf = handle:GetAttribute("_Uhhhhhh_LastPosition")
 		local claimtime = handle:GetAttribute("_Uhhhhhh_ClaimTime")
