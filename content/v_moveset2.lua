@@ -5075,6 +5075,7 @@ AddModule(function()
 		loadhack.Parent = HiddenGui
 		loadhack.Size = UDim2.fromOffset(2, 2)
 		loadhack.Position = UDim2.fromScale(0, 0)
+		loadhack.Visible = true
 		local cps = game:GetService("ContentProvider")
 		task.spawn(cps.PreloadAsync, cps, loadhack:GetChildren())
 		Debris:AddItem(loadhack, 5)
@@ -5306,7 +5307,7 @@ AddModule(function()
 			local if2 = UDim2.fromScale(1, 1)
 			local Camera = workspace.CurrentCamera
 			if Camera then
-				local top = GuiService:GetGuiInset()
+				local top = -insts.ImpactFrame.AbsolutePosition
 				local topy = GuiService.TopbarInset.Height
 				local hi1 = Camera:WorldToViewportPoint(root.CFrame * Vector3.new(34, 25.5, -4))
 				local hi2 = Camera:WorldToViewportPoint(root.CFrame * Vector3.new(-34, -10.5, -4))
