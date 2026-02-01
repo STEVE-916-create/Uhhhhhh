@@ -3293,6 +3293,7 @@ do
 		else
 			ltm -= sltm
 		end
+		Reanimate.LocalTransparencyModifier = ltm
 		if not Reanimate.ShiftlockEnabled and Reanimate.Shiftlocked then
 			Reanimate.Shiftlocked = false
 		end
