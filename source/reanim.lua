@@ -3057,6 +3057,18 @@ local Reanimate = {
 	P2PCollision = false,
 	ShiftlockEnabled = not SaveData.ShiftlockDisabled,
 	Shiftlocked = false,
+	ShouldRotationType = function(self)
+		if self.Character then
+			local hum = self.Character:FindFirstChildOfClass("Humanoid")
+			if hum and hum.AutoRotate and hum.RootPart and not hum.RootPart:IsGrounded() then
+				local state = hum:GetState().Name
+				if table.find({"Running", "Jumping", "Freefall", "Landed", "Climbing"}, state) then
+					return true
+				end
+			end
+		end
+		return false
+	end,
 	Camera = {
 		CFrame = CFrame.identity,
 		Focus = CFrame.identity,
@@ -4175,7 +4187,7 @@ function LimbReanimator.Start()
 				else
 					pcall(sethiddenproperty, Humanoid, "NetworkHumanoidState", Enum.HumanoidStateType[({"Running", "PlatformStanding", "Jumping", "Ragdoll", "Seated", "Physics"})[math.random(1, 6)]])
 				end
-				if Reanimate.Camera:IsMouseLocked() then
+				if Reanimate:ShouldRotationType() then
 					RunService.PreRender:Wait()
 					local ocf = RCRootPart.CFrame
 					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
@@ -6196,7 +6208,7 @@ function HatReanimator.Start()
 						end
 					end
 				end
-				if Reanimate.Camera:IsMouseLocked() then
+				if Reanimate:ShouldRotationType() then
 					RunService.PreRender:Wait()
 					local ocf = RCRootPart.CFrame
 					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
