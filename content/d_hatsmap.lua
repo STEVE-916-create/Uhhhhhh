@@ -155,7 +155,6 @@ local HatKnownAccessoriesDatabase = {
 	},
 
 	-- Swords
-	-- 72666399517938
 	{ -- 4794315940
 		MeshId = "4315410540", TextureId = "",
 		C0 = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(-160)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -3, 0),
@@ -219,6 +218,24 @@ local HatKnownAccessoriesDatabase = {
 			SwordAttachment = CFrame.new(-2.20946121, -1.73155212, 0, -8.1470084e-08, -0.829036415, -0.559194624, -8.44359747e-08, -0.559194624, 0.829036415, -1, 1.1475781e-07, -2.4442862e-08),
 		}
 	},
+	{ -- 73493067082557
+		MeshId = "72666399517938", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(160)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -3, 0),
+		C1 = CFrame.new(0, 7.62939e-06, 3.5, 0, 0, -1, 1, 0, 0, 0, -1, 0),
+		Limb = "Torso", Group = "Sword",
+		Attachments = {
+			SwordAttachment = CFrame.new(0, 0, -4.75, 0, 0, -1, 1, 0, 0, 0, -1, 0),
+		}
+	},
+	{ -- 6411978911
+		MeshId = "6410486686", TextureId = "",
+		C0 = CFrame.new(-1.2, -0.5, -2, 1, 0, 0, 0, -0.342020363, -0.939692557, 0, 0.939692557, -0.342020363),
+		C1 = CFrame.new(3, 1.89999998, 0, -8.1469814e-08, -0.829037607, -0.559192836, -8.44357686e-08, -0.559192836, 0.829037607, -1, 1.1475742e-07, -2.44430947e-08),
+		Limb = "Torso", Group = "Sword",
+		Attachments = {
+			SwordAttachment = CFrame.new(-2.20946121, -1.73155212, 0, -8.1470084e-08, -0.829036415, -0.559194624, -8.44359747e-08, -0.559194624, 0.829036415, -1, 1.1475781e-07, -2.4442862e-08),
+		}
+	},
 
 	-- Guns
 	{ -- 4623059912
@@ -275,6 +292,42 @@ local HatKnownAccessoriesDatabase = {
 			GunAttachment = CFrame.new(0, 0.5, 2.2, 1, 0, 0, 0, 0, -1, 0, 1, 0),
 		}
 	},
+	{ -- 5552252553
+		MeshId = "5548423017", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(140)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1, 0),
+		C1 = CFrame.new(0.795753, 1.12828, 0, 0, -0.5, -0.866025, 0, -0.866025, 0.5, -1, 0, 0),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(-1.83702, -1.68181, 0, 0, -0.5, -0.866025, 0, -0.866025, 0.5, -1, 0, 0),
+		}
+	},
+	{ -- 15254947445
+		MeshId = "15172160708", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(-135)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1, 0),
+		C1 = CFrame.new(1.7586, 1.47563, -0.658649, -0.642788, -0.754406, 0.133022, 0.766044, -0.633022, 0.111619, 0, 0.173648, 0.984808),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(-1.62243, -1.1982, 0.101089, -0.642788, -0.754406, 0.133022, 0.766044, -0.633022, 0.111619, 0, 0.173648, 0.984808),
+		}
+	},
+	{ -- 130264270502525
+		MeshId = "105473254683766", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(-135)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1, 0),
+		C1 = CFrame.new(0.849705, -0.429243, 7.62939e-06, 0, -0.766044, -0.642788, 0, -0.642788, 0.766044, -1, 0, 0),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(-1.80395, -1.35052, 0, 0, -0.766044, -0.642788, 0, -0.642788, 0.766044, -1, 0, 0),
+		}
+	},
+	{ -- 17550887328
+		MeshId = "17550839817", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(45)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1, 0),
+		C1 = CFrame.new(-1.02899, 0.127609, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 1, 0, 0),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(1.76228, -2.30232, 0, 0, 0.5, 0.866026, 0, -0.866026, 0.5, 1, 0, 0),
+		}
+	},
 
 	-- Pistols
 	{ -- 15034807966
@@ -295,11 +348,29 @@ local HatKnownAccessoriesDatabase = {
 			GunAttachment = CFrame.new(-0.375, 1.375, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
 		}
 	},
+	{ -- 11882172399
+		MeshId = "3729241578", TextureId = "",
+		C0 = CFrame.new(-1.1, -0.5, 0, 1, 0, 0, 0, -1, 0, 0, 0, -1),
+		C1 = CFrame.new(0, 0.875, 0.125, 1, 0, 0, 0, -1, 0, 0, 0, -1),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(0, -0.875, -0.25, 1, 0, 0, 0, -1, 0, 0, 0, -1),
+		}
+	},
+	{ -- 18895018400
+		MeshId = "18894853727", TextureId = "",
+		C0 = CFrame.new(1.1, -0.5, 0, 1, 0, 0, 0, -1, 0, 0, 0, -1),
+		C1 = CFrame.new(0, 0.525084, -0.375, -1, 0, 0, 0, -1, 0, 0, 0, 1),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(0, -0.75, 0.125, -1, 0, 0, 0, -1, 0, 0, 0, 1),
+		}
+	},
 	
 	-- Bullets
 	{ -- 4504231783
 		MeshId = "4307568890", TextureId = "",
-		C0 = CFrame.new(0, 1, 0),
+		C0 = CFrame.new(0, 1.2, 0) * CFrame.Angles(0, math.pi, 0),
 		C1 = CFrame.identity,
 		Limb = "Left Arm", Group = "Bullet"
 	},
