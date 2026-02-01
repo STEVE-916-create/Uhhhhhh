@@ -5228,6 +5228,12 @@ AddModule(function()
 			attacking = true
 			hum.WalkSpeed = 0
 			animationspeed = 99999
+			rt = ROOTC0
+			nt = NECKC0 * CFrame.Angles(math.rad(-20), 0, 0)
+			rst = CFrame.new(1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(70))
+			lst = CFrame.new(-1.2, 0.5, 0.5) * CFrame.Angles(math.rad(80), 0, math.rad(-70))
+			rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
+			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 			drhead = CFrame.new(0, -16, 0)
 			drleft = CFrame.new(0, -16, 0)
 			drrite = CFrame.new(0, -16, 0)
