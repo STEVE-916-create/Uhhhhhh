@@ -5262,7 +5262,7 @@ AddModule(function()
 				ReanimCamera.Scriptable = false
 			end
 			if o < 1.9 then
-				local a = CFrame.Angles(0.78 * math.cos(timingsine / 30)), 0.1 * math.sin(timingsine / 8)), 0.3 * math.sin(timingsine / 20)))
+				local a = CFrame.Angles(0.78 * math.cos(timingsine / 30), 0.1 * math.sin(timingsine / 8), 0.3 * math.sin(timingsine / 20))
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5) * CFrame.Angles(0, math.pi, 0) * a:Lerp(CFrame.Angles(math.rad(10), 0, 0), math.min(1, o))
 				ReanimCamera.FieldOfView = 70
 			elseif o < 2.9 then
