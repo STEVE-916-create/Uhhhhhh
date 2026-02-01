@@ -5266,7 +5266,7 @@ AddModule(function()
 			elseif state == 10 and o > 4.5 then
 				state = 11
 				CreateSound(136007472, 0.8)
-			elseif state == 11 and o > 7 + (5 / 30) then
+			elseif state == 11 and o > 7 + (5 / 24) then
 				state = 12
 				CreateSound(233096557, 1)
 				CreateSound(233091205, 1)
@@ -5283,9 +5283,9 @@ AddModule(function()
 				local b = CFrame.Angles(-0.78 * math.cos(timingsine / 30), 0.1 * math.sin(timingsine / 8), 0.3 * math.sin(timingsine / 20))
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5) * CFrame.Angles(0, math.pi, 0) * b:Lerp(CFrame.Angles(math.rad(-10), 0, 0), a)
 				ReanimCamera.FieldOfView = 70
-			elseif o < 2.9 then
-				local a = TweenService:GetValue(o - 1.9, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
-				ReanimCamera.CFrame = root.CFrame * (CFrame.new(0, 0.5, -5) * CFrame.Angles(math.rad(-10), 0, 0)):Lerp(CFrame.new(0, 5.5, -50), a) * CFrame.Angles(0, math.pi, 0)
+			elseif o < 4.5 then
+				local a = TweenService:GetValue((o - 1.9) / 2, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+				ReanimCamera.CFrame = root.CFrame * (CFrame.new(0, 0.5, -5) * CFrame.Angles(math.rad(10), 0, 0)):Lerp(CFrame.new(0, 5.5, -50), a) * CFrame.Angles(0, math.pi, 0)
 				ReanimCamera.FieldOfView = 70
 			elseif o < 7.1 then
 				local a = TweenService:GetValue(o - 4.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
@@ -5296,7 +5296,7 @@ AddModule(function()
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 5.5, -50):Lerp(CFrame.new(
 					sincosPerlin(sincosseed1, o * 2) * 0.05,
 					5.5 + sincosPerlin(sincosseed2, o * 2) * 0.05,
-					-40 + sincosPerlin(sincosseed3, o * 2) * 0.05
+					-20 + sincosPerlin(sincosseed3, o * 2) * 0.05
 				) * CFrame.Angles(
 					sincosPerlin(sincosseed4, o * 2) * 0.05,
 					sincosPerlin(sincosseed5, o * 2) * 0.05,
@@ -5323,7 +5323,7 @@ AddModule(function()
 			insts.ImpactFrame5.Position, insts.ImpactFrame5.Size = if1, if2
 			if o < 7 then
 				insts.ImpactFrame.Visible = false
-			elseif o < 7 + (1 / 40) then
+			elseif o < 7 + (1 / 24) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 				insts.ImpactFrame1.Visible = true
@@ -5331,7 +5331,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = false
-			elseif o < 7 + (2 / 40) then
+			elseif o < 7 + (2 / 24) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 				insts.ImpactFrame1.Visible = false
@@ -5339,7 +5339,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = false
-			elseif o < 7 + (3 / 40) then
+			elseif o < 7 + (3 / 24) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 				insts.ImpactFrame1.Visible = false
@@ -5347,7 +5347,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = true
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = false
-			elseif o < 7 + (4 / 40) then
+			elseif o < 7 + (4 / 24) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 				insts.ImpactFrame1.Visible = false
@@ -5355,7 +5355,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = true
 				insts.ImpactFrame5.Visible = false
-			elseif o < 7 + (5 / 40) then
+			elseif o < 7 + (5 / 24) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 				insts.ImpactFrame1.Visible = false
