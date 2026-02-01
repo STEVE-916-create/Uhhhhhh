@@ -5062,7 +5062,7 @@ AddModule(function()
 		footsteps.Volume = 0.4
 
 		-- haha get it
-		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenUI, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, Visible = false})
+		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenGui, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, Visible = false})
 		insts.ImpactFrame1 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame1.png"), Visible = false})
 		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = false})
 		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = false})
@@ -5223,7 +5223,7 @@ AddModule(function()
 			ReanimCamera.Scriptable = true
 			attacking = true
 			hum.WalkSpeed = 0
-			animationspeed = 0
+			animationspeed = 99999
 			drhead = CFrame.new(0, -16, 0)
 			drleft = CFrame.new(0, -16, 0)
 			drrite = CFrame.new(0, -16, 0)
@@ -5249,12 +5249,12 @@ AddModule(function()
 			elseif state == 10 and o > 4.5 then
 				state = 11
 				CreateSound(136007472, 0.8)
-			elseif state == 11 and o > 6 + (5 / 30) then
+			elseif state == 11 and o > 7 + (5 / 30) then
 				state = 12
 				CreateSound(233096557, 1)
 				CreateSound(233091205, 1)
 				for _=1, 3 do CreateSound(150829983, 0.9) end
-			elseif state == 12 and o > 10 then
+			elseif state == 12 and o > 12 then
 				state = 3
 				statetime = timingsine
 				attacking = false
@@ -5262,19 +5262,19 @@ AddModule(function()
 				ReanimCamera.Scriptable = false
 			end
 			if o < 1.9 then
-				local a = CFrame.Angles(0.78 * math.cos(timingsine / 30), 0.1 * math.sin(timingsine / 8), 0.3 * math.sin(timingsine / 20))
-				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5) * CFrame.Angles(0, math.pi, 0) * a:Lerp(CFrame.Angles(math.rad(10), 0, 0), math.min(1, o))
+				local a = CFrame.Angles(-0.78 * math.cos(timingsine / 30), 0.1 * math.sin(timingsine / 8), 0.3 * math.sin(timingsine / 20))
+				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5) * CFrame.Angles(0, math.pi, 0) * a:Lerp(CFrame.Angles(math.rad(-10), 0, 0), math.min(1, o))
 				ReanimCamera.FieldOfView = 70
 			elseif o < 2.9 then
-				local a = TweenService:GetValue(o - 0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-				local b = TweenService:GetValue(o - 4.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+				local a = TweenService:GetValue(o - 1.9, Enum.EasingStyle.Back, Enum.EasingDirection.InOut)
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5):Lerp(CFrame.new(0, 5.5, -50), a) * CFrame.Angles(0, math.pi, 0)
-				ReanimCamera.FieldOfView = 70 - 40 * b
-			elseif o < 6.1 then
+				ReanimCamera.FieldOfView = 70
+			elseif o < 7.1 then
+				local a = TweenService:GetValue(o - 4.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 5.5, -50) * CFrame.Angles(0, math.pi, 0)
-				ReanimCamera.FieldOfView = 30
-			elseif o < 10 then
-				local a = TweenService:GetValue(o - 6.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+				ReanimCamera.FieldOfView = 70 - 40 * a
+			elseif o < 12 then
+				local a = TweenService:GetValue(o - 7.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 5.5, -50):Lerp(CFrame.new(
 					sincosPerlin(sincosseed1, o * 2) * 0.05,
 					5.5 + sincosPerlin(sincosseed2, o * 2) * 0.05,
@@ -5282,7 +5282,7 @@ AddModule(function()
 				) * CFrame.Angles(
 					sincosPerlin(sincosseed4, o * 2) * 0.05,
 					sincosPerlin(sincosseed5, o * 2) * 0.05,
-					0.1 + sincosPerlin(sincosseed6, o * 2) * 0.05
+					0.05 + sincosPerlin(sincosseed6, o * 2) * 0.05
 				), a) * CFrame.Angles(0, math.pi, 0)
 				ReanimCamera.FieldOfView = 30 + 50 * a
 			end
@@ -5301,9 +5301,9 @@ AddModule(function()
 			insts.ImpactFrame3.Position, insts.ImpactFrame3.Size = if1, if2
 			insts.ImpactFrame4.Position, insts.ImpactFrame4.Size = if1, if2
 			insts.ImpactFrame5.Position, insts.ImpactFrame5.Size = if1, if2
-			if o < 6 then
+			if o < 7 then
 				insts.ImpactFrame.Visible = false
-			elseif o < 6 + (1 / 40) then
+			elseif o < 7 + (1 / 40) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 				insts.ImpactFrame1.Visible = true
@@ -5311,7 +5311,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = false
-			elseif o < 6 + (2 / 40) then
+			elseif o < 7 + (2 / 40) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 				insts.ImpactFrame1.Visible = false
@@ -5319,7 +5319,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = false
-			elseif o < 6 + (3 / 40) then
+			elseif o < 7 + (3 / 40) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 				insts.ImpactFrame1.Visible = false
@@ -5327,7 +5327,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = true
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = false
-			elseif o < 6 + (4 / 40) then
+			elseif o < 7 + (4 / 40) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 				insts.ImpactFrame1.Visible = false
@@ -5335,7 +5335,7 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = true
 				insts.ImpactFrame5.Visible = false
-			elseif o < 6 + (5 / 40) then
+			elseif o < 7 + (5 / 40) then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 				insts.ImpactFrame1.Visible = false
@@ -5346,7 +5346,7 @@ AddModule(function()
 			else
 				insts.ImpactFrame.Visible = false
 			end
-			if o >= 6.1 then
+			if o >= 7.1 then
 				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(50), 0, 0)
 				drleft = CFrame.new(4, 0, 0) * CFrame.Angles(0, math.rad(-30), 0)
 				drrite = CFrame.new(-4, 0, 0) * CFrame.Angles(0, math.rad(30), 0)
@@ -5362,7 +5362,7 @@ AddModule(function()
 			if o >= 6.1 and o <= 10 then
 				if os.clock() > lastfx then
 					lastfx = os.clock() + 1 / 15
-					MagicCircle2("Really black", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.zero, Vector3.one * 3 * scale, 0.03)
+					MagicCircle2("Really black", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.zero, Vector3.one * 5 * scale, 0.03)
 					BlastEffect("White", root.CFrame * Vector3.new(0, -2 * scale, 0), Vector3.new(1, 0.2, 1), Vector3.new(2, 0, 2))
 				end
 			end
