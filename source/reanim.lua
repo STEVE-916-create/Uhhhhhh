@@ -4902,12 +4902,13 @@ function HatReanimator.Start()
 	HatReanimator.HatMapSummary = "(no hat map yet...)"
 	table.clear(HatReanimator.FlingTargets)
 	
+	local lastsimradchange = 0
 	local function SetSimulationRadius()
 		local function setsimrad(plr, radius)
 			pcall(function()
 				Player.SimulationRadius = radius
 			end)
-			pcall(sethiddenproperty, Player, "SimulationRadius", r)
+			pcall(sethiddenproperty, Player, "SimulationRadius", radius)
 		end
 		for _,plr in Players:GetPlayers() do
 			local a, b = pcall(compareinstances, plr, Player)
@@ -4917,7 +4918,10 @@ function HatReanimator.Start()
 		end
 		local r = #Players:GetPlayers() * 1000
 		setsimrad(Player, radius)
-		pcall(replicatesignal, Player.SimulationRadiusChanged, r)
+		if os.clock() > lastsimradchange then
+			lastsimradchange = os.clock() + 0.5
+			pcall(replicatesignal, Player.SimulationRadiusChanged, r)
+		end
 	end
 	local function IsNetworkOwner(part)
 		if isnetworkowner then
