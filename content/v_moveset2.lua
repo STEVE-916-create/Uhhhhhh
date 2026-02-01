@@ -5279,19 +5279,20 @@ AddModule(function()
 				ReanimCamera.Scriptable = false
 			end
 			if o < 1.9 then
-				local a = CFrame.Angles(-0.78 * math.cos(timingsine / 30), 0.1 * math.sin(timingsine / 8), 0.3 * math.sin(timingsine / 20))
-				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5) * CFrame.Angles(0, math.pi, 0) * a:Lerp(CFrame.Angles(math.rad(-10), 0, 0), math.min(1, o))
+				local a = TweenService:GetValue(o, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+				local b = CFrame.Angles(-0.78 * math.cos(timingsine / 30), 0.1 * math.sin(timingsine / 8), 0.3 * math.sin(timingsine / 20))
+				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5) * CFrame.Angles(0, math.pi, 0) * b:Lerp(CFrame.Angles(math.rad(-10), 0, 0), a)
 				ReanimCamera.FieldOfView = 70
 			elseif o < 2.9 then
-				local a = TweenService:GetValue(o - 1.9, Enum.EasingStyle.Back, Enum.EasingDirection.InOut)
-				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 0.5, -5):Lerp(CFrame.new(0, 5.5, -50), a) * CFrame.Angles(0, math.pi, 0)
+				local a = TweenService:GetValue(o - 1.9, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+				ReanimCamera.CFrame = root.CFrame * (CFrame.new(0, 0.5, -5) * CFrame.Angles(math.rad(-10), 0, 0)):Lerp(CFrame.new(0, 5.5, -50), a) * CFrame.Angles(0, math.pi, 0)
 				ReanimCamera.FieldOfView = 70
 			elseif o < 7.1 then
-				local a = TweenService:GetValue(o - 4.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+				local a = TweenService:GetValue(o - 4.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 5.5, -50) * CFrame.Angles(0, math.pi, 0)
 				ReanimCamera.FieldOfView = 70 - 40 * a
 			elseif o < 12 then
-				local a = TweenService:GetValue(o - 7.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+				local a = TweenService:GetValue(o - 7.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
 				ReanimCamera.CFrame = root.CFrame * CFrame.new(0, 5.5, -50):Lerp(CFrame.new(
 					sincosPerlin(sincosseed1, o * 2) * 0.05,
 					5.5 + sincosPerlin(sincosseed2, o * 2) * 0.05,
