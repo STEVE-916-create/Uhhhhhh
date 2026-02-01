@@ -3081,6 +3081,8 @@ local Reanimate = {
 		OnReset = function(self)
 			self.Zoom = (self.Focus.Position - self.CFrame.Position).Magnitude
 			self._Zoom = self.Zoom
+			self.Scriptable = false
+			self.FieldOfView = 70
 			self.Inputs:Reset()
 		end,
 		OnPanInput = function(self, vec, accum)
