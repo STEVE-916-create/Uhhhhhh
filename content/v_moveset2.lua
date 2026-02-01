@@ -5071,7 +5071,7 @@ AddModule(function()
 		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 3", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
 		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 4", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
 		insts.ImpactFrame5 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 5", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame5.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
-		insts.ImpactFrame6 = CreateStuffUtil("TextLabel", insts.ImpactFrame, "sin dragon", {BackgroundTransparency = 1, TextScaled = true, Text = "SIN DRAGON", Font = Enum.Font.Antique, TextColor3 = maincolor, Visible = false, Size = UDim2.fromScale(1, 0.3)})
+		insts.ImpactFrame6 = CreateStuffUtil("TextLabel", insts.ImpactFrame, "sin dragon", {BackgroundTransparency = 1, TextScaled = true, Text = "SIN DRAGON", Font = Enum.Font.Antique, TextColor3 = maincolor, Visible = false, Size = UDim2.fromScale(1, 0.3), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5)})
 		local loadhack = insts.ImpactFrame:Clone()
 		loadhack.Parent = HiddenGui
 		loadhack.Size = UDim2.fromOffset(2, 2)
@@ -5371,15 +5371,30 @@ AddModule(function()
 			elseif o < 12.5 then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+				insts.ImpactFrame1.Visible = false
+				insts.ImpactFrame2.Visible = false
+				insts.ImpactFrame3.Visible = false
+				insts.ImpactFrame4.Visible = false
+				insts.ImpactFrame5.Visible = false
 				insts.ImpactFrame6.Visible = false
 			elseif o < 15 then
 				insts.ImpactFrame.Visible = true
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+				insts.ImpactFrame1.Visible = false
+				insts.ImpactFrame2.Visible = false
+				insts.ImpactFrame3.Visible = false
+				insts.ImpactFrame4.Visible = false
+				insts.ImpactFrame5.Visible = false
 				insts.ImpactFrame6.Visible = true
 			else
-				insts.ImpactFrame.Visible = true
+				insts.ImpactFrame.Visible = o - 15 < 1
 				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 				insts.ImpactFrame.BackgroundTransparency = o - 15
+				insts.ImpactFrame1.Visible = false
+				insts.ImpactFrame2.Visible = false
+				insts.ImpactFrame3.Visible = false
+				insts.ImpactFrame4.Visible = false
+				insts.ImpactFrame5.Visible = false
 				insts.ImpactFrame6.Visible = true
 				insts.ImpactFrame6.TextTransparency = o - 15
 			end
