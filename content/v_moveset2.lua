@@ -4878,7 +4878,9 @@ AddModule(function()
 		elseif m.AltIntro then
 			state = 4
 		end
-		if not m.AltIntro and not m.SkipIntro then
+		if m.AltIntro and not m.SkipIntro then
+			SetOverrideMovesetMusic("", "Silence", 1)
+		else
 			SetOverrideMovesetMusic(AssetGetContentId("SinDragonTheme.mp3"), "Radiarc - Chaos Arranged", 1)
 		end
 		statem1 = 0
@@ -5290,8 +5292,8 @@ AddModule(function()
 			local if2 = UDim2.fromScale(1, 1)
 			local Camera = workspace.CurrentCamera
 			if Camera then
-				local hi1 = Camera:WorldToScreenPoint(root.CFrame * Vector3.new(34, 31.5, -4))
-				local hi2 = Camera:WorldToScreenPoint(root.CFrame * Vector3.new(-34, -4.5, -4))
+				local hi1 = Camera:WorldToViewportPoint(root.CFrame * Vector3.new(34, 25.5, -4))
+				local hi2 = Camera:WorldToViewportPoint(root.CFrame * Vector3.new(-34, -10.5, -4))
 				if1 = UDim2.fromOffset(hi1.X, hi1.Y)
 				if2 = UDim2.fromOffset(hi2.X, hi2.Y)
 			end
@@ -5359,7 +5361,7 @@ AddModule(function()
 					MagicRing("Alder", root.CFrame * (Vector3.new(12, 0, 0) * scale), Vector3.new(20, 20, 2) * scale, Vector3.new(-1, -1, 0) * scale)
 				end
 			end
-			if o >= 6.1 and o <= 10 then
+			if o >= 7.1 and o <= 10 then
 				if os.clock() > lastfx then
 					lastfx = os.clock() + 1 / 15
 					MagicCircle2("Really black", root.CFrame * (Vector3.new(0, 9, 7) * scale), Vector3.zero, Vector3.one * 5 * scale, 0.03)
