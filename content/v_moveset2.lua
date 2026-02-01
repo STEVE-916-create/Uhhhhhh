@@ -4472,8 +4472,8 @@ AddModule(function()
 				rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0) * CFrame.Angles(math.rad(-2.5), 0, 0)
 				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(-20), 0, 0)
-				drleft = CFrame.new(math.random(-20, 10), math.random(-4, 8), -bar * 20)
-				drrite = CFrame.new(math.random(-10, 20), math.random(-4, 8), bar * 20)
+				drleft = CFrame.new(math.random(-13, 10), math.random(-4, 8), -bar * 20)
+				drrite = CFrame.new(math.random(-10, 13), math.random(-4, 8), bar * 20)
 				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
 			end
 			CreateSound(159882584)
