@@ -4929,7 +4929,7 @@ function HatReanimator.Start()
 			end
 		end
 		local r = #Players:GetPlayers() * 1000
-		setsimrad(Player, radius)
+		setsimrad(Player, r)
 		if os.clock() > lastsimradchange then
 			lastsimradchange = os.clock() + 0.5
 			pcall(replicatesignal, Player.SimulationRadiusChanged, r)
