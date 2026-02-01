@@ -5067,10 +5067,11 @@ AddModule(function()
 		-- haha get it
 		insts.ImpactFrame = CreateStuffUtil("Frame", HiddenGui, "impact frames", {Position = UDim2.fromScale(0, 0), Size = UDim2.fromScale(1, 1), BorderSizePixel = 0, Visible = false})
 		insts.ImpactFrame1 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame1.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
-		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
-		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
-		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
-		insts.ImpactFrame5 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 1", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame5.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame2 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 2", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame2.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame3 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 3", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame3.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame4 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 4", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame4.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame5 = CreateStuffUtil("ImageLabel", insts.ImpactFrame, "impact frame 5", {BackgroundTransparency = 1, Image = AssetGetContentId("SinDragonImpactFrame5.png"), Visible = true, Size = UDim2.fromOffset(1, 1)})
+		insts.ImpactFrame6 = CreateStuffUtil("TextLabel", insts.ImpactFrame, "sin dragon", {BackgroundTransparency = 1, TextScaled = true, Text = "SIN DRAGON", Font = Enum.Font.Antique, TextColor3 = maincolor, Visible = false, Size = UDim2.fromScale(1, 0.3)})
 		local loadhack = insts.ImpactFrame:Clone()
 		loadhack.Parent = HiddenGui
 		loadhack.Size = UDim2.fromOffset(2, 2)
@@ -5271,11 +5272,13 @@ AddModule(function()
 				CreateSound(233096557, 1)
 				CreateSound(233091205, 1)
 				for _=1, 3 do CreateSound(150829983, 0.9) end
-			elseif state == 12 and o > 12 then
+			elseif state == 12 and o > 12.5 then
+				state = 13
+				SetOverrideMovesetMusic(AssetGetContentId("SinDragonTheme.mp3"), "Radiarc - Chaos Arranged", 1)
+			elseif state == 13 and o > 16 then
 				state = 3
 				statetime = timingsine
 				attacking = false
-				SetOverrideMovesetMusic(AssetGetContentId("SinDragonTheme.mp3"), "Radiarc - Chaos Arranged", 1)
 				ReanimCamera.Scriptable = false
 			end
 			if o < 1.9 then
@@ -5363,8 +5366,22 @@ AddModule(function()
 				insts.ImpactFrame3.Visible = false
 				insts.ImpactFrame4.Visible = false
 				insts.ImpactFrame5.Visible = true
-			else
+			elseif o < 12 then
 				insts.ImpactFrame.Visible = false
+			elseif o < 12.5 then
+				insts.ImpactFrame.Visible = true
+				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+				insts.ImpactFrame6.Visible = false
+			elseif o < 15 then
+				insts.ImpactFrame.Visible = true
+				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+				insts.ImpactFrame6.Visible = true
+			else
+				insts.ImpactFrame.Visible = true
+				insts.ImpactFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+				insts.ImpactFrame.BackgroundTransparency = o - 15
+				insts.ImpactFrame6.Visible = true
+				insts.ImpactFrame6.TextTransparency = o - 15
 			end
 			if o >= 7.1 then
 				drhead = CFrame.new(math.random(-5, 5) / 10, math.random(55, 65) / 10, math.random(65, 75) / 10) * CFrame.Angles(math.rad(50), 0, 0)
