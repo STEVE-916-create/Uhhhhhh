@@ -744,7 +744,7 @@ else
 			stevetherealone.Visible = true
 			stevetherealone.Size = UDim2.fromOffset(z, z)
 		elseif t < 4.756 then
-			stevetherealone.Text = "STEVE\nTEST\nALONE"
+			stevetherealone.Text = "STEVE\nTHERE\nALONE"
 			stevetherealone.Visible = true
 			stevetherealone.Size = UDim2.fromOffset(100, 100)
 		else
