@@ -379,12 +379,12 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideDanceMusic(AssetGetContentId("Lux.mp3"), "i cant deny it", 1, NumberRange.new(0, 5.88))
+		SetOverrideDanceMusic(AssetGetContentId("imissthequiet.mp3"), "i cant deny it", 1, NumberRange.new(0, 5.88))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = false
 		animator.map = {{0, 5.88}, {0, 5.69999}}
-		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Lux.anim"))
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("imissthequiet.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideDanceMusicTime())
