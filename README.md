@@ -19,7 +19,7 @@ Pick from one of these:
 
 1. raw loadstring (cached by github)
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/source/reanim.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/airy-one-1/Uhhhhhh-but-more-anims/refs/heads/main/source/reanim.lua"))()
 ```
 
 2. api loadstring (bypasses github cache)
