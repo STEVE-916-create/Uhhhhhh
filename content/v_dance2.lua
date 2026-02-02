@@ -283,9 +283,9 @@ end)
 AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
-	m.Name = "T9x"
+	m.Name = "Lux"
 	m.Description = "help me find what tune this is\n\nnot cuz i like it\ni actually hate it"
-	m.Assets = {"imissthequiet.anim", "Lux.mp3"}
+	m.Assets = {"Lux.anim", "Lux.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
 	end
