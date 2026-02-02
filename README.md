@@ -1,3 +1,4 @@
+orignal by steve, new anims here were added by me.
 # <p align="center">STEVETHEREALONE (@steve_internal)'s Universal Hierarchical 6 Reanimator</p>
 <p align="center">A really cool, optimised animation program with demo scenes! Idea originated from a dream.</p>
 <p align="center">
@@ -18,7 +19,7 @@ Pick from one of these:
 
 1. raw loadstring (cached by github)
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/source/reanim.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/airy-one-1/Uhhhhhh-but-more-anims/refs/heads/main/source/reanim.lua"))()
 ```
 
 2. api loadstring (bypasses github cache)
