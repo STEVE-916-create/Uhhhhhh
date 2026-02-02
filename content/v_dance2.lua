@@ -285,7 +285,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Lux"
 	m.Description = "help me find what tune this is\n\nnot cuz i like it\ni actually hate it"
-	m.Assets = {"Lux.anim", "Lux.mp3"}
+	m.Assets = {"imissthequiet.anim", "Lux.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
 	end
@@ -297,7 +297,7 @@ AddModule(function()
 		animator.rig = figure
 		animator.looped = false
 		animator.map = {{0, 5.88}, {0, 5.69999}}
-		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Lux.anim"))
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("imissthequiet.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideDanceMusicTime())
