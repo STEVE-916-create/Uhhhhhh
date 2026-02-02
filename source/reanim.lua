@@ -744,7 +744,7 @@ else
 			stevetherealone.Visible = true
 			stevetherealone.Size = UDim2.fromOffset(z, z)
 		elseif t < 4.756 then
-			stevetherealone.Text = "STEVE\nTHERE\nALONE"
+			stevetherealone.Text = "STEVE\nTEST\nALONE"
 			stevetherealone.Visible = true
 			stevetherealone.Size = UDim2.fromOffset(100, 100)
 		else
@@ -1083,6 +1083,7 @@ local UIMainWindow, WindowContent do
 			"currentangle v5",
 			"patchma hub by <font color=\"#0000FF\">MyWorld</font>",
 			"Genesis FE with extra steps",
+			"AW SHUCKS!!1!1!1!1!!!111!1",
 		}
 		if os.date("%m") == "12" and math.random(4) == 1 then
 			quotes = {
