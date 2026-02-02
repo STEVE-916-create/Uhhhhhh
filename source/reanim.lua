@@ -386,7 +386,7 @@ do
 			Size = UDim2.new(1, 0, 0, 32)
 		}):Play()
 		task.wait(0.5)
-		local s, assetsof = pcall(game.HttpGet, game, "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/uiassets/")
+		local s, assetsof = pcall(game.HttpGet, game, "https://api.github.com/repos/airy-one-1/Uhhhhhh-but-more-anims/contents/uiassets/")
 		if s and assetsof then
 			s, assetsof = pcall(HttpService.JSONDecode, HttpService, assetsof)
 			if s and assetsof then
@@ -7796,7 +7796,7 @@ UI.CreateText(CreditsPage, "This \"software\" is FREE, meaning YOU SHOULD NOT RE
 UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances or Movesets, go to <font color=\"#4444FF\">this thing</font>.", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		Util.Notify("Link copied!")
-		pcall(setclipboard, "https://github.com/STEVE-916-create/Uhhhhhh/")
+		pcall(setclipboard, "https://github.com/airy-one-1/Uhhhhhh-but-more-anims/")
 	end
 end)
 UI.CreateSeparator(CreditsPage)
@@ -7854,7 +7854,7 @@ task.spawn(function()
 	UI.CreateText(ChangelogsPage, "Changelogs", 30, Enum.TextXAlignment.Center)
 	local content = UI.CreateText(ChangelogsPage, "Loading...", 12, Enum.TextXAlignment.Left)
 	xpcall(function()
-		local logs = game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/CHANGELOGS")
+		local logs = game:HttpGet("https://raw.githubusercontent.com/airy-one-1/Uhhhhhh-but-more-anims/main/CHANGELOGS")
 		content.Text = "Rendering error."
 		for _,v in string.split(logs, "\n") do
 			if v:sub(1, 2) == "# " then
@@ -7899,7 +7899,7 @@ SaveData.ContentHash = SaveData.ContentHash or {}
 xpcall(function()
 	local s, resp = pcall(request, {
 		Method = "GET",
-		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/",
+		Url = "https://api.github.com/repos/airy-one-1/Uhhhhhh-but-more-anims/main/content/",
 	})
 	if s and resp and resp.StatusCode == 200 then
 		s, resp = pcall(HttpService.JSONDecode, HttpService, resp.Body)
@@ -7941,7 +7941,7 @@ for _,x in filesofbuiltins_d do
 	if not exist then
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/" .. x,
+			Url = "https://api.github.com/repos/airy-one-1/Uhhhhhh-but-more-anims/contents/content/" .. x,
 			Headers = {
 				Accept = "application/vnd.github.VERSION.raw"
 			}
@@ -7973,7 +7973,7 @@ for _,x in filesofbuiltins_m do
 	else
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/" .. x,
+			Url = "https://api.github.com/repos/airy-one-1/Uhhhhhh-but-more-anims/contents/content/" .. x,
 			Headers = {
 				Accept = "application/vnd.github.VERSION.raw"
 			}
