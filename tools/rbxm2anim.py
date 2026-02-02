@@ -1055,6 +1055,9 @@ class RBXModel:
 						elif typeName == "SecurityCapabilities":
 							read_RBXInterleavedInt64(b2, count)
 							typeName = None
+						elif typeName == "UniqueId":
+							read_RBXInterleavedInt64(b2, count)
+							typeName = None
 						else:
 							raise Exception(typeName, hex(typeIndex), typeP["className"], name)
 							#print(typeName, hex(typeIndex), typeP["className"], name)
