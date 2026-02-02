@@ -4970,9 +4970,9 @@ function HatReanimator.Start()
 	local function SetSimulationRadius()
 		local function setsimrad(plr, radius)
 			pcall(function()
-				Player.SimulationRadius = radius
+				plr.SimulationRadius = radius
 			end)
-			pcall(sethiddenproperty, Player, "SimulationRadius", radius)
+			pcall(sethiddenproperty, plr, "SimulationRadius", radius)
 		end
 		for _,plr in Players:GetPlayers() do
 			local a, b = pcall(compareinstances, plr, Player)
@@ -5058,7 +5058,7 @@ function HatReanimator.Start()
 			speedlimit = math.huge
 		end
 		local netless = Reanimate.NetlessVelocity
-		if handle.Parent:IsA("Tool") then
+		if handle.Parent:IsA("Tool") and false then
 			netless = 0
 		end
 		netless += (math.sin(timing * 0.5) + 1) / 2
@@ -5229,6 +5229,8 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[-1] = {
 		NoAnim = true,
+		Wait1 = 0.06,
+		Wait2 = 0,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
 			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 141, 0))
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 30, 0), Vector3.zero
