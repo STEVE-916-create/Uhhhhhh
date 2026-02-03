@@ -367,4 +367,43 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "hacking full roblox"
+	m.Description = "animator: @maybewasangery\nreference: ████████████\nyes i dont wanna mention him so"
+	m.Assets = {"HackFullRoblox.anim"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	local robloxwalk = nil
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic("", "Roblox walk", 0)
+		start = os.clock()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = false
+		animator.speed = 1
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("HackFullRoblox.anim"))
+		robloxwalk = Instance.new("Sound")
+		robloxwalk.SoundId = "rbxasset://sounds/action_footsteps_plastic.mp3"
+		robloxwalk.Looped = true
+		robloxwalk.Pitch = 1.85
+		robloxwalk.Volume = 1.5
+		robloxwalk.Parent = figure
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock()
+		animator:Step((t - start) % 2)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+		robloxwalk:Destroy()
+	end
+	return m
+end)
+
 return modules
