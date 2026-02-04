@@ -4451,6 +4451,8 @@ function HatReanimator.Config(parent)
 	end)
 	UI.CreateText(parent, "^^^ if ur rig built wrong or u switched to a new rig ^^^\nthis button is for you", 10, Enum.TextXAlignment.Center)
 	UI.CreateButton(parent, "Respawn", 20).Activated:Connect(function()
+		HatReanimator.Status.Permadeath = "Fired CDSB Signal!"
+		replicatesignal(Player.ConnectDiedSignalBackend)
 		if RejectCharacterDeletionsDisabled then
 			HatReanimator.Status.Permadeath = "RCDless mode, did old technique!"
 			local old = Player.Character
@@ -4464,9 +4466,6 @@ function HatReanimator.Config(parent)
 			task.wait()
 			HatReanimator.DontFireCharAddOnThisChar = old
 			Player.Character = old
-		else
-			HatReanimator.Status.Permadeath = "Fired CDSB Signal!"
-			replicatesignal(Player.ConnectDiedSignalBackend)
 		end
 	end)
 end
@@ -5023,6 +5022,7 @@ function HatReanimator.Start()
 	local function Respawn()
 		if IsRespawning then return end
 		IsRespawning = true
+		replicatesignal(Player.ConnectDiedSignalBackend)
 		if RejectCharacterDeletionsDisabled then
 			local old = Player.Character
 			for _,v in old:GetChildren() do
@@ -5035,8 +5035,6 @@ function HatReanimator.Start()
 			task.wait()
 			HatReanimator.DontFireCharAddOnThisChar = old
 			Player.Character = old
-		else
-			replicatesignal(Player.ConnectDiedSignalBackend)
 		end
 	end
 
