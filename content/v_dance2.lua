@@ -393,6 +393,7 @@ AddModule(function()
 		robloxwalk.Looped = true
 		robloxwalk.Pitch = 1.85
 		robloxwalk.Volume = 1.5
+		robloxwalk.Playing = true
 		robloxwalk.Parent = figure
 	end
 	m.Update = function(dt: number, figure: Model)
@@ -402,6 +403,68 @@ AddModule(function()
 	m.Destroy = function(figure: Model?)
 		animator = nil
 		robloxwalk:Destroy()
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Egypt"
+	m.Description = "imagine getting banned here"
+	m.Assets = {"Egypt.anim", "Egypt.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("Egypt.mp3"), "Mofe. - Prince of Egypt", 1)
+		start = os.clock()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.speed = 1
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Egypt.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock()
+		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Rambunctious"
+	m.Description = "idk"
+	m.Assets = {"Rambunctious.anim", "Rambunctious.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("Rambunctious.mp3"), "PatQuinnMusic - Rambunctious", 1)
+		start = os.clock()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.speed = 1
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Rambunctious.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock()
+		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
 	end
 	return m
 end)
