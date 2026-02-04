@@ -5632,13 +5632,9 @@ function HatReanimator.Start()
 		local cdsbeffect = os.clock()
 		local cdsbtime = os.clock()
 		if perma then
-			if RejectCharacterDeletionsDisabled then
-				HatReanimator.Status.Permadeath = "RCDless mode. Not yet."
-			else
-				replicatesignal(Player.ConnectDiedSignalBackend)
-				HatReanimator.Status.Permadeath = "Fired CDSB Signal."
-				cdsbeffect += Players.RespawnTime
-			end
+			replicatesignal(Player.ConnectDiedSignalBackend)
+			HatReanimator.Status.Permadeath = "Fired CDSB Signal."
+			cdsbeffect += Players.RespawnTime
 		end
 		HatReanimator.Status.RespawnFling = "Flinging targets..."
 		if HatReanimator.UseNaNFling and HatReanimator.FlingTargets[1] then
@@ -5723,6 +5719,7 @@ function HatReanimator.Start()
 		HatReanimator.Status.ReanimState = "Loading Permadeath."
 		if perma then
 			if RejectCharacterDeletionsDisabled then
+				HatReanimator.Status.Permadeath = "Doing RCDless Permadeath."
 				cdsbeffect = os.clock() + Players.RespawnTime + 0.05
 				local oldperma = Util.Instance("Model", workspace)
 				Instance.new("Part", oldperma).Name = "Torso"
@@ -5830,9 +5827,8 @@ function HatReanimator.Start()
 				end
 				if hatcols and collidable <= atleast then
 					if perma then
-						HatReanimator.Status.Permadeath = "No hat collide. Fired CDSB Signal!"
-						replicatesignal(Player.ConnectDiedSignalBackend)
-						IsRespawning = true
+						HatReanimator.Status.Permadeath = "No hat collide. Respawning!"
+						Respawn()
 					end
 				end
 			end)
@@ -5856,17 +5852,15 @@ function HatReanimator.Start()
 		HatReanimator.Status.ReanimState = "Done."
 		if #CharHats == 0 then
 			if perma then
-				HatReanimator.Status.Permadeath = "All hats died. Fired CDSB Signal!"
-				replicatesignal(Player.ConnectDiedSignalBackend)
-				IsRespawning = true
+				HatReanimator.Status.Permadeath = "All hats died. Respawning!"
+				Respawn()
 			end
 		end
 		if perma and hatcols then
 			if HatReanimator.IWantAllHats and NumHats > #CharHats then
 				if perma then
-					HatReanimator.Status.Permadeath = "Some hats died. Fired CDSB Signal!"
-					replicatesignal(Player.ConnectDiedSignalBackend)
-					IsRespawning = true
+					HatReanimator.Status.Permadeath = "Some hats died. Respawning!"
+					Respawn()
 				end
 			else
 				NumHats = #CharHats
@@ -5912,7 +5906,7 @@ function HatReanimator.Start()
 				end
 				if HatReanimator.HasPermadeath and not IsRespawning and HatReanimator.IWantAllHats then
 					if NumHats > #CharHats then
-						HatReanimator.Status.Permadeath = "Some hats died. Fired CDSB Signal!"
+						HatReanimator.Status.Permadeath = "Some hats died. Respawning!"
 						Respawn()
 					else
 						local midpoint = Vector3.zero
@@ -5931,7 +5925,7 @@ function HatReanimator.Start()
 						midpoint /= hatsowned
 						for _,v in hatsnotowned do
 							if (v.Position - midpoint).Magnitude > 2000 then
-								HatReanimator.Status.Permadeath = "Unclaimable hats found. Fired CDSB Signal!"
+								HatReanimator.Status.Permadeath = "Some hats unclaimable. Respawning!"
 								Respawn()
 								break
 							end
