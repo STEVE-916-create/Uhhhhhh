@@ -4973,6 +4973,8 @@ function HatReanimator.Start()
 			end)
 			pcall(sethiddenproperty, plr, "SimulationRadius", radius)
 		end
+		settings().Physics.AllowSleep = false
+		settings().Physics.ThrottleAdjustTime = 0/0
 		for _,plr in Players:GetPlayers() do
 			local a, b = pcall(compareinstances, plr, Player)
 			if a and not b then
@@ -4985,6 +4987,7 @@ function HatReanimator.Start()
 			lastsimradchange = os.clock() + 0.5
 			pcall(replicatesignal, Player.SimulationRadiusChanged, r)
 		end
+		pcall(setsimulationradius, r, r)
 	end
 	local function IsNetworkOwner(part)
 		if isnetworkowner then
