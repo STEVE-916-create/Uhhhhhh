@@ -4856,7 +4856,7 @@ function HatReanimator.Start()
 		HatReanimator.HatMapSummary = summary
 		HatReanimator.RebuildRequired = false
 	end
-	local function GetHatCFrameMeshAndTexture(mesh, tex, name)
+	local function GetHatMappedMeshAndTexture(mesh, tex, name)
 		local ReanimCharacter = Reanimate.Character
 		if not ReanimCharacter then return end
 		local scale = ReanimCharacter:GetScale()
@@ -4882,12 +4882,13 @@ function HatReanimator.Start()
 						overriden = {
 							C0 = data.C0 or data.Offset or CFrame.identity,
 							C1 = overriden.C1 * (data.C1 or CFrame.identity),
-							Limb = data.Limb,
+							Limb = data.Limb, RepRootPart = data.RepRootPart,
 						}
 					else
 						overriden = {
 							C0 = data.C0 or data.CFrame or CFrame.identity,
 							C1 = overriden.C1 * (data.C1 or CFrame.identity),
+							RepRootPart = data.RepRootPart,
 						}
 					end
 					break
@@ -4901,6 +4902,11 @@ function HatReanimator.Start()
 				end
 			end
 		end
+		return overriden
+	end
+	local function GetHatMappedCFrame(overriden)
+		local ReanimCharacter = Reanimate.Character
+		if not ReanimCharacter then return end
 		if overriden then
 			-- limb attached
 			if overriden.Limb then
@@ -4923,6 +4929,15 @@ function HatReanimator.Start()
 			end
 		end
 		return
+	end
+	local function GetHatCFrameMeshAndTexture(mesh, tex, name)
+		return GetHatMappedCFrame(GetHatMappedMeshAndTexture(mesh, tex, name))
+	end
+	local function GetHatMapped(hat)
+		local handle = hat:FindFirstChild("Handle")
+		if not handle or not handle:IsA("BasePart") then return end
+		local mesh, tex = GetHatMeshAndTexture(hat)
+		return GetHatMappedMeshAndTexture(mesh, tex, hat.Name)
 	end
 	local function GetHatCFrame(hat)
 		local handle = hat:FindFirstChild("Handle")
@@ -6161,13 +6176,14 @@ function HatReanimator.Start()
 									SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 								else
-									local tcf, tvel = GetHatCFrame(hat)
+									local mapped = GetHatMapped(hat)
+									local tcf, tvel = GetHatMappedCFrame(mapped)
 									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
 									tvel = tvel or Vector3.zero
 									if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
 										table.insert(slocked, handle)
 									end
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
+									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped.RepRootPart)
 								end
 							end
 						end
@@ -6197,13 +6213,14 @@ function HatReanimator.Start()
 									SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 								else
-									local tcf, tvel = GetHatCFrame(hat)
+									local mapped = GetHatMapped(hat)
+									local tcf, tvel = GetHatMappedCFrame(mapped)
 									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
 									tvel = tvel or Vector3.zero
 									if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
 										table.insert(slocked, handle)
 									end
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
+									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped.RepRootPart)
 								end
 							end
 						end
@@ -6221,13 +6238,14 @@ function HatReanimator.Start()
 									SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 								else
-									local tcf, tvel = GetHatCFrame(hat)
+									local mapped = GetHatMapped(hat)
+									local tcf, tvel = GetHatMappedCFrame(mapped)
 									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
 									tvel = tvel or Vector3.zero
 									if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
 										table.insert(slocked, handle)
 									end
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
+									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped.RepRootPart)
 								end
 							end
 						end
@@ -6244,13 +6262,14 @@ function HatReanimator.Start()
 								SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
 								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
 							else
-								local tcf, tvel = GetHatCFrame(hat)
+								local mapped = GetHatMapped(hat)
+								local tcf, tvel = GetHatMappedCFrame(mapped)
 								tcf = tcf or RCRootPart	.CFrame * CFrame.new(0, 5, 0)
 								tvel = tvel or Vector3.zero
 								if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
 									table.insert(slocked, handle)
 								end
-								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
+								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped.RepRootPart)
 							end
 						end
 					end
