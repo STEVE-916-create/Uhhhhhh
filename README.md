@@ -315,9 +315,11 @@ HatReanimator
 			Limb = "the limb it is attached to",
 			Group = "the name of the hat group, see IL moveset for use case"
 		}
+		-- also has .Built, os.clock() value when it was built
+		-- recommended to use ipairs when looping through table
 	.GetHatCFrameMeshAndTexture(mesh, tex) -- pass in mesh id and texture id to get hat cframe
 	.GetAttachmentCFrame(name) -- attachment by name
-ReanimateShowHitboxes() -- function to show hitboxes, laggy for many hats
+ReanimateShowHitboxes() -- function to show hitboxes
 ReanimateFling(target, duration) -- fling target
 -- target can be model, part, Vector3 or CFrame
 -- duration can be 0 for fling to last a frame

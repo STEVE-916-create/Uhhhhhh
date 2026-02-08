@@ -21,7 +21,7 @@ Thou shalth not steal. Point at this source if you used a snippet here.
 if _G.UhhhhhhLoaded then return end
 _G.UhhhhhhLoaded = true
 
-local UhhhhhhVersion = "1.0.4 BETA"
+local UhhhhhhVersion = "1.0.5 BETA"
 
 cloneref = cloneref or function(o) return o end
 getcustomasset = getcustomasset or getsynasset
@@ -4851,6 +4851,7 @@ function HatReanimator.Start()
 			end
 		end
 		summary ..= "...which leaves " .. unused .. " unused."
+		HatMap.Built = os.clock()
 		HatMapCopy = Util.DeepcopyTable(HatMap)
 		HatReanimator.HatMapSummary = summary
 		HatReanimator.RebuildRequired = false
@@ -5058,17 +5059,12 @@ function HatReanimator.Start()
 		if fling then
 			speedlimit = math.huge
 		end
-		local netless = Reanimate.NetlessVelocity
-		if handle.Parent:IsA("Tool") and false then
-			netless = 0
-		end
-		netless += (math.sin(timing * 0.5) + 1) / 2
+		local netless = Reanimate.NetlessVelocity + (math.sin(timing * 0.5) + 1) / 2
 		local aligned = false
 		local lastcf = handle:GetAttribute("_Uhhhhhh_LastPosition")
 		local claimtime = handle:GetAttribute("_Uhhhhhh_ClaimTime")
 		if typeof(lastcf) ~= "CFrame" then lastcf = handle.CFrame end
 		if not handle:IsGrounded() and IsNetworkOwner(handle) then
-			pcall(sethiddenproperty, v, "NetworkIsSleeping", false)
 			local newpos = newcf.Position
 			local lastpos = lastcf.Position
 			local vel = (newpos - lastpos) / dt
@@ -5094,17 +5090,23 @@ function HatReanimator.Start()
 				if timing - claimtime < 0.51 then
 					handle.AssemblyLinearVelocity = Vector3.new(0, netless * 2, 0)
 				else
-					vel = vel + tvel
-					vel *= Vector3.new(1, 0, 1)
-					if vel.Magnitude > netless then
-						vel = vel.Unit * netless
-					end
 					if fling then
 						handle.AssemblyLinearVelocity = Vector3.new(16384, 16384, 16384)
 					else
+						-- so Patchma's netless doesn't need the velocity of the hat, just where its attached to.
 						if Reanimate.UsePatchmaLikeNetless then
+							vel = tvel
+							vel *= Vector3.new(1, 0, 1)
+							if vel.Magnitude > netless then
+								vel = vel.Unit * netless
+							end
 							handle.AssemblyLinearVelocity = Vector3.new(vel.X * 10, netless, vel.Z * 10)
 						else
+							vel += tvel
+							vel *= Vector3.new(1, 0, 1)
+							if vel.Magnitude > netless then
+								vel = vel.Unit * netless
+							end
 							handle.AssemblyLinearVelocity = Vector3.new(vel.X, math.max(vel.Y, netless), vel.Z)
 						end
 					end
