@@ -4907,6 +4907,7 @@ function HatReanimator.Start()
 	local function GetHatMappedCFrame(overriden)
 		local ReanimCharacter = Reanimate.Character
 		if not ReanimCharacter then return end
+		local scale = ReanimCharacter:GetScale()
 		if overriden then
 			-- limb attached
 			if overriden.Limb then
