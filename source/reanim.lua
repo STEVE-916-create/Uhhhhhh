@@ -4863,7 +4863,7 @@ function HatReanimator.Start()
 		local hatmapped = nil
 		local groupname = nil
 		-- find hat mapping
-		for _,data in HatMap do
+		for _,data in ipairs(HatMap) do
 			if (name and data.Name == name or not name) and data.MeshId == mesh and data.TextureId == tex then
 				hatmapped = data
 				groupname = data.Group
@@ -4960,7 +4960,7 @@ function HatReanimator.Start()
 		local scale = ReanimCharacter:GetScale()
 		local hatmapped = nil
 		-- find hat mapping
-		for _,data in HatMap do
+		for _,data in ipairs(HatMap) do
 			if data.Attachments and data.Attachments[name] then
 				hatmapped = data
 				break
