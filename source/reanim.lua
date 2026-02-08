@@ -4883,12 +4883,14 @@ function HatReanimator.Start()
 							C0 = data.C0 or data.Offset or CFrame.identity,
 							C1 = overriden.C1 * (data.C1 or CFrame.identity),
 							Limb = data.Limb, RepRootPart = data.RepRootPart,
+							Scale = hatmapped.Scale,
 						}
 					else
 						overriden = {
 							C0 = data.C0 or data.CFrame or CFrame.identity,
 							C1 = overriden.C1 * (data.C1 or CFrame.identity),
 							RepRootPart = data.RepRootPart,
+							Scale = hatmapped.Scale,
 						}
 					end
 					break
@@ -4896,7 +4898,12 @@ function HatReanimator.Start()
 				-- exact asset id
 				if data.MeshId and data.TextureId then
 					if AssetIdMatch(mesh, data.MeshId) and AssetIdMatch(tex, data.TextureId) then
-						overriden = data
+						overriden = {
+							C0 = data.C0, C1 = data.C1,
+							Offset = data.Offset or data.CFrame,
+							Limb = data.Limb, RepRootPart = data.RepRootPart,
+							Scale = hatmapped.Scale,
+						}
 						break
 					end
 				end
@@ -4909,6 +4916,7 @@ function HatReanimator.Start()
 		if not ReanimCharacter then return end
 		local scale = ReanimCharacter:GetScale()
 		if overriden then
+			local hatscale = overriden.Scale
 			-- limb attached
 			if overriden.Limb then
 				local limb = ReanimCharacter:FindFirstChild(overriden.Limb)
