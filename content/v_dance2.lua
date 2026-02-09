@@ -687,7 +687,7 @@ AddModule(function()
 		if t >= 31.8 and t <= 44.8 then
 			animator2:Step(t)
 		elseif t >= 19.2 then
-			animator1:Step(t - 0.4)
+			animator1:Step(t + 0.4)
 		else
 			animator1:Step(t)
 		end
@@ -723,14 +723,14 @@ AddModule(function()
 		end
 		if instances.Background1 and instances.Background2 and instances.Background3 then
 			if t >= 31.8 and t < 38.057 then
-				pivotto(instances.Juice, rarm.CFrame * CFrame.new(0, -1, 0) * CFrame.Angles(1.57, 0, 0))
+				pivotto(instances.Juice, rarm.CFrame * CFrame.new(0, -1, 0) * CFrame.Angles(-1.57, 0, 0))
 				pivotto(instances.Background1, HIDECF)
 				pivotto(instances.Background3.A, HIDECF)
 				pivotto(instances.Background3.B, HIDECF)
 				pivotto(instances.Background3.C, HIDECF)
 				pivotto(instances.Background2, root.CFrame * CFrame.new(-4 * scale, 0, 6 * scale) * CFrame.Angles(0, 0, t / 8))
 			elseif t >= 31.8 and t < 41.489 then
-				pivotto(instances.Juice, larm.CFrame * CFrame.new(0, -1, 0) * CFrame.Angles(1.57, 0, 0))
+				pivotto(instances.Juice, larm.CFrame * CFrame.new(0, -1, 0) * CFrame.Angles(-1.57, 0, 0))
 				pivotto(instances.Background1, HIDECF)
 				pivotto(instances.Background3.A, HIDECF)
 				pivotto(instances.Background3.B, HIDECF)
