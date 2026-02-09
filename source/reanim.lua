@@ -4111,7 +4111,7 @@ function LimbReanimator.Start()
 			local RCTorso = ReanimCharacter:FindFirstChild("Torso")
 			if RCRootPart and RCTorso then
 				if LimbReanimator.Mode == 1 or workspace.StreamingEnabled then
-					rootcf = CFrame.new(RCRootPart.Position + Vector3.new(0, -32, 0))
+					rootcf = CFrame.new(RCRootPart.Position + Vector3.new(0, -16, 0))
 				end
 				if LimbReanimator.Mode == 2 then
 					rootcf = RCRootPart.CFrame
