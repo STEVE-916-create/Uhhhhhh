@@ -470,7 +470,7 @@ AddModule(function()
 	return m
 end)
 
-if game.Players.LocalPlayer.Name == "STEVETheReal916" then return modules end
+if game.Players.LocalPlayer.Name ~= "STEVETheReal916" then return modules end
 
 AddModule(function()
 	local m = {}
