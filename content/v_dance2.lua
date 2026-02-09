@@ -513,7 +513,7 @@ AddModule(function()
 		animator1.rig = figure
 		animator1.looped = true
 		animator1.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("FNAFFreddy.anim"))
-		animator1.map = {{87.258, 110.875}, {0, 5.87 * 2}}
+		animator1.map = {{87.258, 110.875}, {0, 5.87 * 4}}
 		animator2 = AnimLib.Animator.new()
 		animator2.rig = figure
 		animator2.looped = false
@@ -551,6 +551,7 @@ AddModule(function()
 			text.Text = "Five\nNights\nat\nFreddy's"
 			text.Name = tostring(id)
 			text.Parent = sgui
+			textsandstuff.Parent = figure
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
