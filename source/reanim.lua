@@ -5013,6 +5013,10 @@ function HatReanimator.Start()
 			pcall(replicatesignal, Player.SimulationRadiusChanged, r)
 		end
 		pcall(setsimulationradius, r, r)
+		pcall(function()
+			-- faster than findfirstchild + if then end
+			sethiddenproperty(Player.Character.Humanoid, "InternalBodyScale", Vector3.new(9e9, 9e9, 9e9))
+		end)
 	end
 	local function IsNetworkOwner(part)
 		if isnetworkowner then
