@@ -470,8 +470,6 @@ AddModule(function()
 	return m
 end)
 
-if game.Players.LocalPlayer.Name ~= "STEVETheReal916" then return modules end
-
 AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
@@ -673,20 +671,23 @@ AddModule(function()
 			for _,v in vegetables:GetChildren() do
 				instances[v.Name] = v
 				v.Name = "miku miku oo ee oo - " .. v.Name
-				v.Parent = figure
 				pivotto(v, HIDECF)
 			end
 			for _,name in vegetable do
 				instances[name .. "2"] = instances[name]:Clone()
 				instances[name .. "2"].Parent = figure
 			end
-			vegetables:Destroy()
+			vegetables.Name = "miku miku oo ee oo"
+			vegetables.Parent = workspace
+			instances.Model = vegetables
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = GetOverrideDanceMusicTime()
 		if t >= 31.8 and t <= 44.8 then
 			animator2:Step(t)
+		elseif t >= 19.2 then
+			animator1:Step(t - 0.4)
 		else
 			animator1:Step(t)
 		end
@@ -721,19 +722,22 @@ AddModule(function()
 			end
 		end
 		if instances.Background1 and instances.Background2 and instances.Background3 then
-			if t >= 31.8 and t < 38 then
+			if t >= 31.8 and t < 38.057 then
+				pivotto(instances.Juice, rarm.CFrame * CFrame.new(0, -1, 0) * CFrame.Angles(1.57, 0, 0))
 				pivotto(instances.Background1, HIDECF)
 				pivotto(instances.Background3.A, HIDECF)
 				pivotto(instances.Background3.B, HIDECF)
 				pivotto(instances.Background3.C, HIDECF)
-				pivotto(instances.Background2, root.CFrame * CFrame.new(-4 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
-			elseif t >= 31.8 and t < 41.4 then
+				pivotto(instances.Background2, root.CFrame * CFrame.new(-4 * scale, 0, 6 * scale) * CFrame.Angles(0, 0, t / 8))
+			elseif t >= 31.8 and t < 41.489 then
+				pivotto(instances.Juice, larm.CFrame * CFrame.new(0, -1, 0) * CFrame.Angles(1.57, 0, 0))
 				pivotto(instances.Background1, HIDECF)
 				pivotto(instances.Background3.A, HIDECF)
 				pivotto(instances.Background3.B, HIDECF)
 				pivotto(instances.Background3.C, HIDECF)
-				pivotto(instances.Background2, root.CFrame * CFrame.new(4 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
+				pivotto(instances.Background2, root.CFrame * CFrame.new(4 * scale, 0, 6 * scale) * CFrame.Angles(0, 0, t / 8))
 			elseif t >= 31.8 and t < 44.8 then
+				pivotto(instances.Juice, HIDECF)
 				local a = t - 41.4
 				a = 3 * a - math.max(0, a - 0.2) * 2.91015625
 				pivotto(instances.Background1, HIDECF)
@@ -745,6 +749,7 @@ AddModule(function()
 				pivotto(instances.Background3.B, root.CFrame * CFrame.new(0, 0, 4 * scale) * lb)
 				pivotto(instances.Background3.C, root.CFrame * CFrame.new(0, 0, 4 * scale) * lc)
 			else
+				pivotto(instances.Juice, HIDECF)
 				pivotto(instances.Background2, HIDECF)
 				pivotto(instances.Background3.A, HIDECF)
 				pivotto(instances.Background3.B, HIDECF)
@@ -755,8 +760,8 @@ AddModule(function()
 				instances.Background1.A.Size = Vector3.new(0.5, circle, circle)
 				instances.Background1.B.Size = Vector3.new(0.4, circle + 1, circle + 1)
 				instances.Background1.C.Size = Vector3.new(0.3, circle + 2, circle + 2)
-				local r = (t - 19.2) * 3
-				local r1, r2 = math.max(0, r) % 20, math.max(0, r - 10) % 20
+				local r = (t - 19.2) * 8
+				local r1, r2 = math.max(0, r) % 40, math.max(0, r - 20) % 40
 				instances.Background1.Ring1.Size = Vector3.new(0.3, r1, r1)
 				instances.Background1.Ring2.Size = Vector3.new(0.3, r2, r2)
 			end
