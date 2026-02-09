@@ -660,7 +660,7 @@ AddModule(function()
 		animator2.map = {{31.8, 44.8}, {0, 12.88}}
 		for _,v in instances do v:Destroy() end
 		if m.Effects then
-			local vegetables = game:GetObjects(AssetGetContentId("Popipo.mp3"))[1]
+			local vegetables = game:GetObjects(AssetGetContentId("Popipo.rbxm"))[1]
 			vegetables:ScaleTo(figure:GetScale())
 			for _,v in vegetables:GetChildren() do
 				instances[v.Name] = v
