@@ -640,12 +640,19 @@ AddModule(function()
 	end
 
 	-- vege table
-	local vegetable = {"GreenPepper", "Carrot", "Eggplant", "Radish", "Cabbage", "OrangePepper", "Spinach", "Lemon", "Tomato", "Onion", "banana", "Pumpkin", "RedPepper", "CabbageSphere", "Brocolli", "Apple"}
+	local vegetable = {"GreenPepper", "Carrot", "Eggplant", "Radish", "Cabbage", "OrangePepper", "Spinach", "Lemon", "Tomato", "Onion", "Banana", "Pumpkin", "RedPepper", "CabbageSphere", "Brocolli", "Apple"}
 
 	local animator1 = nil
 	local animator2 = nil
 	local instances = {}
+	local modelcf = {}
 	local HIDECF = CFrame.new(0, -9e9, 0)
+	local function pivotto(bp, cf)
+		if modelcf[bp] ~= nil then
+			modelcf[bp] = cf
+			bp:PivotTo(cf)
+		end
+	end
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("Popipo.mp3"), "po pi po pi po po pi po", 1, NumberRange.new(19.2, 57.63))
 		animator1 = AnimLib.Animator.new()
@@ -659,6 +666,7 @@ AddModule(function()
 		animator2.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("PopipoShake.anim"))
 		animator2.map = {{31.8, 44.8}, {0, 12.88}}
 		for _,v in instances do v:Destroy() end
+		modelcf = {}
 		if m.Effects then
 			local vegetables = game:GetObjects(AssetGetContentId("Popipo.rbxm"))[1]
 			vegetables:ScaleTo(figure:GetScale())
@@ -666,7 +674,7 @@ AddModule(function()
 				instances[v.Name] = v
 				v.Name = "miku miku oo ee oo - " .. v.Name
 				v.Parent = figure
-				v:PivotTo(HIDECF)
+				v, HIDECF)
 			end
 			for _,name in vegetable do
 				instances[name .. "2"] = instances[name]:Clone()
@@ -704,44 +712,44 @@ AddModule(function()
 		for _,name in vegetable do
 			if instances[name] and instances[name .. "2"] then
 				if name == currentvegetable then
-					instances[name]:PivotTo(root.CFrame * CFrame.new(-8 * scale, vypos * scale, 0))
-					instances[name .. "2"]:PivotTo(root.CFrame * CFrame.new(8 * scale, vypos * scale, 0))
+					pivotto(instances[name], root.CFrame * CFrame.new(-5 * scale, vypos * scale, 0))
+					pivotto(instances[name .. "2"], root.CFrame * CFrame.new(5 * scale, vypos * scale, 0))
 				else
-					instances[name]:PivotTo(HIDECF)
-					instances[name .. "2"]:PivotTo(HIDECF)
+					pivotto(instances[name], HIDECF)
+					pivotto(instances[name .. "2"], HIDECF)
 				end
 			end
 		end
 		if instances.Background1 and instances.Background2 and instances.Background3 then
 			if t >= 31.8 and t < 38 then
-				instances.Background1:PivotTo(HIDECF)
-				instances.Background3.A:PivotTo(HIDECF)
-				instances.Background3.B:PivotTo(HIDECF)
-				instances.Background3.C:PivotTo(HIDECF)
-				instances.Background2:PivotTo(root.CFrame * CFrame.new(-4 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
+				pivotto(instances.Background1, HIDECF)
+				pivotto(instances.Background3.A, HIDECF)
+				pivotto(instances.Background3.B, HIDECF)
+				pivotto(instances.Background3.C, HIDECF)
+				pivotto(instances.Background2, root.CFrame * CFrame.new(-4 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
 			elseif t >= 31.8 and t < 41.4 then
-				instances.Background1:PivotTo(HIDECF)
-				instances.Background3.A:PivotTo(HIDECF)
-				instances.Background3.B:PivotTo(HIDECF)
-				instances.Background3.C:PivotTo(HIDECF)
-				instances.Background2:PivotTo(root.CFrame * CFrame.new(4 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
+				pivotto(instances.Background1, HIDECF)
+				pivotto(instances.Background3.A, HIDECF)
+				pivotto(instances.Background3.B, HIDECF)
+				pivotto(instances.Background3.C, HIDECF)
+				pivotto(instances.Background2, root.CFrame * CFrame.new(4 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
 			elseif t >= 31.8 and t < 44.8 then
 				local a = t - 41.4
 				a = 3 * a - math.max(0, a - 0.2) * 2.91015625
-				instances.Background1:PivotTo(HIDECF)
-				instances.Background2:PivotTo(HIDECF)
+				pivotto(instances.Background1, HIDECF)
+				pivotto(instances.Background2, HIDECF)
 				local la = CFrame.new(0, 3 + a, 0) * CFrame.Angles(0, 0, a * 0.7)
 				local lb = CFrame.new(0, a * 0.5, 0) * CFrame.Angles(0, 0, a * 0.1)
 				local lc = CFrame.new(0, -3 - a, 0) * CFrame.Angles(0, 0, a * -0.7)
-				instances.Background3.A:PivotTo(root.CFrame * CFrame.new(0, 0, 4 * scale))
-				instances.Background3.B:PivotTo(root.CFrame * CFrame.new(0, 0, 4 * scale))
-				instances.Background3.C:PivotTo(root.CFrame * CFrame.new(0, 0, 4 * scale))
+				pivotto(instances.Background3.A, root.CFrame * CFrame.new(0, 0, 4 * scale) * la)
+				pivotto(instances.Background3.B, root.CFrame * CFrame.new(0, 0, 4 * scale) * lb)
+				pivotto(instances.Background3.C, root.CFrame * CFrame.new(0, 0, 4 * scale) * lc)
 			else
-				instances.Background2:PivotTo(HIDECF)
-				instances.Background3.A:PivotTo(HIDECF)
-				instances.Background3.B:PivotTo(HIDECF)
-				instances.Background3.C:PivotTo(HIDECF)
-				instances.Background1:PivotTo(root.CFrame * CFrame.new(0, 0, 4 * scale))
+				pivotto(instances.Background2, HIDECF)
+				pivotto(instances.Background3.A, HIDECF)
+				pivotto(instances.Background3.B, HIDECF)
+				pivotto(instances.Background3.C, HIDECF)
+				pivotto(instances.Background1, root.CFrame * CFrame.new(0, 0, 4 * scale))
 				local circle = 8 - beatm * 2 + math.max(0, beatm * 8 - 6)
 				circle *= 2 - math.min(math.max(0, t - 18.8) / 0.4, 1)
 				instances.Background1.A.Size = Vector3.new(0.5, circle, circle)
