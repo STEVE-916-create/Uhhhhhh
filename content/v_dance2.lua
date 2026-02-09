@@ -657,7 +657,7 @@ AddModule(function()
 		animator2.rig = figure
 		animator2.looped = false
 		animator2.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("PopipoShake.anim"))
-		animator1.map = {{31.8, 44.8}, {0, 12.88}}
+		animator2.map = {{31.8, 44.8}, {0, 12.88}}
 		for _,v in instances do v:Destroy() end
 		if m.Effects then
 			local vegetables = game:GetObjects(AssetGetContentId("Popipo.mp3"))[1]
@@ -689,9 +689,9 @@ AddModule(function()
 		local rarm = figure:FindFirstChild("Right Arm")
 		if not rarm then return end
 		local scale = figure:GetScale()
-		local beat = x / 0.4
+		local beat = t / 0.4
 		local beatm = beat % 1
-		local vbeat = (x + 0.2) / 0.4
+		local vbeat = (t + 0.2) / 0.4
 		local vbeatm = vbeat % 1
 		local vypos = (2 * vbeatm - 1.625 * math.clamp(vbeatm, 0.2, 0.8) - 0.1875) * 8
 		local currentvegetable = vegetable[math.floor(vbeat % 16) + 1]

@@ -7505,7 +7505,7 @@ task.spawn(function()
 					CurrentMovementStyle = nil
 				end
 				if _CurrentDance then
-					_CurrentDance.Destroy(nil)
+					pcall(_CurrentDance.Destroy, nil)
 					_CurrentDance = nil
 				end
 				_MovementStyleIndex = nil
@@ -7528,7 +7528,7 @@ task.spawn(function()
 					CurrentMovementStyle.Update(dt, ReanimCharacter)
 					if CurrentDance ~= _CurrentDance then
 						if _CurrentDance then
-							_CurrentDance.Destroy(ReanimCharacter)
+							pcall(_CurrentDance.Destroy, ReanimCharacter)
 						end
 						_CurrentDance = CurrentDance
 						ReanimCharacter:SetAttribute("IsDancing", nil)
