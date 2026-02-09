@@ -4863,7 +4863,7 @@ function HatReanimator.Start()
 		local hatmapped = nil
 		local groupname = nil
 		-- find hat mapping
-		for _,data in HatMap do
+		for _,data in ipairs(HatMap) do
 			if (name and data.Name == name or not name) and data.MeshId == mesh and data.TextureId == tex then
 				hatmapped = data
 				groupname = data.Group
@@ -4883,12 +4883,14 @@ function HatReanimator.Start()
 							C0 = data.C0 or data.Offset or CFrame.identity,
 							C1 = overriden.C1 * (data.C1 or CFrame.identity),
 							Limb = data.Limb, RepRootPart = data.RepRootPart,
+							Scale = hatmapped.Scale,
 						}
 					else
 						overriden = {
 							C0 = data.C0 or data.CFrame or CFrame.identity,
 							C1 = overriden.C1 * (data.C1 or CFrame.identity),
 							RepRootPart = data.RepRootPart,
+							Scale = hatmapped.Scale,
 						}
 					end
 					break
@@ -4896,7 +4898,12 @@ function HatReanimator.Start()
 				-- exact asset id
 				if data.MeshId and data.TextureId then
 					if AssetIdMatch(mesh, data.MeshId) and AssetIdMatch(tex, data.TextureId) then
-						overriden = data
+						overriden = {
+							C0 = data.C0, C1 = data.C1,
+							Offset = data.Offset or data.CFrame,
+							Limb = data.Limb, RepRootPart = data.RepRootPart,
+							Scale = hatmapped.Scale,
+						}
 						break
 					end
 				end
@@ -4907,7 +4914,9 @@ function HatReanimator.Start()
 	local function GetHatMappedCFrame(overriden)
 		local ReanimCharacter = Reanimate.Character
 		if not ReanimCharacter then return end
+		local scale = ReanimCharacter:GetScale()
 		if overriden then
+			local hatscale = overriden.Scale
 			-- limb attached
 			if overriden.Limb then
 				local limb = ReanimCharacter:FindFirstChild(overriden.Limb)
@@ -4951,7 +4960,7 @@ function HatReanimator.Start()
 		local scale = ReanimCharacter:GetScale()
 		local hatmapped = nil
 		-- find hat mapping
-		for _,data in HatMap do
+		for _,data in ipairs(HatMap) do
 			if data.Attachments and data.Attachments[name] then
 				hatmapped = data
 				break
@@ -5004,6 +5013,11 @@ function HatReanimator.Start()
 			pcall(replicatesignal, Player.SimulationRadiusChanged, r)
 		end
 		pcall(setsimulationradius, r, r)
+		pcall(function()
+			-- faster than findfirstchild + if then end
+			sethiddenproperty(Player.Character.Humanoid, "InternalBodyScale", Vector3.new(9e9, 9e9, 9e9))
+			sethiddenproperty(Player.Character.Humanoid, "InternalHeadScale", 9e9)
+		end)
 	end
 	local function IsNetworkOwner(part)
 		if isnetworkowner then
