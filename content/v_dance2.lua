@@ -527,14 +527,14 @@ AddModule(function()
 			textsandstuff.CanTouch = false
 			textsandstuff.CanQuery = false
 			textsandstuff.Name = "INTERNETANGEL"
-			textsandstuff.Size = Vector3.new(10, 6, 0) * figure:GetScale()
+			textsandstuff.Size = Vector3.new(8, 6, 0) * figure:GetScale()
 			local sgui = Instance.new("SurfaceGui")
 			sgui.LightInfluence = 0
 			sgui.Brightness = 1
 			sgui.AlwaysOnTop = false
 			sgui.MaxDistance = 1000
 			sgui.SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
-			sgui.CanvasSize = Vector2.new(300, 120)
+			sgui.CanvasSize = Vector2.new(240, 120)
 			sgui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 			sgui.Name = "UI"
 			sgui.Parent = textsandstuff
