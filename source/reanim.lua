@@ -7964,6 +7964,26 @@ if SaveData.VanillaModuleCache then
 	wasold = true
 	SaveData.VanillaModuleCache = nil
 end
+local function getgithubraw(path)
+	local s, resp = pcall(request, {
+		Method = "GET",
+		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/" .. path,
+		Headers = {
+			Accept = "application/vnd.github.VERSION.raw"
+		}
+	})
+	if s and resp and resp.StatusCode == 200 then
+		return resp.Body
+	end
+	s, resp = pcall(request, {
+		Method = "GET",
+		Url = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/contents/content/" .. path,
+	})
+	if s and resp and resp.StatusCode == 200 then
+		return resp.Body
+	end
+	return nil
+end
 Util.Notify("Loading maps...")
 for _,x in filesofbuiltins_d do
 	local path = "UhhhhhhReanim/BuiltinModules/" .. x
@@ -7971,23 +7991,11 @@ for _,x in filesofbuiltins_d do
 	local s, a = pcall(isfile, path)
 	if s and a then exist = true end
 	if not exist then
-		local s, resp = pcall(request, {
-			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/" .. x,
-			Headers = {
-				Accept = "application/vnd.github.VERSION.raw"
-			}
-		})
-		if s then
-			if resp and resp.StatusCode == 200 then
-				pcall(writefile, path, resp.Body)
-			else
-				warn("DATA " .. x .. ": HTTP ERROR " .. resp.StatusCode .. " :: " .. resp.Body)
-				Util.Notify("Failed to load " .. x .. ", see console.")
-			end
+		local content = getgithubraw(x)
+		if content then
+			pcall(writefile, path, content)
 		else
-			warn("DATA " .. x .. ": " .. resp)
-			Util.Notify("Failed to load " .. x .. ", see console.")
+			Util.Notify("Failed to load " .. x .. ": Download failed.")
 		end
 	end
 end
@@ -8003,24 +8011,12 @@ for _,x in filesofbuiltins_m do
 		data = readfile(path)
 		task.wait()
 	else
-		local s, resp = pcall(request, {
-			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/" .. x,
-			Headers = {
-				Accept = "application/vnd.github.VERSION.raw"
-			}
-		})
-		if s then
-			if resp and resp.StatusCode == 200 then
-				pcall(writefile, path, resp.Body)
-				data = resp.Body
-			else
-				warn("VANILLA " .. x .. ": HTTP ERROR " .. resp.StatusCode .. " :: " .. resp.Body)
-				Util.Notify("Failed to load " .. x .. ", see console.")
-			end
+		local content = getgithubraw(x)
+		if content then
+			pcall(writefile, path, content)
+			data = content
 		else
-			warn("VANILLA " .. x .. ": " .. resp)
-			Util.Notify("Failed to load " .. x .. ", see console.")
+			Util.Notify("Failed to load " .. x .. ": Download failed.")
 		end
 	end
 	task.wait()
