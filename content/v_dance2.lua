@@ -647,7 +647,7 @@ AddModule(function()
 	local instances = {}
 	local HIDECF = CFrame.new(0, -9e9, 0)
 	m.Init = function(figure: Model)
-		SetOverrideDanceMusic(AssetGetContentId("Popipo.mp3"), "po pi po pi po po pi po", 1)
+		SetOverrideDanceMusic(AssetGetContentId("Popipo.mp3"), "po pi po pi po po pi po", 1, NumberRange.new(19.2, 57.63))
 		animator1 = AnimLib.Animator.new()
 		animator1.rig = figure
 		animator1.looped = true
@@ -718,13 +718,13 @@ AddModule(function()
 				instances.Background3.A:PivotTo(HIDECF)
 				instances.Background3.B:PivotTo(HIDECF)
 				instances.Background3.C:PivotTo(HIDECF)
-				instances.Background2:PivotTo(root.CFrame * CFrame.new(-5 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
+				instances.Background2:PivotTo(root.CFrame * CFrame.new(-4 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
 			elseif t >= 31.8 and t < 41.4 then
 				instances.Background1:PivotTo(HIDECF)
 				instances.Background3.A:PivotTo(HIDECF)
 				instances.Background3.B:PivotTo(HIDECF)
 				instances.Background3.C:PivotTo(HIDECF)
-				instances.Background2:PivotTo(root.CFrame * CFrame.new(5 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
+				instances.Background2:PivotTo(root.CFrame * CFrame.new(4 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
 			elseif t >= 31.8 and t < 44.8 then
 				local a = t - 41.4
 				a = 3 * a - math.max(0, a - 0.2) * 2.91015625
@@ -743,11 +743,12 @@ AddModule(function()
 				instances.Background3.C:PivotTo(HIDECF)
 				instances.Background1:PivotTo(root.CFrame * CFrame.new(0, 0, 4 * scale))
 				local circle = 8 - beatm * 2 + math.max(0, beatm * 8 - 6)
-				circle *= 2 - math.max(0, t - 18.8) / 0.4
+				circle *= 2 - math.min(math.max(0, t - 18.8) / 0.4, 1)
 				instances.Background1.A.Size = Vector3.new(0.5, circle, circle)
 				instances.Background1.B.Size = Vector3.new(0.4, circle + 1, circle + 1)
 				instances.Background1.C.Size = Vector3.new(0.3, circle + 2, circle + 2)
-				local r1, r2 = math.max(0, t - 19.2) % 10, math.max(0, t - 19.2 - 5) % 10
+				local r = (t - 19.2) * 3
+				local r1, r2 = math.max(0, r) % 20, math.max(0, r - 10) % 20
 				instances.Background1.Ring1.Size = Vector3.new(0.3, r1, r1)
 				instances.Background1.Ring2.Size = Vector3.new(0.3, r2, r2)
 			end
