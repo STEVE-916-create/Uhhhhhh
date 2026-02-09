@@ -674,7 +674,7 @@ AddModule(function()
 				instances[v.Name] = v
 				v.Name = "miku miku oo ee oo - " .. v.Name
 				v.Parent = figure
-				v, HIDECF)
+				pivotto(v, HIDECF)
 			end
 			for _,name in vegetable do
 				instances[name .. "2"] = instances[name]:Clone()
