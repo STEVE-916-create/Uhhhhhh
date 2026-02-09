@@ -621,7 +621,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Popipo"
-	m.Description = "i know you want my vegetable juice"
+	m.Description = "i know you want my vegetable juice\nfirst dance to use rbxm\ni dont recommend doing what i did for this dance though, this is just a good example of how to put stuff in stuff"
 	m.Assets = {"PopipoDance.anim", "PopipoShake.anim", "Popipo.rbxm", "Popipo.mp3"}
 
 	m.Effects = true
@@ -639,36 +639,118 @@ AddModule(function()
 		}
 	end
 
+	-- vege table
+	local vegetable = {"GreenPepper", "Carrot", "Eggplant", "Radish", "Cabbage", "OrangePepper", "Spinach", "Lemon", "Tomato", "Onion", "banana", "Pumpkin", "RedPepper", "CabbageSphere", "Brocolli", "Apple"}
+
 	local animator1 = nil
 	local animator2 = nil
 	local instances = {}
+	local HIDECF = CFrame.new(0, -9e9, 0)
 	m.Init = function(figure: Model)
 		SetOverrideDanceMusic(AssetGetContentId("Popipo.mp3"), "po pi po pi po po pi po", 1)
 		animator1 = AnimLib.Animator.new()
 		animator1.rig = figure
 		animator1.looped = true
 		animator1.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("PopipoDance.anim"))
-		animator1.map = {{87.258, 110.875}, {0, 5.87 * 2}}
+		animator1.map = {{0, 3.201}, {0, 3.2}}
 		animator2 = AnimLib.Animator.new()
 		animator2.rig = figure
 		animator2.looped = false
 		animator2.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("PopipoShake.anim"))
+		animator1.map = {{31.8, 44.8}, {0, 12.88}}
 		for _,v in instances do v:Destroy() end
 		if m.Effects then
+			local vegetables = game:GetObjects(AssetGetContentId("Popipo.mp3"))[1]
+			vegetables:ScaleTo(figure:GetScale())
+			for _,v in vegetables:GetChildren() do
+				instances[v.Name] = v
+				v.Name = "miku miku oo ee oo - " .. v.Name
+				v.Parent = figure
+				v:PivotTo(HIDECF)
+			end
+			for _,name in vegetable do
+				instances[name .. "2"] = instances[name]:Clone()
+				instances[name .. "2"].Parent = figure
+			end
+			vegetables:Destroy()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = GetOverrideDanceMusicTime()
-		if t >= 87.258 and t <= 110.875 then
-			animator1:Step(t)
-		else
+		if t >= 31.8 and t <= 44.8 then
 			animator2:Step(t)
+		else
+			animator1:Step(t)
 		end
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
+		local larm = figure:FindFirstChild("Left Arm")
+		if not larm then return end
+		local rarm = figure:FindFirstChild("Right Arm")
+		if not rarm then return end
 		local scale = figure:GetScale()
-		if textsandstuff then
-			textsandstuff.CFrame = root.CFrame * CFrame.new(0, 0, -1 * scale)
+		local beat = x / 0.4
+		local beatm = beat % 1
+		local vbeat = (x + 0.2) / 0.4
+		local vbeatm = vbeat % 1
+		local vypos = (2 * vbeatm - 1.625 * math.clamp(vbeatm, 0.2, 0.8) - 0.1875) * 8
+		local currentvegetable = vegetable[math.floor(vbeat % 16) + 1]
+		if t < 25.4 then
+			currentvegetable = ""
+		end
+		if t >= 31.8 and t < 44.8 then
+			currentvegetable = ""
+		end
+		for _,name in vegetable do
+			if instances[name] and instances[name .. "2"] then
+				if name == currentvegetable then
+					instances[name]:PivotTo(root.CFrame * CFrame.new(-8 * scale, vypos * scale, 0))
+					instances[name .. "2"]:PivotTo(root.CFrame * CFrame.new(8 * scale, vypos * scale, 0))
+				else
+					instances[name]:PivotTo(HIDECF)
+					instances[name .. "2"]:PivotTo(HIDECF)
+				end
+			end
+		end
+		if instances.Background1 and instances.Background2 and instances.Background3 then
+			if t >= 31.8 and t < 38 then
+				instances.Background1:PivotTo(HIDECF)
+				instances.Background3.A:PivotTo(HIDECF)
+				instances.Background3.B:PivotTo(HIDECF)
+				instances.Background3.C:PivotTo(HIDECF)
+				instances.Background2:PivotTo(root.CFrame * CFrame.new(-5 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
+			elseif t >= 31.8 and t < 41.4 then
+				instances.Background1:PivotTo(HIDECF)
+				instances.Background3.A:PivotTo(HIDECF)
+				instances.Background3.B:PivotTo(HIDECF)
+				instances.Background3.C:PivotTo(HIDECF)
+				instances.Background2:PivotTo(root.CFrame * CFrame.new(5 * scale, 0, 4 * scale) * CFrame.Angles(0, 0, t / 8))
+			elseif t >= 31.8 and t < 44.8 then
+				local a = t - 41.4
+				a = 3 * a - math.max(0, a - 0.2) * 2.91015625
+				instances.Background1:PivotTo(HIDECF)
+				instances.Background2:PivotTo(HIDECF)
+				local la = CFrame.new(0, 3 + a, 0) * CFrame.Angles(0, 0, a * 0.7)
+				local lb = CFrame.new(0, a * 0.5, 0) * CFrame.Angles(0, 0, a * 0.1)
+				local lc = CFrame.new(0, -3 - a, 0) * CFrame.Angles(0, 0, a * -0.7)
+				instances.Background3.A:PivotTo(root.CFrame * CFrame.new(0, 0, 4 * scale))
+				instances.Background3.B:PivotTo(root.CFrame * CFrame.new(0, 0, 4 * scale))
+				instances.Background3.C:PivotTo(root.CFrame * CFrame.new(0, 0, 4 * scale))
+			else
+				instances.Background2:PivotTo(HIDECF)
+				instances.Background3.A:PivotTo(HIDECF)
+				instances.Background3.B:PivotTo(HIDECF)
+				instances.Background3.C:PivotTo(HIDECF)
+				instances.Background1:PivotTo(root.CFrame * CFrame.new(0, 0, 4 * scale))
+				local circle = 8 - beatm * 2 + math.max(0, beatm * 8 - 6)
+				circle *= 2 - math.max(0, t - 18.8) / 0.4
+				instances.Background1.A.Size = Vector3.new(0.5, circle, circle)
+				instances.Background1.B.Size = Vector3.new(0.4, circle + 1, circle + 1)
+				instances.Background1.C.Size = Vector3.new(0.3, circle + 2, circle + 2)
+				local r1, r2 = math.max(0, t - 19.2) % 10, math.max(0, t - 19.2 - 5) % 10
+				instances.Background1.Ring1.Size = Vector3.new(0.3, r1, r1)
+				instances.Background1.Ring2.Size = Vector3.new(0.3, r2, r2)
+			end
 		end
 	end
 	m.Destroy = function(figure: Model?)
