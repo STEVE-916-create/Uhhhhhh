@@ -648,7 +648,7 @@ AddModule(function()
 	local modelcf = {}
 	local HIDECF = CFrame.new(0, -9e9, 0)
 	local function pivotto(bp, cf)
-		if modelcf[bp] ~= nil then
+		if modelcf[bp] ~= cf then
 			modelcf[bp] = cf
 			bp:PivotTo(cf)
 		end
