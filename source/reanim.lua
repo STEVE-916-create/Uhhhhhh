@@ -5016,6 +5016,7 @@ function HatReanimator.Start()
 		pcall(function()
 			-- faster than findfirstchild + if then end
 			sethiddenproperty(Player.Character.Humanoid, "InternalBodyScale", Vector3.new(9e9, 9e9, 9e9))
+			sethiddenproperty(Player.Character.Humanoid, "InternalHeadScale", 9e9)
 		end)
 	end
 	local function IsNetworkOwner(part)
