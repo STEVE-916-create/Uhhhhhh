@@ -7793,11 +7793,11 @@ UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "<b>* Very random quotes *</b>", 15, Enum.TextXAlignment.Center)
 do
 	local quotes = {
-		"anthonyisnthere: \":fasttrack Luacope\"\n(funny because most of the music in this script is made in FastTracker 2)",
+		"anthonyisnthere: \":fasttrack Luacope\"\n(funny because most of the music in this script is made in FastTracker II)",
 		"hemi once said: \"hat collide has never worked on perma\"",
 		"skids after genesis adds a minimize button: \"REVOLUTIONARY\"",
 		"\"roblox banned my leg\" sounds the same in any context",
-		"what is a 0x1b packet hack? cuz idk wattahel that is",
+		"what is a 0x1b packet hack? cuz idk wattahel that is", -- oh its some raknet
 		"\"i have real fe bypass but i cant show here cuz roblox will detect and patch you have to join me in my game\"",
 		"my income is 2 dollars. i shall DELETE /self now /j",
 		"obfuscator: gifted power\nreal-time registry dumper: pure effort",
@@ -7816,6 +7816,10 @@ do
 		"\"Tired of your hats phasing through people? Uhhhhhh turns that fact upside-down!\"",
 		"\"The best part? It is FREE!! (excluding the taxes and bills) Now, BUY OUR PRODUCT FOR FREE! We know you like it! We know you do.\"",
 		"Does anyone ever physically look upwards when they think of ideas? I definitely don't.",
+		"\"It's not even another Reanimate; it just uses Emper Reanimate. So you can change the name to 'uhhhh hub', that's it.\"",
+		"i wrote this during permadeath's patch. my members are so quick in reporting bugs and stuff lol",
+		"i plead the six seventh amendment",
+		"\"i have strong network ownership that can take big buildings\" \"i have strong network too\" *61 MBPS*",
 	}
 	for _=1, 15 do
 		local idx = math.random(1, #quotes)
