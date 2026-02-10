@@ -4289,7 +4289,7 @@ HatReanimator.HatCollideMethod = SaveData.Reanimator.HatsCollideMethod
 -- 7 - idk honestly but this is just modified heavily for now
 HatReanimator.IWantAllHats = SaveData.Reanimator.IWantAllHats
 HatReanimator.IWantHatCollide = SaveData.Reanimator.IWantHatCollide
-HatReanimator.Permadeath = not SaveData.Reanimator.HatsPatchmahub
+HatReanimator.Permadeath = false--not SaveData.Reanimator.HatsPatchmahub
 HatReanimator.HatFling = SaveData.Reanimator.HatsFling
 HatReanimator.HatSpin = SaveData.Reanimator.HatsSpin
 HatReanimator.FlingMethod = SaveData.Reanimator.HatsFlingMethod
@@ -4369,9 +4369,10 @@ function HatReanimator.Fling(target, duration)
 end
 HatReanimator.DontFireCharAddOnThisChar = nil
 function HatReanimator.Config(parent)
+	UI.CreateText(parent, "permadeath is patched, this switch is ignored", 10, Enum.TextXAlignment.Center)
 	UI.CreateSwitch(parent, "Permadeath", HatReanimator.Permadeath).Changed:Connect(function(val)
-		HatReanimator.Permadeath = val
-		SaveData.Reanimator.HatsPatchmahub = not val
+		--HatReanimator.Permadeath = val
+		--SaveData.Reanimator.HatsPatchmahub = not val
 	end)
 	UI.CreateSwitch(parent, "Hat Collide", HatReanimator.HatCollide).Changed:Connect(function(val)
 		HatReanimator.HatCollide = val
