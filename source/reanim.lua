@@ -5262,7 +5262,7 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[-1] = {
 		NoAnim = true,
-		Wait1 = 0.06,
+		Wait1 = 0.16,
 		Wait2 = 0,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
 			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 141, 0))
