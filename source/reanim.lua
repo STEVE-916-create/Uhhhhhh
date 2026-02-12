@@ -3379,6 +3379,7 @@ do
 				v.LocalTransparencyModifier = ltm
 			end
 		end
+		pcall(function() CoreGui.TopBarApp.TopBarApp.FullScreenFrame.HurtOverlay.Visible = false end)
 	end)
 end
 Reanimate.CreateCharacter = function(InitCFrame)
