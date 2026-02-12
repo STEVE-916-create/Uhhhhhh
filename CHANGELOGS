@@ -3,6 +3,7 @@
  - Fixed Patchma-like netless, now it'll only be "jittery" when you move (like in the REAL)
  - RepRootPart property is now available for hat overrides! (hat orbit is now possible)
  - Permadeath is now forced to false. (RIP Permadeath)
+ - Fixed looprespawn delay
 # Version 1.0.4 BETA
  - Added custom camera (accurate to roblox 2025 camera i think)
    (FOR PC AND MOBILE ONLY FOR NOW)

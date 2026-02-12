@@ -3119,6 +3119,32 @@ local Reanimate = {
 		},
 	},
 	LocalTransparencyModifier = 0,
+	ControlModule = nil,
+	GetControls = function(self)
+		if self.ControlModule then
+			local succ, CMove, CJump = pcall(function()
+				return self.ControlModule:GetMoveVector(), self.ControlModule:GetIsJumping()
+			end)
+			if succ and CMove and CJump ~= nil then return CMove * Vector3.new(1, 1, -1), CJump end
+		end
+		local CMove, CJump = Vector3.zero, false
+		if Player.Character then
+			local Humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
+			if Humanoid then
+				CMove, CJump = Humanoid:GetMoveVelocity() / Humanoid.WalkSpeed, Humanoid.Jump
+			end
+		end
+		local CamCF = CFrame.identity
+		if Camera then CamCF = Camera.CFrame end
+		local _,x,_ = CamCF:ToEulerAngles(Enum.RotationOrder.YXZ)
+		local MoveCF = CFrame.Angles(0, x, 0)
+		if CMove.Y == 0 then
+			CMove = MoveCF:VectorToObjectSpace(CMove)
+		else
+			CMove = CamCF:VectorToObjectSpace(CMove)
+		end
+		return CMove, CJump
+	end,
 }
 Reanimate.Camera.IsFirstPerson = function(self)
 	return self.Zoom < 0.75
@@ -3129,6 +3155,9 @@ end
 Reanimate.Camera.IsMousePanning = function(self)
 	return self:IsMouseLocked() or self.Inputs.MS.RMB
 end
+task.spawn(pcall, function()
+	Reanimate.ControlModule = require(Player.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule"))
+end)
 do
 	local self = Reanimate.Camera
 	local function AdjustTouchPitchSensitivity(delta)
@@ -3492,23 +3521,12 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	local fallingStates = {"Jumping", "Freefall", "PlatformStanding", "Physics", "Ragdoll", "GettingUp", "Seated", "Flying", "FallingDown"}
 	local LastSafest = RCRootPart.CFrame
 	Util.LinkDestroyI2C(RC, RunService.PreAnimation:Connect(function(dt)
-		local CMove, CJump = Vector3.zero, false
-		if Player.Character then
-			local Humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
-			if Humanoid then
-				CMove, CJump = Humanoid:GetMoveVelocity() / Humanoid.WalkSpeed, Humanoid.Jump
-			end
-		end
-		pcall(sethiddenproperty, RCRootPart, "PhysicsRepRootPart", nil)
+		local CMove, CJump = Reanimate:GetControls()
 		local CamCF = CFrame.identity
 		if Camera then CamCF = Camera.CFrame end
 		local _,x,_ = CamCF:ToEulerAngles(Enum.RotationOrder.YXZ)
 		local MoveCF = CFrame.Angles(0, x, 0)
-		if CMove.Y == 0 then
-			CMove = MoveCF:VectorToObjectSpace(CMove)
-		else
-			CMove = CamCF:VectorToObjectSpace(CMove)
-		end
+		pcall(sethiddenproperty, RCRootPart, "PhysicsRepRootPart", nil)
 		if Reanimate.CharacterScale ~= RC:GetScale() then
 			RC:ScaleTo(Reanimate.CharacterScale)
 		end
@@ -4648,6 +4666,52 @@ function HatReanimator.Start()
 	local CharTools = {}
 	local CharHats = {}
 
+	local HatRefs = {}
+	local Hat2HatRefs = {}
+	local function ResetHatRefs()
+		table.clear(Hat2HatRefs)
+		for _,ref in HatRefs do
+			ref.Hat = nil
+		end
+	end
+	local function CreatePlaceholder(hat)
+		local h = hat:FindFirstChild("Handle")
+		local m = h and h:FindFirstChildOfClass("SpecialMesh")
+		if h then
+			local p = Instance.new("Part")
+			p.Anchored = true
+			p.CanCollide = false
+			p.CanTouch = false
+			p.CanQuery = false
+			p.Transparency = 0.75
+			p.Size = h.Size
+			p.CFrame = h.CFrame
+			p.Color = h.Color
+			p.Name = "(C) Uhhhhhh V" .. UhhhhhhVersion .. " :: HAT PLACEHOLDER"
+			local n = m:Clone()
+			n:ClearAllChildren()
+			n.Parent = p
+			p.Parent = workspace
+			return p
+		end
+	end
+	local function RefHatToHatRefs(hat)
+		local mesh, tex = GetHatMeshAndTexture(hat)
+		if mesh and tex then
+			for _,ref in HatRefs do
+				if not ref.Hat then
+					if ref.Name == hat.Name and ref.MeshId == mesh and ref.TextureId == tex then
+						ref.Hat = hat
+						Hat2HatRefs[hat] = ref
+						if not ref.PH then
+							ref.PH = CreatePlaceholder(hat)
+						end
+					end
+				end
+			end
+		end
+	end
+
 	local HatMap = {}
 	local HatMapCopy = {}
 	local function RefreshHatMap(Character)
@@ -4782,6 +4846,9 @@ function HatReanimator.Start()
 				table.insert(limbstobuild, "Right Leg")
 			end
 		end
+		for _,v in HatRefs do if v.PH then v.PH:Destroy() end end
+		table.clear(Hat2HatRefs)
+		table.clear(HatRefs)
 		HatMap = {}
 		local function addhat(limb, data)
 			if data and data[2] then
@@ -4789,7 +4856,17 @@ function HatReanimator.Start()
 				if limb then
 					data.Limb = limb
 				end
+				local index = #HatMap
+				data.Index = index
 				table.insert(HatMap, data)
+				table.insert(HatRefs, {
+					Name = data.Name,
+					MeshId = data.MeshId, TextureId = data.TextureId,
+					Map = data,
+					Index = index,
+					PH = nil,
+					Hat = nil,
+				})
 			end
 		end
 		addhat("Head", hatrig.Head)
@@ -4855,87 +4932,98 @@ function HatReanimator.Start()
 		summary ..= "...which leaves " .. unused .. " unused."
 		HatMap.Built = os.clock()
 		HatMapCopy = Util.DeepcopyTable(HatMap)
+		for _,v in CharHats do
+			RefHatToHatRefs(v)
+		end
 		HatReanimator.HatMapSummary = summary
 		HatReanimator.RebuildRequired = false
 	end
-	local function GetHatMappedMeshAndTexture(mesh, tex, name)
+	local function GetHatMappedOverride(hatmapped)
 		local ReanimCharacter = Reanimate.Character
 		if not ReanimCharacter then return end
 		local scale = ReanimCharacter:GetScale()
-		local hatmapped = nil
-		local groupname = nil
-		-- find hat mapping
-		for _,data in ipairs(HatMap) do
-			if (name and data.Name == name or not name) and data.MeshId == mesh and data.TextureId == tex then
-				hatmapped = data
-				groupname = data.Group
-				break
-			end
-		end
-		if not hatmapped then return end
 		local hatscale = hatmapped.Scale
 		-- cframe override
-		local overriden = hatmapped
 		for _,data in HatReanimator.HatCFrameOverride do
 			if not data.Disable then
 				-- accessory group
-				if overriden and data.Group and groupname == data.Group then
+				if data.Group and hatmapped.Group == data.Group then
 					if data.Limb then
-						overriden = {
+						return {
 							C0 = data.C0 or data.Offset or CFrame.identity,
-							C1 = overriden.C1 * (data.C1 or CFrame.identity),
+							C1 = hatmapped.C1 * (data.C1 or CFrame.identity),
 							Limb = data.Limb, RepRootPart = data.RepRootPart,
-							Scale = hatmapped.Scale,
+							Scale = hatscale,
 						}
 					else
-						overriden = {
+						return {
 							C0 = data.C0 or data.CFrame or CFrame.identity,
-							C1 = overriden.C1 * (data.C1 or CFrame.identity),
+							C1 = hatmapped.C1 * (data.C1 or CFrame.identity),
 							RepRootPart = data.RepRootPart,
-							Scale = hatmapped.Scale,
+							Scale = hatscale,
 						}
 					end
-					break
 				end
 				-- exact asset id
 				if data.MeshId and data.TextureId then
 					if AssetIdMatch(mesh, data.MeshId) and AssetIdMatch(tex, data.TextureId) then
-						overriden = {
+						return {
 							C0 = data.C0, C1 = data.C1,
 							Offset = data.Offset or data.CFrame,
 							Limb = data.Limb, RepRootPart = data.RepRootPart,
-							Scale = hatmapped.Scale,
+							Scale = hatscale,
 						}
-						break
 					end
+				end
+				if data.Index and hatmapped.Index == data.Index then
+					return {
+						C0 = data.C0 or data.CFrame or CFrame.identity,
+						C1 = hatmapped.C1 * (data.C1 or CFrame.identity),
+						RepRootPart = data.RepRootPart,
+						Scale = hatscale,
+					}
 				end
 			end
 		end
-		return overriden
+		return hatmapped
 	end
-	local function GetHatMappedCFrame(overriden)
+	local function GetHatMappedMeshAndTexture(mesh, tex, name)
+		local ReanimCharacter = Reanimate.Character
+		if not ReanimCharacter then return end
+		local hatmapped = nil
+		-- find hat mapping
+		for _,data in ipairs(HatMap) do
+			if (name and data.Name == name or not name) and data.MeshId == mesh and data.TextureId == tex then
+				hatmapped = data
+				break
+			end
+		end
+		if not hatmapped then return end
+		return GetHatMappedOverride(hatmapped)
+	end
+	local function GetHatMappedCFrame(hatmapped)
 		local ReanimCharacter = Reanimate.Character
 		if not ReanimCharacter then return end
 		local scale = ReanimCharacter:GetScale()
-		if overriden then
-			local hatscale = overriden.Scale
+		if hatmapped then
+			local hatscale = hatmapped.Scale
 			-- limb attached
-			if overriden.Limb then
-				local limb = ReanimCharacter:FindFirstChild(overriden.Limb)
+			if hatmapped.Limb then
+				local limb = ReanimCharacter:FindFirstChild(hatmapped.Limb)
 				if limb and limb:IsA("BasePart") then
 					-- weld-like
-					if overriden.C0 and overriden.C1 then
-						return limb.CFrame * Util.ScaleCFrame(overriden.C0, scale) * Util.ScaleCFrame(overriden.C1, hatscale):Inverse(), limb.Velocity
+					if hatmapped.C0 and hatmapped.C1 then
+						return limb.CFrame * Util.ScaleCFrame(hatmapped.C0, scale) * Util.ScaleCFrame(hatmapped.C1, hatscale):Inverse(), limb.Velocity
 					end
 					-- legacy
-					if overriden.Offset then
-						return limb.CFrame * overriden.Offset, limb.Velocity
+					if hatmapped.Offset then
+						return limb.CFrame * hatmapped.Offset, limb.Velocity
 					end
 				end
 			else
 				-- world coords
-				if overriden.C0 and overriden.C1 then
-					return overriden.C0 * Util.ScaleCFrame(overriden.C1, hatscale):Inverse(), Vector3.zero
+				if hatmapped.C0 and hatmapped.C1 then
+					return hatmapped.C0 * Util.ScaleCFrame(hatmapped.C1, hatscale):Inverse(), Vector3.zero
 				end
 			end
 		end
@@ -5091,7 +5179,7 @@ function HatReanimator.Start()
 			speedlimit = math.huge
 		end
 		local netless = Reanimate.NetlessVelocity + (math.sin(timing * 0.5) + 1) / 2
-		local aligned = false
+		local aligned = true
 		local lastcf = handle:GetAttribute("_Uhhhhhh_LastPosition")
 		local claimtime = handle:GetAttribute("_Uhhhhhh_ClaimTime")
 		if typeof(lastcf) ~= "CFrame" then lastcf = handle.CFrame end
@@ -5105,6 +5193,7 @@ function HatReanimator.Start()
 				vel = vel.Unit * speedlimit
 				newpos = lastpos + vel * dt
 				newcf = newcf.Rotation + newpos
+				aligned = false
 			end
 			local rvel = lastcf:ToObjectSpace(newcf)
 			local a, b = rvel:ToAxisAngle()
@@ -5156,10 +5245,10 @@ function HatReanimator.Start()
 					handle.AssemblyAngularVelocity = idleoff
 				end
 			end
-			aligned = true
 		else
 			claimtime = nil
 			lastcf = handle.CFrame
+			aligned = false
 		end
 		handle:SetAttribute("_Uhhhhhh_LastPosition", lastcf)
 		handle:SetAttribute("_Uhhhhhh_ClaimTime", claimtime)
@@ -5263,7 +5352,7 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[-1] = {
 		NoAnim = true,
-		Wait1 = 0.16,
+		Wait1 = 0.12,
 		Wait2 = 0,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
 			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 141, 0))
@@ -5585,6 +5674,7 @@ function HatReanimator.Start()
 		table.clear(BaseParts)
 		table.clear(CharHats)
 		table.clear(CharTools)
+		ResetHatRefs()
 		character.DescendantAdded:Connect(CharOnDesc)
 		for _,v in character:GetDescendants() do
 			CharOnDesc(v)
@@ -5985,16 +6075,9 @@ function HatReanimator.Start()
 				end
 			end
 		end
+		local RCRootPart = ReanimCharacter and ReanimCharacter:FindFirstChild("HumanoidRootPart")
 		local ltm = Reanimate.LocalTransparencyModifier
-		if ReanimCharacter then
-			for _,v in ReanimCharacter:GetChildren() do
-				if v:IsA("BasePart") then
-					if table.find(LimbNames, v.Name) then
-						v.Transparency = ReanimOkay and 1 or 0.5
-					end
-				end
-			end
-		end
+		local slocked = {}
 		if ReanimOkay then
 			local t = os.clock()
 			local dt = RunService.PostSimulation:Wait()
@@ -6007,7 +6090,6 @@ function HatReanimator.Start()
 					v.LocalTransparencyModifier = ltm
 				end
 			end
-			local RCRootPart = ReanimCharacter and ReanimCharacter:FindFirstChild("HumanoidRootPart")
 			if RCRootPart then
 				if Reanimate:ShouldRotationType() then
 					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
@@ -6022,7 +6104,6 @@ function HatReanimator.Start()
 				local toolactivate = false
 				local toolactivated = nil
 				local handlethese = {}
-				local slocked = {}
 				for _,v in CharTools do
 					local handle = v:FindFirstChild("Handle")
 					if handle and handle:IsA("BasePart") then
@@ -6167,10 +6248,12 @@ function HatReanimator.Start()
 						end
 					end
 				end
+				local blacklist = {}
 				if flingtarget then
 					local flingpart = Reanimate.UsePhysicsRepRootPart and Util.PredictionFlingPart(flingtarget.Target) or nil
 					if HatReanimator.FlingMethod == 1 then
 						local biggest = nil
+						local biggesthat = nil
 						local biggestarea = 0
 						for _,hat in CharHats do
 							local handle = hat:FindFirstChild("Handle")
@@ -6178,36 +6261,14 @@ function HatReanimator.Start()
 								local area = handle.Size.X * handle.Size.Y * handle.Size.Z
 								if biggestarea < area then
 									biggest = handle
+									biggesthat = hat
 									biggestarea = area
 								end
 							end
 						end
-						for _,hat in CharHats do
-							local handle = hat:FindFirstChild("Handle")
-							if handle and handle:IsA("BasePart") then
-								if biggest == handle then
-									SetUACFrameNetless(handle, dt, flingcf, Vector3.zero, false, true)
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and flingpart or nil)
-								elseif claimoverride then
-									SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
-								else
-									local mapped = GetHatMapped(hat)
-									local tcf, tvel = GetHatMappedCFrame(mapped)
-									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
-									tvel = tvel or Vector3.zero
-									if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
-										table.insert(slocked, handle)
-									end
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped.RepRootPart)
-								end
-							end
-						end
-						for handle, cf in handlethese do
-							if SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin) then
-								table.insert(slocked, handle)
-							end
-						end
+						blacklist[biggesthat] = true
+						SetUACFrameNetless(biggest, dt, flingcf, Vector3.zero, false, true)
+						pcall(sethiddenproperty, biggest, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and flingpart or nil)
 					end
 					if HatReanimator.FlingMethod == 2 then
 						local collide = false
@@ -6219,92 +6280,56 @@ function HatReanimator.Start()
 								end
 							end
 						end
-						for _,hat in CharHats do
-							local handle = hat:FindFirstChild("Handle")
-							if handle and handle:IsA("BasePart") then
-								if collide then
+						if collide then
+							for _,hat in CharHats do
+								local handle = hat:FindFirstChild("Handle")
+								if handle and handle:IsA("BasePart") then
+									blacklist[hat] = true
 									SetUACFrameNetless(handle, dt, flingcf, Vector3.zero, false, true)
 									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and flingpart or nil)
-								elseif claimoverride then
-									SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
-								else
-									local mapped = GetHatMapped(hat)
-									local tcf, tvel = GetHatMappedCFrame(mapped)
-									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
-									tvel = tvel or Vector3.zero
-									if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
-										table.insert(slocked, handle)
-									end
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped.RepRootPart)
 								end
-							end
-						end
-						for handle, cf in handlethese do
-							if SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin) then
-								table.insert(slocked, handle)
 							end
 						end
 					end
 					if HatReanimator.FlingMethod == 3 then
-						for _,hat in CharHats do
-							local handle = hat:FindFirstChild("Handle")
-							if handle and handle:IsA("BasePart") then
-								if claimoverride then
-									SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
-								else
-									local mapped = GetHatMapped(hat)
-									local tcf, tvel = GetHatMappedCFrame(mapped)
-									tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
-									tvel = tvel or Vector3.zero
-									if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
-										table.insert(slocked, handle)
-									end
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped.RepRootPart)
-								end
-							end
-						end
 						for handle, cf in handlethese do
+							blacklist[handle] = true
 							SetUACFrameNetless(handle, dt, flingcf, Vector3.zero, false, true)
 							pcall(sethiddenproperty, handle, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and flingpart or nil)
 						end
 					end
-				else
-					for _,hat in CharHats do
-						local handle = hat:FindFirstChild("Handle")
-						if handle and handle:IsA("BasePart") then
-							if claimoverride then
-								SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
-								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
+				end
+				for _,hat in CharHats do
+					local handle = hat:FindFirstChild("Handle")
+					if handle and handle:IsA("BasePart") then
+						if claimoverride then
+							SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
+							pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
+						else
+							local ref = Hat2HatRefs[hat]
+							local mapped = nil
+							if ref then
+								mapped = GetHatMappedOverride(ref.Map)
 							else
-								local mapped = GetHatMapped(hat)
-								local tcf, tvel = GetHatMappedCFrame(mapped)
-								tcf = tcf or RCRootPart	.CFrame * CFrame.new(0, 5, 0)
-								tvel = tvel or Vector3.zero
-								if SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin) then
-									table.insert(slocked, handle)
-								end
-								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped.RepRootPart)
+								RefHatToHatRefs(hat)
 							end
+							local tcf, tvel = GetHatMappedCFrame(mapped)
+							tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
+							tvel = tvel or Vector3.zero
+							local aligned = SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
+							if aligned then
+								table.insert(slocked, handle)
+							end
+							pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped and mapped.RepRootPart)
 						end
 					end
-					for handle, cf in handlethese do
+				end
+				for handle, cf in handlethese do
+					if blacklist[handle] then
 						if SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin) then
 							table.insert(slocked, handle)
 						end
 					end
-				end
-				if Reanimate:ShouldRotationType() then
-					RunService.PreRender:Wait()
-					local ocf = RCRootPart.CFrame
-					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
-					local bx, by, bz = ocf:ToEulerAngles(Enum.RotationOrder.YXZ)
-					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ) + ocf.Position
-					for _,handle in slocked do
-						handle.CFrame = tcf:ToWorldSpace(ocf:ToObjectSpace(handle.CFrame))
-					end
-					RCRootPart.CFrame = tcf
 				end
 			end
 		else
@@ -6312,6 +6337,30 @@ function HatReanimator.Start()
 				CurrentCharacter = nil
 				replicatesignal(Player.ConnectDiedSignalBackend)
 			end
+		end
+		for _,ref in HatRefs do
+			local ph = ref.PH
+			if ph then
+				if ref.Hat then
+					ph.Transparency = 1
+				else
+					local tcf, _ = GetHatMappedCFrame(GetHatMappedOverride(ref.Map))
+					ph.CFrame = tcf
+					ph.Transparency = 0.75
+					table.insert(slocked, ph)
+				end
+			end
+		end
+		if Reanimate:ShouldRotationType() then
+			RunService.PreRender:Wait()
+			local ocf = RCRootPart.CFrame
+			local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
+			local bx, by, bz = ocf:ToEulerAngles(Enum.RotationOrder.YXZ)
+			local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ) + ocf.Position
+			for _,handle in slocked do
+				handle.CFrame = tcf:ToWorldSpace(ocf:ToObjectSpace(handle.CFrame))
+			end
+			RCRootPart.CFrame = tcf
 		end
 	end
 	CharConn:Disconnect()
