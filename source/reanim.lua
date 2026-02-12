@@ -6502,6 +6502,7 @@ function HatReanimator.Start()
 			RCRootPart.CFrame = tcf
 		end
 	end
+	ResetHatRefs()
 	CharConn:Disconnect()
 	replicatesignal(Player.ConnectDiedSignalBackend)
 	Reanimate.Stopping = false
