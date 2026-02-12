@@ -6210,9 +6210,9 @@ function HatReanimator.Start()
 		end
 		local RCRootPart = ReanimCharacter and ReanimCharacter:FindFirstChild("HumanoidRootPart")
 		local ltm = Reanimate.LocalTransparencyModifier
+		local t = os.clock()
 		local slocked = {}
 		if ReanimOkay then
-			local t = os.clock()
 			local dt = RunService.PostSimulation:Wait()
 			if HatReanimator.RebuildRequired then
 				RefreshHatMap(Character)
@@ -6485,7 +6485,7 @@ function HatReanimator.Start()
 				else
 					local tcf, _ = GetHatMappedCFrame(GetHatMappedOverride(ref.Map))
 					ph.CFrame = tcf
-					ph.Transparency = 0.75
+					ph.Transparency = 0.625 + math.sin(t) * 0.125
 					table.insert(slocked, ph)
 				end
 			end
