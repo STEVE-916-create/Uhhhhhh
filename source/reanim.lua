@@ -5729,7 +5729,7 @@ function HatReanimator.Start()
 		lgloop = RunService.Heartbeat:Connect(function(dt)
 			selhatcol.HRPTP(dt, character, Humanoid, RootPosition, RootPart, readystate)
 		end)
-		task.wait(1)
+		if perma then task.wait(1) end
 		local backpack = Player:FindFirstChildOfClass("Backpack")
 		local tools = GetTools()
 		if perma and backpack then
