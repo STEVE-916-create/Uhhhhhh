@@ -6435,31 +6435,36 @@ function HatReanimator.Start()
 				for _,hat in CharHats do
 					local handle = hat:FindFirstChild("Handle")
 					if handle and handle:IsA("BasePart") then
-						if claimoverride then
-							SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
-							pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
+						local ref = Hat2HatRefs[hat]
+						if blacklist[hat] then
+							if ref then ref.Aligned = false end
 						else
-							local ref = Hat2HatRefs[hat]
-							local mapped = nil
-							if ref then
-								mapped = GetHatMappedOverride(ref.Map)
+							if claimoverride then
+								SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
+								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
+								if ref then ref.Aligned = false end
 							else
-								RefHatToHatRefs(hat)
+								local mapped = nil
+								if ref then
+									mapped = GetHatMappedOverride(ref.Map)
+								else
+									RefHatToHatRefs(hat)
+								end
+								local tcf, tvel = GetHatMappedCFrame(mapped)
+								tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
+								tvel = tvel or Vector3.zero
+								local aligned = SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
+								if aligned then
+									table.insert(slocked, handle)
+								end
+								if ref then ref.Aligned = aligned end
+								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped and mapped.RepRootPart)
 							end
-							local tcf, tvel = GetHatMappedCFrame(mapped)
-							tcf = tcf or RCRootPart.CFrame * CFrame.new(0, 5, 0)
-							tvel = tvel or Vector3.zero
-							local aligned = SetUACFrameNetless(handle, dt, tcf, tvel, HatReanimator.HatFling, HatReanimator.HatSpin)
-							if aligned then
-								table.insert(slocked, handle)
-							end
-							if ref then ref.Aligned = aligned end
-							pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped and mapped.RepRootPart)
 						end
 					end
 				end
 				for handle, cf in handlethese do
-					if blacklist[handle] then
+					if not blacklist[handle] then
 						if SetUACFrameNetless(handle, dt, cf, rightarm.Velocity, HatReanimator.HatFling, HatReanimator.HatSpin) then
 							table.insert(slocked, handle)
 						end
