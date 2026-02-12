@@ -4,6 +4,9 @@
  - RepRootPart property is now available for hat overrides! (hat orbit is now possible)
  - Permadeath is now forced to false. (RIP Permadeath)
  - Fixed looprespawn delay
+ - Added hat placeholders!
+ - Added custom control (kinda accurate to roblox 2026 control)
+ - Added the same flow as Oxide :sob: /j
 # Version 1.0.4 BETA
  - Added custom camera (accurate to roblox 2025 camera i think)
    (FOR PC AND MOBILE ONLY FOR NOW)

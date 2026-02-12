@@ -152,12 +152,12 @@ workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
 		Camera = newCamera
 	end
 end)
-local _scrsiz = Vector2.new(512, 512)
+Util._scrsiz = Vector2.new(512, 512)
 Util.GetScreenSize = function()
 	if Camera ~= nil then
-		_scrsiz = Camera.ViewportSize
+		Util._scrsiz = Camera.ViewportSize
 	end
-	return _scrsiz
+	return Util._scrsiz
 end
 Util.LoopedHSV = function(h, s, v)
 	h %= 1
@@ -3119,32 +3119,34 @@ local Reanimate = {
 		},
 	},
 	LocalTransparencyModifier = 0,
-	ControlModule = nil,
-	GetControls = function(self)
-		if self.ControlModule then
-			local succ, CMove, CJump = pcall(function()
-				return self.ControlModule:GetMoveVector(), self.ControlModule:GetIsJumping()
-			end)
-			if succ and CMove and CJump ~= nil then return CMove * Vector3.new(1, 1, -1), CJump end
-		end
-		local CMove, CJump = Vector3.zero, false
-		if Player.Character then
-			local Humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
-			if Humanoid then
-				CMove, CJump = Humanoid:GetMoveVelocity() / Humanoid.WalkSpeed, Humanoid.Jump
-			end
-		end
-		local CamCF = CFrame.identity
-		if Camera then CamCF = Camera.CFrame end
-		local _,x,_ = CamCF:ToEulerAngles(Enum.RotationOrder.YXZ)
-		local MoveCF = CFrame.Angles(0, x, 0)
-		if CMove.Y == 0 then
-			CMove = MoveCF:VectorToObjectSpace(CMove)
-		else
-			CMove = CamCF:VectorToObjectSpace(CMove)
-		end
-		return CMove, CJump
-	end,
+	Control = {
+		Move = Vector3.zero,
+		Jump = false,
+		Inputs = {
+			KB = {
+				Up = false,
+				Down = false,
+				Left = false,
+				Right = false,
+				Space = false,
+			},
+			TC = {
+				DJ = nil,
+				LP = nil,
+				JB = nil,
+			},
+			Reset = function(self)
+				self.KB.Up = false
+				self.KB.Down = false
+				self.KB.Left = false
+				self.KB.Right = false
+				self.KB.Space = false
+				self.TC.DJ = nil
+				self.TC.LP = nil
+				self.TC.JB = nil
+			end,
+		}
+	}
 }
 Reanimate.Camera.IsFirstPerson = function(self)
 	return self.Zoom < 0.75
@@ -3155,261 +3157,393 @@ end
 Reanimate.Camera.IsMousePanning = function(self)
 	return self:IsMouseLocked() or self.Inputs.MS.RMB
 end
-task.spawn(pcall, function()
-	Reanimate.ControlModule = require(Player.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule"))
-end)
 do
-	local self = Reanimate.Camera
-	local function AdjustTouchPitchSensitivity(delta)
-		local pitch = Camera.CFrame:ToEulerAnglesYXZ()
-		if delta.Y * pitch >= 0 then
-			return delta
-		end
-		local curveY = 1 - (2 * math.abs(pitch) / math.pi) ^ 0.75
-		local sensitivity = curveY * 0.75 + 0.25
-		return Vector2.new(1, sensitivity) * delta
-	end
 	local function IsInThumbstickArea(pos)
 		local playerGui = Player:FindFirstChildOfClass("PlayerGui")
 		local touchGui = playerGui and playerGui:FindFirstChild("TouchGui")
-		local touchFrame = touchGui and touchGui:FindFirstChild("TouchControlFrame")
-		local thumbstickFrame = touchFrame and touchFrame:FindFirstChild("DynamicThumbstickFrame")
-		if not thumbstickFrame then
+		if not touchGui.Enabled then
 			return false
 		end
-		if not touchGui.Enabled then
+		local touchFrame = touchGui and touchGui:FindFirstChild("TouchControlFrame")
+		local thumbstickFrame = touchFrame and (touchFrame:FindFirstChild("DynamicThumbstickFrame") or touchFrame:FindFirstChild("ThumbstickFrame"))
+		if not thumbstickFrame then
 			return false
 		end
 		local posTopLeft = thumbstickFrame.AbsolutePosition
 		local posBottomRight = posTopLeft + thumbstickFrame.AbsoluteSize
 		return pos.X >= posTopLeft.X and pos.Y >= posTopLeft.Y and pos.X <= posBottomRight.X and pos.Y <= posBottomRight.Y
 	end
-	UserInputService.InputBegan:Connect(function(input, gpe)
-		if GuiService.MenuIsOpen then return end
-		if UserInputService:GetFocusedTextBox() then return end
-		if input.UserInputType == Enum.UserInputType.Keyboard then
-			if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
-				Reanimate.Shiftlocked = Reanimate.ShiftlockEnabled and not Reanimate.Shiftlocked
-			end
-			if input.KeyCode == Enum.KeyCode.Left then
-				self.Inputs.KB.Left = true
-			end
-			if input.KeyCode == Enum.KeyCode.Right then
-				self.Inputs.KB.Right = true
-			end
+	local function IsInJumpButtonArea(pos)
+		local playerGui = Player:FindFirstChildOfClass("PlayerGui")
+		local touchGui = playerGui and playerGui:FindFirstChild("TouchGui")
+		if not touchGui.Enabled then
+			return false
 		end
-		if input.UserInputType == Enum.UserInputType.MouseButton2 then
-			if gpe then return end
-			self.Inputs.MS.RMB = true
+		local touchFrame = touchGui and touchGui:FindFirstChild("TouchControlFrame")
+		local jumpButton = touchFrame and touchFrame:FindFirstChild("JumpButton")
+		if not jumpButton then
+			return false
 		end
-		if input.UserInputType == Enum.UserInputType.Touch then
-			if gpe then return end
-			if self.Inputs.TC.DJ == nil and IsInThumbstickArea(input.Position) then
-				self.Inputs.TC.DJ = input
-				return
-			end
-			self.Inputs.TC.Touch[input] = true
-		end
-	end)
-	UserInputService.InputChanged:Connect(function(input, gpe)
-		if GuiService.MenuIsOpen then return end
-		if input.UserInputType == Enum.UserInputType.MouseMovement then
-			if self:IsMousePanning() then
-				self:OnPanInput(Vector2.new(input.Delta.X, input.Delta.Y) * Vector2.new(1, 0.77) * math.rad(0.5), false)
-			end
-		end
-		if input.UserInputType == Enum.UserInputType.MouseWheel then
-			if gpe and not self:IsMousePanning() then return end
-			local zoom = math.clamp(-input.Position.Z, -1, 1)
-			self:OnZoomInput(zoom)
-		end
-		if input.UserInputType == Enum.UserInputType.Touch then
-			if self.Inputs.TC.DJ == input then
-				return
-			end
-			local touches = {}
-			for touch,exist in self.Inputs.TC.Touch do
-				if exist then table.insert(touches, touch) end
-			end
-			if #touches == 1 then
-				if touches[1] == input then
-					self:OnPanInput(Vector2.new(input.Delta.X, input.Delta.Y) * Vector2.new(1, 0.66) * math.rad(1), true)
-				end
-			end
-			if #touches == 2 then
-				local pinch = (touches[1].Position - touches[2].Position).Magnitude
-				if self.Inputs.TC.LP then
-					local zoom = (self.Inputs.TC.LP - pinch) * 0.04
-					self:OnZoomInput(zoom)
-				end
-				self.Inputs.TC.LP = pinch
-			else
-				self.Inputs.TC.LP = nil
-			end
-		end
-	end)
-	UserInputService.InputEnded:Connect(function(input)
-		if GuiService.MenuIsOpen then return end
-		if UserInputService:GetFocusedTextBox() then return end
-		if input.UserInputType == Enum.UserInputType.Keyboard then
-			if input.KeyCode == Enum.KeyCode.Left then
-				self.Inputs.KB.Left = false
-			end
-			if input.KeyCode == Enum.KeyCode.Right then
-				self.Inputs.KB.Right = false
-			end
-		end
-		if input.UserInputType == Enum.UserInputType.MouseButton2 then
-			self.Inputs.MS.RMB = false
-		end
-		if input.UserInputType == Enum.UserInputType.Touch then
-			if self.Inputs.TC.DJ == input then
-				self.Inputs.TC.DJ = nil
-				return
-			end
-			self.Inputs.TC.LP = nil
-			self.Inputs.TC.Touch[input] = false
-		end
-	end)
-	UserInputService.PointerAction:Connect(function(wheel, pan, pinch, gpe)
-		if not gpe then
-			self:OnPanInput(pan * Vector2.new(1, 0.77) * math.rad(7), false)
-			self:OnZoomInput(-wheel - pinch)
-		end
-	end)
-	local function resetInputDevices()
-		Reanimate.Camera.Inputs:Reset()
+		local posTopLeft = jumpButton.AbsolutePosition
+		local posBottomRight = posTopLeft + jumpButton.AbsoluteSize
+		return pos.X >= posTopLeft.X and pos.Y >= posTopLeft.Y and pos.X <= posBottomRight.X and pos.Y <= posBottomRight.Y
 	end
-	UserInputService.WindowFocused:Connect(resetInputDevices)
-	UserInputService.WindowFocusReleased:Connect(resetInputDevices)
-	UserInputService.TextBoxFocusReleased:Connect(resetInputDevices)
-	GuiService.MenuOpened:Connect(resetInputDevices)
-	local states = {
-		[false] = "rbxasset://textures/ui/mouseLock_off@2x.png",
-		[true] = "rbxasset://textures/ui/mouseLock_on@2x.png"
-	}
-	local MobileShiftlock = Instance.new("ImageButton")
-	MobileShiftlock.Parent = SCREENGUI
-	MobileShiftlock.BackgroundTransparency = 1
-	MobileShiftlock.Position = UDim2.new(1, -190, 1, -60)
-	MobileShiftlock.Size = UDim2.new(0, 40, 0, 40)
-	MobileShiftlock.Image = states[false]
-	local state = false
-	AddToRenderStep(function()
-		if state ~= Reanimate.Shiftlocked then
-			state = Reanimate.Shiftlocked
-			MobileShiftlock.Image = states[state]
-		end
-		MobileShiftlock.Visible = not not (Reanimate.Character and UserInputService.TouchEnabled)
-	end)
-	MobileShiftlock.Activated:Connect(function()
-		Reanimate.Shiftlocked = Reanimate.ShiftlockEnabled and not Reanimate.Shiftlocked
-	end)
-	RunService:BindToRenderStep("Uhhhhhh_Camera", Enum.RenderPriority.Camera.Value + 1, function(dt)
-		if self.Inputs.KB.Left then
-			self:OnPanInput(Vector2.new(math.rad(-120) * dt, 0), true)
-		end
-		if self.Inputs.KB.Right then
-			self:OnPanInput(Vector2.new(math.rad(120) * dt, 0), true)
-		end
-		local ltm = Reanimate.LocalTransparencyModifier
-		local tltm = 0
-		local sltm = dt * 3
-		if not self.Scriptable then
-			if self:IsFirstPerson() then
-				tltm = 1
-			elseif self.Zoom < 1.5 * Reanimate.CharacterScale then
-				tltm = 0.5
-			end
-		end
-		if math.abs(ltm - tltm) <= sltm then
-			ltm = tltm
-		elseif ltm < tltm then
-			ltm += sltm
-		else
-			ltm -= sltm
-		end
-		Reanimate.LocalTransparencyModifier = ltm
-		if not Reanimate.ShiftlockEnabled and Reanimate.Shiftlocked then
-			Reanimate.Shiftlocked = false
-		end
-		if Reanimate.Character then
-			local targetMouseBehavior = Enum.MouseBehavior.Default
-			if self:IsMousePanning() then
-				if self:IsMouseLocked() then
-					if UserInputService.TouchEnabled then
-						targetMouseBehavior = Enum.MouseBehavior.LockCurrentPosition
-					else
-						targetMouseBehavior = Enum.MouseBehavior.LockCenter
-					end
-				else
-					targetMouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+	do -- Control
+		local self = Reanimate.Control
+		UserInputService.InputBegan:Connect(function(input, gpe)
+			if GuiService.MenuIsOpen then return end
+			if UserInputService:GetFocusedTextBox() then return end
+			if input.UserInputType == Enum.UserInputType.Keyboard then
+				if input.KeyCode == Enum.KeyCode.W then
+					self.Inputs.KB.Up = true
+				end
+				if input.KeyCode == Enum.KeyCode.S then
+					self.Inputs.KB.Down = true
+				end
+				if input.KeyCode == Enum.KeyCode.Up then
+					self.Inputs.KB.Up = true
+				end
+				if input.KeyCode == Enum.KeyCode.Down then
+					self.Inputs.KB.Down = true
+				end
+				if input.KeyCode == Enum.KeyCode.A then
+					self.Inputs.KB.Left = true
+				end
+				if input.KeyCode == Enum.KeyCode.D then
+					self.Inputs.KB.Right = true
+				end
+				if input.KeyCode == Enum.KeyCode.Space then
+					self.Inputs.KB.Space = true
 				end
 			end
-			if UserInputService.MouseBehavior ~= targetMouseBehavior then
-				UserInputService.MouseBehavior = targetMouseBehavior
+			if input.UserInputType == Enum.UserInputType.Touch then
+				if self.Inputs.TC.DJ == nil and IsInThumbstickArea(input.Position) then
+					self.Inputs.TC.DJ = input
+					self.Inputs.TC.LP = input.Position
+					return
+				end
+				if self.Inputs.TC.JB == nil and IsInJumpButtonArea(input.Position) then
+					self.Inputs.TC.JB = input
+					return
+				end
 			end
-			local targetMouseIcon = ""
-			if Reanimate.Shiftlocked then
-				targetMouseIcon = "rbxasset://textures/Cursors/CrossMouseIcon.png"
+		end)
+		UserInputService.InputEnded:Connect(function(input)
+			if GuiService.MenuIsOpen then return end
+			if UserInputService:GetFocusedTextBox() then return end
+			if input.UserInputType == Enum.UserInputType.Keyboard then
+				if input.KeyCode == Enum.KeyCode.W then
+					self.Inputs.KB.Up = false
+				end
+				if input.KeyCode == Enum.KeyCode.S then
+					self.Inputs.KB.Down = false
+				end
+				if input.KeyCode == Enum.KeyCode.Up then
+					self.Inputs.KB.Up = false
+				end
+				if input.KeyCode == Enum.KeyCode.Down then
+					self.Inputs.KB.Down = false
+				end
+				if input.KeyCode == Enum.KeyCode.A then
+					self.Inputs.KB.Left = false
+				end
+				if input.KeyCode == Enum.KeyCode.D then
+					self.Inputs.KB.Right = false
+				end
+				if input.KeyCode == Enum.KeyCode.Space then
+					self.Inputs.KB.Space = false
+				end
 			end
-			if UserInputService.MouseIcon ~= targetMouseIcon then
-				UserInputService.MouseIcon = targetMouseIcon
+			if input.UserInputType == Enum.UserInputType.Touch then
+				if self.Inputs.TC.DJ == input then
+					self.Inputs.TC.DJ = nil
+					self.Inputs.TC.LP = nil
+				elseif self.Inputs.TC.JB == input then
+					self.Inputs.TC.JB = nil
+				end
 			end
-			if GameSettings.RotationType ~= Enum.RotationType.MovementRelative then
-				GameSettings.RotationType = Enum.RotationType.MovementRelative
+		end)
+		local function resetInputDevices()
+			self.Inputs:Reset()
+		end
+		UserInputService.WindowFocused:Connect(resetInputDevices)
+		UserInputService.WindowFocusReleased:Connect(resetInputDevices)
+		UserInputService.TextBoxFocusReleased:Connect(resetInputDevices)
+		GuiService.MenuOpened:Connect(resetInputDevices)
+		RunService:BindToRenderStep("Uhhhhhh_Control", Enum.RenderPriority.Input.Value + 1, function(dt)
+			local screensize = Util.GetScreenSize()
+			self.Move = Vector3.zero
+			if self.Inputs.KB.Up then
+				self.Move += Vector3.new(0, 0, -1)
 			end
-			local Humanoid = Reanimate.Character:FindFirstChildOfClass("Humanoid")
-			local RootPart = Reanimate.Character:FindFirstChild("HumanoidRootPart")
-			if Humanoid and RootPart and Camera.CameraSubject == Humanoid then
-				if self.Scriptable then
-					Camera.FieldOfView = self.FieldOfView
-					Camera.FieldOfViewMode = "Vertical"
+			if self.Inputs.KB.Down then
+				self.Move += Vector3.new(0, 0, 1)
+			end
+			if self.Inputs.KB.Left then
+				self.Move += Vector3.new(-1, 0, 0)
+			end
+			if self.Inputs.KB.Right then
+				self.Move += Vector3.new(1, 0, 0)
+			end
+			if self.Inputs.TC.DJ and self.Inputs.TC.LP then
+				local stickrad = 40
+				if math.min(screensize.X, screensize.Y) < 500 then
+					stickrad = 20
+				end
+				local dir = (self.Inputs.TC.DJ.Position - self.Inputs.TC.LP) / stickrad
+				if dir.Magnitude > 0.05 then
+					dir = dir.Unit * math.min(1, (dir.Magnitude - 0.05) / (1 - 0.05))
+					self.Move = Vector3.new(dir.X, 0, dir.Y)
+				end
+			end
+			if self.Move.Magnitude > 1 then self.Move = self.Move.Unit end
+			self.Jump = false
+			if self.Inputs.KB.Space then
+				self.Jump = true
+			end
+			if self.Inputs.TC.JB then
+				self.Jump = true
+			end
+		end)
+	end
+	do -- Camera
+		local self = Reanimate.Camera
+		local function AdjustTouchPitchSensitivity(delta)
+			local pitch = Camera.CFrame:ToEulerAnglesYXZ()
+			if delta.Y * pitch >= 0 then
+				return delta
+			end
+			local curveY = 1 - (2 * math.abs(pitch) / math.pi) ^ 0.75
+			local sensitivity = curveY * 0.75 + 0.25
+			return Vector2.new(1, sensitivity) * delta
+		end
+		UserInputService.InputBegan:Connect(function(input, gpe)
+			if GuiService.MenuIsOpen then return end
+			if UserInputService:GetFocusedTextBox() then return end
+			if input.UserInputType == Enum.UserInputType.Keyboard then
+				if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
+					Reanimate.Shiftlocked = Reanimate.ShiftlockEnabled and not Reanimate.Shiftlocked
+				end
+				if input.KeyCode == Enum.KeyCode.Left then
+					self.Inputs.KB.Left = true
+				end
+				if input.KeyCode == Enum.KeyCode.Right then
+					self.Inputs.KB.Right = true
+				end
+			end
+			if input.UserInputType == Enum.UserInputType.MouseButton2 then
+				if gpe then return end
+				self.Inputs.MS.RMB = true
+			end
+			if input.UserInputType == Enum.UserInputType.Touch then
+				if gpe then return end
+				if self.Inputs.TC.DJ == nil and IsInThumbstickArea(input.Position) then
+					self.Inputs.TC.DJ = input
+					return
+				end
+				self.Inputs.TC.Touch[input] = true
+			end
+		end)
+		UserInputService.InputChanged:Connect(function(input, gpe)
+			if GuiService.MenuIsOpen then return end
+			if input.UserInputType == Enum.UserInputType.MouseMovement then
+				if self:IsMousePanning() then
+					self:OnPanInput(Vector2.new(input.Delta.X, input.Delta.Y) * Vector2.new(1, 0.77) * math.rad(0.5), false)
+				end
+			end
+			if input.UserInputType == Enum.UserInputType.MouseWheel then
+				if gpe and not self:IsMousePanning() then return end
+				local zoom = math.clamp(-input.Position.Z, -1, 1)
+				self:OnZoomInput(zoom)
+			end
+			if input.UserInputType == Enum.UserInputType.Touch then
+				if self.Inputs.TC.DJ == input then
+					return
+				end
+				local touches = {}
+				for touch,exist in self.Inputs.TC.Touch do
+					if exist then table.insert(touches, touch) end
+				end
+				if #touches == 1 then
+					if touches[1] == input then
+						self:OnPanInput(Vector2.new(input.Delta.X, input.Delta.Y) * Vector2.new(1, 0.66) * math.rad(1), true)
+					end
+				end
+				if #touches == 2 then
+					local pinch = (touches[1].Position - touches[2].Position).Magnitude
+					if self.Inputs.TC.LP then
+						local zoom = (self.Inputs.TC.LP - pinch) * 0.04
+						self:OnZoomInput(zoom)
+					end
+					self.Inputs.TC.LP = pinch
 				else
-					Camera.FieldOfView = 70
-					Camera.FieldOfViewMode = "Vertical"
-					local newCameraCFrame, newCameraFocus = self.CFrame, self.Focus
-					local subjectPosition = RootPart.Position + RootPart.CFrame.UpVector * 1.5
-					subjectPosition += RootPart.CFrame.Rotation * Humanoid.CameraOffset
-					local input = self.Input * Vector3.new(1, GameSettings:GetCameraYInvertValue(), 1)
-					self.Input = Vector3.zero
-					local zoomDelta = input.Z
-					if math.abs(zoomDelta) > 0 then
-						if zoomDelta > 0 then
-							self.Zoom += zoomDelta * (1 + self.Zoom * 0.5)
+					self.Inputs.TC.LP = nil
+				end
+			end
+		end)
+		UserInputService.InputEnded:Connect(function(input)
+			if GuiService.MenuIsOpen then return end
+			if UserInputService:GetFocusedTextBox() then return end
+			if input.UserInputType == Enum.UserInputType.Keyboard then
+				if input.KeyCode == Enum.KeyCode.Left then
+					self.Inputs.KB.Left = false
+				end
+				if input.KeyCode == Enum.KeyCode.Right then
+					self.Inputs.KB.Right = false
+				end
+			end
+			if input.UserInputType == Enum.UserInputType.MouseButton2 then
+				self.Inputs.MS.RMB = false
+			end
+			if input.UserInputType == Enum.UserInputType.Touch then
+				if self.Inputs.TC.DJ == input then
+					self.Inputs.TC.DJ = nil
+					return
+				end
+				self.Inputs.TC.LP = nil
+				self.Inputs.TC.Touch[input] = false
+			end
+		end)
+		UserInputService.PointerAction:Connect(function(wheel, pan, pinch, gpe)
+			if not gpe then
+				self:OnPanInput(pan * Vector2.new(1, 0.77) * math.rad(7), false)
+				self:OnZoomInput(-wheel - pinch)
+			end
+		end)
+		local function resetInputDevices()
+			self.Inputs:Reset()
+		end
+		UserInputService.WindowFocused:Connect(resetInputDevices)
+		UserInputService.WindowFocusReleased:Connect(resetInputDevices)
+		UserInputService.TextBoxFocusReleased:Connect(resetInputDevices)
+		GuiService.MenuOpened:Connect(resetInputDevices)
+		local states = {
+			[false] = "rbxasset://textures/ui/mouseLock_off@2x.png",
+			[true] = "rbxasset://textures/ui/mouseLock_on@2x.png"
+		}
+		local MobileShiftlock = Instance.new("ImageButton")
+		MobileShiftlock.Parent = SCREENGUI
+		MobileShiftlock.BackgroundTransparency = 1
+		MobileShiftlock.Position = UDim2.new(1, -190, 1, -60)
+		MobileShiftlock.Size = UDim2.new(0, 40, 0, 40)
+		MobileShiftlock.Image = states[false]
+		local state = false
+		AddToRenderStep(function()
+			if state ~= Reanimate.Shiftlocked then
+				state = Reanimate.Shiftlocked
+				MobileShiftlock.Image = states[state]
+			end
+			MobileShiftlock.Visible = not not (Reanimate.Character and UserInputService.TouchEnabled)
+		end)
+		MobileShiftlock.Activated:Connect(function()
+			Reanimate.Shiftlocked = Reanimate.ShiftlockEnabled and not Reanimate.Shiftlocked
+		end)
+		RunService:BindToRenderStep("Uhhhhhh_Camera", Enum.RenderPriority.Camera.Value + 1, function(dt)
+			if self.Inputs.KB.Left then
+				self:OnPanInput(Vector2.new(math.rad(-120) * dt, 0), true)
+			end
+			if self.Inputs.KB.Right then
+				self:OnPanInput(Vector2.new(math.rad(120) * dt, 0), true)
+			end
+			local ltm = Reanimate.LocalTransparencyModifier
+			local tltm = 0
+			local sltm = dt * 3
+			if not self.Scriptable then
+				if self:IsFirstPerson() then
+					tltm = 1
+				elseif self.Zoom < 1.5 * Reanimate.CharacterScale then
+					tltm = 0.5
+				end
+			end
+			if math.abs(ltm - tltm) <= sltm then
+				ltm = tltm
+			elseif ltm < tltm then
+				ltm += sltm
+			else
+				ltm -= sltm
+			end
+			Reanimate.LocalTransparencyModifier = ltm
+			if not Reanimate.ShiftlockEnabled and Reanimate.Shiftlocked then
+				Reanimate.Shiftlocked = false
+			end
+			if Reanimate.Character then
+				local targetMouseBehavior = Enum.MouseBehavior.Default
+				if self:IsMousePanning() then
+					if self:IsMouseLocked() then
+						if UserInputService.TouchEnabled then
+							targetMouseBehavior = Enum.MouseBehavior.LockCurrentPosition
 						else
-							self.Zoom = (self.Zoom + zoomDelta) / (1 - zoomDelta * 0.5)
+							targetMouseBehavior = Enum.MouseBehavior.LockCenter
 						end
+					else
+						targetMouseBehavior = Enum.MouseBehavior.LockCurrentPosition
 					end
-					if self.Zoom < 0.5 then
-						self.Zoom = 0.5
-					end
-					self._Zoom = self.Zoom + (self._Zoom - self.Zoom) * math.exp(-32 * dt)
-					local currLookVector = suppliedLookVector or newCameraCFrame.LookVector
-					local currPitchAngle = math.asin(currLookVector.Y)
-					local constrainedRotateInput = Vector2.new(input.X, math.clamp(input.Y, math.rad(-80) + currPitchAngle, math.rad(80) + currPitchAngle))
-					local startCFrame = CFrame.lookAt(Vector3.zero, currLookVector)
-					local newLookCFrame = CFrame.Angles(0, -constrainedRotateInput.X, 0) * startCFrame * CFrame.Angles(-constrainedRotateInput.Y, 0, 0)
-					local newLookVector = newLookCFrame.LookVector
-					if self:IsMouseLocked() and not self:IsFirstPerson() then
-						local cameraRelativeOffset = newLookCFrame * Vector3.new(1.7, 0, 0)
-						if cameraRelativeOffset == cameraRelativeOffset then
-							subjectPosition += cameraRelativeOffset
-						end
-					end
-					newCameraFocus = CFrame.new(subjectPosition)
-					local cameraFocusP = newCameraFocus.Position
-					newCameraCFrame = CFrame.lookAt(cameraFocusP - newLookVector * self._Zoom, cameraFocusP)
-					self.CFrame, self.Focus = newCameraCFrame, newCameraFocus
 				end
-				Camera.CFrame, Camera.Focus = self.CFrame, self.Focus
+				if UserInputService.MouseBehavior ~= targetMouseBehavior then
+					UserInputService.MouseBehavior = targetMouseBehavior
+				end
+				local targetMouseIcon = ""
+				if Reanimate.Shiftlocked then
+					targetMouseIcon = "rbxasset://textures/Cursors/CrossMouseIcon.png"
+				end
+				if UserInputService.MouseIcon ~= targetMouseIcon then
+					UserInputService.MouseIcon = targetMouseIcon
+				end
+				if GameSettings.RotationType ~= Enum.RotationType.MovementRelative then
+					GameSettings.RotationType = Enum.RotationType.MovementRelative
+				end
+				local Humanoid = Reanimate.Character:FindFirstChildOfClass("Humanoid")
+				local RootPart = Reanimate.Character:FindFirstChild("HumanoidRootPart")
+				if Humanoid and RootPart and Camera.CameraSubject == Humanoid then
+					if self.Scriptable then
+						Camera.FieldOfView = self.FieldOfView
+						Camera.FieldOfViewMode = "Vertical"
+					else
+						Camera.FieldOfView = 70
+						Camera.FieldOfViewMode = "Vertical"
+						local newCameraCFrame, newCameraFocus = self.CFrame, self.Focus
+						local subjectPosition = RootPart.Position + RootPart.CFrame.UpVector * 1.5
+						subjectPosition += RootPart.CFrame.Rotation * Humanoid.CameraOffset
+						local input = self.Input * Vector3.new(1, GameSettings:GetCameraYInvertValue(), 1)
+						self.Input = Vector3.zero
+						local zoomDelta = input.Z
+						if math.abs(zoomDelta) > 0 then
+							if zoomDelta > 0 then
+								self.Zoom += zoomDelta * (1 + self.Zoom * 0.5)
+							else
+								self.Zoom = (self.Zoom + zoomDelta) / (1 - zoomDelta * 0.5)
+							end
+						end
+						if self.Zoom < 0.5 then
+							self.Zoom = 0.5
+						end
+						self._Zoom = self.Zoom + (self._Zoom - self.Zoom) * math.exp(-32 * dt)
+						local currLookVector = suppliedLookVector or newCameraCFrame.LookVector
+						local currPitchAngle = math.asin(currLookVector.Y)
+						local constrainedRotateInput = Vector2.new(input.X, math.clamp(input.Y, math.rad(-80) + currPitchAngle, math.rad(80) + currPitchAngle))
+						local startCFrame = CFrame.lookAt(Vector3.zero, currLookVector)
+						local newLookCFrame = CFrame.Angles(0, -constrainedRotateInput.X, 0) * startCFrame * CFrame.Angles(-constrainedRotateInput.Y, 0, 0)
+						local newLookVector = newLookCFrame.LookVector
+						if self:IsMouseLocked() and not self:IsFirstPerson() then
+							local cameraRelativeOffset = newLookCFrame * Vector3.new(1.7, 0, 0)
+							if cameraRelativeOffset == cameraRelativeOffset then
+								subjectPosition += cameraRelativeOffset
+							end
+						end
+						newCameraFocus = CFrame.new(subjectPosition)
+						local cameraFocusP = newCameraFocus.Position
+						newCameraCFrame = CFrame.lookAt(cameraFocusP - newLookVector * self._Zoom, cameraFocusP)
+						self.CFrame, self.Focus = newCameraCFrame, newCameraFocus
+					end
+					Camera.CFrame, Camera.Focus = self.CFrame, self.Focus
+				end
+				for _,v in Reanimate.CharacterLTMs do
+					v.LocalTransparencyModifier = ltm
+				end
 			end
-			for _,v in Reanimate.CharacterLTMs do
-				v.LocalTransparencyModifier = ltm
-			end
-		end
-		pcall(function() CoreGui.TopBarApp.TopBarApp.FullScreenFrame.HurtOverlay.Visible = false end)
-	end)
+			pcall(function() CoreGui.TopBarApp.TopBarApp.FullScreenFrame.HurtOverlay.Visible = false end)
+		end)
+	end
 end
 Reanimate.CreateCharacter = function(InitCFrame)
 	local RC = Reanimate.Character
@@ -3521,9 +3655,8 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	local fallingStates = {"Jumping", "Freefall", "PlatformStanding", "Physics", "Ragdoll", "GettingUp", "Seated", "Flying", "FallingDown"}
 	local LastSafest = RCRootPart.CFrame
 	Util.LinkDestroyI2C(RC, RunService.PreAnimation:Connect(function(dt)
-		local CMove, CJump = Reanimate:GetControls()
-		local CamCF = CFrame.identity
-		if Camera then CamCF = Camera.CFrame end
+		local CMove, CJump = Reanimate.Control.Move, Reanimate.Control.Jump
+		local CamCF = Reanimate.Camera.CFrame
 		local _,x,_ = CamCF:ToEulerAngles(Enum.RotationOrder.YXZ)
 		local MoveCF = CFrame.Angles(0, x, 0)
 		pcall(sethiddenproperty, RCRootPart, "PhysicsRepRootPart", nil)
@@ -5352,7 +5485,7 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[-1] = {
 		NoAnim = true,
-		Wait1 = 0.12,
+		Wait1 = 0.16,
 		Wait2 = 0,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
 			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 141, 0))
@@ -6320,6 +6453,7 @@ function HatReanimator.Start()
 							if aligned then
 								table.insert(slocked, handle)
 							end
+							if ref then ref.Aligned = aligned end
 							pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped and mapped.RepRootPart)
 						end
 					end
@@ -6341,7 +6475,7 @@ function HatReanimator.Start()
 		for _,ref in HatRefs do
 			local ph = ref.PH
 			if ph then
-				if ref.Hat then
+				if ref.Hat and ref.Aligned then
 					ph.Transparency = 1
 				else
 					local tcf, _ = GetHatMappedCFrame(GetHatMappedOverride(ref.Map))
