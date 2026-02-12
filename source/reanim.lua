@@ -8001,6 +8001,7 @@ for _,x in filesofbuiltins_d do
 			pcall(writefile, path, content)
 		else
 			Util.Notify("Failed to load " .. x .. ": Download failed.")
+			SaveData.ContentHash[x] = nil
 		end
 	end
 end
@@ -8022,6 +8023,7 @@ for _,x in filesofbuiltins_m do
 			data = content
 		else
 			Util.Notify("Failed to load " .. x .. ": Download failed.")
+			SaveData.ContentHash[x] = nil
 		end
 	end
 	task.wait()
