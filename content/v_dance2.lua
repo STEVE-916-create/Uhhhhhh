@@ -620,7 +620,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Popipo"
 	m.Description = "i know you want my vegetable juice\nfirst dance to use rbxm\ni dont recommend doing what i did for this dance though, this is just a good example of how to put stuff in stuff"
-	m.Assets = {"PopipoDance.anim", "PopipoShake.anim", "Popipo.rbxm", "Popipo.mp3"}
+	m.Assets = {"PopipoDance.anim", "PopipoShake.anim", "Popipo.rbxm", "Popipo.mp3", "PopipoAlt.mp3"}
 
 	m.Effects = true
 	m.Config = function(parent: GuiBase2d)
@@ -652,7 +652,11 @@ AddModule(function()
 		end
 	end
 	m.Init = function(figure: Model)
-		SetOverrideDanceMusic(AssetGetContentId("Popipo.mp3"), "po pi po pi po po pi po", 1, NumberRange.new(19.2, 57.63))
+		if math.random() > 0.67 then
+			SetOverrideDanceMusic(AssetGetContentId("PopipoAlt.mp3"), "po pi po pi po po pi po", 1, NumberRange.new(19.2, 57.613))
+		else
+			SetOverrideDanceMusic(AssetGetContentId("Popipo.mp3"), "po pi po pi po po pi po", 1, NumberRange.new(19.2, 57.63))
+		end
 		animator1 = AnimLib.Animator.new()
 		animator1.rig = figure
 		animator1.looped = true
