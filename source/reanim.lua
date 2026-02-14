@@ -4809,21 +4809,14 @@ function HatReanimator.Start()
 	end
 	local function CreatePlaceholder(hat)
 		local h = hat:FindFirstChild("Handle")
-		local m = h and h:FindFirstChildOfClass("SpecialMesh")
-		if h then
-			local p = Instance.new("Part")
+		if h and h:IsA("BasePart") then
+			local p = h:Clone()
 			p.Anchored = true
 			p.CanCollide = false
 			p.CanTouch = false
 			p.CanQuery = false
 			p.Transparency = 0.75
-			p.Size = h.Size
-			p.CFrame = h.CFrame
-			p.Color = h.Color
 			p.Name = "(C) Uhhhhhh V" .. UhhhhhhVersion .. " :: HAT PLACEHOLDER"
-			local n = m:Clone()
-			n:ClearAllChildren()
-			n.Parent = p
 			p.Parent = workspace
 			return p
 		end
