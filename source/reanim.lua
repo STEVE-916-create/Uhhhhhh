@@ -4811,6 +4811,7 @@ function HatReanimator.Start()
 		local h = hat:FindFirstChild("Handle")
 		if h and h:IsA("BasePart") then
 			local p = h:Clone()
+			p:BreakJoints()
 			p.Anchored = true
 			p.CanCollide = false
 			p.CanTouch = false
