@@ -4521,10 +4521,10 @@ function HatReanimator.Fling(target, duration)
 end
 HatReanimator.DontFireCharAddOnThisChar = nil
 function HatReanimator.Config(parent)
-	UI.CreateText(parent, "permadeath is patched, this switch is ignored", 10, Enum.TextXAlignment.Center)
+	UI.CreateText(parent, "permadeath is patched, enable this switch if you want to", 10, Enum.TextXAlignment.Center)
 	UI.CreateSwitch(parent, "Permadeath", HatReanimator.Permadeath).Changed:Connect(function(val)
-		--HatReanimator.Permadeath = val
-		--SaveData.Reanimator.HatsPatchmahub = not val
+		HatReanimator.Permadeath = val
+		SaveData.Reanimator.HatsPatchmahub = not val
 	end)
 	UI.CreateSwitch(parent, "Hat Collide", HatReanimator.HatCollide).Changed:Connect(function(val)
 		HatReanimator.HatCollide = val
