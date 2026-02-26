@@ -6167,7 +6167,7 @@ AddModule(function()
 				local root = v4 - gravity * (gravity * x * x + 2 * y * v2)
 				local angle = math.rad(45)
 				if root > 0 then
-					angle = math.min(math.atan((v2 - math.sqrt(root)) / (g * x)), math.rad(45))
+					angle = math.min(math.atan((v2 - math.sqrt(root)) / (gravity * x)), math.rad(45))
 				end
 				aim = Vector3.new(0, math.sin(angle), 0) + xz.Unit * math.cos(angle)
 			end
