@@ -6159,13 +6159,17 @@ AddModule(function()
 			local aim = MouseHit() - eye.Position
 			if m.ThrowAimAssist then
 				local gravity = workspace.Gravity
-				local x = Vector3.new(aim.X, 0, aim.Z).Magnitude
+				local xz = Vector3.new(aim.X, 0, aim.Z)
+				local x = xz.Magnitude
 				local y = aim.Y
 				local v2 = speed * speed
 				local v4 = v2 * v2
-				local root = math.sqrt(math.max(0, v4 - gravity * (gravity * x * x + 2 * y * v2)))
-				local angle = math.atan((v2 + root) / (gravity * x))
-				aim = Vector3.new(0, math.sin(angle), 0) + (Vector3.new(aim.X, 0, aim.Z).Unit * math.cos(angle))
+				local root = v4 - gravity * (gravity * x * x + 2 * y * v2)
+				local angle = math.rad(45)
+				if root > 0 then
+					angle = math.min(math.atan((v2 - math.sqrt(root)) / (g * x)), math.rad(45))
+				end
+				aim = Vector3.new(0, math.sin(angle), 0) + xz.Unit * math.cos(angle)
 			end
 			eye.Velocity = aim.Unit * speed
 			task.spawn(function()
