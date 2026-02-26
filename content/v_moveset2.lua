@@ -5600,4 +5600,957 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "Eyozen: The Eye On Zen"
+	m.InternalName = "IPLAYTERRARIEYE"
+	m.Description = "eyozen but he jolly\n\"Haha, I'm a funny guy, but once you anger me, there's no coming back. =)\"\nT - Taunt 1\nY - Taunt 2\nZ - Astigmatism\nX - Baller\nC - Call upon the eyes in the skies\nV - Eyeyeyeyeeyyeye Slammo"
+	m.Assets = {"EyoZenTheme.mp3"}
+
+	m.Notifications = true
+	m.Sounds = true
+	m.NoCooldown = false
+	m.IgnoreDancing = false
+	m.HeadScale = 2
+	m.HitboxDebug = false
+	m.ThrowAimAssist = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Let Eyo-Zen see", m.Notifications).Changed:Connect(function(val)
+			m.Notifications = val
+		end)
+		Util_CreateSwitch(parent, "Sounds", m.Sounds).Changed:Connect(function(val)
+			m.Sounds = val
+		end)
+		Util_CreateSwitch(parent, "No Cooldown", m.NoCooldown).Changed:Connect(function(val)
+			m.NoCooldown = val
+		end)
+		Util_CreateSwitch(parent, "Ignore Dancing", m.IgnoreDancing).Changed:Connect(function(val)
+			m.IgnoreDancing = val
+		end)
+		Util_CreateSlider(parent, "Head Size", m.HeadScale, 0.5, 4, 0.5).Changed:Connect(function(val)
+			m.HeadScale = val
+		end)
+		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
+			m.HitboxDebug = val
+		end)
+		Util_CreateSwitch(parent, "Throw Aim Assist", m.ThrowAimAssist).Changed:Connect(function(val)
+			m.ThrowAimAssist = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Notifications = not save.Blind
+		m.Sounds = not save.Muted
+		m.NoCooldown = not not save.NoCooldown
+		m.IgnoreDancing = not not save.IgnoreDancing
+		m.HeadScale = save.HeadScale or m.HeadScale
+		m.HitboxDebug = not not save.HitboxDebug
+		m.ThrowAimAssist = not not save.ThrowAimAssist
+	end
+	m.SaveConfig = function()
+		return {
+			Blind = not m.Notifications,
+			Muted = not m.Sounds,
+			NoCooldown = m.NoCooldown,
+			IgnoreDancing = m.IgnoreDancing,
+			HeadScale = m.HeadScale,
+			HitboxDebug = m.HitboxDebug,
+			ThrowAimAssist = m.ThrowAimAssist,
+		}
+	end
+
+	local start = 0
+	local hum, root, torso
+	local scale = 1
+	local isdancing = false
+	local rcp = RaycastParams.new()
+	rcp.FilterType = Enum.RaycastFilterType.Exclude
+	rcp.IgnoreWater = true
+	local function PhysicsRaycast(origin, direction)
+		rcp.RespectCanCollide = true
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local function ShootRaycast(origin, direction)
+		rcp.RespectCanCollide = false
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local mouse = Player:GetMouse()
+	local function MouseHit()
+		local ray = mouse.UnitRay
+		local dist = 2000
+		local raycast = ShootRaycast(ray.Origin, ray.Direction * dist)
+		if raycast then
+			return raycast.Position
+		end
+		return ray.Origin + ray.Direction * dist
+	end
+	local function CreateSound(id, pitch, extra)
+		if not m.Sounds then return end
+		if not torso then return end
+		local parent = torso
+		if typeof(id) == "Instance" then
+			parent = id
+			id, pitch = pitch, extra
+		end
+		pitch = pitch or 1
+		local sound = Instance.new("Sound")
+		sound.Name = tostring(id)
+		sound.SoundId = "rbxassetid://" .. id
+		sound.Volume = 1
+		sound.Pitch = pitch
+		sound.EmitterSize = 100
+		sound.Parent = parent
+		sound:Play()
+		sound.Ended:Connect(function()
+			sound:Destroy()
+		end)
+	end
+	local function AimTowards(target)
+		if not root then return end
+		if flight then return end
+		local tcf = CFrame.lookAt(root.Position, target)
+		local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
+		root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
+	end
+	local function Attack(position, radius)
+		if m.HitboxDebug then
+			local hitvis = Instance.new("Part")
+			hitvis.Name = RandomString() -- built into Uhhhhhh
+			hitvis.CastShadow = false
+			hitvis.Material = Enum.Material.ForceField
+			hitvis.Anchored = true
+			hitvis.CanCollide = false
+			hitvis.CanTouch = false
+			hitvis.CanQuery = false
+			hitvis.Shape = Enum.PartType.Ball
+			hitvis.Color = Color3.new(0, 0, 0)
+			hitvis.Size = Vector3.one * radius * 2
+			hitvis.CFrame = CFrame.new(position)
+			hitvis.Parent = workspace
+			Debris:AddItem(hitvis, 1)
+		end
+		local ishit = false
+		local parts = workspace:GetPartBoundsInRadius(position, radius)
+		for _,part in parts do
+			if part.Parent then
+				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
+				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+					if ReanimateFling(part.Parent) then
+						ishit = true
+					end
+				end
+			end
+		end
+		return ishit
+	end
+	local function notify(message)
+		if not m.Notifications then return end
+		if not root or not torso then return end
+		local dialog = torso:FindFirstChild("NOTIFICATION")
+		if dialog then
+			dialog:Destroy()
+		end
+		dialog = Instance.new("BillboardGui", torso)
+		dialog.Size = UDim2.new(50 * scale, 0, 2 * scale, 0)
+		dialog.StudsOffset = Vector3.new(0, 5 * scale, 0)
+		dialog.Adornee = torso
+		dialog.Name = "NOTIFICATION"
+		local text = Instance.new("TextLabel", dialog)
+		text.BackgroundTransparency = 1
+		text.BorderSizePixel = 0
+		text.Text = ""
+		text.Font = "Fantasy"
+		text.TextScaled = true
+		text.TextStrokeTransparency = 0
+		text.TextStrokeColor3 = Color3.new(0.1, 0.1, 0.1)
+		text.Size = UDim2.new(1, 0, 1, 0)
+		text.ZIndex = 0
+		text.TextColor3 = Color3.new(1, 1, 1)
+		task.spawn(function()
+			local function update()
+				text.TextColor3 = Color3.new(0.6, 0.6, 0.6):Lerp(Color3.new(0.8, 0.8, 0.8), math.sin(os.clock() * 3))
+			end
+			local cps = 30
+			local t = os.clock()
+			local ll = 0
+			repeat
+				task.wait()
+				local l = math.floor((os.clock() - t) * cps)
+				if l > ll then
+					ll = l
+				end
+				update()
+				text.Text = string.sub(message, 1, l)
+			until ll >= #message
+			text.Text = message
+			t = os.clock()
+			repeat
+				task.wait()
+				update()
+			until os.clock() - t > 2
+			t = os.clock()
+			repeat
+				task.wait()
+				update()
+				local a = os.clock() - t
+				text.TextTransparency = a
+				text.TextStrokeTransparency = a
+			until os.clock() - t > 1
+			dialog:Destroy()
+		end)
+	end
+	local function randomdialog(arr)
+		notify(arr[math.random(1, #arr)])
+	end
+	local chatconn
+	local attacking = false
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+		sw = CFrame.identity,
+	}
+	local state = 0
+	local timingsine = 0
+	local change = 0
+	local walkspeed = 10
+	local animationOverride = nil
+	local RCF = CFrame.Angles(-1.57, 0, 3.14)
+	local NCF = CFrame.new(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
+	local RHCF = CFrame.Angles(0, 1.6, 0)
+	local LHCF = CFrame.Angles(0, -1.6, 0)
+	local function AuraEffect(bonuspeed, fastspeed, type, pos, x1, y1, z1, value, color, outerpos, meshtype)
+		local rng = Instance.new("Part", workspace)
+		rng.Anchored = true
+		rng.CanCollide = false
+		rng.CanTouch = false
+		rng.CanQuery = false
+		rng.CastShadow = false
+		rng.FormFactor = 3
+		rng.Name = RandomString()
+		rng.Material = "Neon"
+		rng.Color = color
+		rng.Size = Vector3.one * scale
+		rng.Transparency = 0
+		rng.TopSurface = 0
+		rng.BottomSurface = 0
+		rng.CFrame = pos * CFrame.new(0, 0, -outerpos)
+		local rngm = Instance.new("SpecialMesh", rng)
+		rngm.MeshType = meshtype
+		rngm.Scale = Vector3.new(x1, y1, z1)
+		local speeder = fastspeed
+		local scaler2 = (type == "Add") and (1 * value) or (1 / value)
+		local lifetime = (100 / bonuspeed) / 60
+		local elapsed = 0
+		task.spawn(function()
+			while elapsed < lifetime do
+				local dt = task.wait()
+				elapsed = elapsed + dt
+				local frameRatio = dt * 60
+				if type == "Add" then
+					scaler2 = scaler2 - (0.01 * value / bonuspeed) * frameRatio
+				elseif type == "Divide" then
+					scaler2 = scaler2 - (0.01 / value * bonuspeed) * frameRatio
+				end
+				speeder = speeder - (0.01 * fastspeed * bonuspeed) * frameRatio
+				rng.CFrame = rng.CFrame * CFrame.new(0, 0, -speeder * bonuspeed * frameRatio)
+				rng.Transparency = rng.Transparency + (0.01 * bonuspeed) * frameRatio
+				local scaleInc = scaler2 * bonuspeed * frameRatio
+				rngm.Scale = rngm.Scale + Vector3.new(scaleInc, scaleInc, scaleInc)
+			end
+			rng:Destroy()
+		end)
+	end
+	local function Taunt1()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 0
+		randomdialog({
+			"hi! =)",
+			"hello, god here!",
+			"how are you?",
+			"hi! im a funny guy! =)",
+			"oh hi there",
+		})
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(15), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -0.9 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(0, math.rad(78), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(15))
+				lst = CFrame.new(-1, -0.9 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(0, math.rad(-78), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-15))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-9), 0, math.rad(155 + 25 * math.sin(timingsine / 2.5)))
+				lht = CFrame.new(-1, 0.3 + 0.06 * math.sin(timingsine / 20), 0.6) * CFrame.Angles(math.rad(-35), math.rad(25 + 2.5 * math.sin(timingsine / 20)), math.rad(55 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * math.cos(timingsine / 20), 0)
+				return rt, nt, rst, lst, rht, lht, hat, 8
+			end
+			task.wait(1.5)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = nil
+			hum.WalkSpeed = walkspeed * scale
+			attacking = false
+		end)
+	end
+	local function Taunt2()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 0
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.5 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -0.6 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.6 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1, 0.3 + 0.06 * math.sin(timingsine / 20), 0.6) * CFrame.Angles(math.rad(-35), math.rad(-25 + 2.5 * math.sin(timingsine / 20)), math.rad(-55 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1, 0.3 + 0.06 * math.sin(timingsine / 20), 0.6) * CFrame.Angles(math.rad(-35), math.rad(25 + 2.5 * math.sin(timingsine / 20)), math.rad(55 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * math.cos(timingsine / 20), 0)
+				return rt, nt, rst, lst, rht, lht, hat, 8
+			end
+			task.wait(0.333)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			randomdialog({
+				"hats off to you!",
+				"yes. hats off to you!",
+				"hm hm",
+				"yes mere mortal.",
+			})
+			local last = timingsine
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, 0.2 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.new(0, 0, 2) * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -1.2 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -1.2 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.3 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(35), math.rad(-25 + 2.5 * math.sin(timingsine / 20)), math.rad(55 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1.5, 0.3 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(35), math.rad(25 + 2.5 * math.sin(timingsine / 20)), math.rad(-55 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 2 + 0.2 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(0 - 255.45 * (timingsine - last) / 0.333), 0, 0)
+				return rt, nt, rst, lst, rht, lht, hat, 32
+			end
+			task.wait(1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.5 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -0.6 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.6 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1, 0.3 + 0.06 * math.sin(timingsine / 20), 0.6) * CFrame.Angles(math.rad(-35), math.rad(-25 + 2.5 * math.sin(timingsine / 20)), math.rad(-55 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1, 0.3 + 0.06 * math.sin(timingsine / 20), 0.6) * CFrame.Angles(math.rad(-35), math.rad(25 + 2.5 * math.sin(timingsine / 20)), math.rad(55 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 - 0.2, 0)
+				return rt, nt, rst, lst, rht, lht, hat, 8
+			end
+			task.wait(0.333)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = nil
+			hum.WalkSpeed = walkspeed * scale
+			attacking = false
+		end)
+	end
+	local function Astigmatism()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 0
+		randomdialog({
+			"There is no turning back for you. =)",
+			"Your existence is eviscerated. =)",
+			"I'mma firin' ma lazar...",
+		})
+		task.spawn(function()
+			local lastaura = 0
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				if os.clock() - lastaura > 1 / 60 then
+					AuraEffect(7, 0.12, "Add", rootu.CFrame * CFrame.new(0, m.HeadScale / 2 + 2, -1) * CFrame.Angles(math.rad(math.random(-360, 360)), math.rad(math.random(-360, 360)), math.rad(math.random(-360, 360))), 0.5, 0.5, 5, -0.005, Color3.new(1, 1, 1), 0, "Sphere")
+					lastaura = os.clock()
+				end
+				AimTowards(MouseHit())
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.new(0, 0, 1) * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -0.9 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.9 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-35), 0, math.rad(165 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-35), 0, math.rad(-165 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 1 + 0.2 * math.cos(timingsine / 20), 0)
+				return rt, nt, rst, lst, rht, lht, hat, 8
+			end
+			task.wait(1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			CreateSound(294188875)
+			local beamsolid = Instance.new("Part", workspace)
+			beamsolid.Name = RandomString()
+			beamsolid.Anchored = true
+			beamsolid.CanCollide = false
+			beamsolid.CanQuery = false
+			beamsolid.CanTouch = false
+			beamsolid.CastShadow = false
+			beamsolid.Color = Color3.new(1, 1, 1)
+			beamsolid.Material = "SmoothPlastic"
+			beamsolid.Transparency = 0
+			local beamsolid2 = beamsolid:Clone()
+			beamsolid2.Transparency = 0.5
+			beamsolid2.Parent = workspace
+			local mesh = Instance.new("SpecialMesh", beamsolid)
+			mesh.MeshType = "Brick"
+			mesh.Scale = Vector3.new(5, 5, 1)
+			local mesh2 = Instance.new("SpecialMesh", beamsolid2)
+			mesh2.MeshType = "Brick"
+			mesh2.Scale = Vector3.new(7, 7, 1)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				AimTowards(MouseHit())
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.new(0, 0, 1) * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -0.9 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.9 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-35), 0, math.rad(165 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-35), 0, math.rad(-165 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 1 + 0.2 * math.cos(timingsine / 20), 0)
+				return rt, nt, rst, lst, rht, lht, hat
+			end
+			local s = os.clock()
+			repeat
+				local from = rootu.CFrame * Vector3.new(0, m.HeadScale / 2 + 2, -4)
+				local hit = MouseHit()
+				local dist = (hit - from).Magnitude
+				local mid = (hit + from) / 2
+				beamsolid.Size = Vector3.new(1, 1, dist)
+				beamsolid.CFrame = CFrame.new(mid, hit)
+				beamsolid2.Size = Vector3.new(1, 1, dist)
+				beamsolid2.CFrame = CFrame.new(mid, hit)
+				mesh.Scale = Vector3.new(5, 5, 1) - Vector3.new(0.05, 0.05, 0) * (os.clock() - s) * 60
+				mesh2.Scale = Vector3.new(7, 7, 1) - Vector3.new(0.03, 0.03, 0) * (os.clock() - s) * 60
+				if os.clock() - lastaura > 1 / 60 then
+					AuraEffect(5, 0.15, "Add", CFrame.new(hit) * CFrame.Angles(math.rad(math.random(-360, 360)), math.rad(math.random(-360, 360)), math.rad(math.random(-360, 360))), 15, 15, 25, -0.15, Color3.new(1, 1, 1), 0, "Sphere")
+					lastaura = os.clock()
+				end
+				Attack(hit, 7)
+				task.wait()
+				if not rootu:IsDescendantOf(workspace) then
+					beamsolid:Destroy()
+					beamsolid2:Destroy()
+					return
+				end
+			until os.clock() - s > 1.333
+			beamsolid:Destroy()
+			beamsolid2:Destroy()
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = walkspeed * scale
+		end)
+	end
+	local EyeThrow_ref = nil
+	local EyeThrow_lastref = nil
+	local function EyeThrow()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 3.01 * scale
+		task.spawn(function()
+			if math.random() < 0.5 then
+				-- my source calls his "eye head" a head
+				-- its an eye.
+				task.spawn(function()
+					notify("this is")
+					task.wait(1)
+					notify("NOT a head")
+				end)
+			else
+				randomdialog({
+					"watch me dunk haha",
+					"get punished by my eye",
+					"i see you... =)",
+					"i got my eyes on you =)",
+				})
+			end
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -0.9 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.9 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.7 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(0, 0, math.rad(215 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1, 0.3 + 0.06 * math.sin(timingsine / 20), 0.6) * CFrame.Angles(math.rad(-35), math.rad(25 + 2.5 * math.sin(timingsine / 20)), math.rad(55 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * math.cos(timingsine / 20), 0)
+				return rt, nt, rst, lst, rht, lht, hat, 6
+			end
+			task.wait(1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			local rightarm = rootu.Parent:FindFirstChild("Right Arm") or rootu
+			local eye = Instance.new("Part", workspace)
+			eye.Name = RandomString()
+			eye.Anchored = true
+			eye.CanCollide = false
+			eye.CanQuery = false
+			eye.CanTouch = false
+			eye.CastShadow = false
+			eye.Size = Vector3.one * m.HeadScale * scale
+			eye.Material = "SmoothPlastic"
+			eye.Color = Color3.new(0.972549, 0.972549, 0.972549)
+			eye.Shape = "Ball"
+			EyeThrow_ref = eye
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				AimTowards(MouseHit())
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, math.rad(-20))
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, math.rad(20))
+				rst = CFrame.new(1, -0.9 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.9 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(0, 0, math.rad(145 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1.5, 0.5 + 0.05 * math.sin(timingsine / 30), 0.025 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(25), 0, math.rad(-15))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * math.cos(timingsine / 20), 0) * CFrame.Angles(0, math.rad(20), 0)
+				eye.CFrame = rightarm.CFrame * CFrame.new(0, -m.HeadScale / 2 - scale, 0)
+				return rt, nt, rst, lst, rht, lht, hat, 12
+			end
+			task.wait(1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			if math.random() < 0.5 then
+				randomdialog({
+					"boom!",
+					"boing!",
+					"bonk!",
+					"haha!",
+					"rollin!",
+				})
+			end
+			local A = Instance.new("Attachment", eye)
+			A.Position = Vector3.new(0, 1, 0)
+			local B = Instance.new("Attachment", eye)
+			B.Position = Vector3.new(0, -1, 0)
+			local Trail = Instance.new("Trail", eye)
+			Trail.Attachment0 = B
+			Trail.Attachment1 = A
+			Trail.Lifetime = 0.6
+			Trail.Transparency = NumberSequence.new(0.5, 1)
+			Trail.Texture = "http://www.roblox.com/asset/?id=1472703539"
+			Trail.Enabled = true
+			Trail.FaceCamera = true
+			eye.Anchored = false
+			eye.CanCollide = true
+			local speed = 165
+			local aim = MouseHit() - eye.Position
+			if m.ThrowAimAssist then
+				local gravity = workspace.Gravity
+				local x = Vector3.new(aim.X, 0, aim.Z).Magnitude
+				local y = aim.Y
+				local v2 = speed * speed
+				local v4 = v2 * v2
+				local root = math.sqrt(math.max(0, v4 - gravity * (gravity * x * x + 2 * y * v2)))
+				local angle = math.atan((v2 + root) / (gravity * x))
+				aim = Vector3.new(0, math.sin(angle), 0) + (Vector3.new(aim.X, 0, aim.Z).Unit * math.cos(angle))
+			end
+			eye.Velocity = aim.Unit * speed
+			task.spawn(function()
+				local s = os.clock()
+				repeat
+					if Attack(eye.Position, scale + 0.5) then
+						CreateSound(hum.RootPart, 491296320)
+					end
+					task.wait()
+				until os.clock() - s > 5 or eye.Velocity.Magnitude < 1
+				eye.CanCollide = false
+				Trail:Destroy()
+				if EyeThrow_ref == eye then EyeThrow_ref = nil end
+				task.wait(10)
+				eye:Destroy()
+			end)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, math.rad(40))
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, math.rad(-40))
+				rst = CFrame.new(1, -0.9 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.9 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-134), 0, math.rad(145 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1.5, 0.5 + 0.05 * math.sin(timingsine / 30), 0.025 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(45), 0, math.rad(-15))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * math.cos(timingsine / 20), 0) * CFrame.Angles(0, math.rad(-40), 0)
+				return rt, nt, rst, lst, rht, lht, hat, 12
+			end
+			task.wait(0.333)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, math.rad(40))
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, math.rad(-40))
+				rst = CFrame.new(1, -0.9 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.9 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-134), 0, math.rad(145 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1.5, 0.5 + 0.05 * math.sin(timingsine / 30), 0.025 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(45), 0, math.rad(-15))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * math.cos(timingsine / 20), 0) * CFrame.Angles(0, math.rad(-40), 0)
+				return rt, nt, rst, lst, rht, lht, hat, 12
+			end
+			task.wait(1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = walkspeed * scale
+		end)
+	end
+	local function CallUponTheEyes()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 0
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -0.9 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.9 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(145), 0, math.rad(15 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1, 0.3 + 0.06 * math.sin(timingsine / 20), 0.6) * CFrame.Angles(math.rad(-35), math.rad(25 + 2.5 * math.sin(timingsine / 20)), math.rad(55 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 1.5 + 0.2 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(90), 0, 0)
+				return rt, nt, rst, lst, rht, lht, hat, 12
+			end
+			task.wait(1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			local hit = MouseHit()
+			AuraEffect(5, 0, "Add", CFrame.new(hit) * CFrame.new(0, -2.9, 0), 0, 0, 0, 1, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			AuraEffect(10, 0, "Add", CFrame.new(hit) * CFrame.new(0, -2.9, 0), 0, 0, 0, 2, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			AuraEffect(1, 0, "Add", CFrame.new(hit), 1, 100000, 1, 0.5, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			AuraEffect(1, 0, "Add", CFrame.new(hit), 1, 1, 1, 0.75, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			Attack(hit, 14.5)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.4 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -0.8 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.8 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(45), 0, math.rad(15 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1, 0.3 + 0.06 * math.sin(timingsine / 20), 0.6) * CFrame.Angles(math.rad(-35), math.rad(25 + 2.5 * math.sin(timingsine / 20)), math.rad(55 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 1 + 0.2 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(0 - 255.45 * timingsine / 10), 0, 0)
+				return rt, nt, rst, lst, rht, lht, hat, 24
+			end
+			task.wait(1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = walkspeed * scale
+		end)
+	end
+	local function EyeOfChutluhSmash()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 0
+		task.spawn(function()
+			local giant = Instance.new("Part", workspace)
+			giant.Name = RandomString()
+			giant.CanCollide = false
+			giant.CanQuery = false
+			giant.CanTouch = false
+			giant.CastShadow = false
+			giant.Massless = true
+			giant.Color = Color3.new(1, 1, 1)
+			giant.Transparency = 0
+			giant.Material = "Plastic"
+			giant.Size = Vector3.new(1, 1, 2) * scale
+			giant.TopSurface = Enum.SurfaceType.Smooth
+			giant.BottomSurface = Enum.SurfaceType.Smooth
+			local weld = Instance.new("Weld", giant)
+			weld.Part0 = torso
+			weld.Part1 = giant
+			weld.C1 = CFrame.new(0, -17.6 * scale, 1.4 * scale)
+			weld.C0 = CFrame.identity
+			local mesh = Instance.new("SpecialMesh", giant)
+			mesh.MeshId = "http://www.roblox.com/asset/?id=1185246"
+			mesh.TextureId = "http://www.roblox.com/asset/?id=28301750"
+			mesh.Scale = Vector3.new(45.65, 45.65, 45.65)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.new(0, 0, 1) * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -0.9 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.9 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-35), 0, math.rad(165 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-35), 0, math.rad(-165 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * math.cos(timingsine / 20), 0)
+				return rt, nt, rst, lst, rht, lht, hat, 8
+			end
+			task.wait(1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			AuraEffect(1, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -20 * scale), 1, 1, 1, 0.75, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			AuraEffect(5, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -20 * scale), 0, 0, 0, 1, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			AuraEffect(10, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -20 * scale), 0, 0, 0, 2, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			Attack(rootu.CFrame * (Vector3.new(0, -1.9, -20) * scale), 22.5 * scale)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(90 + 2 * math.cos(timingsine / 12)), 0, 0)
+				nt = NCF * CFrame.new(0, 0, 1) * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
+				rst = CFrame.new(1, -1.3 - 0.1 * math.cos(timingsine / 20), -0.2) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(90))
+				lst = CFrame.new(-1, -1.3 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-90))
+				rht = CFrame.new(1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-35), 0, math.rad(165 + 2.5 * math.sin(timingsine / 20)))
+				lht = CFrame.new(-1.5, 0.5 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(-35), 0, math.rad(-165 + 2.5 * math.sin(timingsine / 20)))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * math.cos(timingsine / 20), 0)
+				return rt, nt, rst, lst, rht, lht, hat, 8
+			end
+			task.wait(1)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			giant:Destroy()
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = walkspeed * scale
+		end)
+	end
+	m.Init = function(figure)
+		start = os.clock()
+		state = 0
+		timingsine = 0
+		walkspeed = 10
+		attacking = false
+		animationOverride = nil
+		SetOverrideMovesetMusic(AssetGetContentId("EyoZenTheme.mp3"), "Azrael - Powerhaus (Eyo-Zen theme)", 1)
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		hum.WalkSpeed = 10 * figure:GetScale()
+		hum.JumpPower = 57 * figure:GetScale()
+		ContextActionService:BindAction("Uhhhhhh_EZTaunt1", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				Taunt1()
+			end
+		end, true, Enum.KeyCode.T)
+		ContextActionService:SetTitle("Uhhhhhh_EZTaunt1", "T")
+		ContextActionService:SetPosition("Uhhhhhh_EZTaunt1", UDim2.new(1, -130, 1, -180))
+		ContextActionService:BindAction("Uhhhhhh_EZTaunt2", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				Taunt2()
+			end
+		end, true, Enum.KeyCode.Y)
+		ContextActionService:SetTitle("Uhhhhhh_EZTaunt2", "Y")
+		ContextActionService:SetPosition("Uhhhhhh_EZTaunt2", UDim2.new(1, -180, 1, -180))
+		ContextActionService:BindAction("Uhhhhhh_EZLazar", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				Astigmatism()
+			end
+		end, true, Enum.KeyCode.Z)
+		ContextActionService:SetTitle("Uhhhhhh_EZLazar", "Z")
+		ContextActionService:SetPosition("Uhhhhhh_EZLazar", UDim2.new(1, -130, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_EZThrow", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				EyeThrow()
+			end
+		end, true, Enum.KeyCode.X)
+		ContextActionService:SetTitle("Uhhhhhh_EZThrow", "X")
+		ContextActionService:SetPosition("Uhhhhhh_EZThrow", UDim2.new(1, -180, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_EZMagic", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				CallUponTheEyes()
+			end
+		end, true, Enum.KeyCode.C)
+		ContextActionService:SetTitle("Uhhhhhh_EZMagic", "C")
+		ContextActionService:SetPosition("Uhhhhhh_EZMagic", UDim2.new(1, -230, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_EZSmash", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				EyeOfChutluhSmash()
+			end
+		end, true, Enum.KeyCode.V)
+		ContextActionService:SetTitle("Uhhhhhh_EZSmash", "V")
+		ContextActionService:SetPosition("Uhhhhhh_EZSmash", UDim2.new(1, -280, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_EZRun", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				if walkspeed == 10 then
+					walkspeed = 30
+				else
+					walkspeed = 10
+				end
+				hum.WalkSpeed = walkspeed * scale
+			end
+		end, true, Enum.KeyCode.LeftControl)
+		ContextActionService:SetTitle("Uhhhhhh_EZRun", "Run")
+		ContextActionService:SetPosition("Uhhhhhh_EZRun", UDim2.new(1, -230, 1, -180))
+		task.delay(0, notify, "Eyo-Zen")
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock() - start
+		scale = figure:GetScale()
+		isdancing = not not figure:GetAttribute("IsDancing")
+		rcp.FilterDescendantsInstances = {figure, Player.Character}
+		
+		-- get vii
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		
+		-- joints
+		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		
+		timingsine += change * dt * 60
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
+		-- animations
+		local torsovelocity = root.Velocity.Magnitude
+		local torsovelocityy = root.Velocity.Y
+		local torsorvelocityy = root.RotVelocity.Y
+		local animationspeed = 6.325
+		local cos35 = math.cos(timingsine / 3.5)
+		local cos7 = math.cos(timingsine / 7)
+		local cos12 = math.cos(timingsine / 12)
+		local cos20 = math.cos(timingsine / 20)
+		local sin35 = math.sin(timingsine / 3.5)
+		local sin7 = math.sin(timingsine / 7)
+		local sin20 = math.sin(timingsine / 20)
+		local sin30 = math.sin(timingsine / 30)
+		if onground then
+			if torsovelocity < 1 then
+				change = 0.5
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * cos20) * CFrame.Angles(math.rad(-2 + 2 * cos12), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * sin30), 0, 0)
+				rst = CFrame.new(1, -0.9 - 0.1 * cos20, -0.2) * CFrame.Angles(math.rad(-2 + 2 * cos12), math.rad(74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				lst = CFrame.new(-1, -0.9 - 0.1 * cos20, 0) * CFrame.Angles(math.rad(-2 + 2 * cos12), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
+				rht = CFrame.new(1, 0.3 + 0.06 * sin20, 0.6) * CFrame.Angles(math.rad(-35), math.rad(-25 + 2.5 * sin20), math.rad(-55 + 2.5 * sin20))
+				lht = CFrame.new(-1, 0.3 + 0.06 * sin20, 0.6) * CFrame.Angles(math.rad(-35), math.rad(25 + 2.5 * sin20), math.rad(55 + 2.5 * sin20))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * cos20, 0)
+			elseif torsovelocity < 25 then
+				change = 1
+				rt = RCF * CFrame.new(0, 0, -0.175 + 0.025 * cos35 + -sin35 / 7) * CFrame.Angles(math.rad(3 - 2.5 * cos35), torsorvelocityy / 75, math.rad(3 * cos7))
+				nt = NCF * CFrame.Angles(math.rad(6 - 2.5 * sin7), 0, torsorvelocityy / 15)
+				rst = CFrame.new(1, -0.8 - 0.5 * cos7 / 2, 0.6 * cos7 / 2)  * CFrame.Angles(math.rad(-15 - 5 * cos7) - torsorvelocityy / 75 + -sin7 / 2.5, math.rad(90 - 3 * cos7), 0) * CFrame.Angles(math.rad(2 * cos7), 0, 0)
+				lst = CFrame.new(-1, -0.8 + 0.5 * cos7 / 2, -0.6 * cos7 / 2) * CFrame.Angles(math.rad(-15 + 5 * cos7) + torsorvelocityy / 75 + sin7 / 2.5, math.rad(-90 - 3 * cos7), 0) * CFrame.Angles(math.rad(-2 * cos7), 0, 0)
+				rht = CFrame.new(1, 0.3 + 0.02 * sin20, 0.6) * CFrame.Angles(math.rad(-35), math.rad(-25 + 2.5 * sin20), math.rad(-55 + 2.5 * sin20))
+				lht = CFrame.new(-1, 0.3 + 0.02 * sin20, 0.6) * CFrame.Angles(math.rad(-35), math.rad(25 + 2.5 * sin20), math.rad(55 + 2.5 * sin20))
+				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * cos20, 0)
+			else
+				change = 1.35
+				rt = RCF * CFrame.new(0, 0, -0.175 + 0.025 * cos35 + -sin35 / 7) * CFrame.Angles(math.rad(26 - 4.5 * cos35), torsorvelocityy / 75, math.rad(15 * cos7))
+				nt = NCF * CFrame.Angles(math.rad(-2.5 * sin20), 0, torsorvelocityy / 15)
+				rst = CFrame.new(1, -0.925 - 0.5 * cos7 / 2, 0.7 * cos7 / 2) * CFrame.Angles(math.rad(-15 - 55 * cos7) - torsorvelocityy / 75 + -sin7 / 2.5, math.rad(90 - 0.1 * cos7), 0) * CFrame.Angles(math.rad(0.1 * cos7), 0, 0)
+				lst = CFrame.new(-1, -0.925 + 0.5 * cos7 / 2, -0.7 * cos7 / 2) * CFrame.Angles(math.rad(-15 + 55 * cos7) + torsorvelocityy / 75 + sin7 / 2.5, math.rad(-90 - 0.1 * cos7), 0) * CFrame.Angles(math.rad(-0.1 * cos7), 0, 0)
+				rht = CFrame.new(1.5, 0.5 + 0.05 * sin30, 0.34 * cos7) * CFrame.Angles(math.rad(110) * cos7, 0, math.rad(13) - torsorvelocityy / 75)
+				lht = CFrame.new(-1.5, 0.5 + 0.05 * sin30, -0.34 * cos7) * CFrame.Angles(math.rad(-110) * cos7, 0, math.rad(-13) + torsorvelocityy / 75)
+			end
+		else
+			if torsovelocityy > 1 then
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * cos20) * CFrame.Angles(math.rad(-16), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(12.5 * sin30), 0, 0)
+				rst = CFrame.new(1, -0.2 - 0.1 * cos20, -0.3) * RHCF * CFrame.Angles(math.rad(-2.5), 0, 0)
+				lst = CFrame.new(-1, -0.9 - 0.1 * cos20, -0.5) * LHCF * CFrame.Angles(math.rad(-2.5), 0, 0)
+				rht = CFrame.new(1.5, 0.5 + 0.02 * sin20, 0) * CFrame.Angles(math.rad(25), math.rad(-0.6), math.rad(13 + 4.5 * sin20))
+				lht = CFrame.new(-1.5, 0.5 + 0.02 * sin20, 0) * CFrame.Angles(math.rad(25), math.rad(-0.6), math.rad(-13 - 4.5 * sin20))
+			else
+				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * cos20) * CFrame.Angles(math.rad(24), 0, 0)
+				nt = NCF * CFrame.Angles(math.rad(12.5 * sin30), 0, 0)
+				rst = CFrame.new(1, -1 - 0.1 * cos20, -0.3) * RHCF * CFrame.Angles(math.rad(-3.5), 0, 0)
+				lst = CFrame.new(-1, -0.8 - 0.1 * cos20, -0.3) * LHCF * CFrame.Angles(math.rad(-3.5), 0, 0)
+				rht = CFrame.new(1.5, 0.5 + 0.02 * sin20, 0) * CFrame.Angles(math.rad(65), math.rad(-0.6), math.rad(45 + 4.5 * sin20))
+				lht = CFrame.new(-1.5, 0.5 + 0.02 * sin20, 0) * CFrame.Angles(math.rad(55), math.rad(-0.6), math.rad(-45 - 4.5 * sin20))
+			end
+		end
+		if animationOverride then
+			rt, nt, rst, lst, rht, lht, hat, animationspeed = animationOverride(timingsine, rt, nt, rst, lst, rht, lht, hat)
+		end
+		rst, lst, rht, lht = rht, lht, rst, lst
+		nt *= NCF.Rotation:Inverse() * hat * CFrame.new(0, -m.HeadScale / 2, 0) * NCF.Rotation
+		
+		-- joints
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		-- interpolation
+		local alpha = math.exp(-animationspeed * dt)
+		joints.r = rt:Lerp(joints.r, alpha)
+		joints.n = nt:Lerp(joints.n, alpha)
+		joints.rs = rst:Lerp(joints.rs, alpha)
+		joints.ls = lst:Lerp(joints.ls, alpha)
+		joints.rh = rht:Lerp(joints.rh, alpha)
+		joints.lh = lht:Lerp(joints.lh, alpha)
+		
+		-- apply transforms
+		SetC0C1Joint(rj, joints.r, RCF, scale)
+		SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)), scale)
+		SetC0C1Joint(rsj, joints.rs, CFrame.new(0, 0.5, 0), scale)
+		SetC0C1Joint(lsj, joints.ls, CFrame.new(0, 0.5, 0), scale)
+		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0) * CFrame.Angles(0, math.rad(90), 0), scale)
+		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0) * CFrame.Angles(0, math.rad(-90), 0), scale)
+		
+		if EyeThrow_ref and EyeThrow_ref:IsDescendantOf(workspace) then
+			if not EyeThrow_lastref then
+				nj.Enabled = false
+			end
+			EyeThrow_lastref = EyeThrow_ref
+			local head = figure:FindFirstChild("Head")
+			if head and head.AssemblyRootPart == head then
+				head.CFrame = EyeThrow_ref.CFrame * CFrame.new(0, -m.HeadScale / 4, 0)
+				head.Velocity, head.RotVelocity = Vector3.zero, Vector3.zero
+			end
+		else
+			EyeThrow_ref = nil
+			if EyeThrow_lastref then
+				nj.Enabled = true
+			end
+			EyeThrow_lastref = nil
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		ContextActionService:UnbindAction("Uhhhhhh_EZTaunt1")
+		ContextActionService:UnbindAction("Uhhhhhh_EZTaunt2")
+		ContextActionService:UnbindAction("Uhhhhhh_EZLazar")
+		ContextActionService:UnbindAction("Uhhhhhh_EZThrow")
+		ContextActionService:UnbindAction("Uhhhhhh_EZMagic")
+		ContextActionService:UnbindAction("Uhhhhhh_EZSmash")
+		if uisbegin then
+			uisbegin:Disconnect()
+			uisbegin = nil
+		end
+		if uisend then
+			uisend:Disconnect()
+			uisbegin = nil
+		end
+		root, torso, hum = nil, nil, nil
+	end
+	return m
+end)
+
 return modules
