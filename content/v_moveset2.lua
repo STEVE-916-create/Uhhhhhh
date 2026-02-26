@@ -6229,6 +6229,12 @@ AddModule(function()
 		attacking = true
 		hum.WalkSpeed = 0
 		task.spawn(function()
+			randomdialog({
+				"reinforcements incoming",
+				"the sky is watching too",
+				"we see you... =)",
+				"an evil presence watches over everyone =)", -- terrarieye ball knowledge
+			})
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
 				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
 				nt = NCF * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
@@ -6278,6 +6284,12 @@ AddModule(function()
 		attacking = true
 		hum.WalkSpeed = 0
 		task.spawn(function()
+			randomdialog({
+				"HULK",
+				"KA",
+				"YA",
+				"HAMEHAME",
+			})
 			local giant = Instance.new("Part", workspace)
 			giant.Name = RandomString()
 			giant.CanCollide = false
@@ -6314,6 +6326,12 @@ AddModule(function()
 			if not rootu:IsDescendantOf(workspace) then
 				return
 			end
+			randomdialog({
+				"SMASH",
+				"BOOM",
+				"BLAMOOO",
+				"HA",
+			})
 			AuraEffect(1, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -20 * scale), 1, 1, 1, 0.75, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
 			AuraEffect(5, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -20 * scale), 0, 0, 0, 1, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
 			AuraEffect(10, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -20 * scale), 0, 0, 0, 2, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
