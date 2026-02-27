@@ -3,7 +3,7 @@ local HatMeshDatabase = {
 	{MeshId = "11601535857", TextureId = "", Offset = CFrame.Angles(0, 3.14, 0), For = "Head"},
 	{MeshId = "13953153289", TextureId = "", Offset = CFrame.identity, For = "Head"},
 	{MeshId = "12410145311", TextureId = "", Offset = CFrame.new(0, -0.6, 0), For = "Head", Attachments = {
-		HatAttachment = CFrame.new(0, 0.55, 0),
+		HatAttachment = CFrame.new(0, 0.67, 0),
 	}},
 
 	-- Arms
