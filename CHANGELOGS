@@ -7,6 +7,7 @@
  - Added hat placeholders!
  - Added custom control (kinda accurate to roblox 2026 control)
  - Added the same flow as Oxide :sob: /j
+ - Added attachment override for d_hatsmap.lua (so hats adapt to eyozen's head)
 # Version 1.0.4 BETA
  - Added custom camera (accurate to roblox 2025 camera i think)
    (FOR PC AND MOBILE ONLY FOR NOW)
