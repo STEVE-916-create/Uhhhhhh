@@ -5605,7 +5605,7 @@ AddModule(function()
 	m.ModuleType = "MOVESET"
 	m.Name = "Eyozen: The Eye On Zen"
 	m.InternalName = "IPLAYTERRARIEYE"
-	m.Description = "eyozen but he jolly\n\"Haha, I'm a funny guy, but once you anger me, there's no coming back. =)\"\nT - Taunt 1\nY - Taunt 2\nZ - Astigmatism\nX - Baller\nC - Call upon the eyes in the skies\nV - Eyeyeyeyeeyyeye Slammo"
+	m.Description = "eyozen but he jolly\n\"Haha, I'm a funny guy, but once you anger me, there's no coming back. =)\"\nT - Taunt 1\nY - Taunt 2\nZ - Astigmatism\nX - Baller\nC - Call upon the eyes in the skies\nV - Eyeyeyeyeeyyeye Slammo\nLeft Ctrl - Toggle Run"
 	m.Assets = {"EyoZenTheme.mp3"}
 
 	m.Notifications = true
@@ -5930,7 +5930,6 @@ AddModule(function()
 				"hm hm",
 				"yes mere mortal.",
 			})
-			local last = timingsine
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
 				rt = RCF * CFrame.new(0, 0, 0.2 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
 				nt = NCF * CFrame.new(0, 0, 2) * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
@@ -5938,7 +5937,7 @@ AddModule(function()
 				lst = CFrame.new(-1, -1.2 - 0.1 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), math.rad(-74), 0) * CFrame.Angles(math.rad(-2.5), 0, math.rad(-4))
 				rht = CFrame.new(1.5, 0.3 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(35), math.rad(-25 + 2.5 * math.sin(timingsine / 20)), math.rad(55 + 2.5 * math.sin(timingsine / 20)))
 				lht = CFrame.new(-1.5, 0.3 + 0.06 * math.sin(timingsine / 20), 0) * CFrame.Angles(math.rad(35), math.rad(25 + 2.5 * math.sin(timingsine / 20)), math.rad(-55 + 2.5 * math.sin(timingsine / 20)))
-				hat = CFrame.new(0, m.HeadScale / 2 + 2 + 0.2 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(0 - 255.45 * (timingsine - last) / 0.333), 0, 0)
+				hat = CFrame.new(0, m.HeadScale / 2 + 2 + 0.2 * math.cos(timingsine / 20), 0) * CFrame.Angles(math.rad(0 - 255.45 * timingsine / 10), 0, 0)
 				return rt, nt, rst, lst, rht, lht, hat, 32
 			end
 			task.wait(1)
