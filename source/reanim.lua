@@ -4744,12 +4744,14 @@ function HatReanimator.Start()
 			for _,data in HatNameDatabase do
 				if hat.Name:lower() == data.Match:lower() then
 					mapdata.C1 = data.Offset
+					mapdata.Attachments = data.Attachments
 					return mapdata, data.For, 1
 				end
 			end
 			for _,data in HatMeshDatabase do
 				if AssetIdMatch(mesh, data.MeshId) and AssetIdMatch(tex, data.TextureId) then
 					mapdata.C1 = data.Offset
+					mapdata.Attachments = data.Attachments
 					return mapdata, data.For, 2
 				end
 			end
@@ -5033,16 +5035,25 @@ function HatReanimator.Start()
 		end
 		table.clear(hatfors.Accessories)
 		local unused = 0
+		local function AttmentGet(name)
+			for _,data in ipairs(HatMap) do
+				if data.Attachments and data.Attachments[name] then
+					return {data.Limb, data.C0 * data.C1:Inverse() * data.Attachments[name]}
+				end
+			end
+			return Attachments[name]
+		end
 		for _,v in hatfors do
 			for _,w in v do
 				local hat = w[1]
 				local map = w[2]
-				local limb, c0, c1 = "Head", Attachments.HatAttachment[2], hat.AttachmentPoint
+				local limb, c0 = unpack(AttmentGet("HatAttachment"))
+				local c1 = hat.AttachmentPoint
 				local handle = hat:FindFirstChild("Handle")
 				if handle then
 					for _,x in handle:GetChildren() do
 						if x:IsA("Attachment") then
-							local att = Attachments[x.Name]
+							local att = AttmentGet(x.Name)
 							if att then
 								limb, c0, c1 = att[1], att[2], x.CFrame
 							end
