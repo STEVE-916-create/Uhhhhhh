@@ -6561,6 +6561,7 @@ AddModule(function()
 		ContextActionService:UnbindAction("Uhhhhhh_EZThrow")
 		ContextActionService:UnbindAction("Uhhhhhh_EZMagic")
 		ContextActionService:UnbindAction("Uhhhhhh_EZSmash")
+		ContextActionService:UnbindAction("Uhhhhhh_EZRun")
 		if uisbegin then
 			uisbegin:Disconnect()
 			uisbegin = nil
