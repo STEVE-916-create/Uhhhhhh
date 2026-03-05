@@ -5103,8 +5103,18 @@ function HatReanimator.Start()
 					end
 				end
 				-- exact asset id
-				if data.MeshId and data.TextureId then
-					if AssetIdMatch(mesh, data.MeshId) and AssetIdMatch(tex, data.TextureId) then
+				if data.MeshId or data.TextureId or data.Name then
+					local oke = true
+					if data.MeshId then
+						oke = oke and AssetIdMatch(mesh, data.MeshId)
+					end
+					if data.TextureId then
+						oke = oke and AssetIdMatch(tex, data.TextureId)
+					end
+					if data.Name then
+						oke = oke and AssetIdMatch(hatmapped.Name, data.Name)
+					end
+					if oke then
 						return {
 							C0 = data.C0, C1 = data.C1,
 							Offset = data.Offset or data.CFrame,
