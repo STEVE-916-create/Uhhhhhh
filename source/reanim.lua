@@ -4698,6 +4698,7 @@ function HatReanimator.Start()
 		elseif a:sub(1, 4) == "http" then
 			a = a:match("id=(%d+)")
 		end
+		print(a, b)
 		return a == b
 	end
 	local function ClassifyHat(hat)
@@ -5106,13 +5107,13 @@ function HatReanimator.Start()
 				if data.MeshId or data.TextureId or data.Name then
 					local oke = true
 					if data.MeshId then
-						oke = oke and AssetIdMatch(mesh, data.MeshId)
+						oke = oke and AssetIdMatch(hatmapped.MeshId, data.MeshId)
 					end
 					if data.TextureId then
-						oke = oke and AssetIdMatch(tex, data.TextureId)
+						oke = oke and AssetIdMatch(hatmapped.TextureId, data.TextureId)
 					end
 					if data.Name then
-						oke = oke and AssetIdMatch(hatmapped.Name, data.Name)
+						oke = oke and hatmapped.Name == data.Name
 					end
 					if oke then
 						return {
