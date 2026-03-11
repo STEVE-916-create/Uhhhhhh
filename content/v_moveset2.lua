@@ -5823,7 +5823,7 @@ AddModule(function()
 	local NCF = CFrame.new(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
 	local RHCF = CFrame.Angles(0, 1.6, 0)
 	local LHCF = CFrame.Angles(0, -1.6, 0)
-	local function AuraEffect(bonuspeed, fastspeed, type, pos, x1, y1, z1, value, color, outerpos, meshtype)
+	local function AuraEffect(bonuspeed, fastspeed, type, pos, x1, y1, z1, value, color, outerpos, meshtype, sndid, sndpitch)
 		local rng = Instance.new("Part", workspace)
 		rng.Anchored = true
 		rng.CanCollide = false
@@ -5839,6 +5839,9 @@ AddModule(function()
 		rng.TopSurface = 0
 		rng.BottomSurface = 0
 		rng.CFrame = pos * CFrame.new(0, 0, -outerpos)
+		if sndid and sndpitch then
+			CreateSound(rng, sndid, sndpitch)
+		end
 		local rngm = Instance.new("SpecialMesh", rng)
 		rngm.MeshType = meshtype
 		rngm.Scale = Vector3.new(x1, y1, z1)
@@ -6251,7 +6254,7 @@ AddModule(function()
 			end
 			local hit = MouseHit()
 			AuraEffect(5, 0, "Add", CFrame.new(hit) * CFrame.new(0, -2.9, 0), 0, 0, 0, 1, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
-			AuraEffect(10, 0, "Add", CFrame.new(hit) * CFrame.new(0, -2.9, 0), 0, 0, 0, 2, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			AuraEffect(10, 0, "Add", CFrame.new(hit) * CFrame.new(0, -2.9, 0), 0, 0, 0, 2, Color3.new(1, 1, 1), Vector3.zero, "Sphere", "93865949235180", 0.7)
 			AuraEffect(1, 0, "Add", CFrame.new(hit), 1, 100000, 1, 0.5, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
 			AuraEffect(1, 0, "Add", CFrame.new(hit), 1, 1, 1, 0.75, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
 			Attack(hit, 14.5)
@@ -6290,6 +6293,7 @@ AddModule(function()
 				"YA",
 				"HAMEHAME",
 			})
+			CreateSound("92413337196515")
 			local giant = Instance.new("Part", workspace)
 			giant.Name = RandomString()
 			giant.CanCollide = false
@@ -6306,12 +6310,12 @@ AddModule(function()
 			local weld = Instance.new("Weld", giant)
 			weld.Part0 = torso
 			weld.Part1 = giant
-			weld.C1 = CFrame.new(0, -17.6 * scale, 1.4 * scale)
+			weld.C1 = CFrame.identity
 			weld.C0 = CFrame.identity
 			local mesh = Instance.new("SpecialMesh", giant)
 			mesh.MeshId = "http://www.roblox.com/asset/?id=1185246"
 			mesh.TextureId = "http://www.roblox.com/asset/?id=28301750"
-			mesh.Scale = Vector3.new(45.65, 45.65, 45.65)
+			mesh.Scale = Vector3.zero
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
 				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(-2 + 2 * math.cos(timingsine / 12)), 0, 0)
 				nt = NCF * CFrame.new(0, 0, 1) * CFrame.Angles(math.rad(-2.5 * math.sin(timingsine / 30)), 0, 0)
@@ -6322,6 +6326,9 @@ AddModule(function()
 				hat = CFrame.new(0, m.HeadScale / 2 + 0.2 * math.cos(timingsine / 20), 0)
 				return rt, nt, rst, lst, rht, lht, hat, 8
 			end
+			local grow = TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+			TweenService:Create(mesh, grow, {Size = Vector3.new(45.65, 45.65, 45.65)}):Play()
+			TweenService:Create(weld, grow, {C1 = CFrame.new(0, -17.6 * scale, 1.4 * scale)}):Play()
 			task.wait(1)
 			if not rootu:IsDescendantOf(workspace) then
 				return
@@ -6332,9 +6339,9 @@ AddModule(function()
 				"BLAMOOO",
 				"HA",
 			})
-			AuraEffect(1, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -20 * scale), 1, 1, 1, 0.75, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
-			AuraEffect(5, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -20 * scale), 0, 0, 0, 1, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
-			AuraEffect(10, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -20 * scale), 0, 0, 0, 2, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			AuraEffect(1, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -17 * scale), 1, 1, 1, 0.75, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			AuraEffect(5, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -17 * scale), 0, 0, 0, 1, Color3.new(1, 1, 1), Vector3.zero, "Sphere")
+			AuraEffect(10, 0, "Add", root.CFrame * CFrame.new(0, -1.9 * scale, -17 * scale), 0, 0, 0, 2, Color3.new(1, 1, 1), Vector3.zero, "Sphere", "93865949235180", 0.5)
 			Attack(rootu.CFrame * (Vector3.new(0, -1.9, -20) * scale), 22.5 * scale)
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, hat)
 				rt = RCF * CFrame.new(0, 0, -0.1 + 0.1 * math.cos(timingsine / 20)) * CFrame.Angles(math.rad(90 + 2 * math.cos(timingsine / 12)), 0, 0)
