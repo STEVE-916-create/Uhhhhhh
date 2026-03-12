@@ -11,6 +11,7 @@
  - Fixed hat overrides not actually overriding hats
  - Fixed the 0.1 movement freeze when the game has Streaming enabled
  - Added `ContextActions` as a variable accessible to modules
+ - Attempted to resize ASCII art according to preferred text size by the player (i tried man)
 # Version 1.0.4 BETA
  - Added custom camera (accurate to roblox 2025 camera i think)
    (FOR PC AND MOBILE ONLY FOR NOW)
