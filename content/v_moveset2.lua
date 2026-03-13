@@ -3401,6 +3401,9 @@ AddModule(function()
 				newvel += hit.Normal * hit.Normal:Dot(newvel) * -2
 				newvel += rng:NextUnitVector() * newvel.Magnitude * Vector3.new(1, 0, 1)
 				newvel *= 0.5
+				if newvel.Magnitude < 2.5 then
+					v[2] = 0
+				end
 			end
 			v[1].Position, v[1].Velocity = newpos, newvel
 			v[2] -= dt
