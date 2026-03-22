@@ -7347,6 +7347,7 @@ AddModule(function()
 						CreateSound("123619882242196")
 						MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.1, 0.5) * scale)
 						MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(0.5, 0.1, 0.5) * scale)
+						root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0)
 					else
 						CreateSound("128788885488982")
 					end
