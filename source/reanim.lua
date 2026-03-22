@@ -3732,7 +3732,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			if CJump then
 				if Reanimate.InfiniteJump and RCHumanoid:GetState() == Enum.HumanoidStateType.Freefall then
 					RCRootPart.Velocity = Vector3.new(
-						RCRootPart.Velocity.X, math.max(50, RCHumanoid.JumpPower), RCRootPart.Velocity.Z
+						RCRootPart.Velocity.X, RCHumanoid.JumpPower, RCRootPart.Velocity.Z
 					)
 				end
 			end

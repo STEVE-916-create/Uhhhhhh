@@ -7271,7 +7271,7 @@ AddModule(function()
 				SwitchMode()
 			end
 		end, true, Enum.KeyCode.F)
-		ContextActions:SetTitle("Uhhhhhh_BSHolst", "T")
+		ContextActions:SetTitle("Uhhhhhh_BSHolst", "F")
 		ContextActions:SetPosition("Uhhhhhh_BSHolst", UDim2.new(1, -130, 1, -180))
 		ContextActions:BindAction("Uhhhhhh_BSRun", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
