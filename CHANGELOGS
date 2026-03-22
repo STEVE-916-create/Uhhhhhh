@@ -2,6 +2,7 @@
 # Version 1.0.6 BETA
  - Renamed "RootPart in void" mode to "RootPart in very void"
  - Added "RootPart in void" which fixes floating point issues with the torso.
+ - ModelStreamingMode = Persistent as an attempt to prevent the character from freezing in StreamingEnabled games while on hat reanimation with loop respawn
 # Version 1.0.5 BETA
  - Fixed Patchma-like netless, now it'll only be "jittery" when you move (like in the REAL)
  - RepRootPart property is now available for hat overrides! (hat orbit is now possible)
