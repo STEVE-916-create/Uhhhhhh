@@ -7009,8 +7009,10 @@ AddModule(function()
 		rng.CFrame = cf
 		return rng
 	end
-	local function MagicSphere(size, ticks, cf, color, grow)
-		local part = CreatePart(cf, Vector3.one, color)
+	local function MagicSphere(size, ticks, cf, color, grow, move, transp)
+		grow = grow or Vector3.zero
+		move = move or Vector3.zero
+		local part = CreatePart(cf, Vector3.one, color, nil, transp)
 		local mesh = Instance.new("SpecialMesh", part)
 		mesh.MeshType = "Sphere"
 		mesh.Scale = size
@@ -7022,6 +7024,7 @@ AddModule(function()
 				local dt = task.wait()
 				elapsed += dt
 				mesh.Scale = size + grow * elapsed * 60
+				mesh.Offset = move * elapsed * 60
 				part.Transparency = elapsed / lifetime
 			end
 			part:Destroy()
@@ -7031,6 +7034,32 @@ AddModule(function()
 		for _,v in targets do
 			CreateSound(v, "140626490819228")
 			MagicSphere(Vector3.one, 30, v.CFrame, Color3.new(1, 0, 0), Vector3.one * 0.15)
+		end
+	end
+	local function BootsEffect(part, typ)
+		local COL = Color3.new(1, 0.5, 0)
+		local ground = PhysicsRaycast(part.CFrame * Vector3.new(0, -0.9 * scale, 0), part.CFrame.UpVector * 4)
+		local dist = ground and (ground.Distance / 4) or 1
+		if typ == "IGNITION" then
+			MagicSphere(
+				Vector3.zero, 5, part.CFrame * CFrame.new(0, -1 * scale, 0), COL,
+				Vector3.new(2, 0.1, 2):Lerp(Vector3.new(2, 0.4, 2), dist) * scale,
+				Vector3.new(0, 0, 0):Lerp(Vector3.new(0, -0.2, 0), dist) * scale
+			)
+		end
+		if typ == "THRUST" then
+			MagicSphere(
+				Vector3.one * scale, 10, part.CFrame * CFrame.new(0, -1 * scale, 0), COL,
+				Vector3.new(0.5, 0.1, 0.5):Lerp(Vector3.new(-0.1, 0.2, -0.1), dist) * scale,
+				Vector3.new(0, 0, 0):Lerp(Vector3.new(0, -0.2, 0), dist) * scale
+			)
+		end
+		if ground then
+			MagicSphere(
+				Vector3.new(0, 0.05, 0) * scale, 20, CFrame.lookAlong(ground.Position, ground.Normal), COL,
+				Vector3.new(1, 0, 1):Lerp(Vector3.new(0, 0, 0), dist) * scale,
+				Vector3.new(0, 0, 0), dist
+			)
 		end
 	end
 	local PrimaryMelee_index = 1
@@ -7332,28 +7361,31 @@ AddModule(function()
 				hum.JumpPower = 0
 				mustfly = math.max(0, mustfly - dt)
 			end
-			gofly = mustfly <= 0 and hum.Jump
-			if lastfly ~= gofly then
-				lastfly = gofly
-				if lastfly then
-					CreateSound("123619882242196")
-					MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(2, 0.1, 2) * scale)
-					MagicSphere(Vector3.zero, 5, torso.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(2, 0.1, 2) * scale)
-					root.Velocity += Vector3.new(0, 50, 0)
-				else
-					CreateSound("128788885488982")
+			local larm, rarm = figure:FindFirstChild("Left Leg"), figure:FindFirstChild("Right Leg")
+			if larm and rarm then
+				gofly = mustfly <= 0 and hum.Jump
+				if lastfly ~= gofly then
+					lastfly = gofly
+					if lastfly then
+						CreateSound("123619882242196")
+						BootsEffect(larm, "IGNITION")
+						BootsEffect(rarm, "IGNITION")
+						root.Velocity += Vector3.new(0, 50, 0)
+					else
+						CreateSound("128788885488982")
+					end
 				end
+				if gofly then
+					flysound.Volume = math.min(5, flysound.Volume + dt * 20)
+					hum.WalkSpeed *= 4
+					root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
+					BootsEffect(larm, "THRUST")
+					BootsEffect(rarm, "THRUST")
+				else
+					flysound.Volume = math.max(0, flysound.Volume - dt * 20)
+				end
+				flysound.Playing = flysound.Volume > 0.05
 			end
-			if gofly then
-				flysound.Volume = math.min(5, flysound.Volume + dt * 20)
-				hum.WalkSpeed *= 4
-				root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
-				MagicSphere(Vector3.one * scale, 10, torso.CFrame * CFrame.new(-0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(-0.1, 0.2, -0.1) * scale)
-				MagicSphere(Vector3.one * scale, 10, torso.CFrame * CFrame.new(0.5 * scale, -3 * scale, 0), Color3.new(1, 0.5, 0), Vector3.new(-0.1, 0.2, -0.1) * scale)
-			else
-				flysound.Volume = math.max(0, flysound.Volume - dt * 20)
-			end
-			flysound.Playing = flysound.Volume > 0.05
 		end
 		
 		-- joints
