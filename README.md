@@ -27,7 +27,7 @@ local a,b,c,g="/STEVE-916-create/Uhhhhhh/","/source/reanim.lua",".github","https
 ```
 
 ## Features:
-1. Probably the most stable hatdrop
+1. ~Probably the most stable hatdrop~ (roblox patched permadeath which makes this useless 3:)
 
    Uhhhhhh's hatdrop supports most (if not all) hat rigs!
 

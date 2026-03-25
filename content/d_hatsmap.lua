@@ -16,6 +16,9 @@ Sin dragon hats found in v_movesets2.lua (not in particular order)
 10239245976
 14120501243
 109987071363341
+3302593407
+8843572259
+8843579903
 
 skipped because they fit anyway (and i dont do sin dragon wings)
 132906536668549
@@ -32,12 +35,14 @@ skipped because banned
 
 skipped because itll be used later
 14959586922 -- add part throw move x as option
+13744441119, 5354918926 -- as sin dragon claws my reference mesh wont load lol
 
 these are invalid, colon. dont ever list these
 637528, 878120
 
 this is a GAME.
-14133411956
+14133411956 -- foundation
+95964727828755 -- autorig
 
 and lastly, colon, these are discord emojis.
 1413510991538294844
