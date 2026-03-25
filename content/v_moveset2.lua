@@ -7077,6 +7077,13 @@ AddModule(function()
 		attacking = true
 		if os.clock() - PrimaryMelee_lastatk > 1 then
 			PrimaryMelee_index = 0
+			randomdialog({
+				"Neutralizing Threat...",
+				"Eliminating Target...",
+				"Target Locking On...",
+				"Executing Melee Protocol...",
+				"Close Combat In Progress...",
+			})
 		end
 		PrimaryMelee_lastatk = os.clock()
 		local lol = PrimaryMelee_index
@@ -7177,6 +7184,18 @@ AddModule(function()
 		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
+		PrimaryMelee_index = 0
+		if os.clock() - PrimaryMelee_lastatk > 1 then
+			randomdialog({
+				"Suppressing Threat...",
+				"Eliminating Target...",
+				"Target Locking On...",
+				"Executing Ranged Protocol...",
+				"Distanced Combat In Progress...",
+				"Shot Fired"
+			})
+		end
+		PrimaryMelee_lastatk = os.clock()
 		task.spawn(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
 				rt, nt, rst, lst, rht, lht = lerps.shoot(math.pi / 2, rt, nt, rst, lst, rht, lht)
@@ -7221,8 +7240,15 @@ AddModule(function()
 		if attacking and not m.NoCooldown then return end
 		if not root or not hum or not torso then return end
 		local rootu = root
+		PrimaryMelee_lastatk = 0
 		task.spawn(function()
 			if hasgun then
+				randomdialog({
+					"Close Combat Online",
+					"The Banisher Has Been Disarmed",
+					"Ranged Protocol Disabled",
+					"Optimising For Close Combat...",
+				})
 				CreateSound("83796427261186") -- shotgun holster sound idc
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
 					rt, nt, rst, lst, rht, lht = lerps.holster(0, rt, nt, rst, lst, rht, lht)
@@ -7243,6 +7269,12 @@ AddModule(function()
 				if not rootu:IsDescendantOf(workspace) then
 					return
 				end
+				randomdialog({
+					"Distanced Combat Online",
+					"The Banisher Has Been Armed",
+					"Ranged Protocol Prepared",
+					"Ready To Fire",
+				})
 				hasgun = true
 				gunspin = true
 				CreateSound("129433638565138")
@@ -7307,15 +7339,33 @@ AddModule(function()
 		ContextActions:BindAction("Uhhhhhh_BSRun", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
 				if walkspeed == 16 then
+					randomdialog({
+						"Running Protocol Engaged",
+						"Movement Speed Increased",
+						"I Must Catch Up",
+						"Optimising For Higher Ground Speed...",
+					})
 					walkspeed = 28
 				else
+					randomdialog({
+						"Running Protocol Disengaged",
+						"Accuracy Increased",
+						"Improving Terrestrial Movement",
+						"Optimising For Preciseness...",
+					})
 					walkspeed = 16
 				end
 			end
 		end, true, Enum.KeyCode.LeftControl)
 		ContextActions:SetTitle("Uhhhhhh_BSRun", "Run")
 		ContextActions:SetPosition("Uhhhhhh_BSRun", UDim2.new(1, -180, 1, -130))
-		task.delay(0, notify, "u want a piece of me or smth ??")
+		task.delay(0.2, randomdialog, {
+			"Kernel BANISHER.BIN Loaded",
+			"Your Time-To-Live is about to reach 0.", -- packet larp
+			"Combat Protocol Engaged",
+			"Deployment Successful",
+			"Boot Sequence Complete",
+		})
 		if chatconn then
 			chatconn:Disconnect()
 		end
@@ -7350,45 +7400,49 @@ AddModule(function()
 		if attacking then
 			hum.WalkSpeed = 8 * scale
 			hum.JumpPower = 0
-			if lastfly then
-				lastfly = false
-				CreateSound("128788885488982")
-			end
-			mustfly = 0.05
 		else
 			hum.WalkSpeed = walkspeed * scale
 			if onground then
 				hum.JumpPower = 50 * scale
-				mustfly = 0.2
 			else
 				hum.JumpPower = 0
-				mustfly = math.max(0, mustfly - dt)
 			end
-			local larm, rarm = figure:FindFirstChild("Left Leg"), figure:FindFirstChild("Right Leg")
-			if larm and rarm then
-				gofly = mustfly <= 0 and hum.Jump
-				if lastfly ~= gofly then
-					lastfly = gofly
-					if lastfly then
-						CreateSound("123619882242196")
-						BootsEffect(larm, "IGNITION")
-						BootsEffect(rarm, "IGNITION")
-						root.Velocity += Vector3.new(0, 50, 0)
-					else
-						CreateSound("128788885488982")
-					end
-				end
-				if gofly then
-					flysound.Volume = math.min(5, flysound.Volume + dt * 20)
-					hum.WalkSpeed *= 4
-					root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
-					BootsEffect(larm, "THRUST")
-					BootsEffect(rarm, "THRUST")
+		end
+		if onground then
+			mustfly = 0.2
+		else
+			mustfly = math.max(0, mustfly - dt)
+		end
+		local larm, rarm = figure:FindFirstChild("Left Leg"), figure:FindFirstChild("Right Leg")
+		if larm and rarm then
+			gofly = mustfly <= 0 and hum.Jump
+			if lastfly ~= gofly then
+				lastfly = gofly
+				if lastfly then
+					randomdialog({
+						"Rocket Boots Active",
+						"Executing Flight Protocol...",
+						"Lifting Off Ground...",
+						"Flight Achieved",
+					})
+					CreateSound("123619882242196")
+					BootsEffect(larm, "IGNITION")
+					BootsEffect(rarm, "IGNITION")
+					root.Velocity += Vector3.new(0, 50, 0)
 				else
-					flysound.Volume = math.max(0, flysound.Volume - dt * 20)
+					CreateSound("128788885488982")
 				end
-				flysound.Playing = flysound.Volume > 0.05
 			end
+			if gofly then
+				flysound.Volume = math.min(5, flysound.Volume + dt * 20)
+				hum.WalkSpeed = 112
+				root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
+				BootsEffect(larm, "THRUST")
+				BootsEffect(rarm, "THRUST")
+			else
+				flysound.Volume = math.max(0, flysound.Volume - dt * 20)
+			end
+			flysound.Playing = flysound.Volume > 0.05
 		end
 		
 		-- joints

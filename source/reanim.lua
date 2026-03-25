@@ -8420,10 +8420,12 @@ local function getgithubraw(path)
 	if s and resp and resp.StatusCode == 200 then
 		return resp.Body
 	end
-	if resp then
+	if s and resp then
 		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " " .. resp.StatusCode
-	else
+	elseif s then
 		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " NIL"
+	else
+		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " ERR " .. resp
 	end
 	InitLogsText.Text ..= "\n[LOG] [GitGET] GET raw./" .. path
 	s, resp = pcall(request, {
@@ -8433,10 +8435,12 @@ local function getgithubraw(path)
 	if s and resp and resp.StatusCode == 200 then
 		return resp.Body
 	end
-	if resp then
+	if s and resp then
 		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " " .. resp.StatusCode
-	else
+	elseif s then
 		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " NIL"
+	else
+		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " ERR " .. resp
 	end
 	return nil
 end
