@@ -1673,12 +1673,12 @@ AddModule(function()
 					return x
 				end
 				local codegen = ""
-				codegen ..= apply("RootJoint") .. "\n"
-				codegen ..= apply("Neck") .. "\n"
-				codegen ..= apply("RightShoulder") .. "\n"
-				codegen ..= apply("LeftShoulder") .. "\n"
-				codegen ..= apply("RightHip") .. "\n"
-				codegen ..= apply("LeftHip") .. "\n"
+				codegen ..= applyj("RootJoint") .. "\n"
+				codegen ..= applyj("Neck") .. "\n"
+				codegen ..= applyj("RightShoulder") .. "\n"
+				codegen ..= applyj("LeftShoulder") .. "\n"
+				codegen ..= applyj("RightHip") .. "\n"
+				codegen ..= applyj("LeftHip") .. "\n"
 				codegen ..= "--MW_animatorProgressSave: " .. table.concat(MW_animatorProgressSave, ",")
 				setclipboard(codegen)
 			end)
@@ -1746,12 +1746,12 @@ AddModule(function()
 					return x
 				end
 				local codegen = "animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)\n\t"
-				codegen ..= apply("RootJoint", "rt") .. "\n\t"
-				codegen ..= apply("Neck", "nt") .. "\n\t"
-				codegen ..= apply("RightShoulder", "rst") .. "\n\t"
-				codegen ..= apply("LeftShoulder", "lst") .. "\n\t"
-				codegen ..= apply("RightHip", "rht") .. "\n\t"
-				codegen ..= apply("LeftHip", "lht") .. "\n\treturn rt, nt, rst, lst, rht, lht, " .. sig(animatorcfg.speed) .. "\nend\n"
+				codegen ..= applyj("RootJoint", "rt") .. "\n\t"
+				codegen ..= applyj("Neck", "nt") .. "\n\t"
+				codegen ..= applyj("RightShoulder", "rst") .. "\n\t"
+				codegen ..= applyj("LeftShoulder", "lst") .. "\n\t"
+				codegen ..= applyj("RightHip", "rht") .. "\n\t"
+				codegen ..= applyj("LeftHip", "lht") .. "\n\treturn rt, nt, rst, lst, rht, lht, " .. sig(animatorcfg.speed) .. "\nend\n"
 				codegen ..= "--MW_animatorProgressSave: " .. table.concat(MW_animatorProgressSave, ",")
 				setclipboard(codegen)
 			end)
