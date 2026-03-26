@@ -1322,7 +1322,7 @@ AddModule(function()
 				end
 			})
 		end,
-		function()
+		function(t)
 			local getJoint=t.getJoint
 			local map = {
 				RootJoint=getJoint("RootJoint"),
@@ -1496,12 +1496,20 @@ AddModule(function()
 				i1.TextXAlignment = "Right"
 				local val = lol("TextBox", -50, "")
 				val.PlaceholderText = "0"
+				val.ClearTextOnFocus = false
+				val.PlaceholderColor3 = Color3.new(0.2, 0.2, 0.2)
 				local sval = lol("TextBox", 0, "")
 				sval.PlaceholderText = "0"
+				sval.ClearTextOnFocus = false
+				sval.PlaceholderColor3 = Color3.new(0.2, 0.2, 0.2)
 				local smul = lol("TextBox", 50, "")
 				smul.PlaceholderText = "0"
+				smul.ClearTextOnFocus = false
+				smul.PlaceholderColor3 = Color3.new(0.2, 0.2, 0.2)
 				local soff = lol("TextBox", 100, "")
 				soff.PlaceholderText = "0"
+				soff.ClearTextOnFocus = false
+				soff.PlaceholderColor3 = Color3.new(0.2, 0.2, 0.2)
 				local this = function(mmhm)
 					local t = animatorcfg[a][b]
 					lmao(val, t, 1, mmhm)
@@ -1545,6 +1553,7 @@ AddModule(function()
 				i1.TextXAlignment = "Right"
 				local val = lol("TextBox", 25, "")
 				val.PlaceholderText = "0"
+				val.ClearTextOnFocus = false
 				local this = function(mmhm)
 					if mmhm == "mmhm" then
 						val.Text = sig(animatorcfg[a])
@@ -1585,12 +1594,12 @@ AddModule(function()
 				for _,v in update do v("mmhm") end
 			end)
 			local prop2 = function(name, joint)
-				prop(name .."X", joint, "x")
-				prop(       "Y", joint, "y")
-				prop(       "Z", joint, "z")
-				prop(   "Rot X", joint, "rx")
-				prop(   "Rot Y", joint, "ry")
-				prop(   "Rot Z", joint, "rz")
+				prop(name .. " X", joint, "x")
+				prop("Y", joint, "y")
+				prop("Z", joint, "z")
+				prop("Rot X", joint, "rx")
+				prop("Rot Y", joint, "ry")
+				prop("Rot Z", joint, "rz")
 			end
 			prop1("Lerp Speed", "speed")
 			prop2("Torso", "RootJoint")
