@@ -1553,7 +1553,7 @@ AddModule(function()
 						animatorcfg[a] = tonumber(val.Text) or animatorcfg[a]
 					end
 					if val:IsFocused() then return end
-					val1.Text = sig(animatorcfg[a])
+					val.Text = sig(animatorcfg[a])
 				end
 				this()
 				val.Changed:Connect(this)
