@@ -1337,12 +1337,12 @@ AddModule(function()
 					return t[1] + t[2] * math.sin(sine * t[3] + t[4])
 				end
 				local t = animatorcfg[n]
-				j.C0 = Lerp(j.C0, cfMul(cf(a(t.x), a(t.y), a(t.z)), angles(math.rad(a(t.rx)), math.rad(a(t.ry)), math.rad(a(t.rz)))), math.exp(-animatorcfg.speed * deltaTime))
+				j.C0 = Lerp(cfMul(cf(a(t.x), a(t.y), a(t.z)), angles(math.rad(a(t.rx)), math.rad(a(t.ry)), math.rad(a(t.rz)))), j.C0, math.exp(-animatorcfg.speed * deltaTime))
 			end
 			t.addmode("default", {
 				idle=function()
 					for k,v in map do apply(k, v) end
-				end
+				end,
 			})
 		end,
 	}
@@ -1803,9 +1803,9 @@ AddModule(function()
 		addmode = function(key, mode)
 			if key == "default" then
 				defaultmode.idle = mode.idle or emptyfunction
-				defaultmode.walk = mode.walk or emptyfunction
-				defaultmode.jump = mode.jump or emptyfunction
-				defaultmode.fall = mode.fall or emptyfunction
+				defaultmode.walk = mode.walk or mode.idle or emptyfunction
+				defaultmode.jump = mode.jump or mode.fall or mode.idle or emptyfunction
+				defaultmode.fall = mode.fall or mode.jump or mode.idle or emptyfunction
 				defaultmode.modeEntered = mode.modeEntered or emptyfunction
 				defaultmode.modeLeft = mode.modeLeft or emptyfunction
 				defaultmode.modeEntered()
