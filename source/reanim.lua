@@ -117,7 +117,7 @@ do
 	if not loadstringreturn then
 		diefatal("`loadstring` makes a function that does not return values!")
 	end
-	if ismissing(isfile) then
+	if not ismissing(isfile) then
 		local s, e = pcall(isfile, Util.RandomString(32))
 		if s and e then
 			-- stupid executor
