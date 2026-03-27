@@ -23,15 +23,6 @@ _G.UhhhhhhLoaded = true
 
 local UhhhhhhVersion = "1.0.6 BETA"
 
-cloneref = cloneref or function(o) return o end
-getcustomasset = getcustomasset or getsynasset
-gethiddengui = get_hidden_gui or gethui
-
--- restore
-pcall(restorefunction, restorefunction)
-pcall(restorefunction, sethiddenproperty)
-pcall(restorefunction, replicatesignal)
-
 local Debris = cloneref(game:GetService("Debris"))
 local CoreGui = cloneref(game:GetService("CoreGui"))
 local Players = cloneref(game:GetService("Players"))
@@ -73,32 +64,46 @@ Util.Notify = function(text)
 	})
 end
 
+cloneref = cloneref or function(o) return o end
+getcustomasset = getcustomasset or getsynasset
+gethiddengui = get_hidden_gui or gethui
+request = request or (http and http.request)
+
 do
-	local function diefatal()
-		Util.Notify("Executor not supported.")
+	local function diefatal(msg)
+		Util.Notify("Executor not supported. " .. msg)
 		_G.UhhhhhhLoaded = nil
 		error("fatal error cant start")
 	end
-	if not request then
-		diefatal()
+	local function ismissing(func)
+		return not func or type(func) ~= "function"
 	end
-	if not getcustomasset then
-		diefatal()
+	if ismissing(request) then
+		diefatal("Missing `request` or `http.request` function!")
 	end
-	if not (readfile and writefile and delfile and isfile and isfolder and makefolder and listfiles) then
-		diefatal()
+	if ismissing(getcustomasset) then
+		diefatal("Missing `getcustomasset` or `getsynasset` function!")
 	end
-	if not firetouchinterest then
-		diefatal()
+	if ismissing(readfile)
+		or ismissing(writefile)
+		or ismissing(delfile)
+		or ismissing(isfile)
+		or ismissing(isfolder)
+		or ismissing(makefolder)
+		or ismissing(listfiles) then
+		diefatal("Missing some filesystem functions!")
 	end
-	if not replicatesignal then
-		diefatal()
+	if ismissing(firetouchinterest) then
+		diefatal("Missing `firetouchinterest` function!")
 	end
-	if not sethiddenproperty then
-		diefatal()
+	if ismissing(replicatesignal) then
+		diefatal("Missing `replicatesignal` function!")
 	end
-	if not hookmetamethod and not hookfunction then
-		diefatal()
+	if ismissing(sethiddenproperty) then
+		diefatal("Missing `replicatesignal` function!")
+	end
+	if ismissing(hookmetamethod) or ismissing(hookfunction) then
+		diefatal("Missing `hookmetamethod` and `hookfunction` function!")
 	end
 	local loadstringreturn = false
 	local val = math.random(-65536, 65536)
@@ -110,9 +115,9 @@ do
 		end
 	end
 	if not loadstringreturn then
-		diefatal()
+		diefatal("`loadstring` makes a function that does not return values!")
 	end
-	if isfile then
+	if ismissing(isfile) then
 		local s, e = pcall(isfile, Util.RandomString(32))
 		if s and e then
 			-- stupid executor
@@ -122,7 +127,8 @@ do
 			end
 		end
 	else
-		diefatal()
+		-- THIS LITERALLY SHOULDNT HAPPEN
+		diefatal("T-this one shouldn't happen!")
 	end
 end
 
@@ -137,8 +143,6 @@ local xpcall = function(func, ...)
 		return func(...)
 	end, ...)
 end
-
-b_getfenv = getfenv -- "loadstring marks the env unsafe"
 
 local Player = Players.LocalPlayer
 
@@ -3786,6 +3790,10 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			RCRootPart.Velocity = Vector3.new(0, 50, 0)
 			RCRootPart.RotVelocity = Vector3.zero
 		end
+	end))
+	Util.LinkDestroyI2C(RC, RunService.Heartbeat:Connect(function(dt)
+		local tcf, pos = RCRootPart.CFrame.Rotation, RCRootPart.CFrame.Position
+		local RCHumanoidState = RCHumanoid:GetState().Name
 		local safe = true
 		local void = true
 		for i=1, 8 do
@@ -3804,14 +3812,11 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			LastSafest = RCRootPart.CFrame
 		end
 		if RCHumanoidState == "Running" or not void then
-			SafeY = RCRootPart.CFrame.Y
+			SafeY = pos.Y
 			IsFloat = false
 		else
 			IsFloat = true
 		end
-	end))
-	Util.LinkDestroyI2C(RC, RunService.Heartbeat:Connect(function(dt)
-		local tcf, pos = RCRootPart.CFrame.Rotation, RCRootPart.CFrame.Position
 		if Reanimate.PatchmaVoidFloat and IsFloat then
 			pos = Vector3.new(pos.X, SafeY, pos.Z)
 			RCRootPart.Velocity *= Vector3.new(1, 0, 1)
@@ -7756,7 +7761,7 @@ if type(SaveData.ModuleConfigs) ~= "table" then
 	SaveData.ModuleConfigs = {}
 end
 local function GiveFunctionsToFunction(func)
-	local env = b_getfenv(func)
+	local env = getfenv(func)
 	env.RandomString = Util.RandomString
 	env.Util_CreateText = UI.CreateText
 	env.Util_CreateButton = UI.CreateButton
