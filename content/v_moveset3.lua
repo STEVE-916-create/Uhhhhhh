@@ -1643,8 +1643,31 @@ AddModule(function()
 			end
 			prop1("Lerp Speed", "speed")
 			prop1("Time Change", "change")
-			--lbl("      Value    Sin Value   Sin Speed   Sin Offset")
-			lbl("      Value    Sin Value   Sin Speed   Sin Offset")
+			do
+				local fr = Instance.new("Frame")
+				fr.BackgroundTransparency = 1
+				fr.Size = UDim2.new(1, 0, 0, 18)
+				fr.Name = RandomString()
+				fr.LayoutOrder = 67
+				fr.Parent = parent
+				local lol = function(x, txt)
+					local i1 = Instance.new("TextLabel")
+					i1.BackgroundTransparency = 1
+					i1.Font = Enum.Font.SourceSans
+					i1.TextSize = 18
+					i1.Text = txt
+					i1.AnchorPoint = Vector2.new(0.5, 0)
+					i1.Position = UDim2.new(0.5, x, 0, 0)
+					i1.Size = UDim2.new(0, 45, 1, 0)
+					i1.TextColor3 = Color3.new(0.560784, 0.560784, 0.560784)
+					i1.Name = RandomString()
+					i1.Parent = fr
+				end
+				lol(-50, "value")
+				lol(0, "sinval")
+				lol(50, "sinspeed")
+				lol(100, "sinoff")
+			end
 			prop2("Torso", "RootJoint")
 			prop2("Head", "Neck")
 			prop2("Left Arm", "LeftShoulder")
