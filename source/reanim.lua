@@ -3799,7 +3799,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			RCRootPart.RotVelocity = Vector3.zero
 		end
 	end))
-	Util.LinkDestroyI2C(RC, RunService.Heartbeat:Connect(function(dt)
+	Util.LinkDestroyI2C(RC, RunService.PostSimulation:Connect(function(dt)
 		local tcf, pos = RCRootPart.CFrame.Rotation, RCRootPart.CFrame.Position
 		local RCHumanoidState = RCHumanoid:GetState().Name
 		local safe = true

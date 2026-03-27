@@ -1663,10 +1663,10 @@ AddModule(function()
 					if map[n2] then
 						local t = animatorcfg[map[n2]]
 						t.x = getval()
-						t.y = getval()
-						t.z = getval()
 						t.rx = getval()
+						t.y = getval()
 						t.ry = getval()
+						t.z = getval()
 						t.rz = getval()
 					else
 						for _=1, 6 do getval() end
