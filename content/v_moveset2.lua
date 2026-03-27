@@ -7372,7 +7372,7 @@ AddModule(function()
 		task.spawn(function()
 			local start = timingsine
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
-				rt, nt, rst, lst, rht, lht = lerps.bombthrow(timingsine - start, rt, nt, rst, lst, rht, lht)
+				rt, nt, rst, lst, rht, lht = lerps.bombthrow((timingsine - start - 1) * math.pi, rt, nt, rst, lst, rht, lht)
 				AimTowards(MouseHit())
 				return rt, nt, rst, lst, rht, lht, 20
 			end
@@ -7434,8 +7434,8 @@ AddModule(function()
 					).LookVector
 					MagicSphere(Vector3.new(2, 2, 6), 10, CFrame.lookAlong(bombo.Position, randomdir), Color3.new(1, 1, 0.7), Vector3.one * -0.4, Vector3.new(0, 0, -1))
 				end
-				MagicSphere(Vector3.one * 6, 10, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * -0.6, 0.5)
-				MagicSphere(Vector3.one * 2, 20, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * 0.6, 0.1)
+				MagicSphere(Vector3.one * 6, 10, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * -0.6, Vector3.zero, 0.5)
+				MagicSphere(Vector3.one * 2, 20, bombo.CFrame, Color3.new(1, 0.8, 0.5), Vector3.one * 0.6, Vector3.zero, 0.1)
 				CreateSound(bombo, "102645835886909")
 				Debris:AddItem(bombo, 5)
 			end)
