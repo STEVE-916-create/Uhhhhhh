@@ -7261,6 +7261,7 @@ AddModule(function()
 		if attacking and not m.NoCooldown then return end
 		if not root or not hum or not torso then return end
 		local rootu = root
+		local larm, rarm = rootu.Parent:FindFirstChild("Left Arm"), rootu.Parent:FindFirstChild("Right Arm")
 		attacking = true
 		PrimaryMelee_index = 0
 		if os.clock() - PrimaryMelee_lastatk > 1 then
@@ -7296,16 +7297,15 @@ AddModule(function()
 				rt, nt, rst, lst, rht, lht = lerps.flamethrow(timingsine, rt, nt, rst, lst, rht, lht)
 				return rt, nt, rst, lst, rht, lht, 30
 			end
-			local larm, rarm = rootu.Parent:FindFirstChild("Left Arm") or rootu.Parent:FindFirstChild("Right Arm")
 			if larm and rarm then
-				BootsEffect(larm, "IGNITION", 3, 16)
-				BootsEffect(rarm, "IGNITION", 3, 16)
+				BootsEffect(larm, "IGNITION", 1.2, 16)
+				BootsEffect(rarm, "IGNITION", 1.2, 16)
 			end
 			s = os.clock()
 			repeat
 				if larm and rarm then
-					BootsEffect(larm, "THRUST", 3, 16)
-					BootsEffect(rarm, "THRUST", 3, 16)
+					BootsEffect(larm, "THRUST", 1.2, 16)
+					BootsEffect(rarm, "THRUST", 1.2, 16)
 				end
 				Attack(rootu.CFrame * CFrame.new(0, 0, -5 * scale), Vector3.new(6, 5, 8) * scale)
 				task.wait()
