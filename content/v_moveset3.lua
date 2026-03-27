@@ -1719,7 +1719,7 @@ AddModule(function()
 					local t = animatorcfg[n]
 					local zero = function(k)
 						if t[k][1] == 0 then
-							if t[k][3] == 0 and math.sin(t[k][4]) <= 0.005 then
+							if t[k][3] == 0 then
 								return true
 							elseif t[k][2] == 0 then
 								return true
@@ -1728,7 +1728,7 @@ AddModule(function()
 						return false
 					end
 					local conv = function(k, mul)
-						mul = mul or 0
+						mul = mul or 1
 						local t = t[k]
 						if t[1] == 0 then
 							if t[2] == 0 then
@@ -1797,7 +1797,7 @@ AddModule(function()
 					local t = animatorcfg[n]
 					local zero = function(k)
 						if t[k][1] == 0 then
-							if t[k][3] == 0 and math.sin(t[k][4]) <= 0.005 then
+							if t[k][3] == 0 then
 								return true
 							elseif t[k][2] == 0 then
 								return true
@@ -1806,7 +1806,7 @@ AddModule(function()
 						return false
 					end
 					local conv = function(k, mul)
-						mul = mul or 0
+						mul = mul or 1
 						local t = t[k]
 						if t[1] == 0 then
 							if t[2] == 0 then
