@@ -143,6 +143,7 @@ local xpcall = function(func, ...)
 		return func(...)
 	end, ...)
 end
+local b_getfenv = getfenv
 
 local Player = Players.LocalPlayer
 
@@ -4962,9 +4963,11 @@ function HatReanimator.Start()
 						if not ref.PH then
 							ref.PH = CreatePlaceholder(hat)
 						end
+						return
 					end
 				end
 			end
+			HatReanimator.RebuildRequired = true
 		end
 	end
 
@@ -6356,7 +6359,7 @@ function HatReanimator.Start()
 		local t = os.clock()
 		local slocked = {}
 		if ReanimOkay then
-			local dt = RunService.PostSimulation:Wait()
+			local dt = RunService.Heartbeat:Wait()
 			if HatReanimator.RebuildRequired then
 				RefreshHatMap(Character)
 			end
@@ -7769,7 +7772,7 @@ if type(SaveData.ModuleConfigs) ~= "table" then
 	SaveData.ModuleConfigs = {}
 end
 local function GiveFunctionsToFunction(func)
-	local env = getfenv(func)
+	local env = b_getfenv(func)
 	env.RandomString = Util.RandomString
 	env.Util_CreateText = UI.CreateText
 	env.Util_CreateButton = UI.CreateButton

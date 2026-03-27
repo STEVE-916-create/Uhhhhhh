@@ -12,6 +12,7 @@
  - Virtual tool = massless
  - Added Patchma's Void Float
  - Fixed a few custom camera related issues
+ - Added auto-rebuild hat map (rebuilds when there is an unknown hat found)
 # Version 1.0.5 BETA
  - Fixed Patchma-like netless, now it'll only be "jittery" when you move (like in the REAL)
  - RepRootPart property is now available for hat overrides! (hat orbit is now possible)
