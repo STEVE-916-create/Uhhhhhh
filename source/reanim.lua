@@ -1617,6 +1617,11 @@ function UI.CreatePage()
 	Frame.ZIndex = 0
 	Frame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	Frame.CanvasSize = UDim2.new(0, 0, 0, 0)
+	Frame.ClipsDescendants = true
+	AddToRenderStep(function(t)
+		Frame.BorderColor3 = GetUIColor(t)
+		Frame.BackgroundColor3 = GetUIBGColor(t)
+	end, Frame)
 	Frame.ScrollingDirection = Enum.ScrollingDirection.Y
 	Frame.ScrollBarThickness = 3
 	Frame.ElasticBehavior = Enum.ElasticBehavior.Always
@@ -1625,11 +1630,6 @@ function UI.CreatePage()
 	Frame.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 	Frame.ScrollBarImageTransparency = 0.5
 	Frame.ScrollBarImageColor3 = UITextColor.Value
-	Frame.ClipsDescendants = true
-	AddToRenderStep(function(t)
-		Frame.BorderColor3 = GetUIColor(t)
-		Frame.BackgroundColor3 = GetUIBGColor(t)
-	end, Frame)
 	Util.LinkDestroyI2C(Frame, UITextColor.Changed:Connect(function(val)
 		Frame.ScrollBarImageColor3 = val
 	end))
@@ -2253,9 +2253,18 @@ function UI.CreateScrollCanvas(parent, height)
 	ListBox.BorderSizePixel = 0
 	ListBox.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	ListBox.CanvasSize = UDim2.new(0, 0, 0, 0)
-	ListBox.ScrollingDirection = Enum.ScrollingDirection.Y
-	ListBox.ScrollBarThickness = 0
 	ListBox.ClipsDescendants = true
+	ListBox.ScrollingDirection = Enum.ScrollingDirection.Y
+	ListBox.ScrollBarThickness = 3
+	ListBox.ElasticBehavior = Enum.ElasticBehavior.Always
+	ListBox.TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	ListBox.MidImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	ListBox.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	ListBox.ScrollBarImageTransparency = 0.5
+	ListBox.ScrollBarImageColor3 = UITextColor.Value
+	Util.LinkDestroyI2C(ListBox, UITextColor.Changed:Connect(function(val)
+		ListBox.ScrollBarImageColor3 = val
+	end))
 	Stylize(ListBox, {
 		Depthed = true,
 	})
@@ -2358,9 +2367,18 @@ function UI.CreateItemListPage()
 	ListBox.BorderSizePixel = 0
 	ListBox.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	ListBox.CanvasSize = UDim2.new(0, 0, 0, 0)
-	ListBox.ScrollingDirection = Enum.ScrollingDirection.Y
-	ListBox.ScrollBarThickness = 0
 	ListBox.ClipsDescendants = true
+	ListBox.ScrollingDirection = Enum.ScrollingDirection.Y
+	ListBox.ScrollBarThickness = 3
+	ListBox.ElasticBehavior = Enum.ElasticBehavior.Always
+	ListBox.TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	ListBox.MidImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	ListBox.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+	ListBox.ScrollBarImageTransparency = 0.5
+	ListBox.ScrollBarImageColor3 = UITextColor.Value
+	Util.LinkDestroyI2C(ListBox, UITextColor.Changed:Connect(function(val)
+		ListBox.ScrollBarImageColor3 = val
+	end))
 	Stylize(ListBox, {
 		Depthed = true,
 	})
