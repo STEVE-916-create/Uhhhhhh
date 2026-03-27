@@ -1728,6 +1728,7 @@ AddModule(function()
 						return false
 					end
 					local conv = function(k, mul)
+						mul = mul or 0
 						local t = t[k]
 						if t[1] == 0 then
 							if t[2] == 0 then
@@ -1805,6 +1806,7 @@ AddModule(function()
 						return false
 					end
 					local conv = function(k, mul)
+						mul = mul or 0
 						local t = t[k]
 						if t[1] == 0 then
 							if t[2] == 0 then
