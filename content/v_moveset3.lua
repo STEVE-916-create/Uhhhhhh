@@ -1441,6 +1441,7 @@ AddModule(function()
 		local animatorbtn = nil
 		_, animatorbtn = btn("open MW animator lite", function()
 			animatorbtn:Destroy()
+			local mmhm = nil
 			local update = {}
 			local sig = function(x)
 				x = tostring(x):lower()
@@ -1462,7 +1463,7 @@ AddModule(function()
 				end
 				return x
 			end
-			local lmao = function(k, t, i, mmhm)
+			local lmao = function(k, t, i)
 				if mmhm == "mmhm" then
 					k.Text = sig(t[i])
 					return
@@ -1512,12 +1513,12 @@ AddModule(function()
 				soff.PlaceholderText = "0"
 				soff.ClearTextOnFocus = false
 				soff.PlaceholderColor3 = Color3.new(0.2, 0.2, 0.2)
-				local this = function(mmhm)
+				local this = function()
 					local t = animatorcfg[a][b]
-					lmao(val, t, 1, mmhm)
-					lmao(sval, t, 2, mmhm)
-					lmao(smul, t, 3, mmhm)
-					lmao(soff, t, 4, mmhm)
+					lmao(val, t, 1)
+					lmao(sval, t, 2)
+					lmao(smul, t, 3)
+					lmao(soff, t, 4)
 				end
 				this()
 				val:GetPropertyChangedSignal("Text"):Connect(this)
@@ -1556,7 +1557,7 @@ AddModule(function()
 				local val = lol("TextBox", 25, "")
 				val.PlaceholderText = "0"
 				val.ClearTextOnFocus = false
-				local this = function(mmhm)
+				local this = function()
 					if mmhm == "mmhm" then
 						val.Text = sig(animatorcfg[a])
 						return
@@ -1610,7 +1611,9 @@ AddModule(function()
 						w[4] /= 2
 					end
 				end
-				for _,v in update do v("mmhm") end
+				mmhm = "mmhm"
+				for _,v in update do v() end
+				mmhm = nil
 			end)
 			btn("x2 speed", function()
 				for _,k in {"RootJoint", "Neck", "RightShoulder", "LeftShoulder", "RightHip", "LeftHip"} do
@@ -1620,11 +1623,15 @@ AddModule(function()
 						w[4] *= 2
 					end
 				end
-				for _,v in update do v("mmhm") end
+				mmhm = "mmhm"
+				for _,v in update do v() end
+				mmhm = nil
 			end)
 			btn("reset animator", function()
 				animatorreset()
-				for _,v in update do v("mmhm") end
+				mmhm = "mmhm"
+				for _,v in update do v() end
+				mmhm = nil
 			end)
 			local prop2 = function(name, joint)
 				prop(name .. " X", joint, "x")
@@ -1676,7 +1683,9 @@ AddModule(function()
 						for _=1, 6 do getval() end
 					end
 				end
-				for _,v in update do v("mmhm") end
+				mmhm = "mmhm"
+				for _,v in update do v() end
+				mmhm = nil
 			end)
 			btn("copy lerps to clipboard", function()
 				local MW_animatorProgressSave = {}
