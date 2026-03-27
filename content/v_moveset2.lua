@@ -7372,7 +7372,7 @@ AddModule(function()
 		task.spawn(function()
 			local start = timingsine
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht)
-				rt, nt, rst, lst, rht, lht = lerps.bombthrow((timingsine - start - 1) * math.pi, rt, nt, rst, lst, rht, lht)
+				rt, nt, rst, lst, rht, lht = lerps.bombthrow((timingsine - start + 1) * math.pi, rt, nt, rst, lst, rht, lht)
 				AimTowards(MouseHit())
 				return rt, nt, rst, lst, rht, lht, 20
 			end
