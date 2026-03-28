@@ -7651,22 +7651,22 @@ AddModule(function()
 						"Lifting Off Ground...",
 						"Flight Achieved",
 					})
-					CreateSound("123619882242196")
+					CreateSound("123619882242196", 1, 0.5)
 					BootsEffect(larm, "IGNITION")
 					BootsEffect(rarm, "IGNITION")
 					root.Velocity += Vector3.new(0, 50, 0)
 				else
-					CreateSound("128788885488982")
+					CreateSound("128788885488982", 1, 0.5)
 				end
 			end
 			if gofly then
-				flysound.Volume = math.min(5, flysound.Volume + dt * 20)
+				flysound.Volume = math.min(2, flysound.Volume + dt * 8)
 				hum.WalkSpeed = 112
 				root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
 				BootsEffect(larm, "THRUST")
 				BootsEffect(rarm, "THRUST")
 			else
-				flysound.Volume = math.max(0, flysound.Volume - dt * 20)
+				flysound.Volume = math.max(0, flysound.Volume - dt * 8)
 			end
 			flysound.Playing = flysound.Volume > 0.05
 		end
