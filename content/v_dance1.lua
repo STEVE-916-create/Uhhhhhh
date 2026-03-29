@@ -618,7 +618,7 @@ AddModule(function()
 			Model.Parent = figure
 			Model:ScaleTo(figure:GetScale())
 			for _,v in Ragdoll:GetDescendants() do
-				if v:IsA("BasePart") then v.Transparency = 0.5 end
+				if v:IsA("BasePart") then v.Transparency = 1 end
 			end
 
 			local function createNoCollide(p0, p1)
@@ -667,7 +667,6 @@ AddModule(function()
 			
 			teleporthack = root:GetPropertyChangedSignal("CFrame"):Connect(function()
 				if (torso.Position - root.Position).Magnitude < 10 then return end
-				print("teleport")
 				local cf = root.CFrame
 				Phoria.Teleport(cf)
 			end)
