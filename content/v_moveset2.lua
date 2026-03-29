@@ -30,6 +30,13 @@ local SINDRAGON_HATMAP_CLAWR = table.concat({
 	"",
 }, "|")
 
+local LINKEDSWORD_HATMAP_BALL = table.concat({
+	"",
+}, "|")
+local LINKEDSWORD_HATMAP_BOMB = table.concat({
+	"",
+}, "|")
+
 cloneref = cloneref or function(o) return o end
 
 local Debris = cloneref(game:GetService("Debris"))
