@@ -7653,6 +7653,7 @@ AddModule(function()
 		if not torso then return end
 		
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		local torsooff = CFrame.identity
 		
 		local gofly = false
 		if attacking then
@@ -7689,13 +7690,11 @@ AddModule(function()
 					root.Velocity += Vector3.new(0, 50, 0)
 				else
 					CreateSound("128788885488982", 1, 0.5)
-					hum.PlatformStand = false
 				end
 			end
 			if gofly then
 				flysound.Volume = math.min(2, flysound.Volume + dt * 8)
 				if m.CameraFly then
-					hum.PlatformStand = true
 					local dir = (ReanimCamera.CFrame.LookVector * 2 + hum.MoveDirection).Unit
 					hum.WalkSpeed = 0.001
 					local vel = root.Velocity
@@ -7703,8 +7702,7 @@ AddModule(function()
 					local xz = vel * Vector3.new(1, 0, 1)
 					if xz.Magnitude > 112 then xz = xz.Unit * 112 end
 					root.Velocity = xz + Vector3.new(0, vel.Y, 0)
-					local a, b = root.CFrame:ToObjectSpace(CFrame.lookAlong(Vector3.zero, dir)):ToAxisAngle()
-					root.RotVelocity = a * b * 3
+					torsooff = root.CFrame:ToObjectSpace(CFrame.lookAlong(Vector3.zero, dir))
 				else
 					hum.WalkSpeed = 112 * scale
 					root.Velocity += Vector3.new(0, workspace.Gravity + 50, 0) * dt
@@ -7758,7 +7756,10 @@ AddModule(function()
 				rt = CFrame.lookAt(Vector3.zero, Vector3.new(0, torsovelocityy, -100)) * rt
 			end
 		end
-		rt = CFrame.Angles(lw * -0.01, 0, rw * -0.01) * rt
+		if not lastfly or not m.CameraFly then
+			torsooff *= CFrame.Angles(lw * -0.01, 0, rw * -0.01)
+		end
+		rt = torsooff * rt
 		if animationOverride then
 			rt, nt, rst, lst, rht, lht, animationspeed = animationOverride(timingsine, rt, nt, rst, lst, rht, lht)
 		end
