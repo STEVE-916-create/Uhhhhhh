@@ -668,7 +668,7 @@ else
 		"those who know the place called ajman, dubai, uae                 ",
 		":3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 >:3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3",
 		--"quick intro and quick scrolltext                                                                   hi i like dih",
-		"quick intro        with quick scrolltext         and you will miss the punchline              punchline                did you get the punchline?  "
+		"quick intro        with quick scrolltext         and you will miss the punchline              punchline                did you get the punchline?  ",
 		"meeeooowwwwwwwwww >:3                                          maw",
 		"wwwwwwwwwwwwwwwwwww                         grass                 ",
 		"erika's the towers                            sfoth iv update when",
@@ -692,8 +692,8 @@ else
 		"all UI music credits to dubmood, zabutom, ogge, 4mat and hoster   ",
 		"heres the triforce                and heres my name                              ",
 		"skids are now taking credit of this entire script, meaning its so good           ",
-		"whenever i see hat reanimation nowadays i check to see if they are collidable    ",
-		"",
+		-- nonono i cant advertise that anymore "whenever i see hat reanimation nowadays i check to see if they are collidable    ",
+		"skids, be alert, go to weao.xyz for your roblox hacks!            ",
 	}
 	scrolltexts = scrolltexts[math.random(1, #scrolltexts)]
 	local fade = TweenService:Create(UIMainFrame, TweenInfo.new(5), {BackgroundTransparency = 0.5})
