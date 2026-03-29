@@ -5536,7 +5536,7 @@ function HatReanimator.Start()
 			rvel = (a * b) / dt
 			lastcf = newcf
 			if claimtime then
-				if timing - claimtime < 5.67 then
+				if timing - claimtime < 0.51 then
 					handle.Massless = false
 					handle.CustomPhysicalProperties = nil
 				else
