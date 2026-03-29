@@ -6123,7 +6123,7 @@ function HatReanimator.Start()
 			end
 			if flingtarget then
 				if not RootPart:IsGrounded() then
-					if HatReanimator.UseNaNFling then
+					if LimbReanimator.UseNaNFling then
 						RootPart.CFrame = CFrame.new(flingcf.Position + Vector3.new(0, 0, math.random(0, 1) * 0.005)) * CFrame.Angles(0, os.clock() * 15, 0)
 						RootPart.Velocity, RootPart.RotVelocity = Vector3.zero, Vector3.zero
 					else
@@ -6133,7 +6133,7 @@ function HatReanimator.Start()
 					pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and Util.PredictionFlingPart(flingtarget.Target) or nil)
 				end
 				Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
-				if HatReanimator.UseNaNFling then
+				if LimbReanimator.UseNaNFling then
 					pcall(sethiddenproperty, Humanoid, "MoveDirectionInternal", Vector3.new(0/0, 0/0, 0/0))
 				end
 			elseif #HatReanimator.FlingTargets == 0 then
