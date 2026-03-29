@@ -5536,7 +5536,7 @@ function HatReanimator.Start()
 			rvel = (a * b) / dt
 			lastcf = newcf
 			if claimtime then
-				if timing - claimtime < 0.51 then
+				if timing - claimtime < 5.67 then
 					handle.Massless = false
 					handle.CustomPhysicalProperties = nil
 				else
@@ -5544,7 +5544,7 @@ function HatReanimator.Start()
 					handle.CustomPhysicalProperties = PhysicalProperties.new(0.01, 0, 0, 0, 0)
 				end
 				if timing - claimtime < 0.51 then
-					handle.AssemblyLinearVelocity = Vector3.new(0, netless * 2, 0)
+					handle.AssemblyLinearVelocity = Vector3.new(0, netless, 0)
 				else
 					if fling then
 						handle.AssemblyLinearVelocity = Vector3.new(16384, 16384, 16384)
