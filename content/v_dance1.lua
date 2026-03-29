@@ -666,7 +666,7 @@ AddModule(function()
 					end
 					for _,v in Ragdoll:GetDescendants() do
 						if v:IsA("BasePart") then
-							v.Velocity += acc * figure:GetScale() * dt
+							v.Velocity = acc * figure:GetScale()
 						end
 					end
 				end
