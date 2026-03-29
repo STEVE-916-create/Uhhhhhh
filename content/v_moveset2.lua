@@ -8628,7 +8628,7 @@ AddModule(function()
 		rocket = {
 			Group = "Gun",
 			Limb = "Left Arm",
-			Offset = CFrame.new(0, -0.7, -0.4) * CFrame.Angles(3.14, 3.14, 0),
+			Offset = CFrame.new(0, -0.7, -0.4) * CFrame.Angles(3.14, 0, 0),
 			Disable = true
 		}
 		bullet = {
