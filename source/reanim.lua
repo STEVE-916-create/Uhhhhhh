@@ -3893,7 +3893,7 @@ end
 do
 	local AntiflingHumanoids = {}
 	local AntiflingBaseParts = {}
-	RunService.PreAnimation:Connect(function()
+	RunService.PreSimulation:Connect(function()
 		for i,v in AntiflingBaseParts do
 			if v:IsDescendantOf(workspace) then
 				v.CanCollide = false
