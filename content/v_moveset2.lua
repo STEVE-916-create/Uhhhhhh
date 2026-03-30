@@ -8809,4 +8809,651 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "Slasher"
+	m.InternalName = "NOTJASONFORSAKEN"
+	m.Description = "who is this ????? random kid\nM1 - Attack\nQ - Cyan Moon\nE - Execution"
+	m.Assets = {"SlasherTheme.mp3"}
+
+	m.Sounds = true
+	m.NoCooldown = false
+	m.IgnoreDancing = false
+	m.HitboxDebug = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Sounds", m.Sounds).Changed:Connect(function(val)
+			m.Sounds = val
+		end)
+		Util_CreateSwitch(parent, "No Cooldown", m.NoCooldown).Changed:Connect(function(val)
+			m.NoCooldown = val
+		end)
+		Util_CreateSwitch(parent, "Ignore Dancing", m.IgnoreDancing).Changed:Connect(function(val)
+			m.IgnoreDancing = val
+		end)
+		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
+			m.HitboxDebug = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Sounds = not save.Muted
+		m.NoCooldown = not not save.NoCooldown
+		m.IgnoreDancing = not not save.IgnoreDancing
+		m.HitboxDebug = not not save.HitboxDebug
+	end
+	m.SaveConfig = function()
+		return {
+			Muted = not m.Sounds,
+			NoCooldown = m.NoCooldown,
+			IgnoreDancing = m.IgnoreDancing,
+			HitboxDebug = m.HitboxDebug,
+		}
+	end
+
+	local start = 0
+	local hum, root, torso
+	local isdancing = false
+	local rcp = RaycastParams.new()
+	rcp.FilterType = Enum.RaycastFilterType.Exclude
+	rcp.IgnoreWater = true
+	local function PhysicsRaycast(origin, direction)
+		rcp.RespectCanCollide = true
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local function ShootRaycast(origin, direction)
+		rcp.RespectCanCollide = false
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local mouse = Player:GetMouse()
+	local function MouseHit()
+		local Camera = workspace.CurrentCamera
+		local ray = mouse.UnitRay
+		if UserInputService.TouchEnabled and Camera then
+			local pos = Camera.ViewportSize * Vector2.new(0.5, 0.3)
+			ray = Camera:ViewportPointToRay(pos.X, pos.Y, 1e-6)
+		end
+		local dist = 2000
+		local raycast = ShootRaycast(ray.Origin, ray.Direction * dist)
+		if raycast then
+			return raycast.Position
+		end
+		return ray.Origin + ray.Direction * dist
+	end
+	local function CreateSound(id, pitch, extra)
+		if not m.Sounds then return end
+		if not torso then return end
+		local parent = torso
+		local volume = extra or 1
+		if typeof(id) == "Instance" then
+			parent = id
+			id, pitch = pitch, extra
+			volume = 1
+		end
+		pitch = pitch or 1
+		local sound = Instance.new("Sound")
+		sound.Name = tostring(id)
+		sound.SoundId = id:find("://") and id or "rbxassetid://" .. id
+		sound.Volume = volume
+		sound.Pitch = pitch
+		sound.Parent = parent
+		sound.EmitterSize = 300
+		sound:Play()
+		sound.Ended:Connect(function()
+			sound:Destroy()
+		end)
+	end
+	local function AimTowards(target)
+		if not root then return end
+		if flight then return end
+		local tcf = CFrame.lookAt(root.Position, target)
+		local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
+		root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
+	end
+	local function Attack(cf, size)
+		if m.HitboxDebug then
+			local hitvis = Instance.new("Part")
+			hitvis.Name = RandomString() -- built into Uhhhhhh
+			hitvis.CastShadow = false
+			hitvis.Material = Enum.Material.ForceField
+			hitvis.Anchored = true
+			hitvis.CanCollide = false
+			hitvis.CanTouch = false
+			hitvis.CanQuery = false
+			hitvis.Shape = Enum.PartType.Block
+			hitvis.Color = Color3.new(0, 0, 0)
+			hitvis.Size = size
+			hitvis.CFrame = cf
+			hitvis.Parent = workspace
+			Debris:AddItem(hitvis, 1)
+		end
+		local hashmap = {}
+		local parts = workspace:GetPartBoundsInBox(cf, size)
+		for _,part in parts do
+			if part.Parent then
+				local hum = part.Parent:FindFirstChildOfClass("Humanoid")
+				if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+					if ReanimateFling(part.Parent) then
+						hashmap[hum.RootPart] = true
+					end
+				end
+			end
+		end
+		local hitstuff = {}
+		for k,_ in hashmap do
+			table.insert(hitstuff, k)
+		end
+		return hitstuff
+	end
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+		sw = CFrame.identity,
+	}
+	local sword = {}
+	local attacking = false
+	local timingsine = 0
+	local animationOverride = nil
+	local swordoff = CFrame.new(0, 1, 0) * CFrame.Angles(0, math.rad(90), 0)
+	local RC0 = CFrame.new(0, 0, 0, -1, -0, -0, 0, 0, 1, 0, 1, 0)
+	local NC0 = CFrame.new(0, 1, 0, -1, -0, -0, 0, 0, 1, 0, 1, 0)
+	local lerps = {
+		idle = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(math.rad(10), 0, math.rad(60))
+			nt = NC0 * CFrame.Angles(math.rad(-5), math.rad(5), math.rad(-50))
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(70), math.rad(100), 0)
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(50), math.rad(-70), 0)
+			rht = CFrame.new(1, -1, 0.2) * CFrame.Angles(0, math.rad(40), math.rad(20))
+			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-60), 0)
+			swordoff = CFrame.Angles(0, math.rad(-5), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		walk = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(math.rad(20), 0, math.rad(60))
+			nt = NC0 * CFrame.Angles(math.rad(-10), math.rad(10), math.rad(-50))
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(70), math.rad(100), 0)
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(50), math.rad(-70), 0)
+			rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(80), math.rad(20))
+			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-100), 0)
+			swordoff = CFrame.Angles(0, math.rad(-5), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		jump = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(math.rad(-5), 0, 0)
+			nt = NC0 * CFrame.Angles(math.rad(-10), 0, 0)
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(30), 0, math.rad(10))
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-20), 0, math.rad(-30))
+			rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), math.rad(-20))
+			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-60), 0)
+			swordoff = CFrame.new(0, 0, 0.4) * CFrame.Angles(math.rad(85), math.rad(10), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		fall = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(math.rad(5), 0, 0)
+			nt = NC0 * CFrame.Angles(math.rad(10), 0, 0)
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(30), 0, math.rad(20))
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-20), 0, math.rad(-40))
+			rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), math.rad(-20))
+			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-60), 0)
+			swordoff = CFrame.new(0, 0, 0.4) * CFrame.Angles(math.rad(85), math.rad(10), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		sword1 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(math.rad(10), 0, math.rad(80))
+			nt = NC0 * CFrame.Angles(math.rad(-5), math.rad(10), math.rad(-70))
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, math.rad(90), math.rad(90))
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(80), math.rad(-70), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		sword2 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(math.rad(10), 0, math.rad(-80))
+			nt = NC0 * CFrame.Angles(math.rad(-5), math.rad(5), math.rad(70))
+			rst = CFrame.new(1.5, 0.5, 0.5) * CFrame.Angles(0, math.rad(-70), math.rad(90))
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(70), math.rad(-70), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		sword3 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(math.rad(10), 0, math.rad(90))
+			nt = NC0 * CFrame.Angles(math.rad(-5), math.rad(5), math.rad(-80))
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, math.rad(90), math.rad(90))
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(70), math.rad(-70), 0)
+			swordoff = CFrame.Angles(0, math.rad(-5), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		sword4 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(0, 0, -6 * timingsine * 0.1)
+			nt = NC0 * CFrame.Angles(math.rad(5), math.rad(-5), math.rad(-50))
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, math.rad(-10), math.rad(90))
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(0, 0, math.rad(-60))
+			swordoff = CFrame.Angles(math.rad(-50), 0, 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		sword5 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(math.rad(-10), 0, 0)
+			nt = NC0 * CFrame.Angles(math.rad(5), math.rad(-5), 0)
+			rst = CFrame.new(1, 0.8, -1) * CFrame.Angles(math.rad(150), 0, math.rad(-50))
+			lst = CFrame.new(-1, 0.8, -1) * CFrame.Angles(math.rad(150), 0, math.rad(50))
+			rht = CFrame.new(1, -1, 0.2) * CFrame.Angles(0, math.rad(90), 0)
+			lht = CFrame.new(-1, -1, -0.2) * CFrame.Angles(0, math.rad(-90), 0)
+			swordoff = CFrame.new(-1, 0, -0.2) * CFrame.Angles(math.rad(-20), math.rad(-20), math.rad(50))
+			return rt, nt, rst, lst, rht, lht
+		end,
+		sword6 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(math.rad(20), 0, 0)
+			nt = NC0 * CFrame.Angles(math.rad(-10), math.rad(-5), 0)
+			rst = CFrame.new(1, 0.2, -0.5) * CFrame.Angles(math.rad(10), 0, math.rad(-50))
+			lst = CFrame.new(-1, 0.2, -0.5) * CFrame.Angles(math.rad(10), 0, math.rad(50))
+			rht = CFrame.new(1, -1, 0.2) * CFrame.Angles(0, math.rad(90), 0)
+			lht = CFrame.new(-1, -1, -0.2) * CFrame.Angles(0, math.rad(-90), 0)
+			swordoff = CFrame.new(-1, 0, -0.2) * CFrame.Angles(math.rad(-20), math.rad(-20), math.rad(50))
+			return rt, nt, rst, lst, rht, lht
+		end,
+		moon1 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rst = CFrame.new(1, 0.2, -0.5) * CFrame.Angles(0, math.rad(120), math.rad(80))
+			lst = CFrame.new(-1, 0.2, -0.5) * CFrame.Angles(math.rad(-10), 0, math.rad(-10))
+			swordoff = CFrame.new(-1, 0, -0.2) * CFrame.Angles(math.rad(-30), math.rad(-5), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		moon2 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.new(0, 0, 5) * CFrame.Angles(0, -1.5, -6 * timingsine * 0.1)
+			rst = CFrame.new(1, 0.2, -0.5) * CFrame.Angles(0, math.rad(-40), math.rad(90))
+			lst = CFrame.new(-1, 0.2, -0.5) * CFrame.Angles(math.rad(-20), 0, math.rad(-60))
+			swordoff = CFrame.new(-1, 0, -0.2) * CFrame.Angles(math.rad(-30), math.rad(-5), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		exec1 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(0, 0, math.rad(60))
+			nt = NC0 * CFrame.Angles(math.rad(5), 0, math.rad(-60))
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, math.rad(90), math.rad(120))
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(100), 0, 0)
+			rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), math.rad(-10))
+			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0)
+			swordoff = CFrame.new(0, 0, 0.4) * CFrame.Angles(0, math.rad(10), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+		exec2 = function(timingsine, rt, nt, rst, lst, rht, lht)
+			rt = RC0 * CFrame.Angles(0, 0, math.rad(-90))
+			nt = NC0 * CFrame.Angles(math.rad(5), 0, math.rad(60))
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, math.rad(-20), math.rad(70))
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(0, 0, math.rad(-40))
+			rht = CFrame.new(1, -1, 0) * CFrame.Angles(0, math.rad(90), math.rad(-10))
+			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(0, math.rad(-90), 0)
+			swordoff = CFrame.new(0, 0, 0.4) * CFrame.Angles(0, math.rad(10), 0)
+			return rt, nt, rst, lst, rht, lht
+		end,
+	}
+	local function CreatePart(cf, size, color, material, transp, reflec)
+		local rng = Instance.new("Part", workspace)
+		rng.Anchored = true
+		rng.CanCollide = false
+		rng.CanTouch = false
+		rng.CanQuery = false
+		rng.CastShadow = false
+		rng.Name = RandomString()
+		rng.Material = material or "Neon"
+		rng.Color = color or Color3.new(1, 0, 0)
+		rng.Size = size
+		rng.Transparency = transp or 0
+		rng.Reflectance = reflec or 0
+		rng.TopSurface = 0
+		rng.BottomSurface = 0
+		rng.CFrame = cf
+		return rng
+	end
+	local function Triangle(a, b, c)
+		local function CFrameFromTopBack(at, top, back)
+			local right = top:Cross(back)
+			return CFrame.new(
+				at.x, at.y, at.z,
+				right.x, top.x, back.x,
+				right.y, top.y, back.y,
+				right.z, top.z, back.z
+			)
+		end
+		local ab, bc, ca = b - a, c - b, a - c
+		local function project(p1, p2, p3)
+			return (p3 - p1):Dot((p2 - p1).Unit)
+		end
+		local edg1 = project(a, b, c)
+		local edg2 = project(b, c, a)
+		local edg3 = project(c, a, b)
+		if edg2 >= 0 and edg2 <= bc.Magnitude then
+			a, b, c = b, c, a
+		elseif edg3 >= 0 and edg3 <= ca.Magnitude then
+			a, b, c = c, a, b
+		elseif not (edg1 >= 0 and edg1 <= ab.Magnitude) then
+			return
+		end
+		ab = b - a
+		local abUnit = ab.Unit
+		local len1 = (c - a):Dot(abUnit)
+		local len2 = ab.Magnitude - len1
+		local width = (a + abUnit * len1 - c).Magnitude
+		local maincf = CFrameFromTopBack(a, ab:Cross(c - b).Unit, -abUnit)
+		local function createWedge(size, cf)
+			local w = CreatePart(cf, size, Color3.new(1, 0, 0), "Neon", 0.7, 0)
+			local mesh = Instance.new("SpecialMesh", w)
+			mesh.MeshType = Enum.MeshType.Wedge
+			mesh.Scale = Vector3.new(0, 1, 1) * size / w.Size
+			Debris:AddItem(w, 5)
+			TweenService:Create(w, TweenInfo.new(0.3, Enum.EasingStyle.Linear), {Transparency = 1}):Play()
+			return w
+		end
+		if len1 > 0.01 then
+			createWedge(Vector3.new(0.2, width, len1), maincf * CFrame.Angles(math.pi, 0, math.pi / 2) * CFrame.new(0, width / 2, len1 / 2))
+		end
+		if len2 > 0.01 then
+			createWedge(Vector3.new(0.2, width, len2), maincf * CFrame.Angles(math.pi, math.pi, -math.pi / 2) * CFrame.new(0, width / 2, -len1 - len2 / 2))
+		end
+	end
+	local function MagicSphere(size, ticks, cf, color, grow, move, transp)
+		grow = grow or Vector3.zero
+		move = move or Vector3.zero
+		transp = transp or 0
+		local part = CreatePart(cf, Vector3.one, color, nil, transp)
+		local mesh = Instance.new("SpecialMesh", part)
+		mesh.MeshType = "Sphere"
+		mesh.Scale = size
+		mesh.Offset = Vector3.zero
+		task.spawn(function()
+			local elapsed = 0
+			local lifetime = ticks / 60
+			while elapsed < lifetime do
+				local dt = task.wait()
+				elapsed += dt
+				mesh.Scale = size + grow * elapsed * 60
+				mesh.Offset = move * elapsed * 60
+				part.Transparency = (1 - transp) * (elapsed / lifetime) + transp
+			end
+			part:Destroy()
+		end)
+		return part
+	end
+	local function SliceEffect(targets)
+		for _,v in targets do
+			CreateSound(v, "851453784")
+			for _=1, 5 do
+				MagicSphere(Vector3.new(1, 0, 0.1), 10, v.CFrame * CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2), Color3.new(1, 1, 1), Vector3.new(2, 0.01, 0.1))
+			end
+		end
+	end
+	local function MeleeHitbox(part, dur, cf, size)
+		task.spawn(function()
+			local s = os.clock()
+			repeat task.wait()
+				SliceEffect(Attack(part.CFrame * cf, size))
+			until os.clock() - s > dur
+		end)
+	end
+	local function SwordAttack(dur)
+		if not root then return end
+		local rarm = root.Parent:FindFirstChild("Right Arm")
+		if not rarm then return end
+		task.spawn(function()
+			local s = os.clock()
+			local lastcf = rarm.CFrame
+			repeat
+				local dt = task.wait()
+				local acf = lastcf * sword.Offset * CFrame.new(0, 8, 0)
+				local bcf = rarm.CFrame * sword.Offset * CFrame.new(0, 8, 0)
+				if (acf.Position - bcf.Position).Magnitude > 1 then
+					lastcf = rarm.CFrame
+					local a = 2.5
+					local b = -a
+					Triangle(acf * Vector3.new(0, a, 0), acf * Vector3.new(0, b, 0), bcf * Vector3.new(0, a, 0))
+					Triangle(bcf * Vector3.new(0, a, 0), bcf * Vector3.new(0, b, 0), acf * Vector3.new(0, b, 0))
+				end
+				for i=1, 3 do
+					SliceEffect(Attack(acf:Lerp(bcf, i / 3) * CFrame.new(0, -2, 0), Vector3.new(3, 12, 3)))
+				end
+			until os.clock() - s > dur
+		end)
+	end
+	local MouseButton1_index = 1
+	local function MouseButton1()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		local lol = MouseButton1_index
+		MouseButton1_index = (MouseButton1_index + 1) % 3
+		task.spawn(function()
+			if lol == 0 then
+				animationOverride = lerps.sword1
+				task.wait(0.16)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				CreateSound("92597369", 0.6)
+				CreateSound("231917871", 0.8)
+				SwordAttack(0.16)
+				animationOverride = lerps.sword2
+				task.wait(0.16)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+			end
+			if lol == 1 then
+				animationOverride = lerps.sword3
+				task.wait(0.16)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				CreateSound("92597369", 0.7)
+				CreateSound("234365573", 0.7)
+				SwordAttack(0.16)
+				local start = timingsine
+				animationOverride = function(timingsine, ...)
+					return lerps.sword4(timingsine - start, ...)
+				end
+				task.wait(0.16)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+			end
+			if lol == 2 then
+				animationOverride = lerps.sword5
+				task.wait(0.16)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+				CreateSound("92597369", 0.4)
+				CreateSound("234365549", 0.6)
+				SwordAttack(0.16)
+				animationOverride = lerps.sword6
+				task.wait(0.16)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+			end
+			animationOverride = nil
+			attacking = false
+		end)
+	end
+	local function CyanMoon()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		task.spawn(function()
+			animationOverride = lerps.moon1
+			task.wait(0.16)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			SwordAttack(0.64)
+			local start = timingsine
+			animationOverride = function(timingsine, ...)
+				return lerps.moon2(timingsine - start, ...)
+			end
+			for _=1, 4 do
+				CreateSound("92597369", 0.5)
+				CreateSound("28144425", 0.8)
+				task.wait(0.16)
+				if not rootu:IsDescendantOf(workspace) then
+					return
+				end
+			end
+			animationOverride = nil
+			attacking = false
+		end)
+	end
+	local function Execution()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		task.spawn(function()
+			animationOverride = lerps.exec1
+			task.wait(0.5)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			CreateSound("92597369", 0.5)
+			CreateSound("28144425", 0.5)
+			SwordAttack(0.5)
+			animationOverride = lerps.exec2
+			task.wait(0.5)
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = nil
+			attacking = false
+		end)
+	end
+	m.Init = function(figure)
+		start = os.clock()
+		timingsine = 0
+		attacking = false
+		animationOverride = nil
+		MouseButton1_index = 0
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		SetOverrideMovesetMusic(AssetGetContentId("SlasherTheme.mp3"), "Forsaken OST - A Grave Soul (NOW, RUN)", 1, NumberRange.new(0, 69.538))
+		sword = {
+			Group = "Sword",
+			Limb = "Right Arm",
+			Offset = CFrame.identity
+		}
+		table.insert(HatReanimator.HatCFrameOverride, sword)
+		ContextActions:BindAction("Uhhhhhh_SSSword", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				MouseButton1()
+			end
+		end, true, Enum.UserInputType.MouseButton1)
+		ContextActions:SetTitle("Uhhhhhh_SSSword", "M1")
+		ContextActions:SetPosition("Uhhhhhh_SSSword", UDim2.new(1, -130, 1, -130))
+		ContextActions:BindAction("Uhhhhhh_SSMoon", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				CyanMoon()
+			end
+		end, true, Enum.KeyCode.Q)
+		ContextActions:SetTitle("Uhhhhhh_SSMoon", "Q")
+		ContextActions:SetPosition("Uhhhhhh_SSMoon", UDim2.new(1, -180, 1, -130))
+		ContextActions:BindAction("Uhhhhhh_SSExec", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				Execution()
+			end
+		end, true, Enum.KeyCode.E)
+		ContextActions:SetTitle("Uhhhhhh_SSExec", "E")
+		ContextActions:SetPosition("Uhhhhhh_SSExec", UDim2.new(1, -230, 1, -130))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock() - start
+		scale = figure:GetScale()
+		isdancing = not not figure:GetAttribute("IsDancing")
+		rcp.FilterDescendantsInstances = {figure, Player.Character}
+		
+		-- get vii
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
+		-- animations
+		timingsine += dt * 60
+		local torsovelocity = root.Velocity.Magnitude / scale
+		local torsovelocityy = root.Velocity.Y / scale
+		local animationFunc = nil
+		local animationspeed = 16
+		if onground then
+			if torsovelocity > 1 then
+				animationFunc = lerps.walk
+			else
+				animationFunc = lerps.idle
+			end
+		else
+			if torsovelocityy < -1 then
+				animationFunc = lerps.fall
+			else
+				animationFunc = lerps.jump
+			end
+		end
+		local rt, nt, rst, lst, rht, lht = animationFunc(timingsine)
+		if animationOverride then
+			rt, nt, rst, lst, rht, lht = animationOverride(timingsine, rt, nt, rst, lst, rht, lht)
+		end
+		
+		-- joints
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		-- interpolation
+		local alpha = math.exp(-animationspeed * dt)
+		joints.r = rt:Lerp(joints.r, alpha)
+		joints.n = nt:Lerp(joints.n, alpha)
+		joints.rs = rst:Lerp(joints.rs, alpha)
+		joints.ls = lst:Lerp(joints.ls, alpha)
+		joints.rh = rht:Lerp(joints.rh, alpha)
+		joints.lh = lht:Lerp(joints.lh, alpha)
+		joints.sw = swordoff:Lerp(joints.sw, alpha)
+		
+		-- apply transforms
+		SetC0C1Joint(rj, joints.r, RC0, scale)
+		SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * RC0, scale)
+		SetC0C1Joint(rsj, joints.rs, CFrame.new(0, 0.5, 0), scale)
+		SetC0C1Joint(lsj, joints.ls, CFrame.new(0, 0.5, 0), scale)
+		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		
+		-- sword
+		sword.Offset = joints.sw
+			* CFrame.new(-0.1, -1.63, -0.89, -1, 0, 0, 0, 0, -1, 0, -1, 0)
+			* CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0)
+			* CFrame.Angles(1.57, 0, 0)
+		sword.Disable = not not isdancing
+	end
+	m.Destroy = function(figure: Model?)
+		ContextActions:UnbindAction("Uhhhhhh_SSSword")
+		ContextActions:UnbindAction("Uhhhhhh_SSMoon")
+		ContextActions:UnbindAction("Uhhhhhh_SSExec")
+		root, torso, hum = nil, nil, nil
+	end
+	return m
+end)
+
 return modules
