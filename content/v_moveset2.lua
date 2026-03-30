@@ -7696,15 +7696,16 @@ AddModule(function()
 				flysound.Volume = math.min(2, flysound.Volume + dt * 8)
 				if m.CameraFly then
 					local dir = (ReanimCamera.CFrame.LookVector * 2 + hum.MoveDirection).Unit
-					hum.WalkSpeed = 112 * scale
+					hum.WalkSpeed = 0.001
+					if not hum.PlatformStand then
+						hum:ChangeState(Enum.HumanoidStateType.Flying)
+					end
 					local vel = root.Velocity
 					vel += (dir * 49 + Vector3.new(0, workspace.Gravity + 1, 0)) * dt
 					local xz = vel * Vector3.new(1, 0, 1)
 					if xz.Magnitude > 112 * scale then
 						xz = xz.Unit * 112 * scale
 					end
-					print(vel)
-					print(xz)
 					root.Velocity = xz + Vector3.new(0, vel.Y, 0)
 					torsooff = root.CFrame.Rotation:ToObjectSpace(CFrame.lookAlong(Vector3.zero, dir)) * CFrame.Angles(-1.5, 0, 0)
 				else
