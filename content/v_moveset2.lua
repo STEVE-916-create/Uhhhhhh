@@ -7710,6 +7710,7 @@ AddModule(function()
 						xz = xz.Unit * 112 * scale
 					end
 					root.Velocity = xz + Vector3.new(0, vel.Y, 0)
+					root.RotVelocity = Vector3.zero
 					local cf = CFrame.lookAlong(Vector3.zero, dir) * CFrame.Angles(-1.5, 0, 0)
 					root.CFrame = CFrame.lookAlong(Vector3.zero, cf.UpVector * Vector3.new(1, 0.001, 1)) + root.CFrame.Position
 					torsooff = root.CFrame.Rotation:ToObjectSpace(cf)
