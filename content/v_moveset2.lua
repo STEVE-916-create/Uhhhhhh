@@ -9054,14 +9054,14 @@ AddModule(function()
 		moon1 = function(timingsine, rt, nt, rst, lst, rht, lht)
 			rst = CFrame.new(1, 0.2, -0.5) * CFrame.Angles(0, math.rad(120), math.rad(80))
 			lst = CFrame.new(-1, 0.2, -0.5) * CFrame.Angles(math.rad(-10), 0, math.rad(-10))
-			swordoff = CFrame.new(-1, 0, -0.2) * CFrame.Angles(math.rad(-30), math.rad(-5), 0)
+			swordoff = CFrame.Angles(math.rad(-30), math.rad(-5), 0)
 			return rt, nt, rst, lst, rht, lht
 		end,
 		moon2 = function(timingsine, rt, nt, rst, lst, rht, lht)
 			rt = RC0 * CFrame.new(0, 0, 5) * CFrame.Angles(0, -1.5, -6 * timingsine * 0.1)
 			rst = CFrame.new(1, 0.2, -0.5) * CFrame.Angles(0, math.rad(-40), math.rad(90))
 			lst = CFrame.new(-1, 0.2, -0.5) * CFrame.Angles(math.rad(-20), 0, math.rad(-60))
-			swordoff = CFrame.new(-1, 0, -0.2) * CFrame.Angles(math.rad(-30), math.rad(-5), 0)
+			swordoff = CFrame.Angles(math.rad(-30), math.rad(-5), 0)
 			return rt, nt, rst, lst, rht, lht
 		end,
 		exec1 = function(timingsine, rt, nt, rst, lst, rht, lht)
@@ -9444,8 +9444,7 @@ AddModule(function()
 		sword.Offset = joints.sw
 			* CFrame.new(-0.1, -1.63, -0.89, -1, 0, 0, 0, 0, -1, 0, -1, 0):Inverse()
 			* CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0):Inverse()
-			* (_G.test or CFrame.identity)
-			* CFrame.Angles(1.57, 0, 0)
+			* CFrame.new(0, -4, 0) * CFrame.Angles(1.57, 0, 0)
 		sword.Disable = not not isdancing
 	end
 	m.Destroy = function(figure: Model?)
