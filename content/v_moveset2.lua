@@ -9199,8 +9199,9 @@ AddModule(function()
 			local lastcf = rarm.CFrame
 			repeat
 				local dt = task.wait()
-				local acf = lastcf * sword.Offset * CFrame.new(0, 8, 0)
-				local bcf = rarm.CFrame * sword.Offset * CFrame.new(0, 8, 0)
+				local off = sword.Offset * CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0):Inverse() * CFrame.new(0, 8, 0)
+				local acf = lastcf * off
+				local bcf = rarm.CFrame * off
 				if (acf.Position - bcf.Position).Magnitude > 1 then
 					lastcf = rarm.CFrame
 					local a = 2.5
@@ -9447,8 +9448,8 @@ AddModule(function()
 		-- sword
 		sword.Offset = joints.sw
 			* CFrame.new(-0.1, -1.63, -0.89, -1, 0, 0, 0, 0, -1, 0, -1, 0):Inverse()
-			* CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0):Inverse()
-			* CFrame.new(0, -4, 1.5) * CFrame.Angles(1.5, 0, 0)
+			--* CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0):Inverse()
+			--* CFrame.new(0, -4, 1.5) * CFrame.Angles(1.5, 0, 0)
 		sword.Disable = not not isdancing
 	end
 	m.Destroy = function(figure: Model?)
