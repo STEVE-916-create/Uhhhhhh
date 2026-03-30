@@ -8960,6 +8960,8 @@ AddModule(function()
 	local swordoff = CFrame.new(0, 1, 0) * CFrame.Angles(0, math.rad(90), 0)
 	local RC0 = CFrame.new(0, 0, 0, -1, -0, -0, 0, 0, 1, 0, 1, 0)
 	local NC0 = CFrame.new(0, 1, 0, -1, -0, -0, 0, 0, 1, 0, 1, 0)
+	local SWC0 = CFrame.new(-0.1, -1.63, -0.89, -1, 0, 0, 0, 0, -1, 0, -1, 0):Inverse()
+	local HBC0 = CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0):Inverse()
 	local lerps = {
 		idle = function(timingsine, rt, nt, rst, lst, rht, lht)
 			rt = RC0 * CFrame.Angles(math.rad(10), 0, math.rad(60))
@@ -9199,7 +9201,7 @@ AddModule(function()
 			local lastcf = rarm.CFrame
 			repeat
 				local dt = task.wait()
-				local off = sword.Offset * CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0):Inverse() * CFrame.new(0, 8, 0)
+				local off = joints.sw * SWC0 * HBC0
 				local acf = lastcf * off
 				local bcf = rarm.CFrame * off
 				if (acf.Position - bcf.Position).Magnitude > 1 then
@@ -9210,7 +9212,7 @@ AddModule(function()
 					Triangle(bcf * Vector3.new(0, a, 0), bcf * Vector3.new(0, b, 0), acf * Vector3.new(0, b, 0))
 				end
 				for i=1, 3 do
-					SliceEffect(Attack(acf:Lerp(bcf, i / 3) * CFrame.new(0, -2, 0), Vector3.new(3, 12, 3)))
+					SliceEffect(Attack(acf:Lerp(bcf, i / 3), Vector3.new(1, 7, 2)))
 				end
 			until os.clock() - s > dur
 		end)
@@ -9446,10 +9448,7 @@ AddModule(function()
 		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
 		
 		-- sword
-		sword.Offset = joints.sw
-			* CFrame.new(-0.1, -1.63, -0.89, -1, 0, 0, 0, 0, -1, 0, -1, 0):Inverse()
-			--* CFrame.new(0, -3.94, 2.94, 1, 0, 0, 0, 0, 1, 0, -1, 0):Inverse()
-			--* CFrame.new(0, -4, 1.5) * CFrame.Angles(1.5, 0, 0)
+		sword.Offset = joints.sw * SWC0 * CFrame.new(0, 2.5, 0) * CFrame.Angles(3.1, 0, 0)
 		sword.Disable = not not isdancing
 	end
 	m.Destroy = function(figure: Model?)
