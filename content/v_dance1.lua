@@ -566,7 +566,7 @@ AddModule(function()
 							if TimeOfFalling > 1 then
 								local x = TotalRuntime * math.pi * 3.9
 								local sin, cos = math.sin(x), math.cos(x)
-								local how = math.clamp(velocity.Magnitude > 0 and velocity.Unit.Z or 0, 0, 1)
+								local how = math.clamp(velocity.Magnitude > 0 and (velocity.Unit.Z * 1.25) or 0, -1, 1) * 0.5 + 0.5
 								anim.Neck = CFrame.Angles(math.rad(how * 20 - 10), 0, 0)
 								anim.Waist = CFrame.Angles(math.rad(how * 35 - 30), 0, 0)
 								anim.LeftShoulder = CFrame.new(0, 0, -0.1) * CFrame.Angles(math.rad(90 + sin * 20), math.rad(cos * 20 + how * 90), 0)
