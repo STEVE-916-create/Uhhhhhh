@@ -9006,6 +9006,7 @@ AddModule(function()
 			nt = NC0 * CFrame.Angles(math.rad(-5), math.rad(10), math.rad(-70))
 			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, math.rad(90), math.rad(90))
 			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(80), math.rad(-70), 0)
+			swordoff = CFrame.Angles(0, math.rad(-5), 0)
 			return rt, nt, rst, lst, rht, lht
 		end,
 		sword2 = function(timingsine, rt, nt, rst, lst, rht, lht)
@@ -9013,6 +9014,7 @@ AddModule(function()
 			nt = NC0 * CFrame.Angles(math.rad(-5), math.rad(5), math.rad(70))
 			rst = CFrame.new(1.5, 0.5, 0.5) * CFrame.Angles(0, math.rad(-70), math.rad(90))
 			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(70), math.rad(-70), 0)
+			swordoff = CFrame.Angles(0, math.rad(-5), 0)
 			return rt, nt, rst, lst, rht, lht
 		end,
 		sword3 = function(timingsine, rt, nt, rst, lst, rht, lht)
@@ -9397,7 +9399,7 @@ AddModule(function()
 		local torsovelocity = root.Velocity.Magnitude / scale
 		local torsovelocityy = root.Velocity.Y / scale
 		local animationFunc = nil
-		local animationspeed = 16
+		local animationspeed = 22
 		if onground then
 			if torsovelocity > 1 then
 				animationFunc = lerps.walk
