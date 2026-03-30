@@ -7696,7 +7696,7 @@ AddModule(function()
 				flysound.Volume = math.min(2, flysound.Volume + dt * 8)
 				if m.CameraFly then
 					local dir = (ReanimCamera.CFrame.LookVector * 2 + hum.MoveDirection).Unit
-					hum.WalkSpeed = 0.001
+					hum.WalkSpeed = 112 * scale
 					local vel = root.Velocity
 					vel += (dir * 49 + Vector3.new(0, workspace.Gravity + 1, 0)) * dt
 					local xz = vel * Vector3.new(1, 0, 1)
