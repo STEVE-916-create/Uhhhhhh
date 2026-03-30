@@ -524,10 +524,10 @@ AddModule(function()
 					local rootcf = root.CFrame
 					local realvelocity = root.Velocity / scale
 					local velocity = rootcf:VectorToObjectSpace(realvelocity)
-					if Raycast(rootcf.Position, (Vector3.new(0, -20, 0) + realvelocity * 0.2) * scale) == nil then
-						TimeOfFalling += dt * 4
+					if math.abs(realvelocity.Y) > 20 then
+						TimeOfFalling = math.min(1, TimeOfFalling + dt)
 					else
-						TimeOfFalling = 0
+						TimeOfFalling = math.max(0, TimeOfFalling - dt * 2)
 					end
 					for _,v in Ragdoll:GetDescendants() do
 						if v:IsA("BasePart") and v.CanCollide then
@@ -558,7 +558,7 @@ AddModule(function()
 						end
 					else
 						TimeOfPreserve += dt * math.min(2, velocity.Magnitude / 16)
-						strength *= math.min(1, velocity.Magnitude / 10)
+						strength *= math.clamp(velocity.Magnitude / 10, 0.05, 1)
 						anim.Neck = CFrame.Angles(math.rad(-45), 0, 0)
 						anim.Waist = CFrame.Angles(math.rad(-45), 0, 0)
 						anim.LeftShoulder = CFrame.new(0.1, 0, -0.1) * CFrame.Angles(math.rad(60), math.rad(-30), 0)
@@ -569,8 +569,8 @@ AddModule(function()
 						anim.RightHip = CFrame.Angles(math.rad(110), math.rad(10), 0)
 						anim.LeftKnee = CFrame.Angles(math.rad(90), 0, 0)
 						anim.RightKnee = CFrame.Angles(math.rad(90), 0, 0)
-						if root.RotVelocity.Magnitude < math.pi * 1.8 or true then
-							if TimeOfFalling > 1 then
+						if velocity.Magnitude > 5 then
+							if TimeOfFalling > 0.5 then
 								local x = TimeOfPreserve * math.pi * 3.9
 								local sin, cos = math.sin(x), math.cos(x)
 								local how = math.clamp(velocity.Magnitude > 0 and (velocity.Unit.Z * 1.25) or 0, -1, 1) * 0.5 + 0.5
@@ -609,8 +609,6 @@ AddModule(function()
 								anim.LeftKnee = CFrame.identity
 								anim.RightKnee = CFrame.identity
 							end
-						else
-							strength *= 0.25
 						end
 					end
 					StrengthSmoothing = strength + (StrengthSmoothing - strength) * math.exp(-16 * dt)
