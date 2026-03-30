@@ -7700,7 +7700,7 @@ AddModule(function()
 					hum.WalkSpeed = 0.001
 					hum.PlatformStand = true
 					local vel = root.Velocity
-					vel += (dir * 49 + Vector3.new(0, workspace.Gravity + 1, 0)) * dt
+					vel += (dir * Vector3.new(112, 49, 112) + Vector3.new(0, workspace.Gravity + 1, 0)) * dt
 					local xz = vel * Vector3.new(1, 0, 1)
 					if xz.Magnitude > 112 * scale then
 						xz = xz.Unit * 112 * scale
