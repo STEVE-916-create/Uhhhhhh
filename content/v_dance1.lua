@@ -537,7 +537,7 @@ AddModule(function()
 							end
 						end
 					end
-					TimeOfPreserve += dt * math.min(1.5, velocity.Magnitude / 16)
+					TimeOfPreserve += dt * math.min(1.3, velocity.Magnitude / 16)
 					strength *= math.clamp(velocity.Magnitude / 10 - 0.495, 0.05, 1)
 					if IAmShocked > 0 then
 						IAmShocked -= dt
