@@ -650,7 +650,7 @@ UISound.Music.Ended:Connect(function()
 end)
 
 -- fake obfuscation lag
-for _=1, 4 do for _=1, 1e6 do end end
+for _=1, 60 do for _=1, 1e6 do end end
 task.wait(0.2)
 
 do
