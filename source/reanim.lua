@@ -3715,7 +3715,7 @@ end
 do
 	local AntiflingHumanoids = {}
 	local AntiflingBaseParts = {}
-	RunService.PreSimulation:Connect(function()
+	local function OnStepped()
 		for i,v in AntiflingBaseParts do
 			if v:IsDescendantOf(workspace) then
 				v.CanCollide = false
@@ -3731,7 +3731,10 @@ do
 				table.remove(AntiflingHumanoids, i)
 			end
 		end
-	end)
+	end
+	RunService.PreAnimation:Connect(OnStepped)
+	RunService.PreSimulation:Connect(OnStepped)
+	RunService.Stepped:Connect(OnStepped)
 	local OnBasePart = function(v)
 		if v:IsA("BasePart") then
 			v.CanCollide = false
@@ -6235,18 +6238,18 @@ function HatReanimator.Start()
 		end
 		local RCRootPart = ReanimCharacter and ReanimCharacter:FindFirstChild("HumanoidRootPart")
 		local ltm = Reanimate.LocalTransparencyModifier
+		for _,v in BaseParts do
+			v.CanCollide = false
+			if not v:FindFirstAncestorWhichIsA("Tool") then
+				v.LocalTransparencyModifier = ltm
+			end
+		end
 		local t = os.clock()
 		local slocked = {}
 		if ReanimOkay then
 			local dt = RunService.Heartbeat:Wait()
 			if HatReanimator.RebuildRequired then
 				RefreshHatMap(Character)
-			end
-			for _,v in BaseParts do
-				v.CanCollide = false
-				if not v:FindFirstAncestorWhichIsA("Tool") then
-					v.LocalTransparencyModifier = ltm
-				end
 			end
 			if RCRootPart then
 				local rightarm = ReanimCharacter:FindFirstChild("Right Arm") or RCRootPart
