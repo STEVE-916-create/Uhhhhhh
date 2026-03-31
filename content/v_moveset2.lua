@@ -4644,7 +4644,7 @@ AddModule(function()
 				drhead = CFrame.new(0, 6, 7) * CFrame.Angles(math.rad(50), 0, 0)
 				drleft = CFrame.new(4, 30, 10) * CFrame.Angles(math.rad(35), 0, math.rad(-90))
 				drrite = CFrame.new(-4, 30, 10) * CFrame.Angles(math.rad(35), 0, math.rad(90))
-				block.CFrame = rootu.CFrame.Rotation + (insts.ClawLPart.Position + insts.ClawRPart.Position) / 2
+				if block then block.CFrame = rootu.CFrame.Rotation + (insts.ClawLPart.Position + insts.ClawRPart.Position) / 2 end
 				return rt, nt, rst, lst, rht, lht, drhead, drleft, drrite
 			end
 			task.wait(0.2)
