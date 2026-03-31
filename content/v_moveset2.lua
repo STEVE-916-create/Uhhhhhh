@@ -4659,20 +4659,22 @@ AddModule(function()
 					local s = os.clock()
 					local lasthit = 0
 					repeat local dt = task.wait()
-						Attack(block.Position, 5, true)
-						if os.clock() - lasthit then
-							local hit = PhysicsRaycast(block.Position, block.Velocity)
-							if hit then
-								lasthit = os.clock()
-								local ref = CreatePart(1, "Alder", Vector3.zero)
-								ref.Position = hit.Position
-								BlastEffect("White", ref.Position, Vector3.new(1, 0.2, 1), Vector3.new(1, 0, 1))
-								BlastEffect("White", ref.Position, Vector3.new(5, 1, 0.5), Vector3.new(0.1, 2, 0.1))
-								Attack(ref.Position, 8, true)
-								CreateSound(ref, 178452221)
-								CreateSound(ref, 192410084)
-								Debris:AddItem(ref, 2)
-								SetGunauraState(ref.Position)
+						if block.Velocity.Magnitude > 5 then
+							Attack(block.Position, 5, true)
+							if os.clock() - lasthit > 0.08 then
+								local hit = PhysicsRaycast(block.Position, block.Velocity.Unit * 5)
+								if hit then
+									lasthit = os.clock()
+									local ref = CreatePart(1, "Alder", Vector3.zero)
+									ref.Position = hit.Position
+									BlastEffect("White", ref.Position, Vector3.new(1, 0.2, 1), Vector3.new(1, 0, 1))
+									BlastEffect("White", ref.Position, Vector3.new(5, 1, 0.5), Vector3.new(0.1, 2, 0.1))
+									Attack(ref.Position, 8, true)
+									CreateSound(ref, 178452221)
+									CreateSound(ref, 192410084)
+									Debris:AddItem(ref, 2)
+									SetGunauraState(ref.Position)
+								end
 							end
 						end
 					until os.clock() - s > 5 or block.Velocity.Y < -300
