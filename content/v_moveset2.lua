@@ -3925,6 +3925,7 @@ AddModule(function()
 	m.BlastCharge = 150
 	m.BlastDuration = 200
 	m.RoarDuration = 300
+	m.SmashDownAlt = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
@@ -3968,6 +3969,9 @@ AddModule(function()
 		Util_CreateSlider(parent, "Roar Duration", m.RoarDuration, 60, 600, 1).Changed:Connect(function(val)
 			m.RoarDuration = val
 		end)
+		Util_CreateSwitch(parent, "Smash Down is Block attack", m.SmashDownAlt).Changed:Connect(function(val)
+			m.SmashDownAlt = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Notifications = not save.NoTextType
@@ -3982,6 +3986,7 @@ AddModule(function()
 		m.BlastCharge = save.BlastCharge or m.BlastCharge
 		m.BlastDuration = save.BlastDuration or m.BlastDuration
 		m.RoarDuration = save.RoarDuration or m.RoarDuration
+		m.SmashDownAlt = not not save.SmashDownAlt
 	end
 	m.SaveConfig = function()
 		return {
@@ -3997,6 +4002,7 @@ AddModule(function()
 			BlastCharge = m.BlastCharge,
 			BlastDuration = m.BlastDuration,
 			RoarDuration = m.RoarDuration,
+			SmashDownAlt = m.SmashDownAlt,
 		}
 	end
 
