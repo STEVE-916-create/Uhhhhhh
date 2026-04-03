@@ -6706,7 +6706,7 @@ function HatReanimator.Start()
 		if HatReanimator.HatsSpin then
 			for _,handle in slocked do
 				if math.random() < 0.5 then
-					handle.CFrame *= CFrame.Angles(math.random() * 2 * math.pi, math.random() * 2 * math.pi, math.random() * 2 * math.pi)
+					handle.CFrame = handle.CFrame * CFrame.Angles(math.random() * 2 * math.pi, math.random() * 2 * math.pi, math.random() * 2 * math.pi)
 				end
 			end
 		end
