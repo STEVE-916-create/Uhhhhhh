@@ -5639,6 +5639,7 @@ function HatReanimator.Start()
 				table.insert(CharTools, v)
 				local conn = nil
 				conn = v.AncestryChanged:Connect(function()
+					if Player.Character ~= CurrentCharacterAgain then return end
 					if v.Parent ~= CurrentCharacterAgain then
 						local i = table.find(CharTools, v)
 						if i then table.remove(CharTools, i) end
@@ -6023,7 +6024,7 @@ function HatReanimator.Start()
 		end)
 		currentping = Player:GetNetworkPing()
 		local toolnames = {}
-		for _,v in CharTools do table.insert(toolnames, v) end
+		for _,v in CharTools do table.insert(toolnames, v.Name) end
 		table.clear(BaseParts)
 		table.clear(CharHats)
 		table.clear(CharTools)
@@ -6192,8 +6193,8 @@ function HatReanimator.Start()
 						end
 					end))
 				end
-				tool.Parent = backpack
 			end
+			Humanoid:UnequipTools()
 		end
 		HatReanimator.Status.ReanimState = "Loading Permadeath."
 		if perma then
@@ -6317,17 +6318,13 @@ function HatReanimator.Start()
 		if perma and backpack then
 			for _,tool in tools do
 				tool.Parent = character
-				tool.Parent = backpack
-				tool.Parent = character
-				tool.Parent = backpack
-				tool.Parent = character
 			end
+			Humanoid:UnequipTools()
 			for _,tool in tools do
 				local i = table.find(toolnames, tool.Name)
 				if i then
 					table.remove(toolnames, i)
-				else
-					tool.Parent = backpack
+					tool.Parent = character
 				end
 			end
 		end
