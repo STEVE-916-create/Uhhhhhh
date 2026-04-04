@@ -5425,7 +5425,7 @@ function HatReanimator.Start()
 	HatReanimator.GetAttachmentCFrame = GetAttachmentCFrame
 
 	local InitCFrame = nil
-	local CurrentCharacter = nil
+	local CurrentCharacter, CurrentCharacterAgain
 
 	HatReanimator.RebuildRequired = true
 	HatReanimator.HatMapSummary = "(no hat map yet...)"
@@ -5639,7 +5639,7 @@ function HatReanimator.Start()
 				table.insert(CharTools, v)
 				local conn = nil
 				conn = v.AncestryChanged:Connect(function()
-					if v.Parent ~= Player.Character then
+					if v.Parent ~= CurrentCharacterAgain then
 						local i = table.find(CharTools, v)
 						if i then table.remove(CharTools, i) end
 					end
@@ -6028,6 +6028,7 @@ function HatReanimator.Start()
 		table.clear(CharHats)
 		table.clear(CharTools)
 		ResetHatRefs()
+		CurrentCharacterAgain = character
 		character.DescendantAdded:Connect(CharOnDesc)
 		for _,v in character:GetDescendants() do
 			CharOnDesc(v)
@@ -6316,6 +6317,12 @@ function HatReanimator.Start()
 		if perma and backpack then
 			for _,tool in tools do
 				tool.Parent = character
+				tool.Parent = backpack
+				tool.Parent = character
+				tool.Parent = backpack
+				tool.Parent = character
+			end
+			for _,tool in tools do
 				local i = table.find(toolnames, tool.Name)
 				if i then
 					table.remove(toolnames, i)
