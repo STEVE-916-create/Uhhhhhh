@@ -4985,6 +4985,7 @@ function HatReanimator.Start()
 
 	local BaseParts = {}
 	local CharTools = {}
+	local DelayedCharTools = {}
 	local CharHats = {}
 
 	local HatRefs = {}
@@ -5425,7 +5426,7 @@ function HatReanimator.Start()
 	HatReanimator.GetAttachmentCFrame = GetAttachmentCFrame
 
 	local InitCFrame = nil
-	local CurrentCharacter, CurrentCharacterAgain
+	local CurrentCharacter = nil
 
 	HatReanimator.RebuildRequired = true
 	HatReanimator.HatMapSummary = "(no hat map yet...)"
@@ -5637,12 +5638,15 @@ function HatReanimator.Start()
 		elseif v:IsA("Tool") and v.Parent == Player.Character then
 			if not table.find(CharTools, v) then
 				table.insert(CharTools, v)
+				table.insert(DelayedCharTools, v)
 				local conn = nil
 				conn = v.AncestryChanged:Connect(function()
-					if Player.Character ~= CurrentCharacterAgain then return end
-					if v.Parent ~= CurrentCharacterAgain then
+					if v.Parent ~= Player.Character then
 						local i = table.find(CharTools, v)
 						if i then table.remove(CharTools, i) end
+						task.wait(1)
+						local i = table.find(DelayedCharTools, v)
+						if i then table.remove(DelayedCharTools, i) end
 					end
 				end)
 			end
@@ -6024,12 +6028,12 @@ function HatReanimator.Start()
 		end)
 		currentping = Player:GetNetworkPing()
 		local toolnames = {}
-		for _,v in CharTools do table.insert(toolnames, v.Name) end
+		for _,v in DelayedCharTools do table.insert(toolnames, v.Name) end
 		table.clear(BaseParts)
 		table.clear(CharHats)
 		table.clear(CharTools)
+		table.clear(DelayedCharTools)
 		ResetHatRefs()
-		CurrentCharacterAgain = character
 		character.DescendantAdded:Connect(CharOnDesc)
 		for _,v in character:GetDescendants() do
 			CharOnDesc(v)
