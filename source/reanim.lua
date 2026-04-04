@@ -3802,7 +3802,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		local force = Vector3.zero
 		local RCHumanoidState = RCHumanoid:GetState().Name
 		if RCHumanoidState == "Swimming" then
-			force += Vector3.new(0, workspace.Gravity, 0) * RCRootPart.AssemblyMass
+			force += Vector3.new(0, workspace.Gravity * 0.5, 0) * RCRootPart.AssemblyMass
 		end
 		local gravaff = not not table.find(fallingStates, RCHumanoidState)
 		if gravaff then

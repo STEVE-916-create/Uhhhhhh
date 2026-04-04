@@ -782,6 +782,7 @@ AddModule(function()
 					sndpoint.Splash:Play()
 				end
 				swim.Playing = true
+				playAnimation("walk", 0.1, hum)
 				pose = "Swimming"
 			elseif state == "PlatformStand" then
 				pose = "Standing"
