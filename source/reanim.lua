@@ -5711,7 +5711,7 @@ function HatReanimator.Start()
 		Wait1 = 0.25,
 		Wait2 = 0,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 141, 0))
+			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 3, 0)) * CFrame.Angles(math.pi / 2, 0, 0)
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.zero, Vector3.zero
 		end,
 		State1 = function() end,
@@ -6172,19 +6172,22 @@ function HatReanimator.Start()
 		local lgloop = nil
 		local bringconns = {}
 		local readystate = 0
-		lgloop = RunService.Heartbeat:Connect(function(dt)
-			selhatcol.HRPTP(dt, character, Humanoid, RootPosition, RootPart, readystate)
-		end)
 		if perma then task.wait(1) end
 		local backpack = Player:FindFirstChildOfClass("Backpack")
 		local tools = GetTools()
 		if backpack then
-			-- Credits to Empyrean as reference for this snippet
-			for _,tool in tools do
-				tool.Parent = character
+			for _=1, 3 do
+				for _,tool in tools do
+					tool.Parent = character
+				end
+				for _,tool in tools do
+					tool.Parent = backpack
+				end
 			end
-			Humanoid:UnequipTools()
 		end
+		lgloop = RunService.Heartbeat:Connect(function(dt)
+			selhatcol.HRPTP(dt, character, Humanoid, RootPosition, RootPart, readystate)
+		end)
 		HatReanimator.Status.ReanimState = "Loading Permadeath."
 		if perma then
 			if RejectCharacterDeletionsDisabled then
@@ -6308,8 +6311,8 @@ function HatReanimator.Start()
 			for _,tool in tools do
 				tool.Parent = Humanoid
 				tool.Parent = character
+				tool.Parent = backpack
 			end
-			Humanoid:UnequipTools()
 		end
 		lgloop:Disconnect()
 		if perma then task.wait(1) end
@@ -6700,9 +6703,11 @@ function HatReanimator.Start()
 					ph.Transparency = 1
 				else
 					local tcf, _ = GetHatMappedCFrame(GetHatMappedOverride(ref.Map))
-					ph.CFrame = tcf
-					ph.Transparency = 1 - (1 - Reanimate.PlaceholderTransparency) * (1 - ltm)
-					table.insert(slocked, ph)
+					if tcf then
+						ph.CFrame = tcf
+						ph.Transparency = 1 - (1 - Reanimate.PlaceholderTransparency) * (1 - ltm)
+						table.insert(slocked, ph)
+					end
 				end
 			end
 		end
