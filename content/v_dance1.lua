@@ -641,7 +641,10 @@ AddModule(function()
 			Model.Parent = figure
 			Model:ScaleTo(figure:GetScale())
 			for _,v in Ragdoll:GetDescendants() do
-				if v:IsA("BasePart") then v.Transparency = 1 end
+				if v:IsA("BasePart") then
+					v.Transparency = 1
+					v.Velocity, v.RotVelocity = root.Velocity, root.RotVelocity
+				end
 			end
 
 			local function createNoCollide(p0, p1)
@@ -666,6 +669,8 @@ AddModule(function()
 				part1.CFrame = part2.Upper.CFrame:Lerp(part2.Lower.CFrame, percent) * CFrame.new(0, -part1.Size.Y / 4, 0):Lerp(CFrame.new(0, part1.Size.Y / 4, 0), percent)
 			end
 
+			local ragroot = Ragdoll.Torso.Lower
+
 			local step = RunService.Stepped:Connect(function(dt)
 				hum.EvaluateStateMachine = false
 				if hum.MoveDirection.Magnitude > 0 or hum.Jump then
@@ -679,13 +684,21 @@ AddModule(function()
 						end
 					end
 				end
+				local a, b = ragroot.Velocity, ragroot.RotVelocity
 				he.CFrame = Ragdoll.Head.CFrame
 				lerplimb(torso, Ragdoll.Torso, 0.5)
 				lerplimb(la, Ragdoll["Left Arm"], 0.8)
 				lerplimb(ra, Ragdoll["Right Arm"], 0.8)
 				lerplimb(ll, Ragdoll["Left Leg"], 0.8)
 				lerplimb(rl, Ragdoll["Right Leg"], 0.8)
+				he.Velocity, he.RotVelocity = a, b
+				torso.Velocity, torso.RotVelocity = a, b
+				la.Velocity, la.RotVelocity = a, b
+				ra.Velocity, ra.RotVelocity = a, b
+				ll.Velocity, ll.RotVelocity = a, b
+				rl.Velocity, rl.RotVelocity = a, b
 				root.CFrame = torso.CFrame
+				root.Velocity, root.RotVelocity = a, b
 			end)
 			
 			teleporthack = root:GetPropertyChangedSignal("CFrame"):Connect(function()
