@@ -28,17 +28,23 @@ AddModule(function()
 	m.Assets = {}
 
 	m.Mode = 0
+	m.Speed = 16
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateDropdown(parent, "Type", {"Normal", "Jointless", "CFrame Bug", "\"Realistic\""}, m.Mode + 1).Changed:Connect(function(val)
 			m.Mode = val - 1
 		end)
+		Util_CreateSlider(parent, "Move Speed", m.Speed, 0, 128, 8).Changed:Connect(function(val)
+			m.Speed = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Mode = save.Mode or m.Mode
+		m.Speed = save.Speed or m.Speed
 	end
 	m.SaveConfig = function()
 		return {
-			Mode = m.Mode
+			Mode = m.Mode,
+			Speed = m.Speed,
 		}
 	end
 
@@ -124,11 +130,11 @@ AddModule(function()
 			createNoCollide(root, lhj.Part1)
 
 			local step = RunService.Heartbeat:Connect(function()
-				hum.PlatformStand = true
+				hum.EvaluateStateMachine = false
 				if hum.MoveDirection.Magnitude > 0 or hum.Jump then
-					local acc = hum.MoveDirection * 16
+					local acc = hum.MoveDirection * m.Speed
 					if hum.Jump then
-						acc += Vector3.new(0, 16, 0)
+						acc += Vector3.new(0, m.Speed, 0)
 					end
 					root.Velocity = acc * figure:GetScale()
 				end
@@ -182,7 +188,7 @@ AddModule(function()
 			end
 
 			local step = RunService.Heartbeat:Connect(function()
-				hum.PlatformStand = true
+				hum.EvaluateStateMachine = false
 				local he = figure:FindFirstChild("Head")
 				local la = figure:FindFirstChild("Left Arm")
 				local ra = figure:FindFirstChild("Right Arm")
@@ -455,7 +461,7 @@ AddModule(function()
 				end
 				local TotalRuntime = 0
 				local FearOfHeights = {}
-				local TimeOfTheFear = 0
+				local TimeOfPreserve = 0
 				local TimeOfFalling = 0
 				local IAmShocked = 0
 				local StrengthSmoothing = 0
@@ -518,10 +524,10 @@ AddModule(function()
 					local rootcf = root.CFrame
 					local realvelocity = root.Velocity / scale
 					local velocity = rootcf:VectorToObjectSpace(realvelocity)
-					if Raycast(rootcf.Position, (Vector3.new(0, -5, 0) + realvelocity * 0.2) * scale) == nil then
-						TimeOfFalling += dt * 4
+					if math.abs(realvelocity.Y) > 20 then
+						TimeOfFalling = math.min(1, TimeOfFalling + dt)
 					else
-						TimeOfFalling = 0
+						TimeOfFalling = math.max(0, TimeOfFalling - dt * 2)
 					end
 					for _,v in Ragdoll:GetDescendants() do
 						if v:IsA("BasePart") and v.CanCollide then
@@ -531,6 +537,8 @@ AddModule(function()
 							end
 						end
 					end
+					TimeOfPreserve += dt * math.min(1.3, velocity.Magnitude / 16)
+					strength *= math.clamp(velocity.Magnitude / 10 - 0.495, 0.05, 1)
 					if IAmShocked > 0 then
 						IAmShocked -= dt
 						for name,_ in Muscles do
@@ -551,7 +559,6 @@ AddModule(function()
 							anim[name] = FearOfHeights[name]
 						end
 					else
-						strength *= math.min(1, velocity.Magnitude / 64)
 						anim.Neck = CFrame.Angles(math.rad(-45), 0, 0)
 						anim.Waist = CFrame.Angles(math.rad(-45), 0, 0)
 						anim.LeftShoulder = CFrame.new(0.1, 0, -0.1) * CFrame.Angles(math.rad(60), math.rad(-30), 0)
@@ -562,44 +569,46 @@ AddModule(function()
 						anim.RightHip = CFrame.Angles(math.rad(110), math.rad(10), 0)
 						anim.LeftKnee = CFrame.Angles(math.rad(90), 0, 0)
 						anim.RightKnee = CFrame.Angles(math.rad(90), 0, 0)
-						if TimeOfFalling > 1 then
-							local x = TotalRuntime * math.pi * 3.9
-							local sin, cos = math.sin(x), math.cos(x)
-							local how = math.clamp(velocity.Z / 16, 0, 1)
-							anim.Neck = CFrame.Angles(math.rad(how * 20 - 10), 0, 0)
-							anim.Waist = CFrame.Angles(math.rad(how * 35 - 30), 0, 0)
-							anim.LeftShoulder = CFrame.new(0, 0, -0.1) * CFrame.Angles(math.rad(90 + sin * 20), math.rad(cos * 20 + how * 90), 0)
-							anim.RightShoulder = CFrame.new(0, 0, -0.1) * CFrame.Angles(math.rad(90 - sin * 20), math.rad(cos * 20 - how * 90), 0)
-							anim.LeftElbow = CFrame.Angles(math.rad(-10 + sin * 5), 0, 0)
-							anim.RightElbow = CFrame.Angles(math.rad(-10 - sin * 5), 0, 0)
-							local sit = 90 - how * 90
-							anim.LeftHip = CFrame.Angles(math.rad(sit + sin * 45), math.rad(5), 0)
-							anim.RightHip = CFrame.Angles(math.rad(sit - sin * 45), math.rad(-5), 0)
-							local brace = 50 - how * 50
-							anim.LeftKnee = CFrame.Angles(math.rad(brace + cos * 30), 0, 0)
-							anim.RightKnee = CFrame.Angles(math.rad(brace - cos * 30), 0, 0)
-						else
-							local x = TotalRuntime * math.pi * 3.9
-							local inv = rootcf.Rotation
-							if rootcf.UpVector:Dot(Vector3.yAxis) < 0.8 then
-								local a, b, c = rootcf.Rotation:ToEulerAnglesXYZ()
-								inv = CFrame.fromEulerAnglesXYZ(-a, -b, -c)
-							end
-							anim.Neck = CFrame.lookAlong(Vector3.zero, Vector3.new(velocity.X, velocity.Y, -12))
-							anim.Waist = CFrame.lookAlong(Vector3.zero, Vector3.new(0, velocity.Z, -12))
-							if velocity.Magnitude > 0 then
-								anim.LeftShoulder = anim.Waist:Inverse() * CFrame.new(0, 0, velocity.Z) * (CFrame.lookAlong(Vector3.zero, velocity.Unit) * CFrame.Angles(math.pi * 0.5, 0, 0)):Lerp(inv, math.min(1, 1 / velocity.Magnitude))
+						if root.CFrame.UpVector.Y > 0.8 or velocity.Magnitude > 5 then
+							if TimeOfFalling > 0.5 then
+								local x = TimeOfPreserve * math.pi * 3.9
+								local sin, cos = math.sin(x), math.cos(x)
+								local how = math.clamp(velocity.Magnitude > 0 and (velocity.Unit.Z * 1.25) or 0, -1, 1) * 0.5 + 0.5
+								anim.Neck = CFrame.Angles(math.rad(how * 20 - 10), 0, 0)
+								anim.Waist = CFrame.Angles(math.rad(how * 35 - 30), 0, 0)
+								anim.LeftShoulder = CFrame.new(0, 0, -0.1) * CFrame.Angles(math.rad(90 + sin * 20), math.rad(cos * 20 + how * 90), 0)
+								anim.RightShoulder = CFrame.new(0, 0, -0.1) * CFrame.Angles(math.rad(90 - sin * 20), math.rad(cos * 20 - how * 90), 0)
+								anim.LeftElbow = CFrame.Angles(math.rad(-10 + sin * 5), 0, 0)
+								anim.RightElbow = CFrame.Angles(math.rad(-10 - sin * 5), 0, 0)
+								local sit = 90 - how * 90
+								anim.LeftHip = CFrame.Angles(math.rad(sit + sin * 45), math.rad(5), 0)
+								anim.RightHip = CFrame.Angles(math.rad(sit - sin * 45), math.rad(-5), 0)
+								local brace = 50 - how * 50
+								anim.LeftKnee = CFrame.Angles(math.rad(brace + cos * 30), 0, 0)
+								anim.RightKnee = CFrame.Angles(math.rad(brace - cos * 30), 0, 0)
 							else
-								anim.LeftShoulder = anim.Waist:Inverse() * CFrame.new(0, 0, velocity.Z) * inv
+								local x = TimeOfPreserve * math.pi * 3.9
+								local inv = rootcf.Rotation
+								if rootcf.UpVector:Dot(Vector3.yAxis) < 0.8 then
+									local a, b, c = rootcf.Rotation:ToEulerAnglesXYZ()
+									inv = CFrame.fromEulerAnglesXYZ(-a, -b, -c)
+								end
+								anim.Neck = CFrame.lookAlong(Vector3.zero, Vector3.new(velocity.X, velocity.Y, -12))
+								anim.Waist = CFrame.lookAlong(Vector3.zero, Vector3.new(0, velocity.Z, -12))
+								if velocity.Magnitude > 0 then
+									anim.LeftShoulder = anim.Waist:Inverse() * CFrame.new(0, 0, velocity.Z) * (CFrame.lookAlong(Vector3.zero, velocity.Unit) * CFrame.Angles(math.pi * 0.5, 0, 0)):Lerp(inv, math.min(1, 1 / velocity.Magnitude))
+								else
+									anim.LeftShoulder = anim.Waist:Inverse() * CFrame.new(0, 0, velocity.Z) * inv
+								end
+								anim.RightShoulder = anim.LeftShoulder 
+								anim.LeftElbow = CFrame.lookAlong(Vector3.zero, Vector3.new(0, velocity.Magnitude, -16))
+								anim.RightElbow = CFrame.lookAlong(Vector3.zero, Vector3.new(0, velocity.Magnitude, -16))
+								local move = velocity * Vector3.new(1, 0, 1) * math.sin(x) * 1.5
+								anim.LeftHip = CFrame.lookAlong(Vector3.zero, Vector3.new(0, move.Z, -16), Vector3.new(move.X, 16, 0))
+								anim.RightHip = CFrame.lookAlong(Vector3.zero, Vector3.new(0, -move.Z, -16), Vector3.new(-move.X, 16, 0))
+								anim.LeftKnee = CFrame.identity
+								anim.RightKnee = CFrame.identity
 							end
-							anim.RightShoulder = anim.LeftShoulder 
-							anim.LeftElbow = CFrame.lookAlong(Vector3.zero, Vector3.new(0, velocity.Magnitude, -16))
-							anim.RightElbow = CFrame.lookAlong(Vector3.zero, Vector3.new(0, velocity.Magnitude, -16))
-							local move = velocity * Vector3.new(1, 0, 1) * math.sin(x) * 1.5
-							anim.LeftHip = CFrame.lookAlong(Vector3.zero, Vector3.new(0, move.Z, -16), Vector3.new(move.X, 16, 0))
-							anim.RightHip = CFrame.lookAlong(Vector3.zero, Vector3.new(0, -move.Z, -16), Vector3.new(-move.X, 16, 0))
-							anim.LeftKnee = CFrame.identity
-							anim.RightKnee = CFrame.identity
 						end
 					end
 					StrengthSmoothing = strength + (StrengthSmoothing - strength) * math.exp(-16 * dt)
@@ -632,7 +641,10 @@ AddModule(function()
 			Model.Parent = figure
 			Model:ScaleTo(figure:GetScale())
 			for _,v in Ragdoll:GetDescendants() do
-				if v:IsA("BasePart") then v.Transparency = 1 end
+				if v:IsA("BasePart") then
+					v.Transparency = 1
+					v.Velocity, v.RotVelocity = root.Velocity, root.RotVelocity
+				end
 			end
 
 			local function createNoCollide(p0, p1)
@@ -657,12 +669,14 @@ AddModule(function()
 				part1.CFrame = part2.Upper.CFrame:Lerp(part2.Lower.CFrame, percent) * CFrame.new(0, -part1.Size.Y / 4, 0):Lerp(CFrame.new(0, part1.Size.Y / 4, 0), percent)
 			end
 
+			local ragroot = Ragdoll.Torso.Lower
+
 			local step = RunService.Stepped:Connect(function(dt)
-				hum.PlatformStand = true
+				hum.EvaluateStateMachine = false
 				if hum.MoveDirection.Magnitude > 0 or hum.Jump then
-					local acc = hum.MoveDirection * 16
+					local acc = hum.MoveDirection * m.Speed
 					if hum.Jump then
-						acc += Vector3.new(0, 16, 0)
+						acc += Vector3.new(0, m.Speed, 0)
 					end
 					for _,v in Ragdoll:GetDescendants() do
 						if v:IsA("BasePart") then
@@ -670,13 +684,21 @@ AddModule(function()
 						end
 					end
 				end
+				local a, b = ragroot.Velocity, ragroot.RotVelocity
 				he.CFrame = Ragdoll.Head.CFrame
 				lerplimb(torso, Ragdoll.Torso, 0.5)
 				lerplimb(la, Ragdoll["Left Arm"], 0.8)
 				lerplimb(ra, Ragdoll["Right Arm"], 0.8)
 				lerplimb(ll, Ragdoll["Left Leg"], 0.8)
 				lerplimb(rl, Ragdoll["Right Leg"], 0.8)
+				he.Velocity, he.RotVelocity = a, b
+				torso.Velocity, torso.RotVelocity = a, b
+				la.Velocity, la.RotVelocity = a, b
+				ra.Velocity, ra.RotVelocity = a, b
+				ll.Velocity, ll.RotVelocity = a, b
+				rl.Velocity, rl.RotVelocity = a, b
 				root.CFrame = torso.CFrame
+				root.Velocity, root.RotVelocity = a, b
 			end)
 			
 			teleporthack = root:GetPropertyChangedSignal("CFrame"):Connect(function()
@@ -705,7 +727,7 @@ AddModule(function()
 		if not figure then return end
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
-		hum.PlatformStand = false
+		hum.EvaluateStateMachine = true
 	end
 	return m
 end)

@@ -190,7 +190,7 @@ Util.Instance = function(cl, p)
 end
 Util.LinkDestroyI2I = function(a, b)
 	a.Destroying:Once(function()
-		b:Destroy()
+		task.defer(b.Destroy, b)
 	end)
 end
 Util.LinkDestroyI2C = function(a, b)
@@ -322,11 +322,19 @@ do
 			task.wait()
 			local s, data = pcall(HttpService.JSONEncode, HttpService, SaveData)
 			if s then
-				savefailwarn = false
 				odata = odata or data
 				if odata ~= data then
-					odata = data
-					pcall(writefile, SaveDataFilename, data)
+					local s, err = pcall(writefile, SaveDataFilename, data)
+					if s then
+						savefailwarn = false
+						odata = data
+					else
+						if not savefailwarn then
+							Util.Notify("Failed to write tree.ehehetilde (your save file)")
+							savefailwarn = true
+						end
+					end
+					task.wait(5)
 				end
 			else
 				if not savefailwarn then
@@ -667,7 +675,8 @@ else
 		"greetings to qpmbsjbvt for getting me into reanimation            ",
 		"those who know the place called ajman, dubai, uae                 ",
 		":3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 >:3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3 :3",
-		"quick intro and quick scrolltext                                                                   hi i like dih",
+		--"quick intro and quick scrolltext                                                                   hi i like dih",
+		"quick intro        with quick scrolltext         and you will miss the punchline              punchline                did you get the punchline?  ",
 		"meeeooowwwwwwwwww >:3                                          maw",
 		"wwwwwwwwwwwwwwwwwww                         grass                 ",
 		"erika's the towers                            sfoth iv update when",
@@ -675,23 +684,24 @@ else
 		"kasil loves gooning to everybody                                  ",
 		"fflags are dead lol                                               ",
 		"imagine being called a dummy                                      ",
-		"nothing beats a jet 2 holiday. and right now, im beating myself to",
+		-- DEAD MEME "nothing beats a jet 2 holiday. and right now, im beating myself to",
 		"hi                          ...                oxide more like sui",
 		"even if I mope, nothing good will happen! if i worked hard today, today will be perfecto!",
 		"hi                          ...                                   ",
 		"who the fuck even reads this??                     hi guys        ",
 		"          trust me the ui looks good             here it comes    ",
-		"is this even a btp legends release?? i myself dk if it should be  ",
+		-- its not a btp release "is this even a btp legends release?? i myself dk if it should be  ",
 		"dying is scary, but living is difficult                               dying: gifted scary; living: pure difficult",
 		"but i halter my forethought, i keep on running like a chicken with his dih",
 		"kaiya sounds like a perfect name for a genshin impact character   ",
 		"this is an intro lol                        ",
 		"greetings to myworld for helping with -net less                   ",
 		"Omega-Skidded Immortality Lord Diddy Blud On The Calculator       ",
-		"all UI music credits to dubmood, zabutom, ogge and 4mat           ",
+		"all UI music credits to dubmood, zabutom, ogge, 4mat and hoster   ",
 		"heres the triforce                and heres my name                              ",
 		"skids are now taking credit of this entire script, meaning its so good           ",
-		"whenever i see hat reanimation nowadays i check to see if they are collidable    ",
+		-- nonono i cant advertise that anymore "whenever i see hat reanimation nowadays i check to see if they are collidable    ",
+		"skids, be alert, go to weao.xyz for your roblox hacks!            ",
 	}
 	scrolltexts = scrolltexts[math.random(1, #scrolltexts)]
 	local fade = TweenService:Create(UIMainFrame, TweenInfo.new(5), {BackgroundTransparency = 0.5})
@@ -3639,9 +3649,7 @@ do
 								self.Zoom = (self.Zoom + zoomDelta) / (1 - zoomDelta * 0.5)
 							end
 						end
-						if self.Zoom < 0.5 then
-							self.Zoom = 0.5
-						end
+						self.Zoom = math.clamp(self.Zoom, 0.5, 100000)
 						self._Zoom = self.Zoom + (self._Zoom - self.Zoom) * math.exp(-32 * dt)
 						local currLookVector = suppliedLookVector or newCameraCFrame.LookVector
 						local currPitchAngle = math.asin(currLookVector.Y)
@@ -3730,6 +3738,9 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	Anchor.CustomPhysicalProperties = PhysicalProperties.new(100, 0, 0, 0, 0)
 	Anchor.Size = Vector3.new(2048, 2048, 2048)
 	local AnchorWeld = Instance.new("Weld")]]
+	local BodyForce = Instance.new("BodyForce")
+	BodyForce.Parent = RCRootPart
+	BodyForce.Force = Vector3.zero
 	RC.Parent = workspace
 	RCRootPart.CFrame = cf
 	local SafeY = cf.Y
@@ -3783,8 +3794,9 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	local noclipStates = {"Running", "Jumping", "Freefall", "Landed", "Climbing", "Swimming"}
 	local fallingStates = {"Jumping", "Freefall", "PlatformStanding", "Physics", "Ragdoll", "GettingUp", "Seated", "Flying", "FallingDown"}
 	local LastSafest = RCRootPart.CFrame
+	local CMove, CJump = Vector3.zero, false
 	Util.LinkDestroyI2C(RC, RunService.PreAnimation:Connect(function(dt)
-		local CMove, CJump = Reanimate.Control.Move, Reanimate.Control.Jump
+		CMove, CJump = Reanimate.Control.Move, Reanimate.Control.Jump
 		local CamCF = Reanimate.Camera.CFrame
 		local _,x,_ = CamCF:ToEulerAngles(Enum.RotationOrder.YXZ)
 		local MoveCF = CFrame.Angles(0, x, 0)
@@ -3793,11 +3805,15 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		if scale ~= RC:GetScale() then
 			RC:ScaleTo(scale)
 		end
+		local force = Vector3.zero
 		local RCHumanoidState = RCHumanoid:GetState().Name
+		if RCHumanoidState == "Swimming" then
+			force += Vector3.new(0, workspace.Gravity * 0.5, 0) * RCRootPart.AssemblyMass
+		end
 		local gravaff = not not table.find(fallingStates, RCHumanoidState)
 		if gravaff then
 			if Reanimate.ScaleGravity and not RCRootPart:IsGrounded() then
-				RCRootPart.AssemblyLinearVelocity += Vector3.new(0, -workspace.Gravity * (scale - 1) * 0.25 * dt, 0)
+				force += Vector3.new(0, -workspace.Gravity * (scale - 1), 0) * RCRootPart.AssemblyMass
 			end
 		end
 		if LastJump ~= CJump then
@@ -3828,6 +3844,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			RCHumanoid:Move(MoveCF:VectorToWorldSpace(CMove))
 		end
 		RCHumanoid.Jump = CJump
+		BodyForce.Force = force
 		if RCRootPart.Position.Y < FallenPartsDestroyHeight + 3 * Reanimate.CharacterScale then
 			RCRootPart.CFrame = LastSafest
 			RCRootPart.Velocity = Vector3.new(0, 50, 0)
@@ -3844,6 +3861,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		end
 	end))
 	Util.LinkDestroyI2C(RC, RunService.PostSimulation:Connect(function(dt)
+		RCHumanoid.Jump = CJump
 		local tcf, pos = RCRootPart.CFrame.Rotation, RCRootPart.CFrame.Position
 		local RCHumanoidState = RCHumanoid:GetState().Name
 		local safe = true
@@ -3893,7 +3911,7 @@ end
 do
 	local AntiflingHumanoids = {}
 	local AntiflingBaseParts = {}
-	RunService.PreAnimation:Connect(function()
+	local OnStepped = function()
 		for i,v in AntiflingBaseParts do
 			if v:IsDescendantOf(workspace) then
 				v.CanCollide = false
@@ -3909,7 +3927,10 @@ do
 				table.remove(AntiflingHumanoids, i)
 			end
 		end
-	end)
+	end
+	RunService.PreAnimation:Connect(OnStepped)
+	RunService.PreSimulation:Connect(OnStepped)
+	RunService.Stepped:Connect(OnStepped)
 	local OnBasePart = function(v)
 		if v:IsA("BasePart") then
 			v.CanCollide = false
@@ -4599,6 +4620,7 @@ SaveData.Reanimator.HatsPatchmahub = not not SaveData.Reanimator.HatsPatchmahub
 SaveData.Reanimator.HatsFling = not not SaveData.Reanimator.HatsFling
 SaveData.Reanimator.HatsSpin = not not SaveData.Reanimator.HatsSpin
 SaveData.Reanimator.HatsFlingMethod = SaveData.Reanimator.HatsFlingMethod or 1
+SaveData.Reanimator.NoToolHolding = not not SaveData.Reanimator.NoToolHolding
 SaveData.Reanimator.HatsToolAnim = SaveData.Reanimator.HatsToolAnim or 0
 HatReanimator.HatCollide = SaveData.Reanimator.HatsCollide
 HatReanimator.HatCollideMethod = SaveData.Reanimator.HatsCollideMethod
@@ -4621,6 +4643,7 @@ HatReanimator.FlingMethod = SaveData.Reanimator.HatsFlingMethod
 -- 1 - use biggest collidable hat
 -- 2 - use all hats
 -- 3 - tool fling
+HatReanimator.ToolHolding = not SaveData.Reanimator.NoToolHolding
 HatReanimator.ToolAnimMethod = SaveData.Reanimator.HatsToolAnim
 -- 0 - nothing
 -- 1 - sword
@@ -4751,6 +4774,10 @@ function HatReanimator.Config(parent)
 	}, HatReanimator.FlingMethod + 2).Changed:Connect(function(val)
 		HatReanimator.FlingMethod = val - 2
 		SaveData.Reanimator.HatsFlingMethod = val - 2
+	end)
+	UI.CreateSwitch(parent, "Tool Holding", HatReanimator.ToolHolding).Changed:Connect(function(val)
+		HatReanimator.ToolHolding = val
+		SaveData.Reanimator.NoToolHolding = val
 	end)
 	UI.CreateDropdown(parent, "toolanim Method", {
 		"Disabled",
@@ -5691,7 +5718,7 @@ function HatReanimator.Start()
 		Wait1 = 0.25,
 		Wait2 = 0,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 141, 0))
+			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 12, 0)) * CFrame.Angles(math.pi / 2, 0, 0)
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.zero, Vector3.zero
 		end,
 		State1 = function() end,
@@ -6001,12 +6028,9 @@ function HatReanimator.Start()
 	local NumHats = 0
 	local function OnCharacter(character)
 		if HatReanimator.DontFireCharAddOnThisChar == character then return end
-		local camcfr = Camera.CFrame
-		RunService.PreRender:Once(function()
-			RunService.PreAnimation:Wait()
-			Camera.CFrame = camcfr
-		end)
 		currentping = Player:GetNetworkPing()
+		local toolnames = {}
+		for _,v in CharTools do table.insert(toolnames, v.Name) end
 		table.clear(BaseParts)
 		table.clear(CharHats)
 		table.clear(CharTools)
@@ -6059,13 +6083,14 @@ function HatReanimator.Start()
 		local RootPart = character:WaitForChild("HumanoidRootPart", 10)
 		if not RootPart then return end
 		local RootPosition = Vector3.new(RootPart.Position.X, FallenPartsDestroyHeight, RootPart.Position.Z)
+		local ReanimCharacter = Reanimate.Character
 		if ReanimCharacter then
 			local root = ReanimCharacter:FindFirstChild("HumanoidRootPart")
 			if root then
 				RootPosition = Vector3.new(root.Position.X, FallenPartsDestroyHeight, root.Position.Z)
 			end
 		end
-		if not workspace.StreamingEnabled then
+		--[[if not workspace.StreamingEnabled then
 			local dir = CFrame.Angles(0, math.pi * 2 * math.random(), 0).LookVector * 300
 			while true do
 				local nearAPlayer = false
@@ -6082,7 +6107,7 @@ function HatReanimator.Start()
 					break
 				end
 			end
-		end
+		end]]
 		--pcall(function() Player.ReplicationFocus = character end)
 		if hatcols then
 			HatReanimator.Status.HatCollide = "Waiting for Permadeath."
@@ -6123,7 +6148,7 @@ function HatReanimator.Start()
 			end
 			if flingtarget then
 				if not RootPart:IsGrounded() then
-					if HatReanimator.UseNaNFling then
+					if LimbReanimator.UseNaNFling then
 						RootPart.CFrame = CFrame.new(flingcf.Position + Vector3.new(0, 0, math.random(0, 1) * 0.005)) * CFrame.Angles(0, os.clock() * 15, 0)
 						RootPart.Velocity, RootPart.RotVelocity = Vector3.zero, Vector3.zero
 					else
@@ -6133,7 +6158,7 @@ function HatReanimator.Start()
 					pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and Util.PredictionFlingPart(flingtarget.Target) or nil)
 				end
 				Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
-				if HatReanimator.UseNaNFling then
+				if LimbReanimator.UseNaNFling then
 					pcall(sethiddenproperty, Humanoid, "MoveDirectionInternal", Vector3.new(0/0, 0/0, 0/0))
 				end
 			elseif #HatReanimator.FlingTargets == 0 then
@@ -6153,29 +6178,22 @@ function HatReanimator.Start()
 		local lgloop = nil
 		local bringconns = {}
 		local readystate = 0
-		lgloop = RunService.Heartbeat:Connect(function(dt)
-			selhatcol.HRPTP(dt, character, Humanoid, RootPosition, RootPart, readystate)
-		end)
 		if perma then task.wait(1) end
 		local backpack = Player:FindFirstChildOfClass("Backpack")
 		local tools = GetTools()
-		if perma and backpack then
-			-- Credits to Empyrean as reference for this snippet
-			for _,tool in tools do
-				tool.Parent = character
-				local handle = tool:FindFirstChild("Handle")
-				if handle and handle:IsA("BasePart") then
-					table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
-						if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
-							handle.CFrame = CFrame.new(claimarea) + Vector3.new(5, 0, 0)
-							handle.Velocity = Vector3.new(0, 67, 0)
-							handle.RotVelocity = Vector3.new(0, 0, 0)
-						end
-					end))
+		if backpack then
+			for _=1, 3 do
+				for _,tool in tools do
+					tool.Parent = character
 				end
-				tool.Parent = backpack
+				for _,tool in tools do
+					tool.Parent = backpack
+				end
 			end
 		end
+		lgloop = RunService.Heartbeat:Connect(function(dt)
+			selhatcol.HRPTP(dt, character, Humanoid, RootPosition, RootPart, readystate)
+		end)
 		HatReanimator.Status.ReanimState = "Loading Permadeath."
 		if perma then
 			if RejectCharacterDeletionsDisabled then
@@ -6245,7 +6263,8 @@ function HatReanimator.Start()
 						handle.RotVelocity = Vector3.new(0, 0, 0)
 					end
 				end))
-				handle:BreakJoints()
+				local w = handle:FindFirstChild("AccessoryWeld")
+				if w and w:IsA("Weld") then w:Destroy() end
 				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
 			end
 		end
@@ -6295,11 +6314,12 @@ function HatReanimator.Start()
 			repeat task.wait() until stateunlocked or not character:IsDescendantOf(workspace)
 			task.wait(0.25)
 		end
-		if perma and backpack then
+		if backpack then
 			for _,tool in tools do
+				tool.Parent = Humanoid
 				tool.Parent = character
+				tool.Parent = backpack
 			end
-			Humanoid:UnequipTools()
 		end
 		lgloop:Disconnect()
 		if perma then task.wait(1) end
@@ -6328,6 +6348,16 @@ function HatReanimator.Start()
 		end
 		--pcall(function() Player.ReplicationFocus = nil end)
 		CurrentCharacter = character
+		task.wait()
+		if backpack then
+			for _,tool in tools do
+				local i = table.find(toolnames, tool.Name)
+				if i then
+					table.remove(toolnames, i)
+					tool.Parent = character
+				end
+			end
+		end
 	end
 
 	local CharConn = Player.CharacterAdded:Connect(OnCharacter)
@@ -6413,18 +6443,18 @@ function HatReanimator.Start()
 		end
 		local RCRootPart = ReanimCharacter and ReanimCharacter:FindFirstChild("HumanoidRootPart")
 		local ltm = Reanimate.LocalTransparencyModifier
+		for _,v in BaseParts do
+			v.CanCollide = false
+			if not v:FindFirstAncestorWhichIsA("Tool") then
+				v.LocalTransparencyModifier = ltm
+			end
+		end
 		local t = os.clock()
 		local slocked = {}
 		if ReanimOkay then
 			local dt = RunService.Heartbeat:Wait()
 			if HatReanimator.RebuildRequired then
 				RefreshHatMap(Character)
-			end
-			for _,v in BaseParts do
-				v.CanCollide = false
-				if not v:FindFirstAncestorWhichIsA("Tool") then
-					v.LocalTransparencyModifier = ltm
-				end
 			end
 			if RCRootPart then
 				local rightarm = ReanimCharacter:FindFirstChild("Right Arm") or RCRootPart
@@ -6437,11 +6467,13 @@ function HatReanimator.Start()
 				for _,v in CharTools do
 					local handle = v:FindFirstChild("Handle")
 					if handle and handle:IsA("BasePart") then
-						handlethese[handle] = rightarm.CFrame * rightgrip * v.Grip:Inverse()
-						if IsNetworkOwner(handle) then
-							handle.CanCollide = false
+						handle.CanCollide = false
+						if HatReanimator.ToolHolding then
+							handlethese[handle] = rightarm.CFrame * rightgrip * v.Grip:Inverse()
 						else
-							handle.CanCollide = true
+							handlethese[handle] = RCRootPart.CFrame + Vector3.new(0, -12, 0)
+						end
+						if not IsNetworkOwner(handle) then
 							local a = Player:GetNetworkPing() + 0.2 + math.sin(t * 30) * 0.2
 							claimoverride = handle.CFrame
 							claimoverride += handle.Velocity * a
@@ -6463,7 +6495,7 @@ function HatReanimator.Start()
 					v.RequiresHandle = false
 					v.ManualActivationOnly = false
 				end
-				if #CharTools > 0 then
+				if #CharTools > 0 and HatReanimator.ToolHolding then
 					local FakeTool = ReanimCharacter:FindFirstChildOfClass("Tool")
 					if not FakeTool then
 						toolequipped = true
@@ -6555,7 +6587,7 @@ function HatReanimator.Start()
 				if t > letitgo then
 					flingtarget = HatReanimator.FlingTargets[1]
 					if flingtarget then
-						if not HatReanimator.HasPermadeath or HatReanimator.FlingMethod == 0 then
+						if --[[not HatReanimator.HasPermadeath or]] HatReanimator.FlingMethod == 0 then
 							Respawn()
 							flingtarget.Time = nil
 							flingtarget = nil
@@ -6682,14 +6714,16 @@ function HatReanimator.Start()
 					ph.Transparency = 1
 				else
 					local tcf, _ = GetHatMappedCFrame(GetHatMappedOverride(ref.Map))
-					ph.CFrame = tcf
-					ph.Transparency = 1 - (1 - Reanimate.PlaceholderTransparency) * (1 - ltm)
-					table.insert(slocked, ph)
+					if tcf then
+						ph.CFrame = tcf
+						ph.Transparency = 1 - (1 - Reanimate.PlaceholderTransparency) * (1 - ltm)
+						table.insert(slocked, ph)
+					end
 				end
 			end
 		end
+		RunService.PreRender:Wait()
 		if Reanimate:ShouldRotationType() then
-			RunService.PreRender:Wait()
 			local ocf = RCRootPart.CFrame
 			local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
 			local bx, by, bz = ocf:ToEulerAngles(Enum.RotationOrder.YXZ)
@@ -6698,6 +6732,13 @@ function HatReanimator.Start()
 				handle.CFrame = tcf:ToWorldSpace(ocf:ToObjectSpace(handle.CFrame))
 			end
 			RCRootPart.CFrame = tcf
+		end
+		if HatReanimator.HatsSpin then
+			for _,handle in slocked do
+				if math.random() < 0.5 then
+					handle.CFrame = handle.CFrame * CFrame.Angles(math.random() * 2 * math.pi, math.random() * 2 * math.pi, math.random() * 2 * math.pi)
+				end
+			end
 		end
 	end
 	ResetHatRefs()
@@ -6933,7 +6974,7 @@ do
 	local _lastclickgpe = false
 	local _lastclicktick = 0
 	local _lastclickpos = Vector3.zero
-	UserInputService.InputBegan:Connect(function(input, guiprocessed)
+	UserInputService.InputBegan:Connect(function(input, gpe)
 		if input.UserInputType == Enum.UserInputType.Keyboard then
 			if input.KeyCode == selectedkey then
 				HoldingCtrl.Value = true
@@ -6946,7 +6987,7 @@ do
 			_lastclickpos = input.Position
 		end
 	end)
-	UserInputService.InputEnded:Connect(function(input, guiprocessed)
+	UserInputService.InputEnded:Connect(function(input, gpe)
 		if input.UserInputType == Enum.UserInputType.Keyboard then
 			if input.KeyCode == selectedkey then
 				HoldingCtrl.Value = false
@@ -6981,6 +7022,9 @@ do
 		else
 			ReanimCharacterTeleport(Vector3.new(0, 0, 0))
 		end
+	end)
+	UI.CreateButton(MainPage, "Teleport to 'LastSafe'", 20).Activated:Connect(function()
+		ReanimCharacterTeleport(Vector3.new(0, FallenPartsDestroyHeight - 5000, 0))
 	end)
 	local TeleportToPlayerSel = UI.CreateText(MainPage, "<font color=\"#AAAAAA\">(enter a player name)</font>", 15, Enum.TextXAlignment.Center)
 	local TeleportToPlayer = UI.CreateTextbox(MainPage, "", "Teleport To Player", 20)
@@ -7881,13 +7925,13 @@ local function ClearModules()
 end
 local function GetModuleHash(m)
 	if m.Hash then return m.Hash end
-	local str = m.Name .. ":3/:3" .. m.Description
+	local str = m.Name .. "somethingsomethingidkLOL:3:3:3:3" .. m.Description
 	str = buffer.fromstring(string.rep(str, 8))
-	local hash = {36, 91, 225, 10, 232, 117, 96, 243, 93, 128, 61, 97, 101, 120, 130, 69, 177, 80, 131, 27, 137, 242, 155, 245, 22, 123, 197, 145, 146, 206, 157, 20}
-	local off = buffer.readu8(str, 0) % 32
+	local hash = {36, 91, 225, 10, 232, 117, 96, 243, 93, 128, 61, 97, 101, 120, 130, 69, 177, 80, 131, 27, 137, 242, 155, 245, 22, 123, 197, 145, 146, 206, 157, 20, 36, 91, 225, 10, 232, 117, 96, 243, 93, 128, 61, 97, 101, 120, 130, 69, 177, 80, 131, 27, 137, 242, 155, 245, 22, 123, 197, 145, 146, 206, 157, 20}
+	local off = buffer.readu8(str, 0) % 64
 	local l = buffer.len(str)
 	for i=1, l do
-		local j = ((off + i) % 32) + 1
+		local j = ((off + i) % 64) + 1
 		hash[j] = bit32.bxor(hash[j], buffer.readu8(str, i - 1)) % 256
 	end
 	str = ""
@@ -8348,7 +8392,7 @@ UI.CreateText(CreditsPage, "what a great \"distro\", will u add open document ap
 UI.CreateText(CreditsPage, "<b>anthonyisnthere</b>", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "who r u again? oh ur the one who made skidfling in ur github", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "<b>adamxdd690</b>", 14, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "hey did u get a new phone yet? cuz ur great!!", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "u got ur new phone! omedeto & ur great!!", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "<b>indexFailed</b>", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "thats a good lua code snippet trade :)", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "<b>Roblox</b>", 14, Enum.TextXAlignment.Center)
@@ -8357,7 +8401,7 @@ UI.CreateText(CreditsPage, "expose more backend functions for me like a good boy
 UI.CreateText(CreditsPage, "<b>rqz's Genesis FE</b>", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "ill be taking ALL your convertions >:D", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "actually, im just taking the names, search it up on script sources, read the source, convert it and stuff then done", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "<font color=\"#4444FF\"><b>Empyrean Reanimate (click for Discord)</b></font>", 12, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
+--[[UI.CreateText(CreditsPage, "<font color=\"#4444FF\"><b>Empyrean Reanimate (click for Discord)</b></font>", 12, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		Util.Notify("Link copied!")
 		pcall(setclipboard, "https://discord.gg/UJ7YtqadPJ")
@@ -8376,7 +8420,8 @@ UI.CreateText(CreditsPage, "<font color=\"#4444FF\"><b>Empyrean Reanimate (click
 		})
 	end
 end)
-UI.CreateText(CreditsPage, "your tool fling is great reference!", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "your tool fling is great reference!", 12, Enum.TextXAlignment.Center)]]
+-- now it just takes 2 seconds to take ownership with your method, sorry
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "<b>* Greetings to *</b>", 15, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "fev, inno, rqz, mry7zz, theo, redactedre, colon", 12, Enum.TextXAlignment.Center)
@@ -8545,11 +8590,11 @@ local function getgithubraw(path)
 		return resp.Body
 	end
 	if s and resp then
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " " .. resp.StatusCode
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET api./" .. path .. " " .. resp.StatusCode
 	elseif s then
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " NIL"
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET api./" .. path .. " NIL"
 	else
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET api./" .. path .. " ERR " .. resp
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET api./" .. path .. " ERR " .. resp
 	end
 	InitLogsText.Text ..= "\n[LOG] [GitGET] GET raw./" .. path
 	s, resp = pcall(request, {
@@ -8560,11 +8605,11 @@ local function getgithubraw(path)
 		return resp.Body
 	end
 	if s and resp then
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " " .. resp.StatusCode
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET raw./" .. path .. " " .. resp.StatusCode
 	elseif s then
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " NIL"
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET raw./" .. path .. " NIL"
 	else
-		InitLogsText.Text ..= "\n[ERROR] [GitGET] GET raw./" .. path .. " ERR " .. resp
+		InitLogsText.Text ..= "\n[WARN] [GitGET] GET raw./" .. path .. " ERR " .. resp
 	end
 	return nil
 end
@@ -8610,7 +8655,7 @@ local function ForceModuleReload(force)
 		end
 		InitLogsText.Text ..= "\n[LOG] Checked all SHA1 hashes..."
 	end, function()
-		InitLogsText.Text ..= "\n[ERROR] SHA1 hashes check failed!"
+		InitLogsText.Text ..= "\n[WARN] SHA1 hashes check failed!"
 	end)
 	local wasold = false
 	if SaveData.VanillaModuleCache then
@@ -8700,6 +8745,8 @@ local function ForceModuleReload(force)
 	InitLogsText.Text ..= "\n[LOG] Init complete!"
 	Util.Notify("Init complete" .. (InitLogsText.Text:find("ERROR") and ", there may be errors" or ""))
 	IsUhhhhhhFullyLoaded = true
+	if not Reanimate.Character then return end
+	Reanimate.CreateCharacter()
 end
 UI.CreateSeparator(MainPage)
 UI.CreateText(MainPage, "<b>MODULES MANAGEMENT</b>", 15, Enum.TextXAlignment.Center)

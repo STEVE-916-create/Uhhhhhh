@@ -318,7 +318,7 @@ AddModule(function()
 			if not jumping then
 				hipHeight *= math.exp(-16 * dt)
 			end
-			hum.JumpPower = 0
+			hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
 			rs.V = 0.5
 			ls.V = 0.5
 			rs.D = 3.14
@@ -338,7 +338,7 @@ AddModule(function()
 			lh.D = -1.57
 		else
 			hum.AutoRotate = true
-			hum.JumpPower = 50 * scale
+			hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
 
 			local amplitude = 1
 			local frequency = 9
@@ -782,6 +782,7 @@ AddModule(function()
 					sndpoint.Splash:Play()
 				end
 				swim.Playing = true
+				playAnimation("walk", 0.1, hum)
 				pose = "Swimming"
 			elseif state == "PlatformStand" then
 				pose = "Standing"

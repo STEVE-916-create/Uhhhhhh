@@ -2,6 +2,9 @@
 # Version 1.0.9 BETA
  - Prepare for overhaul...
  - Fixed placeholders having special effects despite not being used.
+ - this is removed now cuz no april fools but Genesis Intro (erm its march of 31st..)
+ - Renewed Tool fling (and removed credit because renewed without reference and with original code, sorry Empyrean)
+ - Added option not to hold the tool and instead use it as a fling part
 # Version 1.0.6 BETA
  - Renamed "RootPart in void" mode to "RootPart in very void"
  - Added "RootPart in void" which fixes floating point issues with the torso.
