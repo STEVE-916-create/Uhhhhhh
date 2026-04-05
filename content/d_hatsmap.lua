@@ -146,6 +146,10 @@ local HatMeshDatabase = {
 	{MeshId = "126825022897778", TextureId = "", Offset = CFrame.identity, For = "Torso"},
 	{MeshId = "138744606849121", TextureId = "83207562332062", Offset = CFrame.Angles(0, 0, 1.57), For = "ArmLeg"},
 
+	-- International Fedoras that are named MeshPartAccessory
+	{MeshId = "4154474745", TextureId = "", Offset = CFrame.identity, For = "Block"},
+	{MeshId = "4324138105", TextureId = "", Offset = CFrame.identity, For = "Block"},
+
 	-- User Rig Requests
 	-- prosthetic rig: 139102413583361, 121830551276315, 99726531005445, 18989526470, 74295684215899
 	{MeshId = "117554824897780", TextureId = "", Offset = CFrame.Angles(0, 3.14, 0), For = "RightArm"},

@@ -4920,6 +4920,8 @@ function HatReanimator.Start()
 				if m2 > 0 then
 					mapdata.Scale = m1 / m2
 				end
+			else
+				originalsize = handle.Size
 			end
 			-- dont map explicitly overriden hats
 			for _,data in HatReanimator.HatCFrameOverride do
@@ -4953,11 +4955,7 @@ function HatReanimator.Start()
 					return mapdata, data.For, 2
 				end
 			end
-			local assumption = handle.Size
-			local originalsize = handle:FindFirstChild("OriginalSize")
-			if originalsize and originalsize:IsA("Vector3Value") then
-				assumption = originalsize.Value
-			end
+			local assumption = originalsize
 			local m = math.min(assumption.X, assumption.Y, assumption.Z)
 			if m >= 0.25 then
 				assumption = Vector3.new(
