@@ -20,6 +20,8 @@ Sin dragon hats found in v_movesets2.lua (not in particular order)
 8843572259
 8843579903
 
+17323578884
+
 Linked sword hats found in said file
 6685365462
 15925628459
