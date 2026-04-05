@@ -19,12 +19,13 @@ Sin dragon hats found in v_movesets2.lua (not in particular order)
 3302593407
 8843572259
 8843579903
-
 17323578884
+14959586922
 
 Linked sword hats found in said file
 6685365462
 15925628459
+123510895039107
 
 skipped because they fit anyway (and i dont do sin dragon wings)
 132906536668549
@@ -327,6 +328,42 @@ local HatKnownAccessoriesDatabase = {
 			SwordAttachment = CFrame.new(0, 2.19592, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
 		}
 	},
+	{ -- 11146177702
+		MeshId = "11146163759", TextureId = "",
+		C0 = CFrame.new(0.89952, 1.57356, 0.5, 0, -0.5, -0.866025, 0, -0.866025, 0.5, -1, 0, 0),
+		C1 = CFrame.new(1.77452, 1.57356, 0, 0, -0.5, -0.866025, 0, -0.866025, 0.5, -1, 0, 0),
+		Limb = "Torso", Group = "Sword",
+		Attachments = {
+			SwordAttachment = CFrame.new(-2.73025, -2.97893, 0, 0, -0.5, -0.866025, 0, -0.866025, 0.5, -1, 0, 0),
+		}
+	},
+	{ -- 121802388293023
+		MeshId = "74355154044660", TextureId = "",
+		C0 = CFrame.new(-1, -0.581861, -1.99411, 1, 0, 0, 0, -0.258819, -0.965926, 0, 0.965926, -0.258819),
+		C1 = CFrame.new(0, 0.793139, -1.99411, 1, 0, 0, 0, -0.258819, -0.965926, 0, 0.965926, -0.258819),
+		Limb = "Torso", Group = "Sword",
+		Attachments = {
+			SwordAttachment = CFrame.new(0, -0.349528, 2.75336, 1, 0, 0, 0, -0.258819, -0.965926, 0, 0.965926, -0.258819),
+		}
+	},
+	{ -- 128997297601622
+		MeshId = "109821286447824", TextureId = "",
+		C0 = CFrame.new(-0.883884, 0.883884, 0.5, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 1, 0, 0),
+		C1 = CFrame.new(-0.883884, 0.883884, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 1, 0, 0),
+		Limb = "Torso", Group = "Sword",
+		Attachments = {
+			SwordAttachment = CFrame.new(0, -0.349528, 2.75336, 1, 0, 0, 0, -0.258819, -0.965926, 0, 0.965926, -0.258819),
+		}
+	},
+	{ -- 92819063935480
+		MeshId = "133701648178658", TextureId = "",
+		C0 = CFrame.new(-0.883884, 0.883884, 0.5, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 1, 0, 0),
+		C1 = CFrame.new(-0.883884, 0.883884, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 1, 0, 0),
+		Limb = "Torso", Group = "Sword",
+		Attachments = {
+			SwordAttachment = CFrame.new(0, -0.349528, 2.75336, 1, 0, 0, 0, -0.258819, -0.965926, 0, 0.965926, -0.258819),
+		}
+	},
 
 	-- Guns
 	{ -- 4623059912
@@ -444,6 +481,15 @@ local HatKnownAccessoriesDatabase = {
 		Limb = "Torso", Group = "Gun",
 		Attachments = {
 			GunAttachment = CFrame.new(-1.54091, 2.19454, 0, 0, -0.766044, 0.642788, 0, 0.642788, 0.766044, -1, 0, 0),
+		}
+	},
+	{ -- 86195639625389
+		MeshId = "89681297163766", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.5) * CFrame.Angles(0, 0, math.rad(50)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1, 0),
+		C1 = CFrame.new(-0.75, 0, 0.375, 0, -1, 0, -1, 0, 0, 0, 0, -1),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(-2.2117, 0, -0.08, 0, -1, 0, -1, 0, 0, 0, 0, -1),
 		}
 	},
 

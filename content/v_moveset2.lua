@@ -31,11 +31,12 @@ local SINDRAGON_HATMAP_CLAWR = table.concat({
 }, "|")
 local SINDRAGON_HATMAP_BLOCK = table.concat({
 	"17323421898,",
-	"",
+	"14959563852,",
 }, "|")
 
 local LINKEDSWORD_HATMAP_BALL = table.concat({
 	"6504654865, 6504654926, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1",
+	"86886965670625, 135572356789218, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1",
 	"",
 }, "|")
 local LINKEDSWORD_HATMAP_BOMB = table.concat({
