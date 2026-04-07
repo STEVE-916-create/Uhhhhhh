@@ -6672,6 +6672,7 @@ function HatReanimator.Start()
 				for _,hat in CharHats do
 					local handle = hat:FindFirstChild("Handle")
 					if handle and handle:IsA("BasePart") then
+						handle.CanCollide = false
 						local ref = Hat2HatRefs[hat]
 						if blacklist[hat] then
 							if ref then ref.Aligned = false end
