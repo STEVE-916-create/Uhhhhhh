@@ -5466,12 +5466,12 @@ function HatReanimator.Start()
 			lastsimradchange = os.clock() + 0.5
 			pcall(replicatesignal, Player.SimulationRadiusChanged, r)
 		end
-		pcall(setsimulationradius, r, r)
+		--[[pcall(setsimulationradius, r, r)
 		pcall(function()
 			-- faster than findfirstchild + if then end
 			sethiddenproperty(Player.Character.Humanoid, "InternalBodyScale", Vector3.new(9e9, 9e9, 9e9))
 			sethiddenproperty(Player.Character.Humanoid, "InternalHeadScale", 9e9)
-		end)
+		end)]]
 	end
 	local function IsNetworkOwner(part)
 		if isnetworkowner then
@@ -5513,7 +5513,7 @@ function HatReanimator.Start()
 		if RejectCharacterDeletionsDisabled then
 			local old = Player.Character
 			for _,v in old:GetChildren() do
-				if v:IsA("Accoutrement") then continue end
+				if v:IsA("Accoutrement") or v:IsA("Tool") then continue end
 				v:Destroy()
 			end
 			local new = Util.Instance("Model", workspace)
@@ -5620,7 +5620,7 @@ function HatReanimator.Start()
 	end
 
 	local CharOnDesc = function(v)
-		if v:IsA("BasePart") and not v:FindFirstAncestorWhichIsA("Tool") then
+		if v:IsA("BasePart") and not (v:FindFirstAncestorWhichIsA("Tool") or v:FindFirstAncestorWhichIsA("Accessory")) then
 			if not table.find(BaseParts, v) then
 				table.insert(BaseParts, v)
 			end
@@ -5637,15 +5637,18 @@ function HatReanimator.Start()
 				if not v.Disabled then v.Disabled = true end
 			end)
 		elseif v:IsA("Accessory") and v.Parent == Player.Character then
-			if not table.find(CharHats, v) then
-				table.insert(CharHats, v)
-				local conn = nil
-				conn = v.AncestryChanged:Connect(function()
-					if v.Parent ~= Player.Character then
-						local i = table.find(CharHats, v)
-						if i then table.remove(CharHats, i) end
-					end
-				end)
+			local handle = v:WaitForChild("Handle", 10)
+			if handle then
+				if not table.find(CharHats, v) then
+					table.insert(CharHats, v)
+					local conn = nil
+					conn = v.AncestryChanged:Connect(function()
+						if v.Parent ~= Player.Character then
+							local i = table.find(CharHats, v)
+							if i then table.remove(CharHats, i) end
+						end
+					end)
+				end
 			end
 		elseif v:IsA("Tool") and v.Parent == Player.Character then
 			if not table.find(CharTools, v) then
@@ -6123,7 +6126,7 @@ function HatReanimator.Start()
 			cdsbeffect += Players.RespawnTime
 		end
 		HatReanimator.Status.RespawnFling = "Flinging targets..."
-		if HatReanimator.UseNaNFling and HatReanimator.FlingTargets[1] then
+		if LimbReanimator.UseNaNFling and HatReanimator.FlingTargets[1] then
 			task.wait(0.2)
 		end
 		while character:IsDescendantOf(workspace) do
@@ -6404,12 +6407,13 @@ function HatReanimator.Start()
 						local hatsowned = 0
 						local hatsnotowned = {}
 						for _,v in CharHats do
-							if v:FindFirstChild("Handle") then
-								if IsNetworkOwner(v.Handle) then
-									midpoint += v.Handle.Position
+							local h = v:FindFirstChild("Handle")
+							if h and h:IsA("BasePart") then
+								if IsNetworkOwner(h) then
+									midpoint += h.Position
 									hatsowned += 1
 								else
-									table.insert(hatsnotowned, v.Handle)
+									table.insert(hatsnotowned, h)
 								end
 							end
 						end
@@ -6588,7 +6592,7 @@ function HatReanimator.Start()
 				if t > letitgo then
 					flingtarget = HatReanimator.FlingTargets[1]
 					if flingtarget then
-						if --[[not HatReanimator.HasPermadeath or]] HatReanimator.FlingMethod == 0 then
+						if - HatReanimator.FlingMethod == 0 then
 							Respawn()
 							flingtarget.Time = nil
 							flingtarget = nil
