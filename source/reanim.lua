@@ -4562,7 +4562,8 @@ function LimbReanimator.Start()
 								end
 								if map.Type == 2 then
 									local offset = map.Offset or CFrame.identity
-									local transform = offset * (p0.CFrame:ToObjectSpace(p1.CFrame) + map.C1 - map.C0) * offset:Inverse()
+									local c0, c1 = CFrame.new(map.C0), CFrame.new(map.C1)
+									local transform = offset * (p0.CFrame * c0):ToObjectSpace(p1.CFrame * c1) * offset:Inverse()
 									cf = v.C0 * transform * v.C1:Inverse()
 								end
 							end
