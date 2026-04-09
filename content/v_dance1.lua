@@ -1190,11 +1190,287 @@ AddModule(function()
 	m.Description = "new obsession found\nbasically tenna\n\nthe world you know always changing so fast\nthis song has a point\ndont touch that dial cuz its tv time"
 	m.Assets = {"StaticV1.anim", "Static.mp3"}
 
+	m.Signaled = "DONTGO"
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateText(parent, "Hidden Message (strictly 6 LETTERS or it WILL DEFAULT to \"DONTGO\")", 15, Enum.TextXAlignment.Center)
+		local sig = Util_CreateTextbox(parent, m.Signaled, "DONTGO", 20)
+		sig:GetPropertyChangedSignal("Text"):Connect(function()
+			local val = sig.Text
+			m.Signaled = "DONTGO"
+			if #val == 6 then
+				val = val:upper()
+				for i=1, #val do
+					local ch = val:sub(i, i):byte()
+					if ch < 65 or ch > 90 then
+						return
+					end
+				end
+				m.Signaled = val
+			end
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Signaled = save.Signaled or "DONTGO"
+	end
+	m.SaveConfig = function()
+		return {
+			Signaled = m.Signaled,
+		}
 	end
 
+	-- grok made ts
+	local function IK2Bone(from: Vector3, target: Vector3, direction: Vector3, lenA: number, lenB: number): CFrame
+		-- 2-segment IK solver (upper arm lenA, forearm lenB). Returns CFrame at target position
+		-- whose rotation orients the bone next to the hand (forearm) using the pole direction
+		-- for the elbow bend plane. Logic tested: elbow solved via law-of-cosines + pole projection;
+		-- last bone roll is pole-consistent so the entire chain stays in the correct plane.
+		-- Handles full extension when unreachable; assumes reachable for under-extension (standard).
+
+		local root = from
+		local goal = target
+		local pole = direction
+
+		local toGoal = goal - root
+		local dist = toGoal.Magnitude
+		if dist < 1e-6 then
+			return CFrame.new(goal) -- degenerate case, no valid plane
+		end
+
+		local dir = toGoal / dist
+
+		-- project pole onto plane perpendicular to dir (defines bend direction)
+		local poleProj = pole - dir * pole:Dot(dir)
+		local poleMag = poleProj.Magnitude
+		if poleMag < 1e-6 then
+			-- fallback perpendicular (avoids singularity)
+			local arb = Vector3.yAxis
+			if math.abs(dir:Dot(arb)) > 0.99 then
+				arb = Vector3.xAxis
+			end
+			poleProj = (arb - dir * arb:Dot(dir)).Unit
+		else
+			poleProj /= poleMag
+		end
+
+		-- compute elbow position
+		local elbowPos
+		if dist > lenA + lenB then
+			-- fully extended toward target (unreachable case)
+			elbowPos = root + dir * lenA
+		else
+			-- standard triangle solution
+			local a = (lenA * lenA + dist * dist - lenB * lenB) / (2 * dist)
+			local hSq = lenA * lenA - a * a
+			local h = hSq > 0 and math.sqrt(hSq) or 0
+			elbowPos = root + dir * a + poleProj * h
+		end
+
+		-- forearm direction (bone next to hand)
+		local boneDir = (goal - elbowPos).Unit
+
+		-- project pole onto plane perpendicular to forearm for consistent roll/up
+		local desiredUp = pole - boneDir * pole:Dot(boneDir)
+		local upMag = desiredUp.Magnitude
+		if upMag < 1e-6 then
+			local arb = Vector3.yAxis
+			if math.abs(boneDir:Dot(arb)) > 0.99 then
+				arb = Vector3.xAxis
+			end
+			desiredUp = (arb - boneDir * arb:Dot(boneDir)).Unit
+		else
+			desiredUp /= upMag
+		end
+
+		-- CFrame at target with LookVector along bone (forward = boneDir from elbow → hand)
+		-- and UpVector pole-projected so rotation respects "elbow points" direction
+		return CFrame.lookAt(goal, goal + boneDir, desiredUp)
+	end
+
+	local rj, nj, rsj, lsj, rhj, lhj, scale
+
+	local function ApplyLegs(tcf, ltgt, rtgt, ikdir, ikoff)
+		ikdir = ikdir or -Vector3.zAxis
+		ikoff = ikoff or 0.1
+		SetC0C1Joint(rj, tcf, CFrame.identity, scale)
+		local rlt = IK2Bone(tcf * Vector3.new(0.5, -1, 0), rtgt, CFrame.Angles(0, -ikoff, 0) * ikdir, 1, 1)
+		local llt = IK2Bone(tcf * Vector3.new(-0.5, -1, 0), ltgt, CFrame.Angles(0, ikoff, 0) * ikdir, 1, 1)
+		SetC0C1Joint(rhj, tcf:Inverse() * rlt, CFrame.new(0, -1, 0) * CFrame.Angles(-1.57, 0, 3.14), scale)
+		SetC0C1Joint(lhj, tcf:Inverse() * llt, CFrame.new(0, -1, 0) * CFrame.Angles(-1.57, 0, 3.14), scale)
+	end
+
+	local LARMA = CFrame.new(0.05, -0.08, 0) * CFrame.Angles(0.02, 0.2, -0.15)
+	local LARMB = CFrame.new(0, -0.1, 0) * CFrame.Angles(-0.1, 0.17, -0.7)
+	local LARMC = CFrame.new(0, 0, 0) * CFrame.Angles(0.1, -0.2, -1.45)
+	local LARMD = CFrame.new(0, 0.1, 0) * CFrame.Angles(2.54, -0.42, -0.98)
+	local LARME = CFrame.new(0, 0.5, 0) * CFrame.Angles(3.14, 0, -0.02)
+	local RARMA = CFrame.new(-0.05, -0.08, 0) * CFrame.Angles(0.02, -0.2, 0.15)
+	local RARMB = CFrame.new(0, -0.1, 0) * CFrame.Angles(-0.1, -0.17, 0.7)
+	local RARMC = CFrame.new(0, 0, 0) * CFrame.Angles(0.1, 0.2, 1.45)
+	local RARMD = CFrame.new(0, 0.1, 0) * CFrame.Angles(2.54, 0.42, 0.98)
+	local RARME = CFrame.new(0, 0.5, 0) * CFrame.Angles(3.14, 0, 0.02)
+
+	local SignalData = {
+		-- A - Z
+		{ -- A
+			CFrame.new(-0.06, -0.06, 0.04) * CFrame.Angles(0, 0, 0.06),
+			LARMA, RARMB
+		},
+		{ -- B
+			CFrame.new(-0.1, -0.06, 0) * CFrame.Angles(0, 0, 0.12),
+			LARMA, RARMC
+		},
+		{ -- C
+			CFrame.new(-0.06, -0.06, 0.04) * CFrame.Angles(0, 0, 0.06),
+			LARMA, RARMD
+		},
+		{ -- D
+			CFrame.new(-0.04, -0.06, 0.04) * CFrame.Angles(0, 0, 0.05),
+			LARMA, RARME
+		},
+		{ -- E
+			CFrame.new(0.06, -0.06, 0.04) * CFrame.Angles(0, 0, -0.06),
+			LARMD, RARMA
+		},
+		{ -- F
+			CFrame.new(0.1, -0.06, 0.04) * CFrame.Angles(0, 0, -0.12),
+			LARMC, RARMA
+		},
+		{ -- G
+			CFrame.new(0.06, -0.06, 0.04) * CFrame.Angles(0, 0, -0.06),
+			LARMB, RARMA
+		},
+		{ -- H
+			CFrame.new(-0.12, -0.08, 0) * CFrame.Angles(0, -0.5, 0.15),
+			CFrame.new(1.1, -0.2, -0.8) * CFrame.Angles(0.05, 0.6, 0.7),
+			CFrame.new(-0.2, 0, 0) * CFrame.Angles(0.1, 0.8, 1.45)
+		},
+		{ -- I
+			CFrame.new(-0.12, -0.08, 0) * CFrame.Angles(0, -0.5, 0.15),
+			CFrame.new(1.1, -0.2, -0.8) * CFrame.Angles(0.05, 0.6, 0.7),
+			CFrame.new(-0.2, 0.1, 0) * CFrame.Angles(2.54, 0.42, 0.98)
+		},
+		{ -- J
+			CFrame.new(0.04, -0.06, 0.04) * CFrame.Angles(0, 0, -0.05),
+			LARMC, RARME
+		},
+		{ -- K
+			CFrame.new(0, -0.06, 0.04) * CFrame.Angles(0, 0, 0),
+			LARME, RARMB
+		},
+		{ -- L
+			CFrame.new(0.06, -0.06, 0.04) * CFrame.Angles(0, 0, -0.05),
+			LARMD, RARMB
+		},
+		{ -- M
+			CFrame.new(0.1, -0.06, 0.04) * CFrame.Angles(0, 0, -0.08),
+			LARMC, RARMB
+		},
+		{ -- N
+			CFrame.new(0.6, -0.24, 0.02) * CFrame.Angles(0, 0, -0.2),
+			CFrame.new(0.3, -0.1, 0) * CFrame.Angles(0.02, -0.1, -0.7),
+			CFrame.new(-0.3, -0.1, 0) * CFrame.Angles(0.02, 0.1, 0.7)
+		},
+		{ -- O
+			CFrame.new(-0.06, -0.06, 0.04) * CFrame.Angles(0, -0.5, 0.05),
+			CFrame.new(1.1, -0.1, -0.8) * CFrame.Angles(0.05, 0.55, 1.57),
+			CFrame.new(-0.2, 0, 0) * CFrame.Angles(2.54, 0.42, 0.98)
+		},
+		{ -- P
+			CFrame.new(0, -0.06, 0.04) * CFrame.Angles(0, 0, 0),
+			LARME, RARMC
+		},
+		{ -- Q
+			CFrame.new(-0.1, -0.06, 0.04) * CFrame.Angles(0, 0, 0.08),
+			LARMD, RARMC
+		},
+		{ -- R
+			CFrame.new(-0.6, -0.24, 0.02) * CFrame.Angles(0, 0, 0.2),
+			LARMC, RARMC
+		},
+		{ -- S
+			CFrame.new(-0.1, -0.06, 0.04) * CFrame.Angles(0, 0, 0.08),
+			LARMB, RARMC
+		},
+		{ -- T
+			CFrame.new(0.04, -0.06, 0.04) * CFrame.Angles(0, 0, -0.05),
+			LARME, RARMD
+		},
+		{ -- U
+			CFrame.new(0, -0.06, 0.04) * CFrame.Angles(0, 0, 0),
+			LARMD, RARMD
+		},
+		{ -- V
+			CFrame.new(-0.04, -0.06, 0.04) * CFrame.Angles(0, 0, 0.05),
+			LARMB, RARME
+		},
+		{ -- W
+			CFrame.new(0.06, -0.06, 0.04) * CFrame.Angles(0, 0.5, -0.05),
+			CFrame.new(0.2, 0, 0) * CFrame.Angles(2.54, -0.42, -0.98),
+			CFrame.new(-1.1, -0.1, -0.8) * CFrame.Angles(0.05, -0.55, -1.57)
+		},
+		{ -- X
+			CFrame.new(0.06, -0.06, 0.04) * CFrame.Angles(0, 0.5, -0.05),
+			CFrame.new(0.2, 0.1, 0) * CFrame.Angles(2.54, -0.42, -0.98),
+			CFrame.new(-1.1, -0.2, -0.8) * CFrame.Angles(0.05, -0.6, -0.7)
+		},
+		{ -- Y
+			CFrame.new(0, -0.06, 0.04) * CFrame.Angles(0, 0, 0),
+			LARMC, RARMD
+		},
+		{ -- Z
+			CFrame.new(0.06, -0.06, 0.04) * CFrame.Angles(0, 0.5, -0.05),
+			CFrame.new(0, 0, 0) * CFrame.Angles(0.1, -0.2, -1.45),
+			CFrame.new(-1.1, -0.2, -0.8) * CFrame.Angles(0.05, -0.6, -0.7)
+		},
+	}
+
+	local function AnimateSignaling(t, tcf, ltgt, rtgt)
+		local _,head,_ = tcf:ToEulerAnglesXYZ()
+		head = CFrame.Angles(0, -head, 0)
+		if t < 0.1 then
+			local leftward = ((0.1 - t) / 0.1) * 0.5
+			ApplyLegs(CFrame.new(0 - leftward, -0.5, -0.1) * CFrame.Angles(-0.1, 0, 0), Vector3.new(-0.55 - leftward, -3, 0), Vector3.new(0.55 - leftward, -3, 0))
+			SetC0C1Joint(nj, CFrame.new(0, 1, 0) * CFrame.Angles(-0.2, 0, 0), CFrame.new(0, -0.5, 0), scale)
+			SetC0C1Joint(rsj, CFrame.new(1, -0.4, -0.5) * CFrame.Angles(2.8, 0.2, -0.4), CFrame.new(0, 0.5, 0), scale)
+			SetC0C1Joint(lsj, CFrame.new(-1, -0.4, -0.5) * CFrame.Angles(2.8, -0.2, 0.4), CFrame.new(0, 0.5, 0), scale)
+		elseif t < 0.2 then
+			ApplyLegs(tcf:Lerp(CFrame.identity, -0.05), Vector3.new(-0.55, -3, 0), Vector3.new(0.55, -3, 0))
+			SetC0C1Joint(nj, CFrame.new(0, 1, 0) * (head * CFrame.Angles(0.05, 0, 0)):Lerp(tcf.Rotation, 0.05), CFrame.new(0, -0.5, 0), scale)
+			SetC0C1Joint(rsj, CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0.2, 0, 0):Lerp(rtgt, 1.05), CFrame.new(0, 0.5, 0), scale)
+			SetC0C1Joint(lsj, CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(0.2, 0, 0):Lerp(ltgt, 1.05), CFrame.new(0, 0.5, 0), scale)
+		else
+			ApplyLegs(tcf, Vector3.new(-0.55, -3, 0), Vector3.new(0.55, -3, 0))
+			SetC0C1Joint(nj, CFrame.new(0, 1, 0) * head, CFrame.new(0, -0.5, 0), scale)
+			SetC0C1Joint(rsj, CFrame.new(1.5, 0.5, 0) * rtgt, CFrame.new(0, 0.5, 0), scale)
+			SetC0C1Joint(lsj, CFrame.new(-1.5, 0.5, 0) * ltgt, CFrame.new(0, 0.5, 0), scale)
+		end
+	end
+	local function AnimateSignalLetter(b, t, st)
+		st = st or 0
+		b = b:byte() - 65
+		if b < 0 or b >= 26 then return end
+		local s = SignalData[b + 1]
+		AnimateSignaling(t - st, s[1], s[2], s[3])
+	end
+	local ReplaceMainKeyframes = {
+		{0, 0.63, 1},
+		{0.63, 1.17, 2},
+		{1.17, 1.6, 3},
+		{1.6, 1.9, 4},
+		{1.9, 2.2, 5},
+		{2.2, 2.57, 6},
+		{5.13, 5.77, 1},
+		{5.77, 6.3, 2},
+		{6.3, 7.03, 3},
+		{7.03, 7.33, 4},
+		{7.33, 7.63, 5},
+		{7.63, 8.23, 6},
+	}
+
+	local start = 0
 	local animator = nil
 	m.Init = function(figure: Model)
+		start = os.clock()
 		SetOverrideDanceMusic(AssetGetContentId("Static.mp3"), "FLAVOR FOLEY - Static", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
@@ -1202,7 +1478,40 @@ AddModule(function()
 		animator.looped = false
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideDanceMusicTime())
+		local t = GetOverrideDanceMusicTime()
+
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
+		local torso = figure:FindFirstChild("Torso")
+		if not torso then return end
+
+		scale = figure:GetScale()
+
+		rj = root:FindFirstChild("RootJoint")
+		nj = torso:FindFirstChild("Neck")
+		rsj = torso:FindFirstChild("Right Shoulder")
+		lsj = torso:FindFirstChild("Left Shoulder")
+		rhj = torso:FindFirstChild("Right Hip")
+		lhj = torso:FindFirstChild("Left Hip")
+
+		local sel = nil
+		if m.Signaled ~= "DONTGO" then
+			for i=1, #ReplaceMainKeyframes do
+				local v = ReplaceMainKeyframes[i]
+				if v[1] <= t and t < v[2] then
+					sel = v
+					break
+				end
+			end
+		end
+
+		if sel then
+			AnimateSignalLetter(m.Signaled:sub(sel[3], sel[3]), t, sel[1])
+		else
+			animator:Step(t)
+		end
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
