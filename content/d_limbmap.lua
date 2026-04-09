@@ -86,7 +86,7 @@ return {
 		RPart0 = "Torso",
 		RPart1 = "Left Leg",
 		C0 = Vector3.new(-0.5, -1, 0),
-		C1 = Vector3.new(0, -1, 0),
+		C1 = Vector3.new(0, 1, 0),
 	},
 	{
 		Part0 = "LowerTorso",
@@ -95,6 +95,6 @@ return {
 		RPart0 = "Torso",
 		RPart1 = "Right Leg",
 		C0 = Vector3.new(0.5, -1, 0),
-		C1 = Vector3.new(0, -1, 0),
+		C1 = Vector3.new(0, 1, 0),
 	},
 }
