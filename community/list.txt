@@ -1,4 +1,4 @@
 name = Bhop dance this is a test
 user = noober
 desc = Bhop emote because lazy Steve didn't make it
-file = nbtest/Bhop module.lua
+file = nbhoptest/Bhop module.lua

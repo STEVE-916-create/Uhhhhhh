@@ -7579,14 +7579,7 @@ local function _UpdateDownloadStatus()
 		end
 	end
 end
-local function AssetDownload(filename)
-	local source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/content/" .. filename
-	local split = string.split(filename, "@")
-	if #split > 1 then
-		filename = table.remove(split, 1)
-		source = table.concat(split, "@")
-	end
-	local path = AssetGetPathFromFilename(filename)
+local function AssetDownloadAgent(source, filename, path)
 	if isfile(path) then return true end
 	if _Assetdownloading[filename] then return false end
 	_Assetdownloading[filename] = true
@@ -7615,6 +7608,19 @@ local function AssetDownload(filename)
 		_Assetdownloading[filename] = nil
 	end)
 	return false
+end
+local function AssetDownload(filename)
+	local source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/content/" .. filename
+	local split = string.split(filename, "@")
+	if #split > 1 then
+		filename = table.remove(split, 1)
+		source = table.concat(split, "@")
+	end
+	if source:sub(1, 7) == "MARKET/" then
+		source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/community/" .. source:sub(8)
+	end
+	local path = AssetGetPathFromFilename(filename)
+	return AssetDownloadAgent(source, filename, path)
 end
 local function AssetGetContentId(filename)
 	local path = AssetGetPathFromFilename(filename)
@@ -7752,6 +7758,37 @@ KeybindsPage.Back.Activated:Connect(function()
 		KeybindsPage.Visible = false
 	end)
 end)
+local MarketPage = UI.CreatePage()
+MarketPage.ZIndex = 1
+MarketPage.Position = UDim2.new(0.5, 360, 0.5, 0)
+MarketPage.Interactable = false
+MarketPage.Visible = false
+UI.CreateButton(MainPage, (math.random() < 0.5 and "Store" or "Marketplace") .. " &gt;", 20).Activated:Connect(function()
+	MarketPage.Interactable = false
+	MarketPage.Visible = true
+	MainPage.Interactable = false
+	local tween = TweenService:Create(MarketPage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		MarketPage.Interactable = true
+	end)
+end)
+UI.CreateButton(MarketPage, "&lt; Hurry back", 20).Activated:Connect(function()
+	MarketPage.Interactable = false
+	MarketPage.Visible = true
+	MainPage.Interactable = false
+	local tween = TweenService:Create(MarketPage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, 360, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		MainPage.Interactable = true
+		MarketPage.Visible = false
+	end)
+end)
+UI.CreateSeparator(MarketPage)
 
 SaveData.KeybindsEnabled = not not SaveData.KeybindsEnabled
 UI.CreateSwitch(MainPage, "Dance Keybinds Enabled", SaveData.KeybindsEnabled).Changed:Connect(function(val)
@@ -8125,6 +8162,7 @@ local function AddMoveset(m)
 				page.Interactable = true
 			end)
 		end))
+		return m.Name
 	end
 end
 local function AddDance(m)
@@ -8195,6 +8233,7 @@ local function AddDance(m)
 				page.Interactable = true
 			end)
 		end))
+		return m.Name
 	end
 end
 local function AddModule(func)
@@ -8202,9 +8241,9 @@ local function AddModule(func)
 	local m = func()
 	if m and type(m) == "table" then
 		if m.ModuleType == "MOVESET" then
-			AddMoveset(m)
+			return AddMoveset(m)
 		elseif m.ModuleType == "DANCE" then
-			AddDance(m)
+			return AddDance(m)
 		else
 			error("Unknown ModuleType for Module!")
 		end
@@ -8213,12 +8252,15 @@ local function AddModule(func)
 	end
 end
 local function AddModules(list)
+	local names = {}
 	if type(list) == "table" then
 		for i=1, #list do
-			AddModule(list[i])
+			local name = AddModule(list[i])
+			if name then table.insert(names, name) end
 			task.wait()
 		end
 	end
+	return names
 end
 task.spawn(function()
 	local function SaveConfig(m)
@@ -8731,11 +8773,13 @@ local function getgithubraw(path)
 	end
 	return nil
 end
+local UserModulesListor = {}
 local function ForceModuleReload(force)
 	IsUhhhhhhFullyLoaded = false
 	InitLogsText.Text = "Init Logs -- This is where you check what happened."
 	ClearModules()
-	Util.UINotify("Checking hashes...", 0)
+	table.clear(UserModulesListor)
+	Util.UINotify("Checking hashes...", 0.05)
 	InitLogsText.Text ..= "\n[LOG] Checking SHA1 hashes..."
 	local filesofbuiltins = {"v_moveset1.lua", "v_moveset2.lua", "v_moveset3.lua", "v_dance1.lua", "v_dance2.lua", "d_limbmap.lua", "d_hatsmap.lua"}
 	local filesofbuiltins_m = {"v_moveset1.lua", "v_moveset2.lua", "v_moveset3.lua", "v_dance1.lua", "v_dance2.lua"}
@@ -8785,9 +8829,9 @@ local function ForceModuleReload(force)
 		wasold = true
 		SaveData.VanillaModuleCache = nil
 	end
-	Util.UINotify("Loading maps...", 0.2)
 	InitLogsText.Text ..= "\n[LOG] Loading maps..."
-	for _,x in filesofbuiltins_d do
+	for i,x in filesofbuiltins_d do
+		Util.UINotify("Loading maps...", 0.15 + (i / #filesofbuiltins_d) * 0.15)
 		local path = "UhhhhhhReanim/BuiltinModules/" .. x
 		local exist = false
 		local s, a = pcall(isfile, path)
@@ -8806,9 +8850,9 @@ local function ForceModuleReload(force)
 			end
 		end
 	end
-	Util.UINotify("Loading modules...", 0.3)
 	InitLogsText.Text ..= "\n[LOG] Loading builtin (also called vanilla) modules..."
-	for _,x in filesofbuiltins_m do
+	for i,x in filesofbuiltins_m do
+		Util.UINotify("Loading modules...", 0.325 + (i / #filesofbuiltins_m) * 0.475)
 		local path = "UhhhhhhReanim/BuiltinModules/" .. x
 		local exist = false
 		local s, a = pcall(isfile, path)
@@ -8856,7 +8900,7 @@ local function ForceModuleReload(force)
 				InitLogsText.Text ..= "\n[LOG] Loadstringing USER " .. x .. "..."
 				local func, comperr = loadstring(data, "Uhhhhhh :: " .. x)
 				if func then
-					AddModules(func())
+					UserModulesListor[x] = AddModules(func())
 				elseif comperr then
 					error("COMPILE FAILED: " .. comperr)
 				end
@@ -8930,6 +8974,269 @@ clearcontenthash.Activated:Connect(function()
 			clearcontenthashtext.Text = "CLEAR ALL DOWNLOADED CONTENT"
 		end
 	end
+end)
+
+UI.CreateText(MarketPage, "welcome to <b>the user generated content marketplace thing</b>", 15, Enum.TextXAlignment.Center)
+UI.CreateText(MarketPage, "this where you download ur movesets and dances made by actual people and totally not ai", 15, Enum.TextXAlignment.Center)
+local GetMarketList_cache = {}
+local function GetMarketList()
+	local aitemus, file2name = GetMarketList_cache.aitemus, GetMarketList_cache.file2name
+	if not aitemus or not file2name then
+		local marketteresult = game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/community/list.txt")
+		marketteresult = string.split(marketteresult, "\n")
+		aitemus = {}
+		local aitemu = {}
+		for _,a in marketteresult do
+			if #a > 3 then
+				local k, v = string.split(a, " = ")
+				k, v = table.remove(k, 1), table.concat(string.split(table.concat(k, " = "), "\\n"), "\n")
+				if k == "name" then
+					aitemu.Name = v
+					continue
+				end
+				if k == "user" then
+					aitemu.User = v
+					continue
+				end
+				if k == "desc" then
+					aitemu.Description = v
+					continue
+				end
+				if k == "cost" then
+					aitemu.Cost = v
+					continue
+				end
+				if k == "file" then
+					aitemu.Source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/community/" .. v
+					aitemu.File = string.gsub(v, "/", ".")
+					continue
+				end
+			end
+			if next(aitemu) == nil then
+				continue
+			end
+			table.insert(aitemus, aitemu)
+			aitemu = {}
+		end
+		if next(aitemu) ~= nil then
+			table.insert(aitemus, aitemu)
+		end
+		file2name = {}
+		for _,aitemu in aitemus do
+			if aitemu.Name and aitemu.File then
+				file2name[aitemu.File] = aitemu.Name
+			end
+		end
+	end
+	GetMarketList_cache.aitemus, GetMarketList_cache.file2name = aitemus, file2name
+	return aitemus, file2name
+end
+local LocalPage = UI.CreateItemListPage()
+LocalPage.ZIndex = 2
+LocalPage.Position = UDim2.new(0.5, 360, 0.5, 0)
+LocalPage.Interactable = false
+LocalPage.Visible = false
+local function RefreshUserModules()
+	Util.ClearAllChildrenGui(LocalPage.List)
+	local _, file2name = GetMarketList()
+	for _,path in listfiles("UhhhhhhReanim/Modules/") do
+		if isfile(path) then
+			local x = path:sub(23)
+			local item = UI.CreateItemListItem(LocalPage.List)
+			local name = file2name[x] or x
+			UI.CreateText(item, name .. " &gt;", 20, Enum.TextXAlignment.Left)
+			local desc1 = "(has errors or has no modules loaded or not loaded)"
+			local desc2 = "(has errors or has no modules loaded or not loaded)"
+			local desc3 = " errors no modules"
+			local list = UserModulesListor[x]
+			if list and #list > 0 then
+				desc1 = "This module contains " .. #list .. " modules."
+				desc2 = "This module contains:"
+				desc3 = ""
+				for _,v in list do
+					desc2 ..= "\n - " .. v
+					desc3 ..= " " .. v
+				end
+			end
+			UI.CreateText(item, desc1, 12, Enum.TextXAlignment.Left)
+			item.Parent.Name = x .. " " .. name .. desc3
+			Util.LinkDestroyI2C(item, item.Activated:Connect(function()
+				local page = UI.CreatePage()
+				page.ZIndex = 3
+				page.Position = UDim2.new(0.5, 360, 0.5, 0)
+				page.Interactable = false
+				page.Visible = true
+				UI.CreateButton(page, " &lt; Hurry back", 20).Activated:Connect(function()
+					page.Interactable = false
+					LocalPage.Interactable = false
+					local tween = TweenService:Create(page, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+						Position = UDim2.new(0.5, 360, 0.5, 0),
+					})
+					tween:Play()
+					tween.Completed:Connect(function()
+						LocalPage.Interactable = true
+						page:Destroy()
+					end)
+				end)
+				UI.CreateSeparator(page)
+				UI.CreateText(page, name, 20, Enum.TextXAlignment.Left)
+				UI.CreateText(page, desc2, 15, Enum.TextXAlignment.Left)
+				UI.CreateSeparator(page)
+				local destruction, destructiontext = UI.CreateButton(page, "Delete Module", 15)
+				local deletion = 0
+				destruction.Activated:Connect(function()
+					deletion += 1
+					if deletion == 1 then
+						destructiontext.Text = "Are you admin?"
+						task.wait(1)
+						if deletion == 1 then
+							deletion = 0
+							destructiontext.Text = "Delete Module"
+						end
+					elseif deletion == 2 then
+						destructiontext.Text = "Confirmation?"
+						task.wait(1)
+						if deletion == 2 then
+							deletion = 0
+							destructiontext.Text = "Delete Module"
+						end
+					elseif deletion == 3 then
+						destructiontext.Text = "Say goodbye..."
+						delfile(path)
+						RefreshUserModules()
+						page.Interactable = false
+						LocalPage.Interactable = false
+						local tween = TweenService:Create(page, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+							Position = UDim2.new(0.5, 360, 0.5, 0),
+						})
+						tween:Play()
+						tween.Completed:Connect(function()
+							LocalPage.Interactable = true
+							page:Destroy()
+						end)
+					end
+				end)
+				LocalPage.Interactable = false
+				local tween = TweenService:Create(page, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {
+					Position = UDim2.new(0.5, 0, 0.5, 0),
+				})
+				tween:Play()
+				tween.Completed:Connect(function()
+					page.Interactable = true
+				end)
+			end))
+		end
+	end
+end
+UI.CreateButton(MarketPage, "See what you have &gt;", 20).Activated:Connect(function()
+	RefreshUserModules()
+	LocalPage.Interactable = false
+	LocalPage.Visible = true
+	MarketPage.Interactable = false
+	local tween = TweenService:Create(LocalPage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		LocalPage.Interactable = true
+	end)
+end)
+LocalPage.Back.Activated:Connect(function()
+	LocalPage.Interactable = false
+	LocalPage.Visible = true
+	MarketPage.Interactable = false
+	local tween = TweenService:Create(LocalPage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, 360, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		MarketPage.Interactable = true
+		LocalPage.Visible = false
+	end)
+end)
+local MarkettePage = UI.CreateItemListPage()
+MarkettePage.ZIndex = 2
+MarkettePage.Position = UDim2.new(0.5, 360, 0.5, 0)
+MarkettePage.Interactable = false
+MarkettePage.Visible = false
+local function RefreshOnlineUserModules()
+	Util.ClearAllChildrenGui(MarkettePage.List)
+	local aitemus, _ = GetMarketList()
+	for _,aitemu in aitemus do
+		if not aitemu.Name or not aitemu.Description or not aitemu.File then continue end
+		local item = UI.CreateItemListItem(MarkettePage.List)
+		UI.CreateText(item, aitemu.Name .. " &gt;", 20, Enum.TextXAlignment.Left)
+		UI.CreateText(item, "By " .. (aitemu.User or "Uncknown"), 12, Enum.TextXAlignment.Left)
+		UI.CreateText(item, aitemu.Description, 12, Enum.TextXAlignment.Left)
+		item.Parent.Name = aitemu.Name .. " " .. (aitemu.User or "Uncknown") .. " " .. aitemu.Description .. " "
+		Util.LinkDestroyI2C(item, item.Activated:Connect(function()
+			local page = UI.CreatePage()
+			page.ZIndex = 3
+			page.Position = UDim2.new(0.5, 360, 0.5, 0)
+			page.Interactable = false
+			page.Visible = true
+			UI.CreateButton(page, " &lt; Hurry back", 20).Activated:Connect(function()
+				page.Interactable = false
+				MarkettePage.Interactable = false
+				local tween = TweenService:Create(page, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+					Position = UDim2.new(0.5, 360, 0.5, 0),
+				})
+				tween:Play()
+				tween.Completed:Connect(function()
+					MarkettePage.Interactable = true
+					page:Destroy()
+				end)
+			end)
+			UI.CreateSeparator(page)
+			UI.CreateText(page, aitemu.Name, 20, Enum.TextXAlignment.Left)
+			UI.CreateText(page, "By " .. (aitemu.User or "Uncknown"), 15, Enum.TextXAlignment.Left)
+			UI.CreateText(page, aitemu.Description, 15, Enum.TextXAlignment.Left)
+			UI.CreateSeparator(page)
+			local download, downloadtext = UI.CreateButton(page, "Buy Module for " .. (aitemu.Cost or "67 B"), 15)
+			local path = "UhhhhhhReanim/Modules/" .. aitemu.File
+			if isfile(path) then
+				downloadtext.Text = "You already have this"
+			end
+			download.Activated:Connect(function()
+				AssetDownloadAgent(aitemu.Source, aitemu.File, path)
+				downloadtext.Text = "Download agent summoned"
+			end)
+			MarkettePage.Interactable = false
+			local tween = TweenService:Create(page, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {
+				Position = UDim2.new(0.5, 0, 0.5, 0),
+			})
+			tween:Play()
+			tween.Completed:Connect(function()
+				page.Interactable = true
+			end)
+		end))
+	end
+end
+UI.CreateButton(MarketPage, "See what we have &gt;", 20).Activated:Connect(function()
+	RefreshOnlineUserModules()
+	MarkettePage.Interactable = false
+	MarkettePage.Visible = true
+	MarketPage.Interactable = false
+	local tween = TweenService:Create(MarkettePage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		MarkettePage.Interactable = true
+	end)
+end)
+MarkettePage.Back.Activated:Connect(function()
+	MarkettePage.Interactable = false
+	MarkettePage.Visible = true
+	MarketPage.Interactable = false
+	local tween = TweenService:Create(MarkettePage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, 360, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		MarketPage.Interactable = true
+		MarkettePage.Visible = false
+	end)
 end)
 
 ForceModuleReload(false)
