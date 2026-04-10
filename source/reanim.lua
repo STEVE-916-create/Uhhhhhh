@@ -1336,13 +1336,98 @@ RunService:BindToRenderStep("Uhhhhhh_Render" .. Util.RandomString(), Enum.Render
 end)
 
 do
-	Util.Notify = function(text)
-		StarterGui:SetCore("SendNotification", {
-			Title = "Uhhhhhh",
-			Text = text,
-			Duration = 5
-		})
+	local uinotif = {
+		Text = "hi",
+		Progress = -1,
+		LastNotif = -67,
+		Animation = 1,
+		ProgressSm = 0,
+	}
+	Util.UINotify = function(text, prog)
+		uinotif.Text, uinotif.Progress = text, prog or 1
+		uinotif.LastNotif = _totalrendertime
 	end
+	local UINotifyFrame = Instance.new("Frame", UIMainFrame)
+	UINotifyFrame.AnchorPoint = Vector2.new(0.5, 0)
+	UINotifyFrame.Position = UDim2.new(0.5, 0, 1, 10)
+	UINotifyFrame.Size = UDim2.new(0, 300, 0, 30)
+	UINotifyFrame.BackgroundTransparency = 0
+	UINotifyFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+	UINotifyFrame.BorderSizePixel = 0
+	UINotifyFrame.Visible = false
+	UINotifyFrame.ZIndex = -1
+	Stylize(UINotifyFrame, {
+		Glow = true,
+	})
+	local Progress = Instance.new("Frame", UINotifyFrame)
+	Progress.AnchorPoint = Vector2.new(0.5, 0)
+	Progress.Position = UDim2.new(0.5, 0, 0, 0)
+	Progress.Size = UDim2.new(1, -10, 1, 0)
+	Progress.BackgroundTransparency = 1
+	Progress.BackgroundColor3 = Color3.new(1, 1, 1)
+	Progress.BorderSizePixel = 0
+	local ProgressTop = Instance.new("Frame", Progress)
+	ProgressTop.AnchorPoint = Vector2.new(0.5, 0)
+	ProgressTop.Position = UDim2.new(0.5, 0, 0, 0)
+	ProgressTop.Size = UDim2.new(0, 0, 0, 4)
+	ProgressTop.BackgroundTransparency = 0
+	ProgressTop.BackgroundColor3 = Color3.new(1, 1, 1)
+	ProgressTop.BorderSizePixel = 0
+	local ProgressBot = Instance.new("Frame", Progress)
+	ProgressBot.AnchorPoint = Vector2.new(0.5, 1)
+	ProgressBot.Position = UDim2.new(0.5, 0, 1, 0)
+	ProgressBot.Size = UDim2.new(0, 0, 0, 4)
+	ProgressBot.BackgroundTransparency = 0
+	ProgressBot.BackgroundColor3 = Color3.new(1, 1, 1)
+	ProgressBot.BorderSizePixel = 0
+	local NotifyText = Util.Instance("TextLabel", UINotifyFrame)
+	NotifyText.AnchorPoint = Vector2.new(0.5, 0.5)
+	NotifyText.Position = UDim2.new(0.5, 0, 0.5, 0)
+	NotifyText.Size = UDim2.new(1, 0, 0, 20)
+	NotifyText.BackgroundTransparency = 1
+	NotifyText.ClipsDescendants = true
+	NotifyText.Font = Enum.Font.Code
+	NotifyText.TextColor3 = Color3.new(1, 1, 1)
+	NotifyText.TextSize = 18
+	NotifyText.TextXAlignment = Enum.TextXAlignment.Center
+	NotifyText.Text = ""
+	RegisterTextLabel(NotifyText)
+	AddToRenderStep(function(t, dt)
+		if t - uinotif.LastNotif < 4 or uinotif.Progress < 1 then
+			uinotif.Animation = math.max(0, uinotif.Animation - dt * 2)
+		else
+			uinotif.Animation = math.min(1, uinotif.Animation + dt * 2)
+		end
+		if uinotif.Animation < 1 then
+			UINotifyFrame.Visible = true
+			UINotifyFrame.Position = UIMainWindow.Position + UDim2.new(0, 0, 0, UIMainWindow.Size.Y.Offset / 2 + 10 + math.pow(uinotif.Animation, 3) * -40)
+			if uinotif.Progress >= 1 then
+				Progress.BackgroundTransparency = math.min(t - uinotif.LastNotif, 0.5) * 2 * 0.3 + 0.7
+			else
+				Progress.BackgroundTransparency = 1
+			end
+			local c = GetUIColor(t)
+			local s = math.sin(t * 3) * 0.5 + 0.5
+			if uinotif.Progress > 0 then
+				uinotif.ProgressSm = uinotif.Progress + (uinotif.ProgressSm - uinotif.Progress) * math.exp(-16 * dt)
+				ProgressTop.BackgroundTransparency = 0
+				ProgressBot.BackgroundTransparency = 0
+				ProgressTop.Size = UDim2.new(uinotif.ProgressSm, 0, 0, 4)
+				ProgressBot.Size = UDim2.new(uinotif.ProgressSm, 0, 0, 4)
+			else
+				uinotif.ProgressSm = 1
+				ProgressTop.BackgroundTransparency = s
+				ProgressBot.BackgroundTransparency = s
+				ProgressTop.Size = UDim2.new(1, 0, 0, 4)
+				ProgressBot.Size = UDim2.new(1, 0, 0, 4)
+			end
+			ProgressTop.BackgroundColor3 = c
+			ProgressBot.BackgroundColor3 = c
+			NotifyText.Text = uinotif.Text
+		else
+			UINotifyFrame.Visible = false
+		end
+	end, UINotifyFrame)
 end
 
 local CracktroFrame = Util.Instance("Frame", WindowContent)
@@ -7481,6 +7566,19 @@ local function AssetGetPathFromFilename(filename)
 	return "UhhhhhhReanim/Content/" .. filetype .. filename
 end
 local _Assetdownloading = {}
+local _Assetdownloadingcount, _Assetdownloadingfail = 0, 0
+local function _UpdateDownloadStatus()
+	local prog = 1 / ((_Assetdownloadingcount + _Assetdownloadingfail) / 2 + 1)
+	if _Assetdownloadingcount > 0 then
+		Util.UINotify("Downloading " .. _Assetdownloadingcount .. " assets...", prog)
+	else
+		if _Assetdownloadingfail > 0 then
+			Util.UINotify(_Assetdownloadingfail .. " failed to download", prog)
+		else
+			Util.UINotify("Asset download done", 1)
+		end
+	end
+end
 local function AssetDownload(filename)
 	local source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/content/" .. filename
 	local split = string.split(filename, "@")
@@ -7493,17 +7591,27 @@ local function AssetDownload(filename)
 	if _Assetdownloading[filename] then return false end
 	_Assetdownloading[filename] = true
 	task.spawn(function()
-		Util.Notify("Downloading " .. filename .. "...")
+		_Assetdownloadingcount += 1
+		_UpdateDownloadStatus()
+		--Util.Notify("Downloading " .. filename .. "...")
 		local s, resp = pcall(request, {
 			Method = "GET",
 			Url = source,
 		})
 		if s and resp and resp.StatusCode == 200 then
+			_Assetdownloadingcount -= 1
+			_UpdateDownloadStatus()
 			pcall(writefile, path, resp.Body)
+			task.wait(10)
 		else
-			Util.Notify("Failed to download " .. filename .. "!")
+			_Assetdownloadingcount -= 1
+			_Assetdownloadingfail += 1
+			_UpdateDownloadStatus()
+			--Util.Notify("Failed to download " .. filename .. "!")
+			task.wait(10)
+			_Assetdownloadingfail -= 1
+			_UpdateDownloadStatus()
 		end
-		task.wait(10)
 		_Assetdownloading[filename] = nil
 	end)
 	return false
@@ -7661,7 +7769,7 @@ local function HandleKeybind(key)
 		else
 			CurrentDance = Keybinds[key]
 			if CurrentDance then
-				Util.Notify(key .. " - " .. CurrentDance.Name)
+				Util.UINotify(key .. " - " .. CurrentDance.Name)
 				return true
 			end
 		end
@@ -7669,7 +7777,7 @@ local function HandleKeybind(key)
 	if key == "M" then
 		local pages = math.max(1, 1 + ((#DanceableDances - 1) // #KeybindsPerPage))
 		KeybindPaging = (KeybindPaging + 1) % pages
-		Util.Notify("Page " .. (KeybindPaging + 1))
+		Util.UINotify("Page " .. (KeybindPaging + 1))
 		RefreshKeybinds()
 		return true
 	end
@@ -8483,7 +8591,7 @@ UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "This \"software\" is FREE, meaning YOU SHOULD NOT REDISTRIBUTE WITH RENUMERATIVE INTENT!!", 15, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances or Movesets, go to <font color=\"#4444FF\">this thing</font>.", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-		Util.Notify("Link copied!")
+		Util.UINotify("Link copied!")
 		pcall(setclipboard, "https://github.com/STEVE-916-create/Uhhhhhh/")
 	end
 end)
@@ -8492,7 +8600,7 @@ UI.CreateText(CreditsPage, "<b>(C) 2026 STEVETHEREALONE</b>", 14, Enum.TextXAlig
 UI.CreateText(CreditsPage, "all rights reserved", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "<font color=\"#4444FF\">[ Discord invite ]</font>", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-		Util.Notify("Link copied!")
+		Util.UINotify("Link copied!")
 		pcall(setclipboard, "https://discord.gg/NASNUKRBVM")
 		pcall(request, {
 			Url = "http://127.0.0.1:6463/rpc?v=1",
@@ -8627,7 +8735,7 @@ local function ForceModuleReload(force)
 	IsUhhhhhhFullyLoaded = false
 	InitLogsText.Text = "Init Logs -- This is where you check what happened."
 	ClearModules()
-	Util.Notify("Loading...")
+	Util.UINotify("Checking hashes...", 0)
 	InitLogsText.Text ..= "\n[LOG] Checking SHA1 hashes..."
 	local filesofbuiltins = {"v_moveset1.lua", "v_moveset2.lua", "v_moveset3.lua", "v_dance1.lua", "v_dance2.lua", "d_limbmap.lua", "d_hatsmap.lua"}
 	local filesofbuiltins_m = {"v_moveset1.lua", "v_moveset2.lua", "v_moveset3.lua", "v_dance1.lua", "v_dance2.lua"}
@@ -8677,6 +8785,7 @@ local function ForceModuleReload(force)
 		wasold = true
 		SaveData.VanillaModuleCache = nil
 	end
+	Util.UINotify("Loading maps...", 0.2)
 	InitLogsText.Text ..= "\n[LOG] Loading maps..."
 	for _,x in filesofbuiltins_d do
 		local path = "UhhhhhhReanim/BuiltinModules/" .. x
@@ -8697,6 +8806,7 @@ local function ForceModuleReload(force)
 			end
 		end
 	end
+	Util.UINotify("Loading modules...", 0.3)
 	InitLogsText.Text ..= "\n[LOG] Loading builtin (also called vanilla) modules..."
 	for _,x in filesofbuiltins_m do
 		local path = "UhhhhhhReanim/BuiltinModules/" .. x
@@ -8735,6 +8845,7 @@ local function ForceModuleReload(force)
 			InitLogsText.Text ..= "\n[ERROR] " .. table.concat(string.split(debug.traceback("VANILLA " .. x .. ": " .. msg), "\n"), "\n[ERROR] ")
 		end)
 	end
+	Util.UINotify("Loading modules...", 0.8)
 	InitLogsText.Text ..= "\n[LOG] Loading user modules..."
 	for _,path in listfiles("UhhhhhhReanim/Modules/") do
 		if isfile(path) then
@@ -8758,7 +8869,7 @@ local function ForceModuleReload(force)
 	InitLogsText.Text ..= "\n[LOG] Refreshing Dance keybinds..."
 	RefreshKeybinds()
 	InitLogsText.Text ..= "\n[LOG] Init complete!"
-	Util.Notify("Init complete" .. (InitLogsText.Text:find("ERROR") and ", there may be errors" or ""))
+	Util.UINotify("Init complete" .. (InitLogsText.Text:find("ERROR") and " with errors" or ""))
 	IsUhhhhhhFullyLoaded = true
 	if not Reanimate.Character then return end
 	Reanimate.CreateCharacter()
@@ -8801,16 +8912,23 @@ clearcontenthash.Activated:Connect(function()
 		task.wait(1)
 		if clearcontenthashclicks == 1 then
 			clearcontenthashclicks = 0
+			clearcontenthashtext.Text = "CLEAR ALL DOWNLOADED CONTENT"
 		end
 	elseif clearcontenthashclicks == 2 then
 		clearcontenthashtext.Text = "VERY SURE??????"
 		task.wait(1)
 		if clearcontenthashclicks == 2 then
 			clearcontenthashclicks = 0
+			clearcontenthashtext.Text = "CLEAR ALL DOWNLOADED CONTENT"
 		end
 	elseif clearcontenthashclicks == 3 then
 		SaveData.ContentHash = nil
-		clearcontenthashtext.Text = "Cleared, now rejoin to apply"
+		clearcontenthashtext.Text = "Cleared, reload modules to apply!"
+		task.wait(1)
+		if clearcontenthashclicks == 2 then
+			clearcontenthashclicks = 0
+			clearcontenthashtext.Text = "CLEAR ALL DOWNLOADED CONTENT"
+		end
 	end
 end)
 
