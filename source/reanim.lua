@@ -9132,8 +9132,8 @@ UI.CreateText(MarketPage, "btw if u download or delete modules, reload your modu
 end]]
 local GetMarketList_cache = {}
 local function GetMarketList()
-	local aitemus, file2name = GetMarketList_cache.aitemus, GetMarketList_cache.file2name
-	if not aitemus or not file2name then
+	local aitemus, file2name, file2aitemu = GetMarketList_cache.aitemus, GetMarketList_cache.file2name, GetMarketList_cache.file2aitemu
+	if not aitemus or not file2name or not file2aitemu then
 		local marketteresult = game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/community/list.txt")
 		marketteresult = string.split(marketteresult, "\n")
 		aitemus = {}
@@ -9173,15 +9173,16 @@ local function GetMarketList()
 		if next(aitemu) ~= nil then
 			table.insert(aitemus, aitemu)
 		end
-		file2name = {}
+		file2name, file2aitemu = {}, {}
 		for _,aitemu in aitemus do
 			if aitemu.Name and aitemu.File then
 				file2name[aitemu.File] = aitemu.Name
+				file2aitemu[aitemu.File] = aitemu
 			end
 		end
 	end
-	GetMarketList_cache.aitemus, GetMarketList_cache.file2name = aitemus, file2name
-	return aitemus, file2name
+	GetMarketList_cache.aitemus, GetMarketList_cache.file2name, GetMarketList_cache.file2aitemu = aitemus, file2name, file2aitemu
+	return aitemus, file2name, file2aitemu
 end
 local LocalPage = UI.CreateItemListPage()
 LocalPage.ZIndex = 2
@@ -9190,7 +9191,7 @@ LocalPage.Interactable = false
 LocalPage.Visible = false
 local function RefreshUserModules()
 	Util.ClearAllChildrenGui(LocalPage.List)
-	local _, file2name = GetMarketList()
+	local _, file2name, file2aitemu = GetMarketList()
 	for _,path in listfiles("UhhhhhhReanim/Modules/") do
 		if isfile(path) then
 			local x = path:sub(23)
@@ -9234,6 +9235,24 @@ local function RefreshUserModules()
 				UI.CreateText(page, name, 20, Enum.TextXAlignment.Left)
 				UI.CreateText(page, desc2, 15, Enum.TextXAlignment.Left)
 				UI.CreateSeparator(page)
+				local aitemu = file2aitemu[x]
+				if aitemu then
+					UI.CreateButton(MarketPage, "Redownload/Update", 20).Activated:Connect(function()
+						delfile(path)
+						AssetDownloadAgent(aitemu.Source, aitemu.File, path)
+						RefreshUserModules()
+						page.Interactable = false
+						LocalPage.Interactable = false
+						local tween = TweenService:Create(page, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+							Position = UDim2.new(0.5, 360, 0.5, 0),
+						})
+						tween:Play()
+						tween.Completed:Connect(function()
+							LocalPage.Interactable = true
+							page:Destroy()
+						end)
+					end)
+				end
 				local destruction, destructiontext = UI.CreateButton(page, "Delete Module", 15)
 				local deletion = 0
 				destruction.Activated:Connect(function()
@@ -9313,7 +9332,7 @@ MarkettePage.Interactable = false
 MarkettePage.Visible = false
 local function RefreshOnlineUserModules()
 	Util.ClearAllChildrenGui(MarkettePage.List)
-	local aitemus, _ = GetMarketList()
+	local aitemus = GetMarketList()
 	for _,aitemu in aitemus do
 		if not aitemu.Name or not aitemu.Description or not aitemu.File then continue end
 		local item = UI.CreateItemListItem(MarkettePage.List)

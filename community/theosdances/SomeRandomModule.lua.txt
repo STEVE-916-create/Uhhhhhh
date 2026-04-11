@@ -1,3 +1,5 @@
+-- ASSET CONFLICTS SHALL BE PREVENTED BY WATERMARKING THE FILENAMES OF YOUR ASSETS WHEN THEYRE DOWNLOADED
+
 local modules = {}
 
 table.insert(modules, function()
@@ -6,7 +8,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Insanity "
 	m.Description = "Ronald McDonald"
-	m.Assets      = {"Insanity.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Insanity.anim","Insanity.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Insanity.mp3"}
+	m.Assets      = {"Theo_Insanity.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Insanity.anim","Theo_Insanity.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Insanity.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -18,12 +20,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Insanity.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Insanity.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Insanity.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Insanity.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -50,7 +52,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Out Of Touch "
 	m.Description = "For the Katseyes fans"
-	m.Assets      = {"Touch.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Touch.anim","Touch.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Touch.mp3"}
+	m.Assets      = {"Theo_Touch.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Touch.anim","Theo_Touch.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Touch.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -62,12 +64,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Touch.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Touch.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Touch.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Touch.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -94,7 +96,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Metro Man V2 "
 	m.Description = "Metro man but continuous(idk if i spelt it right) arm spin\nenjoy enjoy enjoy enjoy enjoy enjoy enjoy enjoy enjoy enjoy enjoy "
-	m.Assets      = {"Metro.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Metro.anim","Metro.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Metro.mp3"}
+	m.Assets      = {"Theo_Metro.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Metro.anim","Theo_Metro.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Metro.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -106,12 +108,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Metro.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Metro.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Metro.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Metro.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -138,7 +140,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Golden Dandelion "
 	m.Description = "Ts So Golden Dandelyin"
-	m.Assets      = {"TsSoGolden.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/TsSoGolden.anim","TsSoGolden.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/TsSoGolden.mp3"}
+	m.Assets      = {"Theo_TsSoGolden.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/TsSoGolden.anim","Theo_TsSoGolden.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/TsSoGolden.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -150,12 +152,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("TsSoGolden.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_TsSoGolden.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("TsSoGolden.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_TsSoGolden.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -182,7 +184,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Wait "
 	m.Description = "Wait! They dont love you like i love you"
-	m.Assets      = {"Wait.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Wait.anim","Wait.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Wait.mp3"}
+	m.Assets      = {"Theo_Wait.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Wait.anim","Theo_Wait.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Wait.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -194,12 +196,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Wait.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Wait.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Wait.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Wait.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -226,7 +228,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Pickup The Phone "
 	m.Description = "Why are my kids not home?"
-	m.Assets      = {"Pickup.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Pickup.anim","Pickup.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Pickup.mp3"}
+	m.Assets      = {"Theo_Pickup.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Pickup.anim","Theo_Pickup.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Pickup.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -238,12 +240,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Pickup.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Pickup.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Pickup.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Pickup.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -270,7 +272,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Cafeteria "
 	m.Description = "Get up get down if you gonna come around\nWe can work together"
-	m.Assets      = {"Cafeteria.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Cafeteria.anim","Cafeteria.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Cafeteria.mp3"}
+	m.Assets      = {"Theo_Cafeteria.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Cafeteria.anim","Theo_Cafeteria.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Cafeteria.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -282,12 +284,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Cafeteria.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Cafeteria.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Cafeteria.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Cafeteria.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -314,7 +316,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Montagem Hikari"
 	m.Description = "Idk what to add "
-	m.Assets      = {"Hikari.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Hikari.anim","Hikari.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Hikari.mp3"}
+	m.Assets      = {"Theo_Hikari.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Hikari.anim","Theo_Hikari.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Hikari.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, "Idk", 14, Enum.TextXAlignment.Center)
 	end
@@ -326,12 +328,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Hikari.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Hikari.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Hikari.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Hikari.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -354,7 +356,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Chegou 3"
 	m.Description = "Idk What To add to this "
-	m.Assets      = {"Chegou 3.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Chegou 3.anim","Chegou 3.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Chegou 3.mp3"}
+	m.Assets      = {"Theo_Chegou 3.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Chegou 3.anim","Theo_Chegou 3.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Chegou 3.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, "Idk", 14, Enum.TextXAlignment.Center)
 	end
@@ -366,12 +368,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Chegou 3.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Chegou 3.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Chegou 3.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Chegou 3.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -394,7 +396,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "JK Flexworks"
 	m.Description = "JK's 69 series but he did it more seriously "
-	m.Assets      = {"Limited.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Limited.anim","JK.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/JK.mp3"}
+	m.Assets      = {"Theo_Limited.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Limited.anim","Theo_JK.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/JK.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, "Idk", 14, Enum.TextXAlignment.Center)
 	end
@@ -406,12 +408,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("JK.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_JK.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Limited.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Limited.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -437,7 +439,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "KJ Flexworks"
 	m.Description = "KJ's 21 series "
-	m.Assets      = {"KJ Flexworks.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/KJ Flexworks.anim","Flexworks.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Flexworks.mp3"}
+	m.Assets      = {"Theo_KJ Flexworks.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/KJ Flexworks.anim","Theo_Flexworks.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Flexworks.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, "Idk", 14, Enum.TextXAlignment.Center)
 	end
@@ -449,12 +451,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Flexworks.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Flexworks.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("KJ Flexworks.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_KJ Flexworks.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -480,7 +482,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Tails Yell"
 	m.Description = "Same guy who animated Yells 1-3 "
-	m.Assets      = {"TailsYell.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/TailsYell.anim","Funny2.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Funny.mp3"}
+	m.Assets      = {"Theo_TailsYell.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/TailsYell.anim","Theo_Funny2.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Funny.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, "Idk", 14, Enum.TextXAlignment.Center)
 	end
@@ -492,12 +494,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Funny2.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Funny2.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("TailsYell.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_TailsYell.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -524,7 +526,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Pokedance "
 	m.Description = "I dont know the lyrics ok? but it seems like the music is good tho "
-	m.Assets      = {"Pokedance.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Pokedance.anim","Pokedance.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Pokedance.mp3"}
+	m.Assets      = {"Theo_Pokedance.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Pokedance.anim","Theo_Pokedance.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Pokedance.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -536,12 +538,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Pokedance.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Pokedance.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Pokedance.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Pokedance.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -568,7 +570,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Dancing Domino "
 	m.Description = "TAKE ME DONW LIKE A DOMINO :fire::fire: "
-	m.Assets      = {"Domino2.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Domino2.anim","Domino.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Domino.mp3"}
+	m.Assets      = {"Theo_Domino2.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Domino2.anim","Theo_Domino.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Domino.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -580,12 +582,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Domino.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Domino.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Domino2.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Domino2.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -612,7 +614,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Everybody Gangnam "
 	m.Description = "Everybody Gangnam Style Ughh~"
-	m.Assets      = {"EverybodyGangnam.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/EverybodyGangnam.anim","EVG.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/EVG.mp3"}
+	m.Assets      = {"Theo_EverybodyGangnam.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/EverybodyGangnam.anim","Theo_EVG.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/EVG.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -624,12 +626,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("EVG.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_EVG.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("EverybodyGangnam.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_EverybodyGangnam.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -656,7 +658,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Heel Toe Hop"
 	m.Description = "First dance to be ported by theo "
-	m.Assets      = {"HeelToeHop.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/HeelToeHop.anim","Heel.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Heel.mp3"}
+	m.Assets      = {"Theo_HeelToeHop.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/HeelToeHop.anim","Theo_Heel.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Heel.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, "Idk", 14, Enum.TextXAlignment.Center)
 	end
@@ -668,12 +670,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Heel.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Heel.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("HeelToeHop.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_HeelToeHop.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -696,7 +698,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Low Qualtiy"
 	m.Description = "The most Low quality dance out there :33\nWATCH YO EARS"
-	m.Assets      = {"LowQuality.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/LowQuality.anim","LowQuality.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/LowQuality.mp3"}
+	m.Assets      = {"Theo_LowQuality.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/LowQuality.anim","Theo_LowQuality.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/LowQuality.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, "Idk", 14, Enum.TextXAlignment.Center)
 	end
@@ -708,12 +710,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("LowQuality.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_LowQuality.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("LowQuality.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_LowQuality.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -740,7 +742,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Jumpstyle "
 	m.Description = "Now Falling To The Sky "
-	m.Assets      = {"Jumpstyle3.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Jumpstyle3.anim","Jumpstyle.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Jumpstyle.mp3"}
+	m.Assets      = {"Theo_Jumpstyle3.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Jumpstyle3.anim","Theo_Jumpstyle.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Jumpstyle.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -752,12 +754,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Jumpstyle.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Jumpstyle.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Jumpstyle3.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Jumpstyle3.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -784,7 +786,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Prism Shuffle "
 	m.Description = "i feel so emotional "
-	m.Assets      = {"Prism.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Prism.anim","Prism.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Prism.mp3"}
+	m.Assets      = {"Theo_Prism.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Prism.anim","Theo_Prism.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Prism.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -796,12 +798,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Prism.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Prism.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Prism.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Prism.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -828,7 +830,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "I Wanna Runaway "
 	m.Description = "Cuz you and I-I-II "
-	m.Assets      = {"Runaway.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Runaway.anim","Runaway.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Runaway.mp3"}
+	m.Assets      = {"Theo_Runaway.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Runaway.anim","Theo_Runaway.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Runaway.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -840,12 +842,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Runaway.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Runaway.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Runaway.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Runaway.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -872,7 +874,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Goated Dance "
 	m.Description = "Ts so goated ong "
-	m.Assets      = {"Goat.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Goat.anim","Goat.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Goat.mp3"}
+	m.Assets      = {"Theo_Goat.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Goat.anim","Theo_Goat.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Goat.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -884,12 +886,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Goat.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Goat.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Goat.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Goat.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -916,7 +918,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Get Down "
 	m.Description = "Get Down- *inaudible* "
-	m.Assets      = {"GetDown.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/GetDown.anim","GetDown.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/GetDown.mp3"}
+	m.Assets      = {"Theo_GetDown.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/GetDown.anim","Theo_GetDown.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/GetDown.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -928,12 +930,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("GetDown.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_GetDown.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("GetDown.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_GetDown.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -960,7 +962,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Cry For Me "
 	m.Description = "Ts is so corny :wilted: "
-	m.Assets      = {"Cry For Me.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Cry For Me.anim","Cry For Me.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Cry For Me.mp3"}
+	m.Assets      = {"Theo_Cry For Me.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Cry For Me.anim","Theo_Cry For Me.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Cry For Me.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -972,12 +974,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Cry For Me.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Cry For Me.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Cry For Me.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Cry For Me.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -1004,7 +1006,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Looping the rooms (Bluududs Variant) "
 	m.Description = "Bluudud is stuck and hes been loopimg every rooms"
-	m.Assets      = {"Looping4.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Looping4.anim","Looping 2.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Looping 2.mp3"}
+	m.Assets      = {"Theo_Looping4.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Looping4.anim","Theo_Looping 2.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Looping 2.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -1016,12 +1018,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Looping 2.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Looping 2.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Looping4.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Looping4.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -1048,7 +1050,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Microwave edit "
 	m.Description = "Hopefully this will be a good edit-"
-	m.Assets      = {"Microwave.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Microwave.anim","Microwave.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Microwave.mp3"}
+	m.Assets      = {"Theo_Microwave.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Microwave.anim","Theo_Microwave.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Microwave.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -1060,12 +1062,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Microwave.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Microwave.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Microwave.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Microwave.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -1092,7 +1094,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Mesmerizer 2 "
 	m.Description = "Mesmerizer but a little bit different"
-	m.Assets      = {"Mesmerizer1.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Mesmerizer1.anim","Mesmerizer.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Mesmerizer.mp3"}
+	m.Assets      = {"Theo_Mesmerizer1.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Mesmerizer1.anim","Theo_Mesmerizer.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Mesmerizer.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -1104,12 +1106,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Mesmerizer.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Mesmerizer.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Mesmerizer1.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Mesmerizer1.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -1136,7 +1138,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Fein "
 	m.Description = "FIN! FIN! FIN! FIN!"
-	m.Assets      = {"Fein.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Fein.anim","Fein.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Fein.mp3"}
+	m.Assets      = {"Theo_Fein.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Fein.anim","Theo_Fein.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Fein.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -1148,12 +1150,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Fein.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Fein.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Fein.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Fein.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -1180,7 +1182,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Billie Jean "
 	m.Description = "Billie Jean is not my lover, she just a girl, he claims i am the one"
-	m.Assets      = {"BillieJean2.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/BillieJean2.anim","Bjean.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Bjean.mp3"}
+	m.Assets      = {"Theo_BillieJean2.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/BillieJean2.anim","Theo_Bjean.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Bjean.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -1192,12 +1194,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Bjean.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Bjean.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("BillieJean2.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_BillieJean2.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -1224,7 +1226,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Sit "
 	m.Description = "Yeah, Just sit around and uh i hope you have a good day"
-	m.Assets      = {"Sit.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Sit.anim","Sit.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Sit.mp3"}
+	m.Assets      = {"Theo_Sit.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Sit.anim","Theo_Sit.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Sit.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -1236,12 +1238,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Sit.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Sit.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Sit.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Sit.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -1274,7 +1276,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Lemon Melon Cookie "
 	m.Description = "Miku with Lemon Melon Cookie"
-	m.Assets      = {"Lemon Melon.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Lemon Melon.anim","Lemon.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Lemon.mp3"}
+	m.Assets      = {"Theo_Lemon Melon.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Lemon Melon.anim","Theo_Lemon.mp3@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/Lemon.mp3"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -1286,12 +1288,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("Lemon.mp3"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_Lemon.mp3"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Lemon Melon.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Lemon Melon.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
@@ -1320,7 +1322,7 @@ table.insert(modules, function()
 	m.ModuleType  = "DANCE"
 	m.Name        = "Requiem "
 	m.Description = "I go faster and harde-\nI feel like im not gonna stop"
-	m.Assets      = {"Requiem.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Requiem.anim","faster.ogg@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/faster.ogg"}
+	m.Assets      = {"Theo_Requiem.anim@https://github.com/Solary-3/Scripts/raw/refs/heads/main/Requiem.anim","Theo_faster.ogg@https://github.com/Solary-3/Scripts/raw/refs/heads/Audios-1/faster.ogg"}
 	m.Config = function(parent)
 		Util_CreateText(parent, " ", 14, Enum.TextXAlignment.Center)
 	end
@@ -1332,12 +1334,12 @@ table.insert(modules, function()
 	local start    = 0
 
 	m.Init = function(figure)
-		SetOverrideDanceMusic(AssetGetContentId("faster.ogg"))
+		SetOverrideDanceMusic(AssetGetContentId("Theo_faster.ogg"))
 
 		start           = os.clock()
 		animator        = AnimLib.Animator.new()
 		animator.rig    = figure
-		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Requiem.anim"))
+		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Theo_Requiem.anim"))
 		animator.looped = true
 		animator.speed  = 1
 	end
