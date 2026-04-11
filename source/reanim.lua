@@ -8866,7 +8866,7 @@ UI.CreateButton(InitLogsPage, "&lt; Hurry back", 20).Activated:Connect(function(
 	end)
 end)
 local InitLogsText = UI.CreateText(InitLogsPage, "Loading...", 12, Enum.TextXAlignment.Left)
-local function getgithubraw(path)
+local function _contentgetgithubraw(path)
 	InitLogsText.Text ..= "\n[LOG] [GitGET] GET api./" .. path
 	local s, resp = pcall(request, {
 		Method = "GET",
@@ -8970,7 +8970,7 @@ local function ForceModuleReload(force)
 			InitLogsText.Text ..= "\n[LOG] " .. x .. " already downloaded :D"
 		else
 			InitLogsText.Text ..= "\n[LOG] Downloading MAP " .. x .. "..."
-			local content = getgithubraw(x)
+			local content = _contentgetgithubraw(x)
 			if content then
 				pcall(writefile, path, content)
 			else
@@ -8995,7 +8995,7 @@ local function ForceModuleReload(force)
 			task.wait()
 		else
 			InitLogsText.Text ..= "\n[LOG] Downloading VANILLA " .. x .. "..."
-			local content = getgithubraw(x)
+			local content = _contentgetgithubraw(x)
 			if content then
 				pcall(writefile, path, content)
 				data = content
@@ -9110,6 +9110,26 @@ end)
 UI.CreateText(MarketPage, "welcome to <b>the user generated content marketplace thing</b>", 15, Enum.TextXAlignment.Center)
 UI.CreateText(MarketPage, "this where you download ur movesets and dances made by actual people and totally not ai", 15, Enum.TextXAlignment.Center)
 UI.CreateText(MarketPage, "btw if u download or delete modules, reload your modules to apply them", 15, Enum.TextXAlignment.Center)
+--[[local function _getgithubraw(path)
+	local s, resp = pcall(request, {
+		Method = "GET",
+		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. path,
+		Headers = {
+			Accept = "application/vnd.github.VERSION.raw"
+		}
+	})
+	if s and resp and resp.StatusCode == 200 then
+		return resp.Body
+	end
+	s, resp = pcall(request, {
+		Method = "GET",
+		Url = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/" .. path,
+	})
+	if s and resp and resp.StatusCode == 200 then
+		return resp.Body
+	end
+	return nil
+end]]
 local GetMarketList_cache = {}
 local function GetMarketList()
 	local aitemus, file2name = GetMarketList_cache.aitemus, GetMarketList_cache.file2name
