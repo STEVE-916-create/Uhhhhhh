@@ -26,6 +26,7 @@ local UhhhhhhVersion = "1.0.9 BETA"
 local Debris = cloneref(game:GetService("Debris"))
 local CoreGui = cloneref(game:GetService("CoreGui"))
 local Players = cloneref(game:GetService("Players"))
+local VRService = cloneref(game:GetService("VRService"))
 local RunService = cloneref(game:GetService("RunService"))
 local StarterGui = cloneref(game:GetService("StarterGui"))
 local GuiService = cloneref(game:GetService("GuiService"))
@@ -3196,6 +3197,7 @@ SaveData.NoclipEnabled = not not SaveData.NoclipEnabled
 SaveData.CtrlClickEnabled = not not SaveData.CtrlClickEnabled
 SaveData.ClickFlingEnabled = not not SaveData.ClickFlingEnabled
 SaveData.NoSmoothCam = not not SaveData.NoSmoothCam
+SaveData.FirstPersonBody = not not SaveData.FirstPersonBody
 SaveData.NoSeatSitEnabled = not SaveData.NoSeatSitEnabled
 SaveData.ToolGrabEnabled = not not SaveData.ToolGrabEnabled
 SaveData.ScaleGravityEnabled = not not SaveData.ScaleGravityEnabled
@@ -3233,6 +3235,7 @@ local Reanimate = {
 	CtrlClick = SaveData.CtrlClickEnabled,
 	ClickFling = SaveData.ClickFlingEnabled,
 	SmoothCam = not SaveData.NoSmoothCam,
+	FirstPersonBody = SaveData.FirstPersonBody,
 	SeatSit = not SaveData.NoSeatSitEnabled,
 	ToolGrab = SaveData.ToolGrabEnabled,
 	ScaleGravity = SaveData.ScaleGravityEnabled,
@@ -3294,6 +3297,9 @@ local Reanimate = {
 				Touch = {},
 				LP = nil,
 			},
+			GP = {
+				DJ = Vector2.zero,
+			},
 			Reset = function(self)
 				self.KB.Left = false
 				self.KB.Right = false
@@ -3301,6 +3307,7 @@ local Reanimate = {
 				self.TC.DJ = nil
 				table.clear(self.TC.Touch)
 				self.TC.LP = nil
+				self.GP.DJ = Vector2.zero
 			end,
 		},
 	},
@@ -3322,7 +3329,7 @@ local Reanimate = {
 				JB = nil,
 			},
 			GP = {
-				DJ = Vector3.zero,
+				DJ = Vector2.zero,
 				JB = false,
 			},
 			Reset = function(self)
@@ -3334,6 +3341,8 @@ local Reanimate = {
 				self.TC.DJ = nil
 				self.TC.LP = nil
 				self.TC.JB = nil
+				self.GP.DJ = Vector2.zero
+				self.GP.JB = false
 			end,
 		}
 	}
@@ -3348,7 +3357,6 @@ Reanimate.Camera.IsMousePanning = function(self)
 	return self:IsMouseLocked() or self.Inputs.MS.RMB
 end
 do
-	local VRService = cloneref(game:GetService("VRService"))
 	local thumbstickAreaTopLeft = nil
 	local thumbstickAreaBottomRight = nil
 	local jumpButtonTopLeft = nil
@@ -3420,7 +3428,7 @@ do
 					self.Inputs.KB.Space = true
 				end
 				if input.KeyCode == Enum.KeyCode.ButtonA then
-					self.Inputs.KB.Space = true
+					self.Inputs.GP.JB = true
 				end
 			end
 			if input.UserInputType == Enum.UserInputType.Touch then
@@ -3433,6 +3441,13 @@ do
 					self.Inputs.TC.JB = input
 					return
 				end
+			end
+		end)
+		UserInputService.InputChanged:Connect(function(input, gpe)
+			if GuiService.MenuIsOpen then return end
+			if UserInputService:GetFocusedTextBox() then return end
+			if input.KeyCode == Enum.KeyCode.Thumbstick1 then
+				self.Inputs.GP.DJ = Vector2.new(input.Position.X, -input.Position.Y)
 			end
 		end)
 		UserInputService.InputEnded:Connect(function(input)
@@ -3461,7 +3476,7 @@ do
 					self.Inputs.KB.Space = false
 				end
 				if input.KeyCode == Enum.KeyCode.ButtonA then
-					self.Inputs.KB.Space = false
+					self.Inputs.GP.JB = false
 				end
 			end
 			if input.UserInputType == Enum.UserInputType.Touch then
@@ -3506,8 +3521,11 @@ do
 				local dir = (self.Inputs.TC.DJ.Position - self.Inputs.TC.LP) / stickrad
 				if dir.Magnitude > 0.05 then
 					dir = dir.Unit * math.min(1, (dir.Magnitude - 0.05) / (1 - 0.05))
-					self.Move = Vector3.new(dir.X, 0, dir.Y)
+					self.Move += Vector3.new(dir.X, 0, dir.Y)
 				end
+			end
+			if self.Inputs.GP.DJ.Magnitude > 0.2 then
+				self.Move += Vector3.new(self.Inputs.GP.DJ.X, 0, self.Inputs.GP.DJ.Y)
 			end
 			if self.Move.Magnitude > 1 then self.Move = self.Move.Unit end
 			self.Jump = false
@@ -3515,6 +3533,9 @@ do
 				self.Jump = true
 			end
 			if self.Inputs.TC.JB then
+				self.Jump = true
+			end
+			if self.Inputs.GP.JB then
 				self.Jump = true
 			end
 		end)
@@ -3551,6 +3572,31 @@ do
 				end
 				if input.KeyCode == Enum.KeyCode.Right then
 					self.Inputs.KB.Right = true
+				end
+			end
+			if input.KeyCode == Enum.KeyCode.ButtonL3 then
+				if self.VRMode then
+					if self.Zoom < 7 then
+						self.Zoom = 7
+					else
+						self.Zoom = 0.5
+					end
+				else
+					if self.Zoom <= 0.5 then
+						self.Zoom = 20
+					elseif self.Zoom <= 10 then
+						self.Zoom = 0.5
+					elseif self.Zoom <= 20 then
+						self.Zoom = 10
+					else
+						self.Zoom = 20
+					end
+				end
+			end
+			if input.KeyCode == Enum.KeyCode.ButtonR3 then
+				if self.VRMode then
+					-- laziest implementation
+					VRService:RecenterUserHeadCFrame()
 				end
 			end
 			if input.UserInputType == Enum.UserInputType.MouseButton2 then
@@ -3600,6 +3646,9 @@ do
 				else
 					self.Inputs.TC.LP = nil
 				end
+			end
+			if input.KeyCode == Enum.KeyCode.Thumbstick2 then
+				self.Inputs.GP.DJ = Vector2.new(thumbstickCurve(input.Position.X), -thumbstickCurve(input.Position.Y))
 			end
 		end)
 		UserInputService.InputEnded:Connect(function(input)
@@ -3679,6 +3728,7 @@ do
 			Reanimate.Shiftlocked = Reanimate.ShiftlockEnabled and not Reanimate.Shiftlocked
 		end)
 		RunService:BindToRenderStep("Uhhhhhh_Camera", Enum.RenderPriority.Camera.Value + 1, function(dt)
+			self.VRMode = VRService.VREnabled
 			if UserInputService:GetFocusedTextBox() then
 				resetInputDevices()
 			end
@@ -3688,15 +3738,32 @@ do
 			if self.Inputs.KB.Right then
 				self:OnPanInput(Vector2.new(math.rad(120) * dt, 0), true)
 			end
+			self:OnPanInput(self.Inputs.GP.DJ * Vector2.new(1, 0.77) * math.rad(4) * 60 * dt * GameSettings.GamepadCameraSensitivity, true)
 			local input = self.Input * Vector3.new(1, GameSettings:GetCameraYInvertValue(), 1)
 			self.Input = Vector3.zero
+			local zoomDelta = input.Z
+			if math.abs(zoomDelta) > 0 then
+				if zoomDelta > 0 then
+					self.Zoom += zoomDelta * (1 + self.Zoom * 0.5)
+				else
+					self.Zoom = (self.Zoom + zoomDelta) / (1 - zoomDelta * 0.5)
+				end
+			end
+			self.Zoom = math.clamp(self.Zoom, 0.5, 100000)
+			local rzoom = self.Zoom
+			if self.VRMode then
+				input *= Vector3.new(1, 0, 1)
+				rzoom *= Reanimate.CharacterScale
+				self._Zoom = rzoom
+			end
+			self._Zoom = rzoom + (self._Zoom - rzoom) * math.exp(-32 * dt)
 			local ltm = Reanimate.LocalTransparencyModifier
 			local tltm = 0
 			local sltm = dt * 3
 			if not self.Scriptable then
 				if self:IsFirstPerson() then
 					tltm = 1
-				elseif self.Zoom < 1.5 * Reanimate.CharacterScale then
+				elseif rzoom < 1.5 * Reanimate.CharacterScale then
 					tltm = 0.5
 				end
 			end
@@ -3748,23 +3815,19 @@ do
 						Camera.FieldOfViewMode = "Vertical"
 						local newCameraCFrame, newCameraFocus = self.CFrame, self.Focus
 						local subjectPosition = RootPart.Position + RootPart.CFrame.UpVector * 1.5
-						subjectPosition += RootPart.CFrame.Rotation * Humanoid.CameraOffset
-						local zoomDelta = input.Z
-						if math.abs(zoomDelta) > 0 then
-							if zoomDelta > 0 then
-								self.Zoom += zoomDelta * (1 + self.Zoom * 0.5)
-							else
-								self.Zoom = (self.Zoom + zoomDelta) / (1 - zoomDelta * 0.5)
-							end
-						end
-						self.Zoom = math.clamp(self.Zoom, 0.5, 100000)
-						self._Zoom = self.Zoom + (self._Zoom - self.Zoom) * math.exp(-32 * dt)
+						if not self.VRMode then subjectPosition += RootPart.CFrame.Rotation * Humanoid.CameraOffset end
 						local currLookVector = suppliedLookVector or newCameraCFrame.LookVector
 						local currPitchAngle = math.asin(currLookVector.Y)
 						local constrainedRotateInput = Vector2.new(input.X, math.clamp(input.Y, math.rad(-80) + currPitchAngle, math.rad(80) + currPitchAngle))
 						local startCFrame = CFrame.lookAt(Vector3.zero, currLookVector)
 						local newLookCFrame = CFrame.Angles(0, -constrainedRotateInput.X, 0) * startCFrame * CFrame.Angles(-constrainedRotateInput.Y, 0, 0)
 						local newLookVector = newLookCFrame.LookVector
+						if self.VRMode then
+							newLookVector = (newLookVector * Vector3.new(1, 0, 1)).Unit
+							if newLookVector.Magnitude == 0 or newLookVector ~= newLookVector then
+								newLookVector = Vector3.zAxis
+							end
+						end
 						if self:IsMouseLocked() and not self:IsFirstPerson() then
 							local cameraRelativeOffset = newLookCFrame * Vector3.new(1.7, 0, 0)
 							if cameraRelativeOffset == cameraRelativeOffset then
@@ -3784,6 +3847,20 @@ do
 			end
 			pcall(function() CoreGui.TopBarApp.TopBarApp.FullScreenFrame.HurtOverlay.Visible = false end)
 		end)
+	end
+end
+Reanimate.CameraLockCharacter = function()
+	local RCRootPart = Reanimate.Character and Reanimate.Character:FindFirstChild("HumanoidRootPart")
+	if RCRootPart and RCRootPart:IsA("BasePart") then
+		local ccf = Reanimate.Camera.CFrame
+		if Reanimate.Camera.VRMode then
+			local _,y,_ = VRService:GetUserCFrame(Enum.UserCFrame.Head):ToEulerAngles(Enum.RotationOrder.YXZ)
+			ccf *= CFrame.Angles(0, y, 0)
+		end
+		local rcf = RCRootPart.CFrame
+		local ax, ay, az = ccf:ToEulerAngles(Enum.RotationOrder.YXZ)
+		local bx, by, bz = rcf:ToEulerAngles(Enum.RotationOrder.YXZ)
+		RCRootPart.CFrame = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ) + rcf.Position
 	end
 end
 Reanimate.CreateCharacter = function(InitCFrame)
@@ -3999,12 +4076,10 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			pos = Vector3.new(pos.X, SafeY, pos.Z)
 			RCRootPart.Velocity *= Vector3.new(1, 0, 1)
 		end
-		if Reanimate:ShouldRotationType() then
-			local ax, ay, az = Reanimate.Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
-			local bx, by, bz = RCRootPart.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
-			tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ)
-		end
 		RCRootPart.CFrame = tcf + pos
+		if Reanimate:ShouldRotationType() then
+			Reanimate:CameraLockCharacter()
+		end
 	end))
 	Reanimate.Character = RC
 	_G_Uhhhhhh.Character = RC
@@ -4591,7 +4666,19 @@ function LimbReanimator.Start()
 				v.Velocity = Vector3.zero
 				v.RotVelocity = Vector3.zero
 				if not v:FindFirstAncestorWhichIsA("Tool") then
-					v.LocalTransparencyModifier = ltm
+					local lltm = ltm
+					if Reanimate.FirstPersonBody then
+						lltm = 0
+						if v.Name == "Head" then
+							lltm = ltm
+						else
+							local lol = v:FindFirstChild("AccessoryWeld")
+							if lol and lol:IsA("Weld") and lol.Part0 and lol.Part0.Name == "Head" then
+								lltm = ltm
+							end
+						end
+					end
+					v.LocalTransparencyModifier = lltm
 				end
 			end
 			for _,v in ReanimCharacter:GetChildren() do
@@ -4695,11 +4782,8 @@ function LimbReanimator.Start()
 				if Reanimate:ShouldRotationType() then
 					RunService.PreRender:Wait()
 					local ocf = RCRootPart.CFrame
-					local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
-					local bx, by, bz = ocf:ToEulerAngles(Enum.RotationOrder.YXZ)
-					local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ) + ocf.Position
-					RootPart.CFrame = tcf:ToWorldSpace(ocf:ToObjectSpace(RootPart.CFrame))
-					RCRootPart.CFrame = tcf
+					Reanimate:CameraLockCharacter()
+					RootPart.CFrame = RCRootPart.CFrame:ToWorldSpace(ocf:ToObjectSpace(RootPart.CFrame))
 				end
 			end
 		end
@@ -5140,6 +5224,9 @@ function HatReanimator.Start()
 					end)
 				end
 			end
+			if h:GetAttribute("AttachHead") then
+				p:SetAttribute("AttachHead", true)
+			end
 			p.Parent = workspace
 			return p
 		end
@@ -5153,6 +5240,9 @@ function HatReanimator.Start()
 					if ref.Name == hat.Name and ref.MeshId == mesh and ref.TextureId == tex then
 						ref.Hat = hat
 						ref.Han = handle
+						if ref.Map.Limb == "Head" then
+							handle:SetAttribute("AttachHead", true)
+						end
 						Hat2HatRefs[hat] = ref
 						if not ref.PH then
 							ref.PH = CreatePlaceholder(hat)
@@ -6782,7 +6872,13 @@ function HatReanimator.Start()
 					local handle = hat:FindFirstChild("Handle")
 					if handle and handle:IsA("BasePart") then
 						handle.CanCollide = false
-						handle.LocalTransparencyModifier = ltm
+						local lltm = ltm
+						if Reanimate.FirstPersonBody then
+							if not v:GetAttribute("AttachHead") then
+								lltm = 0
+							end
+						end
+						handle.LocalTransparencyModifier = lltm
 						local ref = Hat2HatRefs[hat]
 						if blacklist[hat] then
 							if ref then ref.Aligned = false end
@@ -6833,8 +6929,14 @@ function HatReanimator.Start()
 				else
 					local tcf, _ = GetHatMappedCFrame(GetHatMappedOverride(ref.Map))
 					if tcf then
+						local lltm = ltm
+						if Reanimate.FirstPersonBody then
+							if not v:GetAttribute("AttachHead") then
+								lltm = 0
+							end
+						end
 						ph.CFrame = tcf
-						ph.Transparency = 1 - (1 - Reanimate.PlaceholderTransparency) * (1 - ltm)
+						ph.Transparency = 1 - (1 - Reanimate.PlaceholderTransparency) * (1 - lltm)
 						table.insert(slocked, ph)
 					end
 				end
@@ -6843,13 +6945,11 @@ function HatReanimator.Start()
 		RunService.PreRender:Wait()
 		if RCRootPart and Reanimate:ShouldRotationType() then
 			local ocf = RCRootPart.CFrame
-			local ax, ay, az = Camera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
-			local bx, by, bz = ocf:ToEulerAngles(Enum.RotationOrder.YXZ)
-			local tcf = CFrame.fromEulerAngles(bx, ay, bz, Enum.RotationOrder.YXZ) + ocf.Position
+			Reanimate:CameraLockCharacter()
+			local tcf = RCRootPart.CFrame
 			for _,handle in slocked do
 				handle.CFrame = tcf:ToWorldSpace(ocf:ToObjectSpace(handle.CFrame))
 			end
-			RCRootPart.CFrame = tcf
 		end
 		if HatReanimator.HatSpin then
 			for _,handle in slocked do
@@ -6974,6 +7074,10 @@ do
 	UI.CreateSwitch(MainPage, "Smooth Camera", Reanimate.SmoothCam).Changed:Connect(function(val)
 		Reanimate.SmoothCam = val
 		SaveData.NoSmoothCam = not val
+	end)
+	UI.CreateSwitch(MainPage, "First Person Body", Reanimate.FirstPersonBody).Changed:Connect(function(val)
+		Reanimate.FirstPersonBody = val
+		SaveData.FirstPersonBody = not val
 	end)
 	UI.CreateSwitch(MainPage, "Allow Shiftlock", Reanimate.ShiftlockEnabled).Changed:Connect(function(val)
 		Reanimate.ShiftlockEnabled = val
@@ -8935,9 +9039,11 @@ local function ForceModuleReload(force)
 	end
 	InitLogsText.Text ..= "\n[LOG] Refreshing Dance keybinds..."
 	RefreshKeybinds()
+	InitLogsText.Text ..= "\n[LOG] Loaded " .. (#MovementStyles + #DanceableDances) .. " modules - " .. #MovementStyles .. " Movesets, " .. #DanceableDances .. " Dances."
 	InitLogsText.Text ..= "\n[LOG] Init complete!"
 	Util.UINotify("Init complete" .. (InitLogsText.Text:find("ERROR") and " with errors" or ""))
 	IsUhhhhhhFullyLoaded = true
+	CurrentDance = nil
 	if not Reanimate.Character then return end
 	Reanimate.CreateCharacter()
 end

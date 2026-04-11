@@ -470,7 +470,7 @@ table.insert(modules, function()
     m.ModuleType  = "DANCE"
     m.Name        = "Keel Me Baby"
     m.Description = "Misspelled kill because steve might get angy."
-    m.Assets = {"k#ll me baby.anim@MARKET/googlyeyes/k#ll me baby.anim", "k#ll me baby.mp3@MARKET/googlyeyes/k#ll me baby mp3"}
+    m.Assets = {"k#ll me baby.anim", "k#ll me baby.mp3"}
     m.Config = function(parent)
         Util_CreateText(parent, "No settings.", 14, Enum.TextXAlignment.Center)
     end

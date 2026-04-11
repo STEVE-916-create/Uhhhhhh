@@ -5,7 +5,9 @@
  - this is removed now cuz no april fools but Genesis Intro (erm its march of 31st..)
  - Renewed Tool fling (and removed credit because renewed without reference and with original code, sorry Empyrean)
  - Added option not to hold the tool and instead use it as a fling part
- - Marketplace/Store/Workshop
+ - Added Marketplace/Store/Workshop, now you can increase how many dances you have!
+ - Added Gamepad and VR support (needs testing as of writing)
+ - Added First Person Body option, makes your body opaque when in first person
 # Version 1.0.6 BETA
  - Renamed "RootPart in void" mode to "RootPart in very void"
  - Added "RootPart in void" which fixes floating point issues with the torso.
