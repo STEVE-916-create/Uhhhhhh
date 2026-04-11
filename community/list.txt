@@ -32,3 +32,9 @@ user = totallyMr_eyes
 desc = 
 cost = 70 MB
 file = googlyeyes/allinone.lua
+
+name = Theos 32 Ported Animation From His Dance Script
+user = Literally Theo
+desc = it contains \nKJ Flexworks \nJK Flexworks \nMontagem Hikari \nChegou 3\nHeel Toe Hop \nTails Yell\nBillie Jean\nSit\nLemon Melon Cookie
+cost = 32 KB
+file = theosdances/SomeRandomModules.lua.txt
