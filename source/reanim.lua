@@ -3259,6 +3259,7 @@ local Reanimate = {
 		CFrame = CFrame.identity,
 		Focus = CFrame.identity,
 		Scriptable = false,
+		VRMode = false,
 		Zoom = 16,
 		FieldOfView = 70,
 		Input = Vector3.zero,
@@ -3320,6 +3321,10 @@ local Reanimate = {
 				LP = nil,
 				JB = nil,
 			},
+			GP = {
+				DJ = Vector3.zero,
+				JB = false,
+			},
 			Reset = function(self)
 				self.KB.Up = false
 				self.KB.Down = false
@@ -3343,6 +3348,7 @@ Reanimate.Camera.IsMousePanning = function(self)
 	return self:IsMouseLocked() or self.Inputs.MS.RMB
 end
 do
+	local VRService = cloneref(game:GetService("VRService"))
 	local thumbstickAreaTopLeft = nil
 	local thumbstickAreaBottomRight = nil
 	local jumpButtonTopLeft = nil
@@ -3413,6 +3419,9 @@ do
 				if input.KeyCode == Enum.KeyCode.Space then
 					self.Inputs.KB.Space = true
 				end
+				if input.KeyCode == Enum.KeyCode.ButtonA then
+					self.Inputs.KB.Space = true
+				end
 			end
 			if input.UserInputType == Enum.UserInputType.Touch then
 				if self.Inputs.TC.DJ == nil and IsInThumbstickArea(input.Position) then
@@ -3449,6 +3458,9 @@ do
 					self.Inputs.KB.Right = false
 				end
 				if input.KeyCode == Enum.KeyCode.Space then
+					self.Inputs.KB.Space = false
+				end
+				if input.KeyCode == Enum.KeyCode.ButtonA then
 					self.Inputs.KB.Space = false
 				end
 			end

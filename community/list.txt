@@ -20,3 +20,15 @@ user = Valtta
 desc = Started this in regards to Melon's dance zip file. I couldn't be more patient for someone/or for Steve to add the animations he had listed, so I just converted some notable stuffs myself.\nI'll be adding more animations outside of melon's zip, as this isn't just specifically for that.\nHuge huge credits to Melon for the rbxm and providing the trimmed mp3s with the first batch of dances <3\nCurrently converted animations:\n* Otsukare Summer [Dance]\n* Doomer [Dance]\n* With Friends (OneyPlays) [Dance]\n* Unlock It [Dance]\n* Liar Dancer [Dance]\n* Competent [Dance]\n* Bouncin' [Dance]\n* Birdbrain V2 [Dance]\n* Skeleton Shield Bash [Dance]\n* Spoken For [Dance]\n* Iris Out (Reze) [Dance]\n* Low Cortisol (Uma) [Dance]\n* I Came To Goon [Dance]\n* Release The Ghouls! [Dance]\n* Lil Buddy Was Sick [Dance]\n* Dare (Noodle) [Dance]\n* Eyes Closed (Jane Remover) [Dance]\n* Schadenfreude [Dance]\n* Usagi [Dance]
 cost = 41 KB
 file = valttaportslop/allinone.lua
+
+name = Awes' Two Dances
+user = Awes, Botsl's Tech Support
+desc = I took one of the peoples moveset And modified it to a template like And made this
+cost = $100
+file = awesthealter1/dances.lua
+
+name = GooglyEyes's Dancezz
+user = totallyMr_eyes
+desc = 
+cost = 70 MB
+file = awesthealter1/dances.lua
