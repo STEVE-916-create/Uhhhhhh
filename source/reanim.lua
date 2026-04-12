@@ -3487,6 +3487,9 @@ do
 					self.Inputs.TC.JB = nil
 				end
 			end
+			if input.KeyCode == Enum.KeyCode.Thumbstick1 then
+				self.Inputs.GP.DJ = Vector2.zero
+			end
 		end)
 		local function resetInputDevices()
 			self.Inputs:Reset()
@@ -3527,7 +3530,6 @@ do
 			if self.Inputs.GP.DJ.Magnitude > 0.2 then
 				self.Move += Vector3.new(self.Inputs.GP.DJ.X, 0, self.Inputs.GP.DJ.Y)
 			end
-			self.Inputs.GP.DJ *= 0
 			if self.Move.Magnitude > 1 then self.Move = self.Move.Unit end
 			self.Jump = false
 			if self.Inputs.KB.Space then
@@ -3674,6 +3676,9 @@ do
 				self.Inputs.TC.LP = nil
 				self.Inputs.TC.Touch[input] = false
 			end
+			if input.KeyCode == Enum.KeyCode.Thumbstick2 then
+				self.Inputs.GP.DJ = Vector2.zero
+			end
 		end)
 		UserInputService.PointerAction:Connect(function(wheel, pan, pinch, gpe)
 			if not gpe then
@@ -3740,7 +3745,6 @@ do
 				self:OnPanInput(Vector2.new(math.rad(120) * dt, 0), true)
 			end
 			self:OnPanInput(self.Inputs.GP.DJ * Vector2.new(1, 0.77) * math.rad(4) * 60 * dt * GameSettings.GamepadCameraSensitivity, true)
-			self.Inputs.GP.DJ *= 0
 			local input = self.Input * Vector3.new(1, GameSettings:GetCameraYInvertValue(), 1)
 			self.Input = Vector3.zero
 			local zoomDelta = input.Z
