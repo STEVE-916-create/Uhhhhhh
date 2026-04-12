@@ -5653,25 +5653,55 @@ AddModule(function()
 			local lleg = figure:FindFirstChild("Left Leg")
 			torso.CFrame = insts.HeadPart.CFrame * CFrame.Angles(0, math.pi * 0.5, 0) * CFrame.new(0, 0, -1)
 			torso.Velocity, torso.RotVelocity = Vector3.zero, Vector3.zero
+			local antigravity = Instance.new("BodyForce", torso)
+			antigravity.Force = Vector3.new(0, workspace.Gravity * torso:GetMass(), 0)
+			RunService.PostSimulation:Once(function()
+				antigravity:Destroy()
+			end)
 			if head then
 				head.CFrame = insts.HeadPart.CFrame * CFrame.Angles(0, math.pi * 0.5, 0) * CFrame.new(0, 0, -2)
 				head.Velocity, head.RotVelocity = Vector3.zero, Vector3.zero
+				local antigravity = Instance.new("BodyForce", head)
+				antigravity.Force = Vector3.new(0, workspace.Gravity * head:GetMass(), 0)
+				RunService.PostSimulation:Once(function()
+					antigravity:Destroy()
+				end)
 			end
 			if rarm then
 				rarm.CFrame = insts.ClawRPart.CFrame * CFrame.Angles(math.pi * -0.5, 0, 0) * CFrame.new(0.5, 0, 0)
 				rarm.Velocity, rarm.RotVelocity = Vector3.zero, Vector3.zero
+				local antigravity = Instance.new("BodyForce", rarm)
+				antigravity.Force = Vector3.new(0, workspace.Gravity * rarm:GetMass(), 0)
+				RunService.PostSimulation:Once(function()
+					antigravity:Destroy()
+				end)
 			end
 			if larm then
 				larm.CFrame = insts.ClawLPart.CFrame * CFrame.Angles(math.pi * -0.5, 0, 0) * CFrame.new(-0.5, 0, 0)
 				larm.Velocity, larm.RotVelocity = Vector3.zero, Vector3.zero
+				local antigravity = Instance.new("BodyForce", larm)
+				antigravity.Force = Vector3.new(0, workspace.Gravity * larm:GetMass(), 0)
+				RunService.PostSimulation:Once(function()
+					antigravity:Destroy()
+				end)
 			end
 			if rleg then
 				rleg.CFrame = insts.ClawRPart.CFrame * CFrame.Angles(math.pi * -0.5, 0, 0) * CFrame.new(-0.5, 0, 0)
 				rleg.Velocity, rleg.RotVelocity = Vector3.zero, Vector3.zero
+				local antigravity = Instance.new("BodyForce", rleg)
+				antigravity.Force = Vector3.new(0, workspace.Gravity * rleg:GetMass(), 0)
+				RunService.PostSimulation:Once(function()
+					antigravity:Destroy()
+				end)
 			end
 			if lleg then
 				lleg.CFrame = insts.ClawLPart.CFrame * CFrame.Angles(math.pi * -0.5, 0, 0) * CFrame.new(0.5, 0, 0)
 				lleg.Velocity, lleg.RotVelocity = Vector3.zero, Vector3.zero
+				local antigravity = Instance.new("BodyForce", lleg)
+				antigravity.Force = Vector3.new(0, workspace.Gravity * lleg:GetMass(), 0)
+				RunService.PostSimulation:Once(function()
+					antigravity:Destroy()
+				end)
 			end
 		else
 			rj.Enabled, nj.Enabled, rsj.Enabled, lsj.Enabled, rhj.Enabled, lhj.Enabled = true, true, true, true, true, true
@@ -6690,15 +6720,20 @@ AddModule(function()
 		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0) * CFrame.Angles(0, math.rad(90), 0), scale)
 		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0) * CFrame.Angles(0, math.rad(-90), 0), scale)
 		
+		local head = figure:FindFirstChild("Head")
 		if EyeThrow_ref and EyeThrow_ref:IsDescendantOf(workspace) then
 			if not EyeThrow_lastref then
 				nj.Enabled = false
 			end
 			EyeThrow_lastref = EyeThrow_ref
-			local head = figure:FindFirstChild("Head")
 			if head and head.AssemblyRootPart == head then
 				head.CFrame = EyeThrow_ref.CFrame * CFrame.new(0, -m.HeadScale / 4, 0)
 				head.Velocity, head.RotVelocity = Vector3.zero, Vector3.zero
+				local antigravity = Instance.new("BodyForce", head)
+				antigravity.Force = Vector3.new(0, workspace.Gravity * head:GetMass(), 0)
+				RunService.PostSimulation:Once(function()
+					antigravity:Destroy()
+				end)
 			end
 		else
 			EyeThrow_ref = nil

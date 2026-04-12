@@ -8754,6 +8754,11 @@ do
 		"i wrote this during permadeath's patch. my members are so quick in reporting bugs and stuff lol",
 		"i plead the six seventh amendment",
 		"\"i have strong network ownership that can take big buildings\" \"i have strong network too\" *61 MBPS*",
+		"when your script is so good it keeps the reanimation community alive-",
+		"i need your hat ids",
+		"We can confirm that we were !",
+		"Looking At You Just Makes Me Jaded",
+		"\"Yo whwho can dm me emeremerian  reanimation\"",
 	}
 	for _=1, 15 do
 		local idx = math.random(1, #quotes)
