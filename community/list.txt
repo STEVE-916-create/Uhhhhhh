@@ -1,5 +1,5 @@
 name = Bhop dance this is a test
-user = noober
+user = Noober
 desc = Bhop emote because lazy Steve didn't make it
 file = nbhoptest/Bhop module.lua
 
@@ -38,3 +38,9 @@ user = Literally Theo
 desc = it contains \nKJ Flexworks \nJK Flexworks \nMontagem Hikari \nChegou 3\nHeel Toe Hop \nTails Yell\nBillie Jean\nSit\nLemon Melon Cookie
 cost = 32 KB
 file = theosdances/SomeRandomModule.lua.txt
+
+name = Noober dance pack
+user = Noober
+desc = Mega pack of 106 dances
+cost = 134 KB
+file = noobersdances/noobersdances.lua
