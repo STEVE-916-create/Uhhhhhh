@@ -8423,10 +8423,10 @@ local function AddModule(func)
 		elseif m.ModuleType == "DANCE" then
 			return AddDance(m)
 		else
-			error("Unknown ModuleType for Module!")
+			--error("Unknown ModuleType for Module!")
 		end
 	else
-		error("Module return value is not a table. Got " .. typeof(m) .. " instead.")
+		--error("Module return value is not a table. Got " .. typeof(m) .. " instead.")
 	end
 end
 local function AddModules(list)
