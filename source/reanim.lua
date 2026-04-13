@@ -3760,6 +3760,7 @@ do
 			self.Zoom = math.clamp(self.Zoom, 0.5, 100000)
 			local rzoom = self.Zoom
 			if self.FPSLocked then
+				self.Zoom = 0.5
 				rzoom = 0.5
 			end
 			if self.VRMode then
@@ -9152,9 +9153,22 @@ clearcontenthash.Activated:Connect(function()
 		end
 	elseif clearcontenthashclicks == 3 then
 		SaveData.ContentHash = nil
-		clearcontenthashtext.Text = "Cleared, reload modules to apply!"
+		local function cleardir(path)
+			for _,x in listfiles(path) do
+				if x:sub(1, #path) == path then
+					pcall(delfile, x)
+				end
+			end
+		end
+		pcall(cleardir, "UhhhhhhReanim/Content/Anims")
+		pcall(cleardir, "UhhhhhhReanim/Content/Sounds")
+		pcall(cleardir, "UhhhhhhReanim/Content/Images")
+		pcall(cleardir, "UhhhhhhReanim/Content/Models")
+		pcall(cleardir, "UhhhhhhReanim/Content/Unknown")
+		ForceModuleReload(false)
+		clearcontenthashtext.Text = "Sayonara = Matane!"
 		task.wait(1)
-		if clearcontenthashclicks == 2 then
+		if clearcontenthashclicks >= 3 then
 			clearcontenthashclicks = 0
 			clearcontenthashtext.Text = "CLEAR ALL DOWNLOADED CONTENT"
 		end
