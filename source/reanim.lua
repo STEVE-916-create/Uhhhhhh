@@ -357,7 +357,7 @@ do
 end
 
 do
-	local CDNVersion = 2
+	local CDNVersion = 3
 	local AllFileNames = {
 		"dm_afterburner.ft2.mp3",
 		"4m_brokenheart.ft2.mp3",
@@ -3263,6 +3263,7 @@ local Reanimate = {
 		Focus = CFrame.identity,
 		Scriptable = false,
 		VRMode = false,
+		FPSLocked = false,
 		Zoom = 16,
 		FieldOfView = 70,
 		Input = Vector3.zero,
@@ -3271,6 +3272,7 @@ local Reanimate = {
 			self.Zoom = (self.Focus.Position - self.CFrame.Position).Magnitude
 			self._Zoom = self.Zoom
 			self.Scriptable = false
+			self.FPSLocked = false
 			self.FieldOfView = 70
 			self.Inputs:Reset()
 		end,
@@ -3757,6 +3759,9 @@ do
 			end
 			self.Zoom = math.clamp(self.Zoom, 0.5, 100000)
 			local rzoom = self.Zoom
+			if self.FPSLocked then
+				rzoom = 0.5
+			end
 			if self.VRMode then
 				input *= Vector3.new(1, 0, 1)
 				rzoom *= Reanimate.CharacterScale
@@ -3842,6 +3847,9 @@ do
 						end
 						newCameraFocus = CFrame.new(subjectPosition)
 						local cameraFocusP = newCameraFocus.Position
+						if self.VRMode then
+							cameraFocusP += newLookVector * 0.5
+						end
 						newCameraCFrame = CFrame.lookAt(cameraFocusP - newLookVector * self._Zoom, cameraFocusP)
 						self.CFrame, self.Focus = newCameraCFrame, newCameraFocus
 					end
@@ -3933,6 +3941,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	BodyForce.Parent = RCRootPart
 	BodyForce.Force = Vector3.zero
 	RC.Parent = workspace
+	RCRootPart.RootPriority = 67
 	RCRootPart.CFrame = cf
 	local SafeY = cf.Y
 	local IsFloat = false
@@ -4816,6 +4825,7 @@ SaveData.Reanimator.HatsCollideMethod = SaveData.Reanimator.HatsCollideMethod or
 SaveData.Reanimator.IWantAllHats = not not SaveData.Reanimator.IWantAllHats
 SaveData.Reanimator.IWantHatCollide = SaveData.Reanimator.IWantHatCollide or 3
 SaveData.Reanimator.HatsPatchmahub = not not SaveData.Reanimator.HatsPatchmahub
+SaveData.Reanimator.RespawnPosition = SaveData.Reanimator.RespawnPosition or 0
 SaveData.Reanimator.HatsFling = not not SaveData.Reanimator.HatsFling
 SaveData.Reanimator.HatsSpin = not not SaveData.Reanimator.HatsSpin
 SaveData.Reanimator.HatsFlingMethod = SaveData.Reanimator.HatsFlingMethod or 1
@@ -4834,6 +4844,11 @@ HatReanimator.HatCollideMethod = SaveData.Reanimator.HatsCollideMethod
 HatReanimator.IWantAllHats = SaveData.Reanimator.IWantAllHats
 HatReanimator.IWantHatCollide = SaveData.Reanimator.IWantHatCollide
 HatReanimator.Permadeath = false--not SaveData.Reanimator.HatsPatchmahub
+HatReanimator.RespawnPosition = SaveData.Reanimator.RespawnPosition
+-- 0 - hide body
+-- 1 - behind character
+-- 2 - randomtp close
+-- 3 - stay at spawn
 HatReanimator.HatFling = SaveData.Reanimator.HatsFling
 HatReanimator.HatSpin = SaveData.Reanimator.HatsSpin
 HatReanimator.FlingMethod = SaveData.Reanimator.HatsFlingMethod
@@ -4918,6 +4933,15 @@ function HatReanimator.Config(parent)
 	UI.CreateSwitch(parent, "Permadeath", HatReanimator.Permadeath).Changed:Connect(function(val)
 		HatReanimator.Permadeath = val
 		SaveData.Reanimator.HatsPatchmahub = not val
+	end)
+	UI.CreateDropdown(parent, "respawntp", {
+		"The Void",
+		"Behind ReanimCharacter",
+		"Randomtp near",
+		"At spawn",
+	}, HatReanimator.RespawnPosition + 1).Changed:Connect(function(val)
+		HatReanimator.RespawnPosition = val - 1
+		SaveData.Reanimator.RespawnPosition = val - 1
 	end)
 	UI.CreateSwitch(parent, "Hat Collide", HatReanimator.HatCollide).Changed:Connect(function(val)
 		HatReanimator.HatCollide = val
@@ -5927,7 +5951,7 @@ function HatReanimator.Start()
 		Wait1 = 0.25,
 		Wait2 = 0,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			RootPart.CFrame = CFrame.new(RootPosition + Vector3.new(0, 12, 0)) * CFrame.Angles(math.pi / 2, 0, 0)
+			RootPart.CFrame = CFrame.new(RootPosition) * CFrame.Angles(math.pi / 2, 0, 0)
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.zero, Vector3.zero
 		end,
 		State1 = function() end,
@@ -6299,7 +6323,7 @@ function HatReanimator.Start()
 				RootPosition = Vector3.new(root.Position.X, FallenPartsDestroyHeight, root.Position.Z)
 			end
 		end
-		--[[if not workspace.StreamingEnabled then
+		if not workspace.StreamingEnabled and false then
 			local dir = CFrame.Angles(0, math.pi * 2 * math.random(), 0).LookVector * 300
 			while true do
 				local nearAPlayer = false
@@ -6316,7 +6340,28 @@ function HatReanimator.Start()
 					break
 				end
 			end
-		end]]
+		end
+		if not perma then
+			RootPosition += Vector3.new(0, 12, 0)
+			if ReanimCharacter then
+				local root = ReanimCharacter:FindFirstChild("HumanoidRootPart")
+				if root then
+					if HatReanimator.RespawnPosition == 1 then
+						RootPosition = root.CFrame * Vector3.new(0, 0, 6)
+					end
+					if HatReanimator.RespawnPosition == 2 then
+						local dir = Vector3.new(math.random() * 2 - 1, math.random() * 2 - 1, math.random() * 2 - 1).Unit
+						if dir ~= dir or dir.Magnitude == 0 then
+							dir = Vector3.yAxis
+						end
+						RootPosition = root.Position + dir * math.random(8, 12)
+					end
+				end
+			end
+			if HatReanimator.RespawnPosition == 3 then
+				RootPosition = RootPart.Position
+			end
+		end
 		--pcall(function() Player.ReplicationFocus = character end)
 		if hatcols then
 			HatReanimator.Status.HatCollide = "Waiting for Permadeath."
