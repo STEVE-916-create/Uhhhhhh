@@ -40,16 +40,22 @@ table.insert(modules,     function()
     		else
     			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_123.anim"))
     		end
-    	end)
-table.insert(modules,     function(dt, figure)
+    	end
+    
+    	m.Update = function(dt, figure)
     		animator:Step(os.clock() - start)
-    	end)
-table.insert(modules,     function(dt: number, figure: Model)
+    	end
+    
+    	m.Update = function(dt: number, figure: Model)
     		animator:Step(GetOverrideDanceMusicTime())
-    	end)
-table.insert(modules,     function(figure)
+    	end
+    
+    	m.Destroy = function(figure)
     		animator = nil
-    	end)
+    	end
+    
+    	return m
+    end)
 table.insert(modules,     function()
     	local m = {}
     
@@ -109,12 +115,12 @@ table.insert(modules,     function()
     	local force = nil
     
     	m.Init = function(figure)
-    		SetOverrideDanceMusic(AssetGetContentId("bhop.mp3"))
+    		SetOverrideDanceMusic(AssetGetContentId("nil_bhop.mp3"))
     
     		start           = os.clock()
     		animator        = AnimLib.Animator.new()
     		animator.rig    = figure
-    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("bhop.anim"))
+    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_bhop.anim"))
     		animator.looped = true
     		force = Instance.new("BodyVelocity")
     		force.P = 9e4
@@ -137,11 +143,20 @@ table.insert(modules,     function()
     			)
     		else
     			force.Velocity = Vector3.zero
-    		end)
-table.insert(modules,     function(figure)
+    		end
+    	end
+    	
+    	m.Destroy = function(figure)
     	animator = nil
     	force:Destroy()
-    	if not figure then return end)
+    	if not figure then return end
+    	local hum = figure:FindFirstChild("Humanoid")
+    	if not hum or not hum.RootPart then return end
+    	hum.WalkSpeed = 16 * figure:GetScale()
+    	end
+    
+    	return m
+    end)
 table.insert(modules,     function()
     	local m = {}
     
@@ -220,20 +235,25 @@ table.insert(modules,     function()
     		animator.looped = true
     		animator.speed  = 1
     		if m.Alternative then
-    			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("iagangnam.anim"))
-    			SetOverrideDanceMusic(AssetGetContentId("iagangnamAlt.mp3"))
+    			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_iagangnam.anim"))
+    			SetOverrideDanceMusic(AssetGetContentId("nil_iagangnamAlt.mp3"))
     			animator.speed = 1.7
     		else
-    			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("iagangnam.anim"))
-    			SetOverrideDanceMusic(AssetGetContentId("iagangnam.mp3"))
+    			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_iagangnam.anim"))
+    			SetOverrideDanceMusic(AssetGetContentId("nil_iagangnam.mp3"))
     		end
-    	end)
-table.insert(modules,     function(dt, figure)
+    	end
+    
+    	m.Update = function(dt, figure)
     		animator:Step(os.clock() - start)
-    	end)
-table.insert(modules,     function(figure)
+    	end
+    
+    	m.Destroy = function(figure)
     		animator = nil
-    	end)
+    	end
+    
+    	return m
+    end)
 table.insert(modules,     function()
     	local m = {}
     
@@ -417,12 +437,12 @@ table.insert(modules,     function()
     	local start    = 0
     
     	m.Init = function(figure)
-    		SetOverrideDanceMusic(AssetGetContentId("Usagiflap.mp3"), "IAusagi", 1, NumberRange.new(11.82, 60))
+    		SetOverrideDanceMusic(AssetGetContentId("nil_Usagiflap.mp3"), "IAusagi", 1, NumberRange.new(11.82, 60))
     
     		start           = os.clock()
     		animator        = AnimLib.Animator.new()
     		animator.rig    = figure
-    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Usagiflap.anim"))
+    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_Usagiflap.anim"))
     		animator.looped = true
     		animator.speed  = 1
     	end
@@ -620,12 +640,12 @@ table.insert(modules,     function()
     	local start    = 0
     
     	m.Init = function(figure)
-    		SetOverrideDanceMusic(AssetGetContentId("proxima.mp3"))
+    		SetOverrideDanceMusic(AssetGetContentId("nil_proxima.mp3"))
     
     		start           = os.clock()
     		animator        = AnimLib.Animator.new()
     		animator.rig    = figure
-    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("proxima.anim"))
+    		animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("nil_proxima.anim"))
     		animator.looped = true
     		animator.speed  = 1
     	end
@@ -640,15 +660,7 @@ table.insert(modules,     function()
     
     	return m
     end)
-table.insert(modules,     function()
-    	local m = {}
-    
-    	m.ModuleType  = "DANCE"
-    	m.Name        = "Omni"
-    	m.Description = "500 years of constant human evolution"
-    	m.Assets = {"nil_omni.anim@https://github.com/czmalio291/Mkaxss/raw/refs/heads/main/goodies/contents/nil_omni.anim", "nil_omni.mp3@https://github.com/czmalio291/Mkaxss/raw/refs/heads/main/goodies/contents/nil_omni.mp3"}
-    
-    	m.Config = function(parent)
+table.insert(modules,     function(parent)
     		Util_CreateText(parent, "how do i add distortionsoundeffect?", 14, Enum.TextXAlignment.Center)
     	end
     

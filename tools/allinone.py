@@ -33,6 +33,7 @@ def split_lua_table_elements(table_content):
     return elements
 
 def modify_closure(closure_str, market_dir, watermark):
+    to_change = {}
     assets_match = re.search(r'm\.Assets\s*=\s*\{(.*?)\}', closure_str, re.DOTALL)
     if not assets_match:
         return closure_str
@@ -47,6 +48,7 @@ def modify_closure(closure_str, market_dir, watermark):
             if '@' not in value:
                 new_value = f"{watermark}_{value}@MARKET/{market_dir}/{value}"
                 modified_elem = f"{quote}{new_value}{quote}"
+                to_change[value] = f"{watermark}_{value}"
             else:
                 modified_elem = elem
             modified_elements.append(modified_elem)
@@ -56,6 +58,8 @@ def modify_closure(closure_str, market_dir, watermark):
     old_full = assets_match.group(0)
     new_full = f'm.Assets = {new_table}'
     new_closure = closure_str.replace(old_full, new_full, 1)
+    for old, new in to_change.items():
+        new_closure = new_closure.replace(f"\"{old}\"", f"\"{new}\"").replace(f"'{old}'", f"'{new}'")
     return new_closure
 
 def extract_closures(lua_code):
@@ -70,15 +74,15 @@ def extract_closures(lua_code):
         level = 1
         pos = start + 8
         while pos < length and level > 0:
-            next_match = re.search(r'\b(function|end)\b', lua_code[pos:])
+            next_match = re.search(r'\b(function|do|then|end)\b', lua_code[pos:])
             if not next_match:
                 break
             kw_start = pos + next_match.start()
             kw = next_match.group(1)
-            if kw == 'function':
-                level += 1
-            else:
+            if kw == 'end':
                 level -= 1
+            else:
+                level += 1
             pos = kw_start + len(kw)
         if level == 0:
             closure = lua_code[start:pos]
@@ -105,8 +109,8 @@ def main():
     output_path = os.path.join(zip_dir, output_name)
 
     # This is the variable you can change at the top of the generated file
-    THE_MARKET_DIRECTORY = "nilsbin"
-    THE_WATERMARK = "nil"
+    THE_MARKET_DIRECTORY = input("THE_MARKET_DIRECTORY = ")
+    THE_WATERMARK = input("THE_WATERMARK = ")
 
     try:
         all_closures = []

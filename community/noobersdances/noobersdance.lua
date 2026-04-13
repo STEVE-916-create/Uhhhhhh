@@ -18,12 +18,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("24 hour cinderella.mp3"), "23 hour cinderella", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_24 hour cinderella.mp3"), "23 hour cinderella", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("24 hour cinderella.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_24 hour cinderella.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -57,12 +57,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("aint no loving my man.mp3"), "aint no loving my man", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_aint no loving my man.mp3"), "aint no loving my man", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("aint no loving my man.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_aint no loving my man.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -96,12 +96,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Bhop.mp3"), "Bhop", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Bhop.mp3"), "Bhop", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Bhop.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Bhop.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -135,12 +135,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("BloodPop.mp3"), "BloodPop", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_BloodPop.mp3"), "BloodPop", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("BloodPop.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_BloodPop.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -174,12 +174,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("BreakDance.mp3"), "Break Dance", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_BreakDance.mp3"), "Break Dance", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("BreakDance.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_BreakDance.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -213,12 +213,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("BreakDown.mp3"), "BreakDown", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_BreakDown.mp3"), "BreakDown", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("BreakDown.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_BreakDown.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -252,12 +252,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("ChronoShift.mp3"), "ChronoShift", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_ChronoShift.mp3"), "ChronoShift", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("ChronoShift.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_ChronoShift.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -291,12 +291,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("CryForMe.mp3"), "Cry for me", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_CryForMe.mp3"), "Cry for me", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("CryForMe.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_CryForMe.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -330,12 +330,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Ellen doe.mp3"), "Ellen doe", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Ellen doe.mp3"), "Ellen doe", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Ellen doe.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Ellen doe.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -369,12 +369,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("EverybodyGangnam.mp3"), "Everybody gangnam", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_EverybodyGangnam.mp3"), "Everybody gangnam", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("EverybodyGangnam.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_EverybodyGangnam.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -408,12 +408,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Gangnam style (dod).mp3"), "Gangnam style (dod)", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Gangnam style (dod).mp3"), "Gangnam style (dod)", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Gangnam style (dod).anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Gangnam style (dod).anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -428,25 +428,12 @@ table.insert(modules,     function()
     
         return m
     end)
-table.insert(modules,     function()
-        local m = {}
-    
-        m.ModuleType  = "DANCE"
-        m.Name        = "Hakari from fatsaken"
-        m.Description = "if Steve not adding this, then Ill do it"
-        m.Assets = {"noober_HakariForsaken.anim@MARKET/noobersdances/HakariForsaken.anim", "noober_HakariForsaken.mp3@MARKET/noobersdances/HakariForsaken.mp3"}
-    
-        m.Config = function(parent)
+table.insert(modules,     function(parent)
             Util_CreateText(parent, "No settings.", 14, Enum.TextXAlignment.Center)
-        end
-    
-        m.SaveConfig = function() return {} end
-        m.LoadConfig  = function(save) end
-    
-        local animator = nil
-        local start    = 0
-    
-        m.Init = function(figure)
+        end)
+table.insert(modules,     function() return {} end)
+table.insert(modules,     function(save) end)
+table.insert(modules,     function(figure)
             SetOverrideDanceMusic(AssetGetContentId("HakariForsaken.mp3"), "Hakari from fatsaken", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
@@ -455,18 +442,13 @@ table.insert(modules,     function()
             animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("HakariForsaken.anim"))
             animator.looped = true
             animator.speed  = 1
-        end
-    
-        m.Update = function(dt, figure)
+        end)
+table.insert(modules,     function(dt, figure)
             animator:Step(os.clock() - start)
-        end
-    
-        m.Destroy = function(figure)
+        end)
+table.insert(modules,     function(figure)
             animator = nil
-        end
-    
-        return m
-    end)
+        end)
 table.insert(modules,     function()
         local m = {}
     
@@ -486,12 +468,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Honey Pie.mp3"), "Honey Pie", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Honey Pie.mp3"), "Honey Pie", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Honey Pie.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Honey Pie.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -525,12 +507,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("HypnoDance.mp3"), "HypnoDance", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_HypnoDance.mp3"), "HypnoDance", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("HypnoDance.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_HypnoDance.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -564,12 +546,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("I luv it.mp3"), "I luv it", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_I luv it.mp3"), "I luv it", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("I luv it.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_I luv it.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -603,12 +585,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("JK.mp3"), "JK unlimited flexworks", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_JK.mp3"), "JK unlimited flexworks", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("JK.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_JK.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -642,12 +624,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Jamal celebration.mp3"), "Jamal celebration", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Jamal celebration.mp3"), "Jamal celebration", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Jamal celebration.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Jamal celebration.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -681,12 +663,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Jax toy.mp3"), "Jax toy", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Jax toy.mp3"), "Jax toy", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Jax toy.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Jax toy.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -720,12 +702,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Jung justice.mp3"), "Jung justice", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Jung justice.mp3"), "Jung justice", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Jung justice.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Jung justice.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -759,12 +741,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Lil buddy was sick.mp3"), "Lil buddy was sick", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Lil buddy was sick.mp3"), "Lil buddy was sick", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Lil buddy was sick.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Lil buddy was sick.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -798,12 +780,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("LowCortisol.mp3"), "Low Cortisol", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_LowCortisol.mp3"), "Low Cortisol", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("LowCortisol.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_LowCortisol.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -837,12 +819,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Luffy dance.mp3"), "Luffy dance", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Luffy dance.mp3"), "Luffy dance", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Luffy dance.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Luffy dance.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -876,12 +858,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("MLG.mp3"), "MLG", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_MLG.mp3"), "MLG", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("MLG.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_MLG.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -915,12 +897,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Macarena.mp3"), "macarena", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Macarena.mp3"), "macarena", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Macarena.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Macarena.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -954,12 +936,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("NoMoreGames.mp3"), "No More Games", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_NoMoreGames.mp3"), "No More Games", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("NoMoreGames.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_NoMoreGames.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -993,12 +975,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Pick it up.mp3"), "Pick it up", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Pick it up.mp3"), "Pick it up", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Pick it up.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Pick it up.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1032,12 +1014,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Runaway.mp3"), "I wanna ran away", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Runaway.mp3"), "I wanna ran away", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Runaway.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Runaway.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1071,12 +1053,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Six Seven.mp3"), "6 7", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Six Seven.mp3"), "6 7", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Six Seven.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Six Seven.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1110,12 +1092,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Slickback.mp3"), "SlickBack", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Slickback.mp3"), "SlickBack", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Slickback.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Slickback.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1149,12 +1131,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("SodaPop.mp3"), "Soda Pop", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_SodaPop.mp3"), "Soda Pop", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("SodaPop.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_SodaPop.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1188,7 +1170,7 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("SpartaRemix.mp3"), "Sparta Remix", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_SpartaRemix.mp3"), "Sparta Remix", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
@@ -1227,12 +1209,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Sparta Remix.mp3"), "Sparta Remix", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Sparta Remix.mp3"), "Sparta Remix", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Sparta Remix.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Sparta Remix.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1266,12 +1248,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Tokyo drift.mp3"), "Tokyo drift", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Tokyo drift.mp3"), "Tokyo drift", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Tokyo drift.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Tokyo drift.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1305,12 +1287,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Wait.mp3"), "Wait", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Wait.mp3"), "Wait", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Wait.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Wait.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1344,12 +1326,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("WithFriends.mp3"), "with friends", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_WithFriends.mp3"), "with friends", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("WithFriends.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_WithFriends.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1383,12 +1365,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("XO.mp3"), "XO", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_XO.mp3"), "XO", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("XO.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_XO.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1422,12 +1404,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("ai niche baby.mp3"), "Ai niche baby", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_ai niche baby.mp3"), "Ai niche baby", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("ai niche baby.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_ai niche baby.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1461,12 +1443,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Analog horror funk.mp3"), "analog horror funk", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Analog horror funk.mp3"), "analog horror funk", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Analog horror funk.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Analog horror funk.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1500,12 +1482,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("angry.mp3"), "angry", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_angry.mp3"), "angry", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("angry.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_angry.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1539,12 +1521,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("ay mi gatito.mp3"), "ay mi gatito", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_ay mi gatito.mp3"), "ay mi gatito", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("ay mi gatito.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_ay mi gatito.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1578,12 +1560,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("beat em up.mp3"), "Beat em up", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_beat em up.mp3"), "Beat em up", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("beat em up.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_beat em up.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1617,12 +1599,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("bones.mp3"), "Bones", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_bones.mp3"), "Bones", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("bones.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_bones.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1656,12 +1638,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("boombox.mp3"), "boombox", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_boombox.mp3"), "boombox", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("boombox.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_boombox.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1695,12 +1677,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("booming.mp3"), "boomin", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_booming.mp3"), "boomin", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("booming.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_booming.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1734,12 +1716,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Brickbattler.mp3"), "Brickbattler", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Brickbattler.mp3"), "Brickbattler", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Brickbattler.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Brickbattler.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1773,12 +1755,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("bumblebee.mp3"), "bumblebee", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_bumblebee.mp3"), "bumblebee", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("bumblebee.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_bumblebee.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1812,12 +1794,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("butcher vanity.mp3"), "Butcher vanity", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_butcher vanity.mp3"), "Butcher vanity", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("butcher vanity.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_butcher vanity.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1851,12 +1833,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("cafeteria.mp3"), "cafeteria", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_cafeteria.mp3"), "cafeteria", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("cafeteria.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_cafeteria.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1890,12 +1872,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("close to you.mp3"), "Close to you", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_close to you.mp3"), "Close to you", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("close to you.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_close to you.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1929,12 +1911,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("clubPenguin.mp3"), "Club Penguin", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_clubPenguin.mp3"), "Club Penguin", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("clubPenguin.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_clubPenguin.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -1968,12 +1950,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("coffin.mp3"), "coffin", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_coffin.mp3"), "coffin", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("coffin.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_coffin.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2007,12 +1989,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("company groove.mp3"), "company groove", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_company groove.mp3"), "company groove", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("company groove.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_company groove.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2046,12 +2028,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("conga.mp3"), "Conga", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_conga.mp3"), "Conga", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("conga.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_conga.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2085,12 +2067,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("criss cross.mp3"), "criss cross", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_criss cross.mp3"), "criss cross", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("criss cross.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_criss cross.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2124,12 +2106,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("cry for me v2.mp3"), "cry for me (evilsaken)", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_cry for me v2.mp3"), "cry for me (evilsaken)", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("cry for me v2.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_cry for me v2.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2163,12 +2145,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("cupid.mp3"), "Cupid", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_cupid.mp3"), "Cupid", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("cupid.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_cupid.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2202,12 +2184,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("doomer.mp3"), "Doomer", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_doomer.mp3"), "Doomer", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("doomer.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_doomer.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2241,12 +2223,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("down.mp3"), "Down", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_down.mp3"), "Down", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("down.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_down.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2280,12 +2262,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("downtown.mp3"), "downtown", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_downtown.mp3"), "downtown", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("downtown.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_downtown.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2319,12 +2301,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("electro swing.mp3"), "Electronic Swing", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_electro swing.mp3"), "Electronic Swing", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("electro swing.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_electro swing.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2358,12 +2340,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("engineer taunt.mp3"), "engineer taunt", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_engineer taunt.mp3"), "engineer taunt", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("engineer taunt.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_engineer taunt.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2397,12 +2379,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("epical.mp3"), "epical", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_epical.mp3"), "epical", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("epical.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_epical.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2436,12 +2418,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("firework.mp3"), "firework", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_firework.mp3"), "firework", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("firework.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_firework.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2475,12 +2457,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("floss.mp3"), "floss", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_floss.mp3"), "floss", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("floss.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_floss.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2514,12 +2496,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("gnarly.mp3"), "Gnarly", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_gnarly.mp3"), "Gnarly", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("gnarly.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_gnarly.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2553,12 +2535,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("go mufasa.mp3"), "mufasa", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_go mufasa.mp3"), "mufasa", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("go mufasa.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_go mufasa.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2592,12 +2574,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("goat simulator.mp3"), "goat simulator", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_goat simulator.mp3"), "goat simulator", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("goat simulator.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_goat simulator.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2631,12 +2613,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("gojo.mp3"), "Gojo", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_gojo.mp3"), "Gojo", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("gojo.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_gojo.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2670,12 +2652,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("griddy.mp3"), "Griddy", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_griddy.mp3"), "Griddy", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("griddy.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_griddy.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2709,12 +2691,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Hit the jackpot.mp3"), "I just hit the jackpot", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Hit the jackpot.mp3"), "I just hit the jackpot", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Hit the jackpot.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Hit the jackpot.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2748,12 +2730,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("ice cream.mp3"), "ice cream", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_ice cream.mp3"), "ice cream", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("ice cream.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_ice cream.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2787,12 +2769,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("idk.mp3"), "IDK", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_idk.mp3"), "IDK", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("idk.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_idk.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2826,12 +2808,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("kj unlimited.mp3"), "kj unlimited flexworks", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_kj unlimited.mp3"), "kj unlimited flexworks", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("kj unlimited.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_kj unlimited.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2865,12 +2847,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("konton boogie.mp3"), "konton boogie", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_konton boogie.mp3"), "konton boogie", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("konton boogie.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_konton boogie.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2904,12 +2886,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("locked.mp3"), "Locked", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_locked.mp3"), "Locked", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("locked.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_locked.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2943,12 +2925,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("lucky.mp3"), "lucky", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_lucky.mp3"), "lucky", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("lucky.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_lucky.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -2982,12 +2964,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("lush life.mp3"), "lush life", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_lush life.mp3"), "lush life", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("lush life.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_lush life.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3021,12 +3003,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("mambo.mp3"), "Mambo", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_mambo.mp3"), "Mambo", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("mambo.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_mambo.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3060,12 +3042,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("miku miku beam.mp3"), "miku miku beam", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_miku miku beam.mp3"), "miku miku beam", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("miku miku beam.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_miku miku beam.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3099,12 +3081,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("miss the quiet.mp3"), "miss the quiet", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_miss the quiet.mp3"), "miss the quiet", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("miss the quiet.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_miss the quiet.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3138,12 +3120,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("monster.mp3"), "monster", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_monster.mp3"), "monster", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("monster.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_monster.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3177,12 +3159,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("muffin time.mp3"), "muffin time", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_muffin time.mp3"), "muffin time", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("muffin time.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_muffin time.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3216,12 +3198,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Orange justice.mp3"), "Orange Justice", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Orange justice.mp3"), "Orange Justice", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Orange justice.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Orange justice.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3255,12 +3237,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("otsukare.mp3"), "Otsukare Summer", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_otsukare.mp3"), "Otsukare Summer", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("otsukare.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_otsukare.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3294,12 +3276,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("PARROT PARTY.mp3"), "parrot party", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_PARROT PARTY.mp3"), "parrot party", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("PARROT PARTY.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_PARROT PARTY.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3338,7 +3320,7 @@ table.insert(modules,     function()
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("PickThePhone.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_PickThePhone.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3372,12 +3354,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("popStar.mp3"), "popStar", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_popStar.mp3"), "popStar", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("popStar.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_popStar.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3411,12 +3393,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("schadenfreude.mp3"), "Schadenfreude", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_schadenfreude.mp3"), "Schadenfreude", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("schadenfreude.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_schadenfreude.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3450,12 +3432,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("shake it.mp3"), "shake it", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_shake it.mp3"), "shake it", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("shake it.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_shake it.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3489,12 +3471,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("shattered hopes.mp3"), "Shattered hopes", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_shattered hopes.mp3"), "Shattered hopes", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("shattered hopes.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_shattered hopes.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3528,12 +3510,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Shout.mp3"), "Shout", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Shout.mp3"), "Shout", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Shout.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Shout.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3567,12 +3549,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("shucks.mp3"), "shucks", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_shucks.mp3"), "shucks", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("shucks.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_shucks.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3606,12 +3588,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("snowy.mp3"), "snowy", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_snowy.mp3"), "snowy", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("snowy.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_snowy.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3645,12 +3627,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("speed covering.mp3"), "Speed covering mouth", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_speed covering.mp3"), "Speed covering mouth", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("speed covering.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_speed covering.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3684,12 +3666,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("speed driving.mp3"), "speed driving", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_speed driving.mp3"), "speed driving", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("speed driving.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_speed driving.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3723,12 +3705,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("stereo hearts.mp3"), "stereo hearts", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_stereo hearts.mp3"), "stereo hearts", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("stereo hearts.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_stereo hearts.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3762,12 +3744,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("sturdy.mp3"), "Sturdy", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_sturdy.mp3"), "Sturdy", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("sturdy.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_sturdy.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3801,12 +3783,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("SubterFuge.mp3"), "subterFuge", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_SubterFuge.mp3"), "subterFuge", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("SubterFuge.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_SubterFuge.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3840,12 +3822,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("Survivalist.mp3"), "Survivalist", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_Survivalist.mp3"), "Survivalist", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("Survivalist.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_Survivalist.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3879,12 +3861,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("teto territory.mp3"), "teto territory", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_teto territory.mp3"), "teto territory", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("teto territory.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_teto territory.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3918,12 +3900,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("the hero.mp3"), "the hero", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_the hero.mp3"), "the hero", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("the hero.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_the hero.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3957,12 +3939,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("these cuffs.mp3"), "these cuffs", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_these cuffs.mp3"), "these cuffs", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("these cuffs.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_these cuffs.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -3996,12 +3978,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("tick tock.mp3"), "tick tock", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_tick tock.mp3"), "tick tock", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("tick tock.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_tick tock.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -4035,12 +4017,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("topbot.mp3"), "topbot", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_topbot.mp3"), "topbot", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("topbot.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_topbot.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -4074,12 +4056,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("umamusume.mp3"), "Umamusume", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_umamusume.mp3"), "Umamusume", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("umamusume.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_umamusume.anim"))
             animator.looped = true
             animator.speed  = 1
         end
@@ -4113,12 +4095,12 @@ table.insert(modules,     function()
         local start    = 0
     
         m.Init = function(figure)
-            SetOverrideDanceMusic(AssetGetContentId("work to the beat.mp3"), "work to the beat", 0.8, NumberRange.new(0, 45.5))
+            SetOverrideDanceMusic(AssetGetContentId("noober_work to the beat.mp3"), "work to the beat", 0.8, NumberRange.new(0, 45.5))
     
             start           = os.clock()
             animator        = AnimLib.Animator.new()
             animator.rig    = figure
-            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("work to the beat.anim"))
+            animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("noober_work to the beat.anim"))
             animator.looped = true
             animator.speed  = 1
         end

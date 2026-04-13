@@ -43,4 +43,4 @@ name = Noober dance pack
 user = Noober
 desc = Mega pack of 106 dances
 cost = 134 KB
-file = noobersdances/noobersdances.lua
+file = noobersdances/noobersdance.lua
