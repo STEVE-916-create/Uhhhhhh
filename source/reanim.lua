@@ -6407,6 +6407,10 @@ function HatReanimator.Start()
 		while character:IsDescendantOf(workspace) do
 			local t = os.clock()
 			local flingtarget = HatReanimator.FlingTargets[1]
+			if HatReanimator.FlingMethod == -1 then
+				table.remove(HatReanimator.FlingTargets, 1)
+				flingtarget = nil
+			end
 			if flingtarget then
 				if flingtarget.Time then
 					if t > flingtarget.Time then
