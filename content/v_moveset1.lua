@@ -1283,16 +1283,6 @@ AddModule(function()
 
 	local rj, nj, rsj, lsj, rhj, lhj, scale
 
-	local function ApplyLegs(tcf, ltgt, rtgt, ikdir, ikoff)
-		ikdir = ikdir or -Vector3.zAxis
-		ikoff = ikoff or 0.1
-		SetC0C1Joint(rj, tcf, CFrame.identity, scale)
-		local rlt = IK2Bone(tcf * Vector3.new(0.5, -1, 0), rtgt, CFrame.Angles(0, -ikoff, 0) * ikdir, 1, 1)
-		local llt = IK2Bone(tcf * Vector3.new(-0.5, -1, 0), ltgt, CFrame.Angles(0, ikoff, 0) * ikdir, 1, 1)
-		SetC0C1Joint(rhj, tcf:Inverse() * rlt, CFrame.new(0, -1, 0) * CFrame.Angles(-1.57, 0, 3.14), scale)
-		SetC0C1Joint(lhj, tcf:Inverse() * llt, CFrame.new(0, -1, 0) * CFrame.Angles(-1.57, 0, 3.14), scale)
-	end
-
 	local LegsTarget = {}
 	local FakeVRArms = {}
 	local TorsoRotation = CFrame.identity
@@ -1317,9 +1307,11 @@ AddModule(function()
 		end
 		local real = CFrame.Angles(last.X, last.Y, last.Z)
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
-		local dir = Vector3.new(0, -3, 0)
+		local origin = torso.CFrame * leg.Offset + root.CFrame.LookVector + root.Velocity * (LEG_MOVE_TIME * 0.6)
+		local dir = Vector3.new(0, -3, 0) - root.CFrame.LookVector
 		if hum:GetState() == Enum.HumanoidStateType.Climbing then
 			onground = true
+			origin = torso.CFrame * leg.Offset + Vector3.new(0, -0.5, 0)
 			dir = root.CFrame.LookVector * 3
 		end
 		local tgt = leg.Position
@@ -1328,7 +1320,6 @@ AddModule(function()
 			if leg.Timer >= 1 then
 				leg.Timer %= 1
 				leg.Target = leg.Position
-				local origin = torso.CFrame * leg.Offset + root.Velocity * (LEG_MOVE_TIME * 0.6)
 				local cast = PhysicsRaycast(origin, dir)
 				if cast then
 					cast = cast.Position
