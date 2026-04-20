@@ -1308,7 +1308,7 @@ AddModule(function()
 		local real = CFrame.Angles(last.X, last.Y, last.Z)
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		local origin = torso.CFrame * leg.Offset + root.CFrame.LookVector + root.Velocity * (LEG_MOVE_TIME * 0.6)
-		local dir = Vector3.new(0, -3, 0) - root.CFrame.LookVector
+		local dir = Vector3.new(0, -3, 0) - root.CFrame.LookVector * 1.5
 		if hum:GetState() == Enum.HumanoidStateType.Climbing then
 			onground = true
 			origin = torso.CFrame * leg.Offset + Vector3.new(0, -0.5, 0)
