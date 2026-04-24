@@ -100,12 +100,47 @@ do
 	if ismissing(replicatesignal) then
 		diefatal("Missing `replicatesignal` function!")
 	end
+	if ismissing(gethiddenproperty) then
+		if ismissing(setscriptable) then
+			diefatal("Missing `gethiddenproperty` and `setscriptable` function!")
+		elseif ismissing(isscriptable) then
+			gethiddenproperty = function(inst, prop, val)
+				setscriptable(inst, prop, true)
+				local val = inst[prop]
+				setscriptable(inst, prop, false)
+				return val
+			end
+		else
+			gethiddenproperty = function(inst, prop, val)
+				local was = isscriptable(inst, prop)
+				if not was then setscriptable(inst, prop, true) end
+				local val = inst[prop]
+				if not was then setscriptable(inst, prop, false) end
+				return val
+			end
+		end
+	end
 	if ismissing(sethiddenproperty) then
-		diefatal("Missing `replicatesignal` function!")
+		if ismissing(setscriptable) then
+			diefatal("Missing `sethiddenproperty` and `setscriptable` function!")
+		elseif ismissing(isscriptable) then
+			sethiddenproperty = function(inst, prop, val)
+				setscriptable(inst, prop, true)
+				inst[prop] = val
+				setscriptable(inst, prop, false)
+			end
+		else
+			gethiddenproperty = function(inst, prop, val)
+				local was = isscriptable(inst, prop)
+				if not was then setscriptable(inst, prop, true) end
+				inst[prop] = val
+				if not was then setscriptable(inst, prop, false) end
+			end
+		end
 	end
-	if ismissing(hookmetamethod) or ismissing(hookfunction) then
-		diefatal("Missing `hookmetamethod` and `hookfunction` function!")
-	end
+	--if ismissing(hookmetamethod) or ismissing(hookfunction) then
+	--	diefatal("Missing `hookmetamethod` and `hookfunction` function!")
+	--end
 	local loadstringreturn = false
 	local val = math.random(-65536, 65536)
 	local _, func = pcall(loadstring, "return " .. val)
@@ -4161,7 +4196,10 @@ do
 	end
 end
 
-local HumanoidLASetHookState do
+local HumanoidLASetHookState
+if ismissing(hookmetamethod) or ismissing(hookfunction) then
+	HumanoidLASetHookState = function(hooked) end
+else
 	local LoadAnimation_old = nil
 	local function LoadAnimation_new(animation)
 		local char = Instance.new("Model")
@@ -4447,34 +4485,8 @@ function LimbReanimator.Start()
 			local r = h.RootPart
 			InitCFrame = r.CFrame
 			if h:GetState() ~= Enum.HumanoidStateType.Dead then
-				if false and LimbReanimator.InitMode ~= 0 and replicatesignal then
-					local a = Player:GetNetworkPing()
-					--replicatesignal(Player.ConnectDiedSignalBackend)
-					local t = os.clock()
-					while h:GetState() ~= Enum.HumanoidStateType.Dead do
-						task.wait()
-						local d = Players.RespawnTime - 0.1 + math.max(Player:GetNetworkPing() - a, 0)
-						if os.clock() - t > d then break end
-					end
-					InitCFrame = r.CFrame
-					if h:GetState() ~= Enum.HumanoidStateType.Dead then
-						if LimbReanimator.InitMode == 2 then
-							h:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
-						end
-						replicatesignal(Player.Kill)
-						h.Health = 0
-						task.delay(1, function()
-							if h:IsDescendantOf(workspace) then
-								--replicatesignal(Player.ConnectDiedSignalBackend)
-								h:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
-								h:ChangeState(Enum.HumanoidStateType.Dead)
-							end
-						end)
-					end
-				else
-					h:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
-					h:ChangeState(Enum.HumanoidStateType.Dead)
-				end
+				h:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
+				h:ChangeState(Enum.HumanoidStateType.Dead)
 			end
 		end
 	end
@@ -4832,9 +4844,6 @@ function LimbReanimator.Start()
 	if Player.Character then
 		local h = Player.Character:FindFirstChild("Humanoid")
 		if h then
-			if replicatesignal then
-				--replicatesignal(Player.ConnectDiedSignalBackend)
-			end
 			h:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
 			h:ChangeState(Enum.HumanoidStateType.Dead)
 		end
@@ -5050,22 +5059,7 @@ function HatReanimator.Config(parent)
 	end)
 	UI.CreateText(parent, "^^^ if ur rig built wrong or u switched to a new rig ^^^\nthis button is for you", 10, Enum.TextXAlignment.Center)
 	UI.CreateButton(parent, "Respawn", 20).Activated:Connect(function()
-		HatReanimator.Status.Permadeath = "Fired CDSB Signal!"
-		--replicatesignal(Player.ConnectDiedSignalBackend)
-		if RejectCharacterDeletionsDisabled then
-			HatReanimator.Status.Permadeath = "RCDless mode, did old technique!"
-			local old = Player.Character
-			for _,v in old:GetChildren() do
-				if v:IsA("Accoutrement") then continue end
-				v:Destroy()
-			end
-			local new = Util.Instance("Model", workspace)
-			HatReanimator.DontFireCharAddOnThisChar = new
-			Player.Character = new
-			task.wait()
-			HatReanimator.DontFireCharAddOnThisChar = old
-			Player.Character = old
-		end
+		--HatReanimator.Status.Permadeath = "Fired CDSB Signal!"
 	end)
 end
 HatReanimator.GetHatMap = function() end
@@ -5717,7 +5711,7 @@ function HatReanimator.Start()
 		local r = #Players:GetPlayers() * 1000
 		setsimrad(Player, r)
 		if os.clock() > lastsimradchange then
-			lastsimradchange = os.clock() + 0.5
+			lastsimradchange = os.clock() + 1
 			pcall(replicatesignal, Player.SimulationRadiusChanged, r)
 		end
 		--[[pcall(setsimulationradius, r, r)
@@ -5763,20 +5757,6 @@ function HatReanimator.Start()
 	local function Respawn()
 		if IsRespawning then return end
 		IsRespawning = true
-		--replicatesignal(Player.ConnectDiedSignalBackend)
-		if RejectCharacterDeletionsDisabled then
-			local old = Player.Character
-			for _,v in old:GetChildren() do
-				if v:IsA("Accoutrement") or v:IsA("Tool") then continue end
-				v:Destroy()
-			end
-			local new = Util.Instance("Model", workspace)
-			HatReanimator.DontFireCharAddOnThisChar = new
-			Player.Character = new
-			task.wait()
-			HatReanimator.DontFireCharAddOnThisChar = old
-			Player.Character = old
-		end
 	end
 
 	-- Credits to MyWorld for helping with netless
@@ -6561,7 +6541,7 @@ function HatReanimator.Start()
 			end
 			return
 		end
-		replicatesignal(Humanoid.ServerBreakJoints)
+		pcall(replicatesignal, Humanoid.ServerBreakJoints)
 		Humanoid.EvaluateStateMachine = true
 		Humanoid.BreakJointsOnDeath = true
 		Humanoid.Health = 0
@@ -7362,6 +7342,9 @@ do
 		Reanimate.UseLoadAnimationHook = val
 		SaveData.NoLoadAnimationHook = not val
 	end)
+	if ismissing(hookmetamethod) or ismissing(hookfunction) then
+		UI.CreateText(MainPage, "^ this option will not work for you", 10, Enum.TextXAlignment.Center)
+	end
 	UI.CreateSwitch(MainPage, "Use Physics Glue", Reanimate.UsePhysicsRepRootPart).Changed:Connect(function(val)
 		Reanimate.UsePhysicsRepRootPart = val
 		SaveData.NoPhysicsRepRootPart = not val

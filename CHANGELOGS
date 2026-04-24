@@ -8,6 +8,8 @@
  - Added Marketplace/Store/Workshop, now you can increase how many dances you have!
  - Added Gamepad and VR support (needs testing as of writing)
  - Added First Person Body option, makes your body opaque when in first person
+ - Fixed wrongly named "missing" message when `sethiddenproperty` isn't found.
+ - (sorta) Added in more support, needs testing
 # Version 1.0.6 BETA
  - Renamed "RootPart in void" mode to "RootPart in very void"
  - Added "RootPart in void" which fixes floating point issues with the torso.
