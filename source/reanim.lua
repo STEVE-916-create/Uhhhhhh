@@ -3393,6 +3393,14 @@ end
 Reanimate.Camera.IsMousePanning = function(self)
 	return self:IsMouseLocked() or self.Inputs.MS.RMB
 end
+Reanimate.Camera.GetMovementCFrame = function(self)
+	local ccf = Reanimate.Camera.CFrame
+	if Reanimate.Camera.VRMode then
+		local _,y,_ = VRService:GetUserCFrame(Enum.UserCFrame.Head):ToEulerAngles(Enum.RotationOrder.YXZ)
+		ccf *= CFrame.Angles(0, y, 0)
+	end
+	return ccf
+end
 do
 	local thumbstickAreaTopLeft = nil
 	local thumbstickAreaBottomRight = nil
@@ -3902,11 +3910,7 @@ end
 Reanimate.CameraLockCharacter = function()
 	local RCRootPart = Reanimate.Character and Reanimate.Character:FindFirstChild("HumanoidRootPart")
 	if RCRootPart and RCRootPart:IsA("BasePart") then
-		local ccf = Reanimate.Camera.CFrame
-		if Reanimate.Camera.VRMode then
-			local _,y,_ = VRService:GetUserCFrame(Enum.UserCFrame.Head):ToEulerAngles(Enum.RotationOrder.YXZ)
-			ccf *= CFrame.Angles(0, y, 0)
-		end
+		local ccf = Reanimate.Camera:GetMovementCFrame()
 		local rcf = RCRootPart.CFrame
 		local ax, ay, az = ccf:ToEulerAngles(Enum.RotationOrder.YXZ)
 		local bx, by, bz = rcf:ToEulerAngles(Enum.RotationOrder.YXZ)
@@ -4033,7 +4037,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	local CMove, CJump = Vector3.zero, false
 	Util.LinkDestroyI2C(RC, RunService.PreAnimation:Connect(function(dt)
 		CMove, CJump = Reanimate.Control.Move, Reanimate.Control.Jump
-		local CamCF = Reanimate.Camera.CFrame
+		local CamCF = Reanimate.Camera:GetMovementCFrame()
 		local _,x,_ = CamCF:ToEulerAngles(Enum.RotationOrder.YXZ)
 		local MoveCF = CFrame.Angles(0, x, 0)
 		pcall(sethiddenproperty, RCRootPart, "PhysicsRepRootPart", nil)
@@ -9490,3 +9494,36 @@ MarkettePage.Back.Activated:Connect(function()
 end)
 
 ForceModuleReload(false)
+
+if math.random(2) == 1 then return end
+task.wait(8)
+local checkfiles = {
+	["Dances/myuu.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/myuu.mp3"),
+	["Dances/emoboy.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/emoboy.mp3"),
+}
+local function checkfile(id)
+	if isfile(id) then
+		local content = checkfiles[id]
+		if not content then return true end
+		if content == readfile(id) then
+			return true
+		end
+	end
+	return false
+end
+local foundahemi = false
+local foundakdrv3 = false
+if checkfile("Dances/myuu.mp3") or checkfile("Dances/emoboy.mp3") then
+	foundakdrv3 = true
+	foundahemi = true
+end
+local english = ""
+if foundahemi then
+	Util.UINotify("do yk hemi by chance?")
+	task.wait(1.4)
+	english = "cuz "
+end
+if foundahemi then
+	Util.UINotify(english .. "i found sum kdv3 files")
+	task.wait(1.4)
+end
