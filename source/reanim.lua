@@ -70,14 +70,14 @@ getcustomasset = getcustomasset or getsynasset
 gethiddengui = get_hidden_gui or gethui
 request = request or (http and http.request)
 
+local function ismissing(func)
+	return not func or type(func) ~= "function"
+end
 do
 	local function diefatal(msg)
 		Util.Notify("Executor not supported. " .. msg)
 		_G.UhhhhhhLoaded = nil
 		error("fatal error cant start")
-	end
-	local function ismissing(func)
-		return not func or type(func) ~= "function"
 	end
 	if ismissing(request) then
 		diefatal("Missing `request` or `http.request` function!")
