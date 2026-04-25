@@ -2098,6 +2098,11 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 		end
 		BoxText.Text = str
 		SliderB.Position = UDim2.new(math.clamp((Select.Value - min) / (max - min), 0, 1), 0, 0.5, 0)
+		if math.random(4) == 1 then
+			if str:find("67") or str:find("6.7") then
+				Util.UINotify("SIX SEVENNNN 67 67 67 67 OMG")
+			end
+		end
 	end
 	Select.Value = value
 	Select.Changed:Connect(update)
@@ -2969,7 +2974,7 @@ MusicSelect.Changed:Connect(function(val)
 		MusicPlayer.PlayMusic(val - 1)
 	end
 end)
-UI.CreateSwitch(MainPage, "Mute UI Music", SaveData.MuteUIMusic).Changed:Connect(function(value)
+UI.CreateSwitch(MainPage, math.random(8) == 1 and "Mute @Noober 67s" or "Mute UI Music", SaveData.MuteUIMusic).Changed:Connect(function(value)
 	SaveData.MuteUIMusic = value
 end)
 UI.CreateSwitch(MainPage, "Mute Reanim Music", SaveData.MuteReanimMusic).Changed:Connect(function(value)
@@ -4387,6 +4392,7 @@ LimbReanimator.UseNaNFling = SaveData.Reanimator.LimbUseNaNFling
 LimbReanimator.FlingTargets = {}
 LimbReanimator._TempNotFling = {}
 function LimbReanimator.ShowHitboxes()
+	Util.UINotify("Just a useless option")
 	pcall(function()
 		Util.ShowPartHitbox(Player.Character.HumanoidRootPart)
 	end)
@@ -7843,7 +7849,15 @@ local OnPlayerChatted = Util.Instance("BindableEvent")
 TextChatService.MessageReceived:Connect(function(message)
 	if message.Status ~= Enum.TextChatMessageStatus.Sending and message.TextSource and message.TextSource.UserId then
 		local plr, msg = Players:GetPlayerByUserId(message.TextSource.UserId), message.Text:gsub("&lt;", "<"):gsub("&gt;", ">"):gsub("&quot;", "\""):gsub("&apos;", "'"):gsub("&amp;", "&")
-		if plr then OnPlayerChatted:Fire(plr, msg) end
+		if plr then
+			OnPlayerChatted:Fire(plr, msg)
+			if msg == "67" then
+				Util.UINotify("SON :sob::sob::sob::sob:")
+			end
+			if msg == "1.1.0" then
+				Util.UINotify("the overhaul update is real?")
+			end
+		end
 	end
 end)
 task.wait()
@@ -9495,35 +9509,141 @@ end)
 
 ForceModuleReload(false)
 
-if math.random(2) == 1 then return end
-task.wait(8)
-local checkfiles = {
-	["Dances/myuu.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/myuu.mp3"),
-	["Dances/emoboy.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/emoboy.mp3"),
-}
-local function checkfile(id)
-	if isfile(id) then
-		local content = checkfiles[id]
-		if not content then return true end
-		if content == readfile(id) then
-			return true
+if math.random(2) == 1 then (function()
+	-- registry overflow bypass !! (so tuff)
+	task.wait(8)
+	local checkfiles = {
+		["Dances/myuu.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/myuu.mp3"),
+		["Dances/emoboy.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/emoboy.mp3"),
+		["KDV3/Sphere.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Solary-3/Scripts/refs/heads/Audios-1/Sphere.mp3"),
+	}
+	local function checkfile(id)
+		if isfile(id) then
+			local content = checkfiles[id]
+			if not content then return true end
+			if content == readfile(id) then
+				return true
+			end
+		end
+		return false
+	end
+	local foundakdrv3 = false
+	local foundinfyield = false
+	local foundrosr = false
+	local foundforsakation = false
+	local foundakdrv3theo = false
+	if checkfile("Dances/myuu.mp3") or checkfile("Dances/emoboy.mp3") then
+		foundakdrv3 = true
+	end
+	if checkfile("IY_FE.iy") then
+		foundinfyield = true
+	end
+	if checkfile("ROSRConfig.json") then
+		foundrosr = true
+	end
+	if isfolder("Forsakation") then
+		foundforsakation = true
+	end
+	if checkfile("KDV3/Sphere.mp3") then
+		foundakdrv3theo = true
+	end
+	local function rng(t) return t[math.random(#t)] end
+	local function shuff(t)
+		for i=#t, 2, -1 do
+			local j = math.random(i)
+			t[i], t[j] = t[j], t[i]
 		end
 	end
-	return false
-end
-local foundahemi = false
-local foundakdrv3 = false
-if checkfile("Dances/myuu.mp3") or checkfile("Dances/emoboy.mp3") then
-	foundakdrv3 = true
-	foundahemi = true
-end
-local english = ""
-if foundahemi then
-	Util.UINotify("do yk hemi by chance?")
-	task.wait(1.4)
-	english = "cuz "
-end
-if foundahemi then
-	Util.UINotify(english .. "i found sum kdv3 files")
-	task.wait(1.4)
-end
+	local function asihavestatedbefore()
+		if SaveData.MentionedStuffToExploiter then
+			Util.UINotify(rng({
+				"as i have stated before...",
+				"as i had said...",
+				"lemme tell you one more time",
+				"i said this before, but..."
+			}))
+			task.wait(1.4)
+		end
+		SaveData.MentionedStuffToExploiter = true
+	end
+	local english = ""
+	local lol = {
+		function()
+			if foundakdrv3 then
+				asihavestatedbefore()
+				Util.UINotify(english .. "do yk hemi by chance?")
+				task.wait(1.4)
+				Util.UINotify("cuz i found some kdv3 files")
+				task.wait(2)
+				Util.UINotify(rng({
+					"pls delete ur Dances folder",
+					"destroy your Dances folder",
+				}))
+				task.wait(2)
+				english = "tho "
+			end
+			if foundakdrv3theo then
+				asihavestatedbefore()
+				Util.UINotify(english .. "u used theo's kdrv3")
+				task.wait(1.4)
+				if foundakdrv3 then
+					Util.UINotify(rng({
+						"somewhat an improvement",
+						"so... thats good",
+						"do u form a crowd with ur friends",
+					}))
+					task.wait(1.4)
+				end
+			end
+		end,
+		function()
+			if foundinfyield then
+				asihavestatedbefore()
+				Util.UINotify(english .. "ure another iy user...")
+				task.wait(1.4)
+				english = "...and u used "
+			else
+				english = english .. "u used "
+			end
+			if foundrosr then
+				asihavestatedbefore()
+				Util.UINotify(english .. "rosr, didnt u?")
+				task.wait(1.4)
+			end
+			if foundinfyield or foundrosr then
+				task.wait(0.6)
+				Util.UINotify(rng({
+					"nothing wrong with that tho",
+					"idk its just something to point out",
+					"nothing to worry tho",
+				}))
+				task.wait(2)
+			end
+			if foundrosr and math.random(2) == 1 then
+				Util.UINotify("u atleast enjoyed using rosr?")
+				task.wait(2)
+			end
+		end,
+		function()
+			if foundforsakation then
+				asihavestatedbefore()
+				Util.UINotify(english .. "i see u used forsakation")
+				task.wait(2)
+				Util.UINotify(rng({
+					"have you heard of the real game?",
+					"the topology is a nightmare.",
+					"still looking for the balance...",
+				}))
+				task.wait(2)
+			end
+		end,
+	}
+	shuff(lol)
+	for i=1, #lol do
+		if math.random(2) == 1 then
+			lol[i]()
+			english = rng({"and ", "also ", "oh? "})
+			task.wait(1)
+		end
+	end
+end)() end
