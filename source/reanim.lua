@@ -224,15 +224,15 @@ Util.Instance = function(cl, p)
 	i.Parent = p
 	return i
 end
-Util.LinkDestroyI2I = function(a, b)
-	a.Destroying:Once(function()
-		task.defer(b.Destroy, b)
-	end)
-end
 Util.LinkDestroyI2C = function(a, b)
 	a.Destroying:Once(function()
 		b:Disconnect()
 	end)
+end
+Util.LinkDestroyI2I = function(a, b)
+	Util.LinkDestroyI2C(b, a.Destroying:Once(function()
+		task.defer(b.Destroy, b)
+	end))
 end
 Util.ClearAllChildrenGui = function(a)
 	for _,v in a:GetChildren() do
