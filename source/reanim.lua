@@ -3520,9 +3520,9 @@ do
 				if input.KeyCode == Enum.KeyCode.Space then
 					self.Inputs.KB.Space = false
 				end
-				if input.KeyCode == Enum.KeyCode.ButtonA then
-					self.Inputs.GP.JB = false
-				end
+			end
+			if input.KeyCode == Enum.KeyCode.ButtonA then
+				self.Inputs.GP.JB = false
 			end
 			if input.UserInputType == Enum.UserInputType.Touch then
 				if self.Inputs.TC.DJ == input then
