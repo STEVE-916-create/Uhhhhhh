@@ -3472,9 +3472,9 @@ do
 				if input.KeyCode == Enum.KeyCode.Space then
 					self.Inputs.KB.Space = true
 				end
-				if input.KeyCode == Enum.KeyCode.ButtonA then
-					self.Inputs.GP.JB = true
-				end
+			end
+			if input.KeyCode == Enum.KeyCode.ButtonA then
+				self.Inputs.GP.JB = true
 			end
 			if input.UserInputType == Enum.UserInputType.Touch then
 				if self.Inputs.TC.DJ == nil and IsInThumbstickArea(input.Position) then
