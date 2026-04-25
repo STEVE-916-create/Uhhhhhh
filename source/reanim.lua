@@ -97,9 +97,9 @@ do
 	if ismissing(firetouchinterest) then
 		diefatal("Missing `firetouchinterest` function!")
 	end
-	if ismissing(replicatesignal) then
-		diefatal("Missing `replicatesignal` function!")
-	end
+	--if ismissing(replicatesignal) then
+	--	diefatal("Missing `replicatesignal` function!")
+	--end
 	if ismissing(gethiddenproperty) then
 		if ismissing(setscriptable) then
 			diefatal("Missing `gethiddenproperty` and `setscriptable` function!")
