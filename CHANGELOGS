@@ -11,6 +11,7 @@
  - Fixed wrongly named "missing" message when `sethiddenproperty` isn't found.
  - (sorta) Added in more support, needs testing
  - Fixed gamepad button A
+ - secrets
 # Version 1.0.6 BETA
  - Renamed "RootPart in void" mode to "RootPart in very void"
  - Added "RootPart in void" which fixes floating point issues with the torso.
