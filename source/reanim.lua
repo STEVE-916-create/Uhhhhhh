@@ -9635,7 +9635,7 @@ local d = function()
 			local lastcheck = os.clock()
 			local sentping = false
 			look.OnMessage:Connect(function(frame)
-				print(frame)
+				--print(frame)
 				frame = HttpService:JSONDecode(frame)
 				local name, data = frame.event, type(frame.data) == "table" and frame.data or HttpService:JSONDecode(frame.data or "{}")
 				lastcheck = os.clock()
