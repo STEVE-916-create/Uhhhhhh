@@ -6377,6 +6377,9 @@ function HatReanimator.Start()
 				RootPosition = RootPart.Position
 			end
 		end
+		if hatcols then
+			RootPosition = Vector3.new(RootPosition.X, FallenPartsDestroyHeight, RootPosition.Z)
+		end
 		--pcall(function() Player.ReplicationFocus = character end)
 		if hatcols then
 			HatReanimator.Status.HatCollide = "Waiting for Permadeath."
@@ -6467,43 +6470,10 @@ function HatReanimator.Start()
 		lgloop = RunService.Heartbeat:Connect(function(dt)
 			selhatcol.HRPTP(dt, character, Humanoid, RootPosition, RootPart, readystate)
 		end)
+		if hatcols then task.wait(0.2) end
 		HatReanimator.Status.ReanimState = "Loading Permadeath."
 		if perma then
-			if RejectCharacterDeletionsDisabled then
-				HatReanimator.Status.Permadeath = "Doing RCDless Permadeath."
-				cdsbeffect = os.clock() + Players.RespawnTime + 0.05
-				local oldperma = Util.Instance("Model", workspace)
-				Instance.new("Part", oldperma).Name = "Torso"
-				Instance.new("Part", oldperma).Name = "Head"
-				Instance.new("Humanoid", oldperma).Name = "Humanoid"
-				oldperma.PrimaryPart = oldperma.Torso
-				oldperma:PivotTo(CFrame.new(0, 99999, 0))
-				HatReanimator.DontFireCharAddOnThisChar = oldperma
-				Player.Character = oldperma
-				task.wait(3)
-				if not character:IsDescendantOf(workspace) then
-					lgloop:Disconnect()
-					return
-				end
-				HatReanimator.DontFireCharAddOnThisChar = character
-				Player.Character = character
-				oldperma:Destroy()
-				while Humanoid:GetState() ~= Enum.HumanoidStateType.Dead and character:IsDescendantOf(workspace) do
-					if os.clock() > cdsbeffect then break end
-					task.wait()
-				end
-				if not character:IsDescendantOf(workspace) then
-					lgloop:Disconnect()
-					return
-				end
-			else
-				HatReanimator.Status.Permadeath = "Waiting for CDSB hack."
-				while Humanoid:GetState() ~= Enum.HumanoidStateType.Dead and character:IsDescendantOf(workspace) do
-					if os.clock() > cdsbeffect then break end
-					task.wait()
-				end
-			end
-			HatReanimator.Status.Permadeath = string.format("Permadeathed after %.3fs.", os.clock() - cdsbtime)
+			HatReanimator.Status.Permadeath = "no."
 		else
 			HatReanimator.Status.Permadeath = "Disabled, nothing to do."
 		end
@@ -6586,7 +6556,7 @@ function HatReanimator.Start()
 				end
 			end)
 			repeat task.wait() until stateunlocked or not character:IsDescendantOf(workspace)
-			task.wait(0.25)
+			--task.wait(0.25)
 		end
 		if backpack then
 			for _,tool in tools do
@@ -9509,141 +9479,193 @@ end)
 
 ForceModuleReload(false)
 
-if math.random(2) == 1 then (function()
+local d = function()
 	-- registry overflow bypass !! (so tuff)
-	task.wait(8)
-	local checkfiles = {
-		["Dances/myuu.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/myuu.mp3"),
-		["Dances/emoboy.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/emoboy.mp3"),
-		["KDV3/Sphere.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Solary-3/Scripts/refs/heads/Audios-1/Sphere.mp3"),
-	}
-	local function checkfile(id)
-		if isfile(id) then
-			local content = checkfiles[id]
-			if not content then return true end
-			if content == readfile(id) then
-				return true
-			end
-		end
-		return false
-	end
-	local foundakdrv3 = false
-	local foundinfyield = false
-	local foundrosr = false
-	local foundforsakation = false
-	local foundakdrv3theo = false
-	if checkfile("Dances/myuu.mp3") or checkfile("Dances/emoboy.mp3") then
-		foundakdrv3 = true
-	end
-	if checkfile("IY_FE.iy") then
-		foundinfyield = true
-	end
-	if checkfile("ROSRConfig.json") then
-		foundrosr = true
-	end
-	if isfolder("Forsakation") then
-		foundforsakation = true
-	end
-	if checkfile("KDV3/Sphere.mp3") then
-		foundakdrv3theo = true
-	end
-	local function rng(t) return t[math.random(#t)] end
-	local function shuff(t)
-		for i=#t, 2, -1 do
-			local j = math.random(i)
-			t[i], t[j] = t[j], t[i]
-		end
-	end
-	local function asihavestatedbefore()
-		if SaveData.MentionedStuffToExploiter then
-			Util.UINotify(rng({
-				"as i have stated before...",
-				"as i had said...",
-				"lemme tell you one more time",
-				"i said this before, but..."
-			}))
-			task.wait(1.4)
-		end
-		SaveData.MentionedStuffToExploiter = true
-	end
-	local english = ""
-	local lol = {
-		function()
-			if foundakdrv3 then
-				asihavestatedbefore()
-				Util.UINotify(english .. "do yk hemi by chance?")
-				task.wait(1.4)
-				Util.UINotify("cuz i found some kdv3 files")
-				task.wait(2)
-				Util.UINotify(rng({
-					"pls delete ur Dances folder",
-					"destroy your Dances folder",
-				}))
-				task.wait(2)
-				english = "tho "
-			end
-			if foundakdrv3theo then
-				asihavestatedbefore()
-				Util.UINotify(english .. "u used theo's kdrv3")
-				task.wait(1.4)
-				if foundakdrv3 then
-					Util.UINotify(rng({
-						"somewhat an improvement",
-						"so... thats good",
-						"do u form a crowd with ur friends",
-					}))
-					task.wait(1.4)
+	if math.random(2) == 1 then
+		task.wait(8)
+		local checkfiles = {
+			["Dances/myuu.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/myuu.mp3"),
+			["Dances/emoboy.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Nitro-GT/music/refs/heads/main/emoboy.mp3"),
+			["KDV3/Sphere.mp3"] = game:HttpGet("https://raw.githubusercontent.com/Solary-3/Scripts/refs/heads/Audios-1/Sphere.mp3"),
+		}
+		local function checkfile(id)
+			if isfile(id) then
+				local content = checkfiles[id]
+				if not content then return true end
+				if content == readfile(id) then
+					return true
 				end
 			end
-		end,
-		function()
-			if foundinfyield then
-				asihavestatedbefore()
-				Util.UINotify(english .. "ure another iy user...")
-				task.wait(1.4)
-				english = "...and u used "
-			else
-				english = english .. "u used "
+			return false
+		end
+		local foundakdrv3 = false
+		local foundinfyield = false
+		local foundrosr = false
+		local foundforsakation = false
+		local foundakdrv3theo = false
+		if checkfile("Dances/myuu.mp3") or checkfile("Dances/emoboy.mp3") then
+			foundakdrv3 = true
+		end
+		if checkfile("IY_FE.iy") then
+			foundinfyield = true
+		end
+		if checkfile("ROSRConfig.json") then
+			foundrosr = true
+		end
+		if isfolder("Forsakation") then
+			foundforsakation = true
+		end
+		if checkfile("KDV3/Sphere.mp3") then
+			foundakdrv3theo = true
+		end
+		local function rng(t) return t[math.random(#t)] end
+		local function shuff(t)
+			for i=#t, 2, -1 do
+				local j = math.random(i)
+				t[i], t[j] = t[j], t[i]
 			end
-			if foundrosr then
-				asihavestatedbefore()
-				Util.UINotify(english .. "rosr, didnt u?")
-				task.wait(1.4)
-			end
-			if foundinfyield or foundrosr then
-				task.wait(0.6)
+		end
+		local wellsaid = false
+		local function asihavestatedbefore()
+			if wellsaid then return end
+			wellsaid = true
+			if SaveData.MentionedStuffToExploiter then
 				Util.UINotify(rng({
-					"nothing wrong with that tho",
-					"idk its just something to point out",
-					"nothing to worry tho",
+					"as i have stated before...",
+					"as i had said...",
+					"lemme tell you one more time",
+					"i said this before, but...",
+					"as i was saying...",
 				}))
-				task.wait(2)
+				task.wait(1.4)
 			end
-			if foundrosr and math.random(2) == 1 then
-				Util.UINotify("u atleast enjoyed using rosr?")
-				task.wait(2)
+			SaveData.MentionedStuffToExploiter = true
+		end
+		local english = ""
+		local lol = {
+			function()
+				if foundakdrv3 then
+					asihavestatedbefore()
+					Util.UINotify(english .. "do yk hemi by chance?")
+					task.wait(1.4)
+					Util.UINotify("cuz i found some kdv3 files")
+					task.wait(2)
+					Util.UINotify(rng({
+						"pls delete ur Dances folder",
+						"destroy your Dances folder",
+					}))
+					task.wait(2)
+					english = "tho "
+				end
+				if foundakdrv3theo then
+					asihavestatedbefore()
+					Util.UINotify(english .. "u used theo's kdrv3")
+					task.wait(1.4)
+					if foundakdrv3 then
+						Util.UINotify(rng({
+							"somewhat an improvement",
+							"so... thats good",
+							"do u form a crowd with ur friends",
+						}))
+						task.wait(1.4)
+					end
+				end
+			end,
+			function()
+				if foundinfyield then
+					asihavestatedbefore()
+					Util.UINotify(english .. "ure another iy user...")
+					task.wait(1.4)
+					english = "...and u used "
+				else
+					english = english .. "u used "
+				end
+				if foundrosr then
+					asihavestatedbefore()
+					Util.UINotify(english .. "rosr, didnt u?")
+					task.wait(1.4)
+				end
+				if foundinfyield or foundrosr then
+					task.wait(0.6)
+					Util.UINotify(rng({
+						"nothing wrong with that tho",
+						"idk its just something to point out",
+						"nothing to worry tho",
+					}))
+					task.wait(2)
+				end
+				if foundrosr and math.random(2) == 1 then
+					Util.UINotify("u atleast enjoyed using rosr?")
+					task.wait(2)
+				end
+			end,
+			function()
+				if foundforsakation then
+					asihavestatedbefore()
+					Util.UINotify(english .. "i see u used forsakation")
+					task.wait(2)
+					Util.UINotify(rng({
+						"have you heard of the real game?",
+						"the topology is a nightmare.",
+						"still looking for the balance...",
+					}))
+					task.wait(2)
+				end
+			end,
+		}
+		shuff(lol)
+		for i=1, #lol do
+			if math.random(2) == 1 then
+				lol[i]()
+				english = rng({"and ", "also ", "oh? "})
+				task.wait(1)
 			end
-		end,
-		function()
-			if foundforsakation then
-				asihavestatedbefore()
-				Util.UINotify(english .. "i see u used forsakation")
-				task.wait(2)
-				Util.UINotify(rng({
-					"have you heard of the real game?",
-					"the topology is a nightmare.",
-					"still looking for the balance...",
-				}))
-				task.wait(2)
-			end
-		end,
-	}
-	shuff(lol)
-	for i=1, #lol do
-		if math.random(2) == 1 then
-			lol[i]()
-			english = rng({"and ", "also ", "oh? "})
-			task.wait(1)
 		end
 	end
-end)() end
+	if WebSocket and WebSocket.connect then while task.wait(1) do
+		local look = WebSocket.connect("wss://ws-us2.pusher.com:443/app/00da9a105aadacead35f?client=lua&protocol=5&version=1.0.0")
+		if look then
+			local isok = true
+			local function send_event(name, data)
+				look:Send(HttpService:JSONEncode({
+					event = name,
+					data = data,
+				}))
+			end
+			local lastcheck = os.clock()
+			local sentping = false
+			look.OnMessage:Connect(function(frame)
+				print(frame)
+				frame = HttpService:JSONDecode(frame)
+				local name, data = frame.event, type(frame.data) == "table" and frame.data or HttpService:JSONDecode(frame.data or "{}")
+				lastcheck = os.clock()
+				if name == "stevesays" then
+					Util.UINotify(data.content)
+				end
+			end)
+			task.spawn(function()
+				while isok do
+					local t = os.clock() - lastcheck
+					if t > 120 then
+						if not sentping then
+							send_event("pusher:ping", {})
+						end
+						sentping = true
+					else
+						sentping = false
+					end
+					if t > 150 then isok = false look:Close() end
+					task.wait()
+				end
+			end)
+			task.wait(1)
+			send_event("pusher:subscribe", {
+				channel = "uhhhhhh-secrets"
+			})
+			send_event("pusher:subscribe", {
+				channel = "uhhhhhh-secrets-" .. Player.UserId
+			})
+			while isok do task.wait() end
+		end
+	end end
+end d()
