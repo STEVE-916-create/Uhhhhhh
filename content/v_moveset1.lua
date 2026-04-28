@@ -1554,8 +1554,8 @@ AddModule(function()
 					end
 				end
 				chead = CFrame.new(0, -0.5, 0) * CFrame.fromEulerAngles(x, y, z, Enum.RotationOrder.YXZ) * CFrame.new(0, 0.5, 0) + Vector3.new(0, -CrouchDistance, 0)
-				clarm = ProcessArms(FakeVRArms[1], dt, vro, chead)
-				crarm = ProcessArms(FakeVRArms[2], dt, vro, chead)
+				clarm = ProcessArms(FakeVRArms[1], dt, vro, chead) + Vector3.new(0, -CrouchDistance, 0)
+				crarm = ProcessArms(FakeVRArms[2], dt, vro, chead) + Vector3.new(0, -CrouchDistance, 0)
 			end
 			chead += chead.Position * (scale - 1)
 			clarm += clarm.Position * (scale - 1)
