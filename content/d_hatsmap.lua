@@ -383,7 +383,16 @@ local HatKnownAccessoriesDatabase = {
 		C1 = CFrame.new(-0.475349, 1.50762, -0.1383, 0.0262082, 0.299562, -0.953717, -0.0831219, -0.950088, -0.300706, -0.996195, 0.0871557, 0),
 		Limb = "Torso", Group = "Sword",
 		Attachments = {
-			SwordAttachment = CFrame.new(0, -0.349528, 2.75336, 1, 0, 0, 0, -0.258819, -0.965926, 0, 0.965926, -0.258819),
+			SwordAttachment = CFrame.new(0.93079, -2.35394, 0.220899, 0.0262081, 0.299562, -0.953717, -0.083122, -0.950088, -0.300707, -0.996195, 0.0871558, 0),
+		}
+	},
+	{ -- 14525299193
+		MeshId = "14525254277", TextureId = "",
+		C0 = CFrame.new(-1.41421, 1.41421, 0.55, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 1, 0, 0),
+		C1 = CFrame.new(-1.41421, 1.41421, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 1, 0, 0),
+		Limb = "Torso", Group = "Sword",
+		Attachments = {
+			SwordAttachment = CFrame.new(1.89036, -1.89036, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 1, 0, 0),
 		}
 	},
 
@@ -520,7 +529,25 @@ local HatKnownAccessoriesDatabase = {
 		C1 = CFrame.new(-1, -1, 0, 0, -1, 0, 0, 0, 1, -1, 0, 0),
 		Limb = "Torso", Group = "Gun",
 		Attachments = {
-			GunAttachment = CFrame.new(-2.2117, 0, -0.08, 0, -1, 0, -1, 0, 0, 0, 0, -1),
+			GunAttachment = CFrame.new(-7, 0.75, -0.08, 0, -1, 0, 0, 0, 1, -1, 0, 0),
+		}
+	},
+	{ -- 14890554305
+		MeshId = "14890477660", TextureId = "",
+		C0 = CFrame.new(1.06066, 0.530329, 0.5, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 1, 0, 0),
+		C1 = CFrame.new(1.06066, 0.530329, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 1, 0, 0),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(1.32582, 1.5026, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 1, 0, 0),
+		}
+	},
+	{ -- 132539284750061
+		MeshId = "89921454026819", TextureId = "",
+		C0 = CFrame.new(0, 0, 0.5) * CFrame.Angles(0, 0, math.rad(50)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, 1, 0),
+		C1 = CFrame.new(0.375, 0, 0.75, 0, 0, -1, -1, 0, 0, 0, 1, 0),
+		Limb = "Torso", Group = "Gun",
+		Attachments = {
+			GunAttachment = CFrame.new(-0.0799999, 0, 2.2117, 0, 0, -1, -1, 0, 0, 0, 1, 0),
 		}
 	},
 

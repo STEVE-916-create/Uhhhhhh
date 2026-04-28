@@ -47,6 +47,7 @@ local LINKEDSWORD_HATMAP_BALL = table.concat({
 }, "|")
 local LINKEDSWORD_HATMAP_BOMB = table.concat({
 	"15925622812, 15925622912, 0, -0.5, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1",
+	"129579447344786, 107080893806835, 0, -0.225616, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1",
 	"",
 }, "|")
 
