@@ -1570,8 +1570,8 @@ AddModule(function()
 			SetCFrame(torso, IK2Bone(
 				vroot * Vector3.new(0, -3 * scale, 0),
 				vro * chead * Vector3.new(0, -0.5 * scale, 0),
-				vroot.LookVector, 1.5 * scale, 1.5 * scale)
-			 * CFrame.Angles(1.57, 0, 3.14) * CFrame.new(0, -1 * scale, 0) * TorsoRotation)
+				-vroot.LookVector, 1.5 * scale, 1.5 * scale)
+			 * CFrame.Angles(1.57, 3.14, 3.14) * CFrame.new(0, -1 * scale, 0) * TorsoRotation)
 			SetCFrame(lleg, ProcessLegs(LegsTarget[1], dt))
 			SetCFrame(rleg, ProcessLegs(LegsTarget[2], dt))
 		else
