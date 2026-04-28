@@ -1482,7 +1482,7 @@ AddModule(function()
 			end
 		end, true, Enum.KeyCode.C)
 		ContextActions:SetTitle("Uhhhhhh_VRCrouch", "C")
-		ContextActions:SetPosition("Uhhhhhh_VRCrouch", UDim2.new(1, -180, 1, -180))
+		ContextActions:SetPosition("Uhhhhhh_VRCrouch", UDim2.new(1, -130, 1, -230))
 		ContextActions:BindAction("Uhhhhhh_VRRun", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
 				if hum.WalkSpeed == 12 then
@@ -1493,7 +1493,7 @@ AddModule(function()
 			end
 		end, true, Enum.KeyCode.LeftControl, Enum.KeyCode.ButtonB)
 		ContextActions:SetTitle("Uhhhhhh_VRRun", "Run")
-		ContextActions:SetPosition("Uhhhhhh_VRRun", UDim2.new(1, -230, 1, -180))
+		ContextActions:SetPosition("Uhhhhhh_VRRun", UDim2.new(1, -180, 1, -230))
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock()
