@@ -1336,7 +1336,7 @@ AddModule(function()
 			tgt = leg.Target:Lerp(leg.Position, tweener) + Vector3.new(0, math.sin(math.pi * tweener) * (leg.Target - leg.Position).Magnitude * 0.1, 0)
 		else
 			leg.InAir = true
-			tgt = torso.CFrame * (leg.Offset + Vector3.new(0, -1.3, -0.3))
+			tgt = torso.CFrame * ((leg.Offset + Vector3.new(0, -1.3, -0.3)) * scale)
 			tgt = tgt:Lerp(leg.Position + root.Velocity * dt, math.exp(-16 * dt))
 			leg.Position = tgt
 			leg.Target = tgt
@@ -1345,7 +1345,7 @@ AddModule(function()
 			leg.InAir = false
 			leg.Timer = (leg.Timer % 1) + 1
 		end
-		local orig = torso.CFrame * leg.Offset
+		local orig = torso.CFrame * (leg.Offset * scale)
 		local dir = root.CFrame.Rotation * Vector3.new(leg.Offset.X, 0, -2)
 		if (tgt - orig).Magnitude > 2.1 * scale then
 			tgt = orig + (tgt - orig).Unit * 2.1 * scale
@@ -1518,8 +1518,7 @@ AddModule(function()
 		local lhj = torso:FindFirstChild("Left Hip")
 
 		if Crouching then
-			local a = CROUCH_DISTANCE * scale
-			CrouchDistance = a + (CrouchDistance - a) * math.exp(-16 * dt)
+			CrouchDistance = CROUCH_DISTANCE + (CrouchDistance - CROUCH_DISTANCE) * math.exp(-16 * dt)
 		else
 			CrouchDistance *= math.exp(-16 * dt)
 		end
@@ -1527,7 +1526,7 @@ AddModule(function()
 		if not isdancing then
 			rj.Enabled, nj.Enabled, rsj.Enabled, lsj.Enabled, rhj.Enabled, lhj.Enabled = false, false, false, false, false, false
 			--hum.HipHeight = 2 * scale
-			hum.HipHeight = 2 * scale - 2 - CrouchDistance
+			hum.HipHeight = 2 * scale - 2 - CrouchDistance * scale
 			root.CustomPhysicalProperties = PhysicalProperties.new(3.15, 0.3, 0.5)
 			local head = figure:FindFirstChild("Head")
 			local rarm = figure:FindFirstChild("Right Arm")
@@ -1537,8 +1536,8 @@ AddModule(function()
 			local chead, clarm, crarm
 			local vro = root.CFrame * CFrame.new(0, 1.5 * scale, 0)
 			local vroot = root.CFrame
-			vro += Vector3.new(0, CrouchDistance, 0)
-			vroot += Vector3.new(0, CrouchDistance, 0)
+			vro += Vector3.new(0, CrouchDistance * scale, 0)
+			vroot += Vector3.new(0, CrouchDistance * scale, 0)
 			if VRService.VREnabled then
 				chead, clarm, crarm = VRService:GetUserCFrame(Enum.UserCFrame.Head), VRService:GetUserCFrame(Enum.UserCFrame.LeftHand), VRService:GetUserCFrame(Enum.UserCFrame.RightHand)
 				if ReanimCamera:IsFirstPerson() then
