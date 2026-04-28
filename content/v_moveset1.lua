@@ -1536,8 +1536,8 @@ AddModule(function()
 			local chead, clarm, crarm
 			local vro = root.CFrame * CFrame.new(0, 1.5 * scale, 0)
 			local vroot = root.CFrame
-			vro += Vector3.new(0, -CrouchDistance, 0)
-			vroot += Vector3.new(0, -CrouchDistance, 0)
+			vro += Vector3.new(0, CrouchDistance, 0)
+			vroot += Vector3.new(0, CrouchDistance, 0)
 			if VRService.VREnabled then
 				chead, clarm, crarm = VRService:GetUserCFrame(Enum.UserCFrame.Head), VRService:GetUserCFrame(Enum.UserCFrame.LeftHand), VRService:GetUserCFrame(Enum.UserCFrame.RightHand)
 				if ReanimCamera:IsFirstPerson() then
