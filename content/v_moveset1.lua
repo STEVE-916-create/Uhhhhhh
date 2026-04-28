@@ -1480,7 +1480,7 @@ AddModule(function()
 			if state == Enum.UserInputState.Begin then
 				Crouching = not Crouching
 			end
-		end, true, Enum.UserInputType.C)
+		end, true, Enum.KeyCode.C)
 		ContextActions:SetTitle("Uhhhhhh_VRCrouch", "C")
 		ContextActions:SetPosition("Uhhhhhh_VRCrouch", UDim2.new(1, -130, 1, -180))
 		ContextActions:BindAction("Uhhhhhh_VRRun", function(_, state, _)
