@@ -1491,7 +1491,7 @@ AddModule(function()
 					hum.WalkSpeed = 12
 				end
 			end
-		end, true, Enum.UserInputType.LeftControl, Enum.KeyCode.ButtonB)
+		end, true, Enum.KeyCode.LeftControl, Enum.KeyCode.ButtonB)
 		ContextActions:SetTitle("Uhhhhhh_VRRun", "Run")
 		ContextActions:SetPosition("Uhhhhhh_VRRun", UDim2.new(1, -180, 1, -180))
 	end
