@@ -4646,7 +4646,7 @@ function LimbReanimator.Start()
 	Reanimate.CreateCharacter(InitCFrame)
 
 	local lastrep = 0
-	local function UpdateTransforms(ReanimCharacter, RootPart, flingtarget, flingcf)
+	local function UpdateTransforms(ReanimCharacter, RootPart, rootcf, rootvel, flingtarget, flingcf)
 		if not RootPart:IsGrounded() then
 			if flingtarget then
 				if LimbReanimator.UseNaNFling then
@@ -4810,7 +4810,7 @@ function LimbReanimator.Start()
 						flingtarget = nil
 					end
 				end
-				UpdateTransforms(ReanimCharacter, RootPart, flingtarget, flingcf)
+				UpdateTransforms(ReanimCharacter, RootPart, rootcf, rootvel, flingtarget, flingcf)
 				if LimbReanimator.UseNaNFling then
 					if os.clock() - lastspawn > 0.1 then
 						pcall(sethiddenproperty, Humanoid, "MoveDirectionInternal", Vector3.new(0/0, 0/0, 0/0))
@@ -4825,7 +4825,7 @@ function LimbReanimator.Start()
 				if Reanimate:ShouldRotationType() then
 					Reanimate:CameraLockCharacter()
 				end
-				UpdateTransforms(ReanimCharacter, RootPart, flingtarget, flingcf)
+				UpdateTransforms(ReanimCharacter, RootPart, rootcf, rootvel, flingtarget, flingcf)
 			end
 		end
 	end
