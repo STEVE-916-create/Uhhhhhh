@@ -1168,7 +1168,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
 	m.Name = "Immersive VR"
-	m.Description = "fake but real vr altho clunky\n\nvery clunky"
+	m.Description = "fake but real vr altho clunky\n\nvery clunky\n\nM1 - Point Left Hand\nM2 - Point Right Hand\nLeftControl/Button B - Toggle Run\nC - Crouch"
 	m.Assets = {}
 
 	m.Config = function(parent: GuiBase2d)
@@ -1285,10 +1285,14 @@ AddModule(function()
 
 	local LegsTarget = {}
 	local FakeVRArms = {}
+	local Crouching = false
+	local CrouchDistance = 0
 	local TorsoRotation = CFrame.identity
 
+	local CROUCH_DISTANCE = 1.25
 	local LEG_TWEEN_TIME = 0.25
 	local LEG_MOVE_TIME = 0.25
+
 	local function GetLegPoint(leg)
 		if leg.InAir then
 			return leg.Position
@@ -1307,12 +1311,12 @@ AddModule(function()
 		end
 		local real = CFrame.Angles(last.X, last.Y, last.Z)
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
-		local origin = torso.CFrame * leg.Offset + root.CFrame.LookVector + root.Velocity * (LEG_MOVE_TIME * 0.6)
-		local dir = Vector3.new(0, -3, 0) - root.CFrame.LookVector * 1.5
+		local origin = torso.CFrame * leg.Offset * scale + root.CFrame.LookVector * scale + root.Velocity * (LEG_MOVE_TIME * 0.6)
+		local dir = (Vector3.new(0, -3, 0) - root.CFrame.LookVector * 1.5) * scale
 		if hum:GetState() == Enum.HumanoidStateType.Climbing then
 			onground = true
-			origin = torso.CFrame * leg.Offset + Vector3.new(0, -0.5, 0)
-			dir = root.CFrame.LookVector * 3
+			origin = torso.CFrame * leg.Offset * scale + Vector3.new(0, -0.5, 0) * scale
+			dir = root.CFrame.LookVector * 3 * scale
 		end
 		local tgt = leg.Position
 		if onground then
@@ -1343,11 +1347,11 @@ AddModule(function()
 		end
 		local orig = torso.CFrame * leg.Offset
 		local dir = root.CFrame.Rotation * Vector3.new(leg.Offset.X, 0, -2)
-		if (tgt - orig).Magnitude > 2.1 then
-			tgt = orig + (tgt - orig).Unit * 2.1
-			return CFrame.lookAlong(tgt, tgt - orig, orig) * real * CFrame.Angles(1.57, 0, 0) * CFrame.new(0, 1, 0)
+		if (tgt - orig).Magnitude > 2.1 * scale then
+			tgt = orig + (tgt - orig).Unit * 2.1 * scale
+			return CFrame.lookAlong(tgt, tgt - orig, orig, dir) * real * CFrame.Angles(1.57, 0, 0) * CFrame.new(0, 1 * scale, 0)
 		end
-		return IK2Bone(orig, tgt, dir, 0.7, 1.2) * real * CFrame.Angles(1.57, 0, 0) * CFrame.new(0, 1, 0)
+		return IK2Bone(orig, tgt, dir, 0.7 * scale, 1.2 * scale) * real * CFrame.Angles(1.57, 0, 0) * CFrame.new(0, 1 * scale, 0)
 	end
 	local function ProcessArms(arm, dt, vro, headcf)
 		local last
@@ -1358,7 +1362,7 @@ AddModule(function()
 				arm.Realism[i] = last
 			end
 		end
-		local cast = PhysicsRaycast(vro.Position, headcf.LookVector * 32)
+		local cast = PhysicsRaycast(vro.Position, headcf.LookVector * 32 * scale)
 		if cast then
 			cast = (cast.Position - vro.Position - arm.Offset.Position).Unit
 			if cast ~= cast or cast.Magnitude == 0 then
@@ -1386,6 +1390,7 @@ AddModule(function()
 		if not hum then return end
 		if not root then return end
 		if not torso then return end
+		hum.WalkSpeed = 12
 		--ReanimCamera.FPSLocked = true
 		for _,v in figure:GetChildren() do
 			if v:IsA("BasePart") then
@@ -1449,6 +1454,8 @@ AddModule(function()
 				Offset = CFrame.new(1.5, -1, 0),
 			},
 		}
+		Crouching = false
+		CrouchDistance = 0
 		ContextActions:BindAction("Uhhhhhh_VRWaveL", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
 				FakeVRArms[1].Waving = true
@@ -1469,6 +1476,24 @@ AddModule(function()
 		end, true, Enum.UserInputType.MouseButton2)
 		ContextActions:SetTitle("Uhhhhhh_VRWaveR", "R")
 		ContextActions:SetPosition("Uhhhhhh_VRWaveR", UDim2.new(1, -180, 1, -130))
+		ContextActions:BindAction("Uhhhhhh_VRCrouch", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				Crouching = not Crouching
+			end
+		end, true, Enum.UserInputType.C)
+		ContextActions:SetTitle("Uhhhhhh_VRCrouch", "C")
+		ContextActions:SetPosition("Uhhhhhh_VRCrouch", UDim2.new(1, -130, 1, -180))
+		ContextActions:BindAction("Uhhhhhh_VRRun", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				if hum.WalkSpeed == 12 then
+					hum.WalkSpeed = 24
+				else
+					hum.WalkSpeed = 12
+				end
+			end
+		end, true, Enum.UserInputType.LeftControl, Enum.KeyCode.ButtonB)
+		ContextActions:SetTitle("Uhhhhhh_VRRun", "Run")
+		ContextActions:SetPosition("Uhhhhhh_VRRun", UDim2.new(1, -180, 1, -180))
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock()
@@ -1492,10 +1517,16 @@ AddModule(function()
 		local rhj = torso:FindFirstChild("Right Hip")
 		local lhj = torso:FindFirstChild("Left Hip")
 
+		if Crouching then
+			CrouchDistance = CROUCH_DISTANCE + (CrouchDistance - CROUCH_DISTANCE) * math.exp(-16 * dt)
+		else
+			CrouchDistance *= math.exp(-16 * dt)
+		end
+
 		if not isdancing then
 			rj.Enabled, nj.Enabled, rsj.Enabled, lsj.Enabled, rhj.Enabled, lhj.Enabled = false, false, false, false, false, false
 			--hum.HipHeight = 2 * scale
-			hum.HipHeight = 2 * scale - 2
+			hum.HipHeight = 2 * scale - 2 - CrouchDistance
 			root.CustomPhysicalProperties = PhysicalProperties.new(3.15, 0.3, 0.5)
 			local head = figure:FindFirstChild("Head")
 			local rarm = figure:FindFirstChild("Right Arm")
@@ -1503,7 +1534,10 @@ AddModule(function()
 			local rleg = figure:FindFirstChild("Right Leg")
 			local lleg = figure:FindFirstChild("Left Leg")
 			local chead, clarm, crarm
-			local vro = root.CFrame * CFrame.new(0, 1.5, 0)
+			local vro = root.CFrame * CFrame.new(0, 1.5 * scale, 0)
+			local vroot = root.CFrame
+			vro += Vector3.new(0, -CrouchDistance, 0)
+			vroot += Vector3.new(0, -CrouchDistance, 0)
 			if VRService.VREnabled then
 				chead, clarm, crarm = VRService:GetUserCFrame(Enum.UserCFrame.Head), VRService:GetUserCFrame(Enum.UserCFrame.LeftHand), VRService:GetUserCFrame(Enum.UserCFrame.RightHand)
 				if ReanimCamera:IsFirstPerson() then
@@ -1519,22 +1553,25 @@ AddModule(function()
 						y = math.pi - y
 					end
 				end
-				chead = CFrame.new(0, -0.5, 0) * CFrame.fromEulerAngles(x, y, z, Enum.RotationOrder.YXZ) * CFrame.new(0, 0.5, 0)
+				chead = CFrame.new(0, -0.5, 0) * CFrame.fromEulerAngles(x, y, z, Enum.RotationOrder.YXZ) * CFrame.new(0, 0.5, 0) + Vector3.new(0, -CrouchDistance, 0)
 				clarm = ProcessArms(FakeVRArms[1], dt, vro, chead)
 				crarm = ProcessArms(FakeVRArms[2], dt, vro, chead)
 			end
+			chead += chead.Position * (scale - 1)
+			clarm += clarm.Position * (scale - 1)
+			crarm += crarm.Position * (scale - 1)
 			local armo = CFrame.Angles(1.57, 0, 0) * CFrame.new(0, 0, 0)
 			SetCFrame(head, vro * chead)
 			SetCFrame(larm, vro * clarm * armo)
 			SetCFrame(rarm, vro * crarm * armo)
-			local z1, z2 = root.CFrame:PointToObjectSpace(GetLegPoint(LegsTarget[1])).Z, root.CFrame:PointToObjectSpace(GetLegPoint(LegsTarget[2])).Z
-			local yabai = CFrame.Angles(0, math.atan(z1 - z2) * 0.5, 0)
+			local z1, z2 = vroot:PointToObjectSpace(GetLegPoint(LegsTarget[1])).Z, vroot:PointToObjectSpace(GetLegPoint(LegsTarget[2])).Z
+			local yabai = CFrame.Angles(0, math.atan(z1 - z2) * 0.5 / scale, 0)
 			TorsoRotation = yabai:Lerp(TorsoRotation, math.exp(-4 * dt))
 			SetCFrame(torso, IK2Bone(
-				root.CFrame * Vector3.new(0, -3, 0),
-				head.CFrame * Vector3.new(0, -0.5, 0),
-				root.CFrame.LookVector, 1.5, 1.5)
-			 * CFrame.Angles(1.57, 0, 3.14) * CFrame.new(0, -1, 0) * TorsoRotation)
+				vroot * Vector3.new(0, -3 * scale, 0),
+				vro * chead * Vector3.new(0, -0.5 * scale, 0),
+				vroot.LookVector, 1.5 * scale, 1.5 * scale)
+			 * CFrame.Angles(1.57, 0, 3.14) * CFrame.new(0, -1 * scale, 0) * TorsoRotation)
 			SetCFrame(lleg, ProcessLegs(LegsTarget[1], dt))
 			SetCFrame(rleg, ProcessLegs(LegsTarget[2], dt))
 		else
@@ -1546,6 +1583,8 @@ AddModule(function()
 	m.Destroy = function(figure: Model?)
 		ContextActions:UnbindAction("Uhhhhhh_VRWaveL")
 		ContextActions:UnbindAction("Uhhhhhh_VRWaveR")
+		ContextActions:UnbindAction("Uhhhhhh_VRCrouch")
+		ContextActions:UnbindAction("Uhhhhhh_VRRun")
 	end
 	return m
 end)
