@@ -4646,6 +4646,68 @@ function LimbReanimator.Start()
 	Reanimate.CreateCharacter(InitCFrame)
 
 	local lastrep = 0
+	local function UpdateTransforms(ReanimCharacter, RootPart, flingtarget, flingcf)
+		if not RootPart:IsGrounded() then
+			if flingtarget then
+				if LimbReanimator.UseNaNFling then
+					RootPart.CFrame = CFrame.new(flingcf.Position + Vector3.new(0, 0, math.random(0, 1) * 0.005)) * CFrame.Angles(0, os.clock() * 15, 0)
+					RootPart.Velocity, RootPart.RotVelocity = Vector3.zero, Vector3.zero
+				else
+					RootPart.CFrame = flingcf + Vector3.new(0, 0, math.random(0, 1) * 0.005)
+					RootPart.Velocity, RootPart.RotVelocity = Vector3.new(0, -16384, 0), Vector3.one * 16384
+				end
+				pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and Util.PredictionFlingPart(flingtarget.Target) or nil)
+			else
+				RootPart.CFrame = rootcf + Vector3.new(0, 0, math.random(0, 1) * 0.005)
+				RootPart.Velocity, RootPart.RotVelocity = rootvel, Vector3.zero
+				pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", nil)
+			end
+		end
+		local dorep = true
+		if LimbReanimator.ReplicateFPS10 then
+			dorep = false
+			local b = os.clock()
+			local a = b - lastrep
+			if a >= 1 / 10 then
+				dorep = true
+				a %= 1 / 10
+				lastrep = b - a
+			end
+		end
+		for _,v in UnknownMotor6Ds do
+			Util.SetMotor6DTransform(v, CFrame.identity)
+		end
+		for _,map in LimbMapping do
+			local v = map.Reference
+			if v then
+				if flingtarget then
+					Util.SetMotor6DTransform(v, CFrame.identity)
+				else
+					local cf = CFrame.identity
+					local p0, p1 = ReanimCharacter:FindFirstChild(map.RPart0), ReanimCharacter:FindFirstChild(map.RPart1)
+					if map.RPart0 == "ROOT" then
+						p0 = RootPart
+					end
+					if p0 and p1 then
+						if map.Type == 1 then
+							cf = p0.CFrame:ToObjectSpace(p1.CFrame)
+						end
+						if map.Type == 2 then
+							local offset = map.Offset or CFrame.identity
+							local c0, c1 = CFrame.new(map.C0), CFrame.new(map.C1)
+							local transform = offset * (p0.CFrame * c0):ToObjectSpace(p1.CFrame * c1) * offset:Inverse()
+							cf = v.C0 * transform * v.C1:Inverse()
+						end
+					end
+					if dorep or not map.CFrame then
+						map.CFrame = cf
+					end
+					Util.SetMotor6DOffset(v, map.CFrame)
+				end
+			end
+		end
+	end
+
 	Reanimate.Starting = false
 	while not Reanimate.Stopping do
 		RunService.PreSimulation:Wait()
@@ -4748,65 +4810,7 @@ function LimbReanimator.Start()
 						flingtarget = nil
 					end
 				end
-				if not RootPart:IsGrounded() then
-					if flingtarget then
-						if LimbReanimator.UseNaNFling then
-							RootPart.CFrame = CFrame.new(flingcf.Position + Vector3.new(0, 0, math.random(0, 1) * 0.005)) * CFrame.Angles(0, os.clock() * 15, 0)
-							RootPart.Velocity, RootPart.RotVelocity = Vector3.zero, Vector3.zero
-						else
-							RootPart.CFrame = flingcf + Vector3.new(0, 0, math.random(0, 1) * 0.005)
-							RootPart.Velocity, RootPart.RotVelocity = Vector3.new(0, -16384, 0), Vector3.one * 16384
-						end
-						pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and Util.PredictionFlingPart(flingtarget.Target) or nil)
-					else
-						RootPart.CFrame = rootcf + Vector3.new(0, 0, math.random(0, 1) * 0.005)
-						RootPart.Velocity, RootPart.RotVelocity = rootvel, Vector3.zero
-						pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", nil)
-					end
-				end
-				local dorep = true
-				if LimbReanimator.ReplicateFPS10 then
-					dorep = false
-					local b = os.clock()
-					local a = b - lastrep
-					if a >= 1 / 10 then
-						dorep = true
-						a %= 1 / 10
-						lastrep = b - a
-					end
-				end
-				for _,v in UnknownMotor6Ds do
-					Util.SetMotor6DTransform(v, CFrame.identity)
-				end
-				for _,map in LimbMapping do
-					local v = map.Reference
-					if v then
-						if flingtarget then
-							Util.SetMotor6DTransform(v, CFrame.identity)
-						else
-							local cf = CFrame.identity
-							local p0, p1 = ReanimCharacter:FindFirstChild(map.RPart0), ReanimCharacter:FindFirstChild(map.RPart1)
-							if map.RPart0 == "ROOT" then
-								p0 = RootPart
-							end
-							if p0 and p1 then
-								if map.Type == 1 then
-									cf = p0.CFrame:ToObjectSpace(p1.CFrame)
-								end
-								if map.Type == 2 then
-									local offset = map.Offset or CFrame.identity
-									local c0, c1 = CFrame.new(map.C0), CFrame.new(map.C1)
-									local transform = offset * (p0.CFrame * c0):ToObjectSpace(p1.CFrame * c1) * offset:Inverse()
-									cf = v.C0 * transform * v.C1:Inverse()
-								end
-							end
-							if dorep or not map.CFrame then
-								map.CFrame = cf
-							end
-							Util.SetMotor6DOffset(v, map.CFrame)
-						end
-					end
-				end
+				UpdateTransforms(ReanimCharacter, RootPart, flingtarget, flingcf)
 				if LimbReanimator.UseNaNFling then
 					if os.clock() - lastspawn > 0.1 then
 						pcall(sethiddenproperty, Humanoid, "MoveDirectionInternal", Vector3.new(0/0, 0/0, 0/0))
@@ -4817,36 +4821,11 @@ function LimbReanimator.Start()
 				else
 					pcall(sethiddenproperty, Humanoid, "NetworkHumanoidState", Enum.HumanoidStateType[({"Running", "PlatformStanding", "Jumping", "Ragdoll", "Seated", "Physics"})[math.random(1, 6)]])
 				end
-				if not flingtarget and Reanimate:ShouldRotationType() then
-					RunService.PreRender:Wait()
-					local ocf = RCRootPart.CFrame
+				RunService.PreRender:Wait()
+				if Reanimate:ShouldRotationType() then
 					Reanimate:CameraLockCharacter()
-					for _,map in LimbMapping do
-						local v = map.Reference
-						if v then
-							local cf = CFrame.identity
-							local p0, p1 = ReanimCharacter:FindFirstChild(map.RPart0), ReanimCharacter:FindFirstChild(map.RPart1)
-							if map.RPart0 == "ROOT" then
-								p0 = RootPart
-							end
-							if p0 and p1 then
-								if map.Type == 1 then
-									cf = p0.CFrame:ToObjectSpace(p1.CFrame)
-								end
-								if map.Type == 2 then
-									local offset = map.Offset or CFrame.identity
-									local c0, c1 = CFrame.new(map.C0), CFrame.new(map.C1)
-									local transform = offset * (p0.CFrame * c0):ToObjectSpace(p1.CFrame * c1) * offset:Inverse()
-									cf = v.C0 * transform * v.C1:Inverse()
-								end
-							end
-							if dorep or not map.CFrame then
-								map.CFrame = cf
-							end
-							Util.SetMotor6DOffset(v, map.CFrame)
-						end
-					end
 				end
+				UpdateTransforms(ReanimCharacter, RootPart, flingtarget, flingcf)
 			end
 		end
 	end
@@ -5751,16 +5730,7 @@ function HatReanimator.Start()
 		Equipped = 4,
 	}
 	local function SetAccoutrementState(hat, state)
-		if sethiddenproperty then
-			sethiddenproperty(hat, "BackendAccoutrementState", state)
-		else
-			if setscriptable then
-				setscriptable(hat, "BackendAccoutrementState", true)
-			end
-			pcall(function()
-				hat.BackendAccoutrementState = state
-			end)
-		end
+		sethiddenproperty(hat, "BackendAccoutrementState", state)
 	end
 
 	local IsRespawning = false
@@ -6984,11 +6954,17 @@ function HatReanimator.Start()
 		end
 		RunService.PreRender:Wait()
 		if RCRootPart and Reanimate:ShouldRotationType() then
-			local ocf = RCRootPart.CFrame
 			Reanimate:CameraLockCharacter()
-			local tcf = RCRootPart.CFrame
-			for _,handle in slocked do
-				handle.CFrame = tcf:ToWorldSpace(ocf:ToObjectSpace(handle.CFrame))
+		end
+		for _,ref in HatRefs do
+			local ph = ref.PH
+			if ph then
+				if ReanimOkay and ref.Hat and ref.Aligned then else
+					local tcf, _ = GetHatMappedCFrame(GetHatMappedOverride(ref.Map))
+					if tcf then
+						ph.CFrame = tcf
+					end
+				end
 			end
 		end
 		if HatReanimator.HatSpin then
