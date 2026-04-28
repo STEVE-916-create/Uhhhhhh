@@ -977,7 +977,7 @@ table.insert(modules, function()
 
 	m.Update = function(dt, figure)
 		local t = GetOverrideDanceMusicTime()
-		animator:Step(os.clock() - start)
+		animator:Step(t)
 
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
