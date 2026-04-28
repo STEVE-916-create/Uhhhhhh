@@ -1311,11 +1311,11 @@ AddModule(function()
 		end
 		local real = CFrame.Angles(last.X, last.Y, last.Z)
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
-		local origin = torso.CFrame * leg.Offset * scale + root.CFrame.LookVector * scale + root.Velocity * (LEG_MOVE_TIME * 0.6)
+		local origin = torso.CFrame * (leg.Offset * scale) + root.CFrame.LookVector * scale + root.Velocity * (LEG_MOVE_TIME * 0.6)
 		local dir = (Vector3.new(0, -3, 0) - root.CFrame.LookVector * 1.5) * scale
 		if hum:GetState() == Enum.HumanoidStateType.Climbing then
 			onground = true
-			origin = torso.CFrame * leg.Offset * scale + Vector3.new(0, -0.5, 0) * scale
+			origin = torso.CFrame * (leg.Offset * scale) + Vector3.new(0, -0.5, 0) * scale
 			dir = root.CFrame.LookVector * 3 * scale
 		end
 		local tgt = leg.Position
@@ -1518,7 +1518,8 @@ AddModule(function()
 		local lhj = torso:FindFirstChild("Left Hip")
 
 		if Crouching then
-			CrouchDistance = CROUCH_DISTANCE + (CrouchDistance - CROUCH_DISTANCE) * math.exp(-16 * dt)
+			local a = CROUCH_DISTANCE * scale
+			CrouchDistance = a + (CrouchDistance - a) * math.exp(-16 * dt)
 		else
 			CrouchDistance *= math.exp(-16 * dt)
 		end
