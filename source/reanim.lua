@@ -5711,7 +5711,7 @@ function HatReanimator.Start()
 		end)]]
 	end
 	local function IsNetworkOwner(part)
-		if isnetworkowner then
+		if isnetworkowner and false then
 			local s, d = pcall(isnetworkowner, part)
 			if s then
 				return d
