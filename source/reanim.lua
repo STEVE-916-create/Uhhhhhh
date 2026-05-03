@@ -4800,6 +4800,11 @@ function LimbReanimator.Start()
                         end
                 end
                 if accHandle then
+                        for _, weld in accHandle:GetChildren() do
+                                if weld:IsA("WeldConstraint") or weld:IsA("Weld") then
+                                        weld:Destroy()
+                                end
+                        end
                         accHandle.CanCollide = false
                         accHandle.LocalTransparencyModifier = ltm
                         local gripCF = accReanim.GripSide == 0 and RIGHTGRIP_C0 or LEFTGRIP_C0
