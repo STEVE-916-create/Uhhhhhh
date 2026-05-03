@@ -4396,19 +4396,28 @@ LimbReanimator.AccessoryReanim = {
                 SaveData.Reanimator.LimbAccessoryReanimRotYaw,
                 SaveData.Reanimator.LimbAccessoryReanimRotRoll
         ),
-        CachedWeldData = {},
+        GripActive = false,
+        GripClone = nil,
+        GripCloneWeld = nil,
+        GripOriginalHandle = nil,
+        GripOriginalTransparency = nil,
 }
 function LimbReanimator.RestoreAccessoryGrip(Character)
         local accReanim = LimbReanimator.AccessoryReanim
-        for handle, entry in accReanim.CachedWeldData do
-                if handle and handle.Parent and entry.Weld and entry.Weld.Parent then
-                        entry.Weld.Part0 = entry.Part0
-                        entry.Weld.Part1 = entry.Part1
-                        entry.Weld.C0    = entry.C0
-                        entry.Weld.C1    = entry.C1
-                end
+        if not accReanim.GripActive then return end
+        local handle = accReanim.GripOriginalHandle
+        if handle and handle.Parent then
+                handle.Transparency = accReanim.GripOriginalTransparency or 0
+                handle.LocalTransparencyModifier = 0
         end
-        table.clear(accReanim.CachedWeldData)
+        if accReanim.GripClone then
+                accReanim.GripClone:Destroy()
+        end
+        accReanim.GripClone = nil
+        accReanim.GripCloneWeld = nil
+        accReanim.GripOriginalHandle = nil
+        accReanim.GripOriginalTransparency = nil
+        accReanim.GripActive = false
 end
 LimbReanimator.Mode = SaveData.Reanimator.LimbMode
 -- 0 = hide rootpart (defaults to 2 when streaming is enabled)
@@ -4847,10 +4856,10 @@ function LimbReanimator.Start()
         local function ApplyAccessoryGrip(ReanimCharacter, Character, ltm, flingtarget)
                 local accReanim = LimbReanimator.AccessoryReanim
                 if not accReanim or not accReanim.Enabled or accReanim.SelectedName == "" then return end
-                if not Character or flingtarget then return end
+                if not Character or not ReanimCharacter or flingtarget then return end
                 local armName = accReanim.GripSide == 0 and "Right Arm" or "Left Arm"
-                local arm = Character:FindFirstChild(armName)
-                if not arm then return end
+                local reanimArm = ReanimCharacter:FindFirstChild(armName)
+                if not reanimArm then return end
                 local accHandle = nil
                 for _, v in Character:GetChildren() do
                         if v:IsA("Accessory") and v.Name == accReanim.SelectedName then
@@ -4861,39 +4870,49 @@ function LimbReanimator.Start()
                                 end
                         end
                 end
-                if accHandle then
-                        if not accReanim.CachedWeldData[accHandle] then
-                                local existingWeld = nil
-                                for _, w in accHandle:GetChildren() do
-                                        if w:IsA("Weld") then
-                                                existingWeld = w
-                                                break
-                                        end
-                                end
-                                accReanim.CachedWeldData[accHandle] = {
-                                        Weld  = existingWeld,
-                                        Part0 = existingWeld and existingWeld.Part0,
-                                        Part1 = existingWeld and existingWeld.Part1,
-                                        C0    = existingWeld and existingWeld.C0 or CFrame.identity,
-                                        C1    = existingWeld and existingWeld.C1 or CFrame.identity,
-                                }
+                if not accHandle then return end
+                local gripCF = accReanim.GripSide == 0 and RIGHTGRIP_C0 or LEFTGRIP_C0
+                local rot = accReanim.GripRotation
+                local rotCF = CFrame.Angles(math.rad(rot.X), math.rad(rot.Y), math.rad(rot.Z))
+                local fullGripCF = gripCF * CFrame.new(accReanim.GripOffset) * rotCF
+                if not accReanim.GripActive or accReanim.GripOriginalHandle ~= accHandle then
+                        if accReanim.GripActive then
+                                LimbReanimator.RestoreAccessoryGrip(Character)
                         end
-                        accHandle.CanCollide = false
+                        accReanim.GripOriginalHandle = accHandle
+                        accReanim.GripOriginalTransparency = accHandle.Transparency
+                        accHandle.Transparency = 1
                         accHandle.LocalTransparencyModifier = 0
-                        local gripCF = accReanim.GripSide == 0 and RIGHTGRIP_C0 or LEFTGRIP_C0
-                        local rot = accReanim.GripRotation
-                        local rotCF = CFrame.Angles(math.rad(rot.X), math.rad(rot.Y), math.rad(rot.Z))
-                        local newC0 = gripCF * CFrame.new(accReanim.GripOffset) * rotCF
-                        local entry = accReanim.CachedWeldData[accHandle]
-                        if entry.Weld and entry.Weld.Parent then
-                                entry.Weld.Part0 = arm
-                                entry.Weld.Part1 = accHandle
-                                entry.Weld.C0    = newC0
-                                entry.Weld.C1    = CFrame.identity
-                        else
-                                accHandle.CFrame = arm.CFrame * newC0
-                                accHandle.AssemblyLinearVelocity = Vector3.zero
-                                accHandle.AssemblyAngularVelocity = Vector3.zero
+                        accHandle.CanCollide = false
+                        local clone = accHandle:Clone()
+                        for _, w in clone:GetChildren() do
+                                if w:IsA("Weld") or w:IsA("WeldConstraint") or w:IsA("Motor6D") then
+                                        w:Destroy()
+                                end
+                        end
+                        clone.Transparency = accReanim.GripOriginalTransparency
+                        clone.CanCollide = false
+                        clone.Massless = true
+                        clone.Anchored = false
+                        local cloneWeld = Instance.new("Weld")
+                        cloneWeld.Name = "AccessoryGripWeld"
+                        cloneWeld.Part0 = reanimArm
+                        cloneWeld.Part1 = clone
+                        cloneWeld.C0 = fullGripCF
+                        cloneWeld.C1 = CFrame.identity
+                        cloneWeld.Parent = clone
+                        clone.Parent = workspace
+                        accReanim.GripClone = clone
+                        accReanim.GripCloneWeld = cloneWeld
+                        accReanim.GripActive = true
+                else
+                        accHandle.Transparency = 1
+                        accHandle.LocalTransparencyModifier = 0
+                        accHandle.CanCollide = false
+                        local weld = accReanim.GripCloneWeld
+                        if weld and weld.Parent then
+                                weld.Part0 = reanimArm
+                                weld.C0 = fullGripCF
                         end
                 end
         end
