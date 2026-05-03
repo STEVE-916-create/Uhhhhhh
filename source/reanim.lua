@@ -4850,7 +4850,6 @@ function LimbReanimator.Start()
                                 end
                         end
                         accHandle.CanCollide = false
-                        accHandle.LocalTransparencyModifier = ltm
                         local gripCF = accReanim.GripSide == 0 and RIGHTGRIP_C0 or LEFTGRIP_C0
                         accHandle.CFrame = arm.CFrame * gripCF
                         accHandle.AssemblyLinearVelocity = Vector3.zero
