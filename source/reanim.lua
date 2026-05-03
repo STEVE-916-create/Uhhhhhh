@@ -4380,7 +4380,32 @@ LimbReanimator.AccessoryReanim = {
         Enabled = SaveData.Reanimator.LimbAccessoryReanimEnabled,
         SelectedName = SaveData.Reanimator.LimbAccessoryReanimName,
         GripSide = SaveData.Reanimator.LimbAccessoryReanimSide,
+        CachedWeldData = {},
 }
+function LimbReanimator.RestoreAccessoryGrip(Character)
+        local accReanim = LimbReanimator.AccessoryReanim
+        for handle, dataList in accReanim.CachedWeldData do
+                if handle and handle.Parent then
+                        for _, data in dataList do
+                                local ok, weld = pcall(Instance.new, data.ClassName)
+                                if ok then
+                                        weld.Name = data.Name
+                                        if data.ClassName == "Weld" then
+                                                weld.C0 = data.C0
+                                                weld.C1 = data.C1
+                                                weld.Part0 = data.Part0
+                                                weld.Part1 = data.Part1
+                                        else
+                                                weld.Part0 = data.Part0
+                                                weld.Part1 = data.Part1
+                                        end
+                                        weld.Parent = handle
+                                end
+                        end
+                end
+        end
+        table.clear(accReanim.CachedWeldData)
+end
 LimbReanimator.Mode = SaveData.Reanimator.LimbMode
 -- 0 = hide rootpart (defaults to 2 when streaming is enabled)
 -- 1 = put rootpart just under void (defaults to 2 when streaming is enabled)
@@ -4485,6 +4510,9 @@ function LimbReanimator.Config(parent)
         UI.CreateSwitch(parent, "Accessory Grip Enabled", LimbReanimator.AccessoryReanim.Enabled).Changed:Connect(function(val)
                 LimbReanimator.AccessoryReanim.Enabled = val
                 SaveData.Reanimator.LimbAccessoryReanimEnabled = val
+                if not val then
+                        LimbReanimator.RestoreAccessoryGrip(Player.Character)
+                end
         end)
         UI.CreateDropdown(parent, "Hold With", {"Right Hand", "Left Hand"}, LimbReanimator.AccessoryReanim.GripSide + 1).Changed:Connect(function(val)
                 LimbReanimator.AccessoryReanim.GripSide = val - 1
@@ -4800,6 +4828,22 @@ function LimbReanimator.Start()
                         end
                 end
                 if accHandle then
+                        if not accReanim.CachedWeldData[accHandle] then
+                                local dataList = {}
+                                for _, weld in accHandle:GetChildren() do
+                                        if weld:IsA("Weld") or weld:IsA("WeldConstraint") then
+                                                table.insert(dataList, {
+                                                        ClassName = weld.ClassName,
+                                                        Name = weld.Name,
+                                                        Part0 = weld.Part0,
+                                                        Part1 = weld.Part1,
+                                                        C0 = weld:IsA("Weld") and weld.C0 or CFrame.identity,
+                                                        C1 = weld:IsA("Weld") and weld.C1 or CFrame.identity,
+                                                })
+                                        end
+                                end
+                                accReanim.CachedWeldData[accHandle] = dataList
+                        end
                         for _, weld in accHandle:GetChildren() do
                                 if weld:IsA("WeldConstraint") or weld:IsA("Weld") then
                                         weld:Destroy()
@@ -4937,6 +4981,7 @@ function LimbReanimator.Start()
                         end
                 end
         end
+        LimbReanimator.RestoreAccessoryGrip(Player.Character)
         CharConn:Disconnect()
         if Player.Character then
                 local h = Player.Character:FindFirstChild("Humanoid")
