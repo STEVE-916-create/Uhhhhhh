@@ -4379,6 +4379,9 @@ SaveData.Reanimator.LimbAccessoryReanimName = SaveData.Reanimator.LimbAccessoryR
 SaveData.Reanimator.LimbAccessoryReanimOffsetX = SaveData.Reanimator.LimbAccessoryReanimOffsetX or 0
 SaveData.Reanimator.LimbAccessoryReanimOffsetY = SaveData.Reanimator.LimbAccessoryReanimOffsetY or 0
 SaveData.Reanimator.LimbAccessoryReanimOffsetZ = SaveData.Reanimator.LimbAccessoryReanimOffsetZ or 0
+SaveData.Reanimator.LimbAccessoryReanimRotPitch = SaveData.Reanimator.LimbAccessoryReanimRotPitch or 0
+SaveData.Reanimator.LimbAccessoryReanimRotYaw   = SaveData.Reanimator.LimbAccessoryReanimRotYaw   or 0
+SaveData.Reanimator.LimbAccessoryReanimRotRoll  = SaveData.Reanimator.LimbAccessoryReanimRotRoll  or 0
 LimbReanimator.AccessoryReanim = {
         Enabled = SaveData.Reanimator.LimbAccessoryReanimEnabled,
         SelectedName = SaveData.Reanimator.LimbAccessoryReanimName,
@@ -4387,6 +4390,11 @@ LimbReanimator.AccessoryReanim = {
                 SaveData.Reanimator.LimbAccessoryReanimOffsetX,
                 SaveData.Reanimator.LimbAccessoryReanimOffsetY,
                 SaveData.Reanimator.LimbAccessoryReanimOffsetZ
+        ),
+        GripRotation = Vector3.new(
+                SaveData.Reanimator.LimbAccessoryReanimRotPitch,
+                SaveData.Reanimator.LimbAccessoryReanimRotYaw,
+                SaveData.Reanimator.LimbAccessoryReanimRotRoll
         ),
         CachedWeldData = {},
 }
@@ -4541,6 +4549,22 @@ function LimbReanimator.Config(parent)
                 local r = LimbReanimator.AccessoryReanim
                 r.GripOffset = Vector3.new(r.GripOffset.X, r.GripOffset.Y, val)
                 SaveData.Reanimator.LimbAccessoryReanimOffsetZ = val
+        end)
+        UI.CreateText(parent, "Grip Rotation (degrees)", 15, Enum.TextXAlignment.Center)
+        UI.CreateSlider(parent, "Pitch", LimbReanimator.AccessoryReanim.GripRotation.X, -180, 180, 0).Changed:Connect(function(val)
+                local r = LimbReanimator.AccessoryReanim
+                r.GripRotation = Vector3.new(val, r.GripRotation.Y, r.GripRotation.Z)
+                SaveData.Reanimator.LimbAccessoryReanimRotPitch = val
+        end)
+        UI.CreateSlider(parent, "Yaw", LimbReanimator.AccessoryReanim.GripRotation.Y, -180, 180, 0).Changed:Connect(function(val)
+                local r = LimbReanimator.AccessoryReanim
+                r.GripRotation = Vector3.new(r.GripRotation.X, val, r.GripRotation.Z)
+                SaveData.Reanimator.LimbAccessoryReanimRotYaw = val
+        end)
+        UI.CreateSlider(parent, "Roll", LimbReanimator.AccessoryReanim.GripRotation.Z, -180, 180, 0).Changed:Connect(function(val)
+                local r = LimbReanimator.AccessoryReanim
+                r.GripRotation = Vector3.new(r.GripRotation.X, r.GripRotation.Y, val)
+                SaveData.Reanimator.LimbAccessoryReanimRotRoll = val
         end)
         local accDrop, accDropText = nil, nil
         local accDropLayoutOrder = nil
@@ -4874,8 +4898,11 @@ function LimbReanimator.Start()
                                 end
                         end
                         accHandle.CanCollide = false
+                        accHandle.LocalTransparencyModifier = 0
                         local gripCF = accReanim.GripSide == 0 and RIGHTGRIP_C0 or LEFTGRIP_C0
-                        accHandle.CFrame = arm.CFrame * gripCF * CFrame.new(accReanim.GripOffset)
+                        local rot = accReanim.GripRotation
+                        local rotCF = CFrame.Angles(math.rad(rot.X), math.rad(rot.Y), math.rad(rot.Z))
+                        accHandle.CFrame = arm.CFrame * gripCF * CFrame.new(accReanim.GripOffset) * rotCF
                         accHandle.AssemblyLinearVelocity = Vector3.zero
                         accHandle.AssemblyAngularVelocity = Vector3.zero
                 end
