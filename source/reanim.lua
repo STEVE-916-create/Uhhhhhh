@@ -4312,6 +4312,7 @@ Util.ShowPartHitbox = function(part)
 end
 
 local RIGHTGRIP_C0 = CFrame.new(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0)
+local LEFTGRIP_C0  = CFrame.new(0, -1, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
 Util.PredictionFling = function(target)
         if typeof(target) == "Instance" then
                 if target:IsA("Model") then
@@ -4372,6 +4373,14 @@ SaveData.Reanimator.LimbInitMode = SaveData.Reanimator.LimbInitMode or 2
 SaveData.Reanimator.LimbReplicateFPS10 = not not SaveData.Reanimator.LimbReplicateFPS10
 SaveData.Reanimator.LimbRoleplay = not not SaveData.Reanimator.LimbRoleplay
 SaveData.Reanimator.LimbUseNaNFling = not not SaveData.Reanimator.LimbUseNaNFling
+SaveData.Reanimator.LimbAccessoryReanimEnabled = not not SaveData.Reanimator.LimbAccessoryReanimEnabled
+SaveData.Reanimator.LimbAccessoryReanimSide = SaveData.Reanimator.LimbAccessoryReanimSide or 0
+SaveData.Reanimator.LimbAccessoryReanimName = SaveData.Reanimator.LimbAccessoryReanimName or ""
+LimbReanimator.AccessoryReanim = {
+        Enabled = SaveData.Reanimator.LimbAccessoryReanimEnabled,
+        SelectedName = SaveData.Reanimator.LimbAccessoryReanimName,
+        GripSide = SaveData.Reanimator.LimbAccessoryReanimSide,
+}
 LimbReanimator.Mode = SaveData.Reanimator.LimbMode
 -- 0 = hide rootpart (defaults to 2 when streaming is enabled)
 -- 1 = put rootpart just under void (defaults to 2 when streaming is enabled)
@@ -4469,6 +4478,60 @@ function LimbReanimator.Config(parent)
         UI.CreateSwitch(parent, "Use NaN State Fling", LimbReanimator.UseNaNFling).Changed:Connect(function(val)
                 LimbReanimator.UseNaNFling = val
                 SaveData.Reanimator.LimbUseNaNFling = val
+        end)
+        UI.CreateSeparator(parent)
+        UI.CreateText(parent, "Accessory Grip Reanimate", 15, Enum.TextXAlignment.Center)
+        UI.CreateText(parent, "teleports a worn accessory to your chosen hand while reanimating", 10, Enum.TextXAlignment.Center)
+        UI.CreateSwitch(parent, "Accessory Grip Enabled", LimbReanimator.AccessoryReanim.Enabled).Changed:Connect(function(val)
+                LimbReanimator.AccessoryReanim.Enabled = val
+                SaveData.Reanimator.LimbAccessoryReanimEnabled = val
+        end)
+        UI.CreateDropdown(parent, "Hold With", {"Right Hand", "Left Hand"}, LimbReanimator.AccessoryReanim.GripSide + 1).Changed:Connect(function(val)
+                LimbReanimator.AccessoryReanim.GripSide = val - 1
+                SaveData.Reanimator.LimbAccessoryReanimSide = val - 1
+        end)
+        local accDrop, accDropText = nil, nil
+        local accDropLayoutOrder = nil
+        local function BuildAccDrop()
+                local names = {"(none)"}
+                if Player.Character then
+                        for _, v in Player.Character:GetChildren() do
+                                if v:IsA("Accessory") then
+                                        local h = v:FindFirstChild("Handle")
+                                        if h and h:IsA("BasePart") then
+                                                table.insert(names, v.Name)
+                                        end
+                                end
+                        end
+                end
+                local selIdx = 1
+                for i, n in names do
+                        if n == LimbReanimator.AccessoryReanim.SelectedName then
+                                selIdx = i
+                                break
+                        end
+                end
+                local d, dt = UI.CreateDropdown(parent, "Accessory", names, selIdx)
+                if accDropLayoutOrder then
+                        dt.Parent.LayoutOrder = accDropLayoutOrder
+                else
+                        accDropLayoutOrder = dt.Parent.LayoutOrder
+                end
+                accDrop = d
+                accDropText = dt
+                d.Changed:Connect(function(val)
+                        LimbReanimator.AccessoryReanim.SelectedName = val == 1 and "" or (names[val] or "")
+                        SaveData.Reanimator.LimbAccessoryReanimName = LimbReanimator.AccessoryReanim.SelectedName
+                end)
+        end
+        BuildAccDrop()
+        UI.CreateButton(parent, "Refresh Accessory List", 18).Activated:Connect(function()
+                if accDropText and accDropText.Parent then
+                        accDropText.Parent:Destroy()
+                        accDrop = nil
+                        accDropText = nil
+                end
+                BuildAccDrop()
         end)
         Util.LinkDestroyI2C(dmode, RunService.Heartbeat:Connect(function()
                 dmode.Value = LimbReanimator.Mode + 1
@@ -4717,6 +4780,35 @@ function LimbReanimator.Start()
                 end
         end
 
+        local function ApplyAccessoryGrip(ReanimCharacter, Character, ltm, flingtarget)
+                local accReanim = LimbReanimator.AccessoryReanim
+                if not accReanim or not accReanim.Enabled or accReanim.SelectedName == "" then return end
+                if not ReanimCharacter or flingtarget then return end
+                local armName = accReanim.GripSide == 0 and "Right Arm" or "Left Arm"
+                local arm = ReanimCharacter:FindFirstChild(armName)
+                if not arm then return end
+                local accHandle = nil
+                if Character then
+                        for _, v in Character:GetChildren() do
+                                if v:IsA("Accessory") and v.Name == accReanim.SelectedName then
+                                        local h = v:FindFirstChild("Handle")
+                                        if h and h:IsA("BasePart") then
+                                                accHandle = h
+                                                break
+                                        end
+                                end
+                        end
+                end
+                if accHandle then
+                        accHandle.CanCollide = false
+                        accHandle.LocalTransparencyModifier = ltm
+                        local gripCF = accReanim.GripSide == 0 and RIGHTGRIP_C0 or LEFTGRIP_C0
+                        accHandle.CFrame = arm.CFrame * gripCF
+                        accHandle.AssemblyLinearVelocity = Vector3.zero
+                        accHandle.AssemblyAngularVelocity = Vector3.zero
+                end
+        end
+
         Reanimate.Starting = false
         while not Reanimate.Stopping do
                 RunService.PreSimulation:Wait()
@@ -4820,6 +4912,7 @@ function LimbReanimator.Start()
                                         end
                                 end
                                 UpdateTransforms(ReanimCharacter, RootPart, rootcf, rootvel, flingtarget, flingcf, heartbeatDt)
+                                ApplyAccessoryGrip(ReanimCharacter, Character, ltm, flingtarget)
                                 if LimbReanimator.UseNaNFling then
                                         if os.clock() - lastspawn > 0.1 then
                                                 pcall(sethiddenproperty, Humanoid, "MoveDirectionInternal", Vector3.new(0/0, 0/0, 0/0))
@@ -4835,6 +4928,7 @@ function LimbReanimator.Start()
                                         Reanimate:CameraLockCharacter()
                                 end
                                 UpdateTransforms(ReanimCharacter, RootPart, rootcf, rootvel, flingtarget, flingcf, heartbeatDt)
+                                ApplyAccessoryGrip(ReanimCharacter, Character, ltm, flingtarget)
                         end
                 end
         end
