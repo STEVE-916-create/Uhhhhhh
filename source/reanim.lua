@@ -4400,24 +4400,12 @@ LimbReanimator.AccessoryReanim = {
 }
 function LimbReanimator.RestoreAccessoryGrip(Character)
         local accReanim = LimbReanimator.AccessoryReanim
-        for handle, dataList in accReanim.CachedWeldData do
-                if handle and handle.Parent then
-                        for _, data in dataList do
-                                local ok, weld = pcall(Instance.new, data.ClassName)
-                                if ok then
-                                        weld.Name = data.Name
-                                        if data.ClassName == "Weld" then
-                                                weld.C0 = data.C0
-                                                weld.C1 = data.C1
-                                                weld.Part0 = data.Part0
-                                                weld.Part1 = data.Part1
-                                        else
-                                                weld.Part0 = data.Part0
-                                                weld.Part1 = data.Part1
-                                        end
-                                        weld.Parent = handle
-                                end
-                        end
+        for handle, entry in accReanim.CachedWeldData do
+                if handle and handle.Parent and entry.Weld and entry.Weld.Parent then
+                        entry.Weld.Part0 = entry.Part0
+                        entry.Weld.Part1 = entry.Part1
+                        entry.Weld.C0    = entry.C0
+                        entry.Weld.C1    = entry.C1
                 end
         end
         table.clear(accReanim.CachedWeldData)
@@ -4859,52 +4847,54 @@ function LimbReanimator.Start()
         local function ApplyAccessoryGrip(ReanimCharacter, Character, ltm, flingtarget)
                 local accReanim = LimbReanimator.AccessoryReanim
                 if not accReanim or not accReanim.Enabled or accReanim.SelectedName == "" then return end
-                if not ReanimCharacter or flingtarget then return end
+                if not Character or flingtarget then return end
                 local armName = accReanim.GripSide == 0 and "Right Arm" or "Left Arm"
-                local arm = ReanimCharacter:FindFirstChild(armName)
+                local arm = Character:FindFirstChild(armName)
                 if not arm then return end
                 local accHandle = nil
-                if Character then
-                        for _, v in Character:GetChildren() do
-                                if v:IsA("Accessory") and v.Name == accReanim.SelectedName then
-                                        local h = v:FindFirstChild("Handle")
-                                        if h and h:IsA("BasePart") then
-                                                accHandle = h
-                                                break
-                                        end
+                for _, v in Character:GetChildren() do
+                        if v:IsA("Accessory") and v.Name == accReanim.SelectedName then
+                                local h = v:FindFirstChild("Handle")
+                                if h and h:IsA("BasePart") then
+                                        accHandle = h
+                                        break
                                 end
                         end
                 end
                 if accHandle then
                         if not accReanim.CachedWeldData[accHandle] then
-                                local dataList = {}
-                                for _, weld in accHandle:GetChildren() do
-                                        if weld:IsA("Weld") or weld:IsA("WeldConstraint") then
-                                                table.insert(dataList, {
-                                                        ClassName = weld.ClassName,
-                                                        Name = weld.Name,
-                                                        Part0 = weld.Part0,
-                                                        Part1 = weld.Part1,
-                                                        C0 = weld:IsA("Weld") and weld.C0 or CFrame.identity,
-                                                        C1 = weld:IsA("Weld") and weld.C1 or CFrame.identity,
-                                                })
+                                local existingWeld = nil
+                                for _, w in accHandle:GetChildren() do
+                                        if w:IsA("Weld") then
+                                                existingWeld = w
+                                                break
                                         end
                                 end
-                                accReanim.CachedWeldData[accHandle] = dataList
-                        end
-                        for _, weld in accHandle:GetChildren() do
-                                if weld:IsA("WeldConstraint") or weld:IsA("Weld") then
-                                        weld:Destroy()
-                                end
+                                accReanim.CachedWeldData[accHandle] = {
+                                        Weld  = existingWeld,
+                                        Part0 = existingWeld and existingWeld.Part0,
+                                        Part1 = existingWeld and existingWeld.Part1,
+                                        C0    = existingWeld and existingWeld.C0 or CFrame.identity,
+                                        C1    = existingWeld and existingWeld.C1 or CFrame.identity,
+                                }
                         end
                         accHandle.CanCollide = false
                         accHandle.LocalTransparencyModifier = 0
                         local gripCF = accReanim.GripSide == 0 and RIGHTGRIP_C0 or LEFTGRIP_C0
                         local rot = accReanim.GripRotation
                         local rotCF = CFrame.Angles(math.rad(rot.X), math.rad(rot.Y), math.rad(rot.Z))
-                        accHandle.CFrame = arm.CFrame * gripCF * CFrame.new(accReanim.GripOffset) * rotCF
-                        accHandle.AssemblyLinearVelocity = Vector3.zero
-                        accHandle.AssemblyAngularVelocity = Vector3.zero
+                        local newC0 = gripCF * CFrame.new(accReanim.GripOffset) * rotCF
+                        local entry = accReanim.CachedWeldData[accHandle]
+                        if entry.Weld and entry.Weld.Parent then
+                                entry.Weld.Part0 = arm
+                                entry.Weld.Part1 = accHandle
+                                entry.Weld.C0    = newC0
+                                entry.Weld.C1    = CFrame.identity
+                        else
+                                accHandle.CFrame = arm.CFrame * newC0
+                                accHandle.AssemblyLinearVelocity = Vector3.zero
+                                accHandle.AssemblyAngularVelocity = Vector3.zero
+                        end
                 end
         end
 
