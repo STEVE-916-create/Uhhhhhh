@@ -1274,6 +1274,12 @@ local UIMainWindow, WindowContent do
 	if SaveData.WindowClosedPosition then
 		MainWindowPosClose = UDim2.new(unpack(SaveData.WindowClosedPosition))
 	end
+	if MainWindowPosClose and (MainWindowPosClose.X.Scale < 0 or MainWindowPosClose.X.Scale > 1) then
+		MainWindowPosClose = nil
+	end
+	if MainWindowPosClose and (MainWindowPosClose.Y.Scale < 0 or MainWindowPosClose.Y.Scale > 1) then
+		MainWindowPosClose = nil
+	end
 	TopBarClose.Activated:Connect(function()
 		if MainWindowTweening then return end
 		MainWindowTweening = true
@@ -1335,6 +1341,12 @@ local UIMainWindow, WindowContent do
 				local screen = Util.GetScreenSize()
 				local ch = (Vector2.new(input.Position.X, input.Position.Y) + SCREENGUI.AbsolutePosition) / screen
 				local pos = ch + offset
+				local imjolly = Util.UDim2ToVector2Offset(UIMainWindow.Size).Y * -0.5 / screen.Y
+				local boxy = 31 / screen.Y
+				pos = Vector2.new(
+					math.clamp(pos.X, 0, 1),
+					math.clamp(pos.Y, -imjolly, 1 - imjolly - boxy)
+				)
 				UIMainWindow.Position = Util.Vector2ToUDim2Scale(pos)
 			end
 		end
