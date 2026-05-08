@@ -9605,7 +9605,9 @@ local d = function()
 		for i=1, #lol do
 			if math.random(2) == 1 then
 				lol[i]()
-				english = rng({"and ", "also ", "oh? "})
+				if #english > 0 then
+					english = rng({"and ", "also ", "oh? "})
+				end
 				task.wait(1)
 			end
 		end
