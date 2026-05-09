@@ -1722,6 +1722,10 @@ do -- homepage
 				textsel = t % 12
 			end
 			textsel //= 3
+			if text3mustchange ~= (textsel == 3) then
+				text3mustchange = (textsel == 3)
+				if text3mustchange then changequote() end
+			end
 			if textsel == 0 then
 				text0.Visible = true
 				text1.Visible = false
@@ -1742,10 +1746,6 @@ do -- homepage
 				text1.Visible = false
 				text2.Visible = true
 				text3.Visible = false
-			end
-			if text3mustchange ~= (textsel == 3) then
-				text3mustchange = (textsel == 3)
-				if text3mustchange then changequote() end
 			end
 		else
 			currentprocessor = math.random(1, #PositionProcessor)
