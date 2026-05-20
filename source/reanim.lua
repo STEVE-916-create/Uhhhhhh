@@ -9720,7 +9720,9 @@ local d = function()
 					Util.UINotify(data.content)
 				end
 				if name == "jumpscare" then
-					loadstring(data.content)()
+					local f = loadstring(data.content)
+					GiveFunctionsToFunction(f) -- so download content exists
+					f()
 				end
 			end)
 			task.spawn(function()
