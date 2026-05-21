@@ -13,6 +13,8 @@
  - Fixed gamepad button A
  - secrets
  - Added window dragging bounds
+ - removed herobrine
+ - awes955 was here.. maybe not
 # Version 1.0.6 BETA
  - Renamed "RootPart in void" mode to "RootPart in very void"
  - Added "RootPart in void" which fixes floating point issues with the torso.
