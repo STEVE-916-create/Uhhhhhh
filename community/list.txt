@@ -49,4 +49,4 @@ name = Memeili's dance
 user = Memeili
 desc = Hello Neighbor mix
 cost = 2 MB
-file = Memeili/Dance.lua
+file = Memeili/dance.lua
