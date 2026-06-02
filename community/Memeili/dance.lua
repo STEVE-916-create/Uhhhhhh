@@ -4,7 +4,7 @@ table.insert(modules, function()
     m.ModuleType  = "DANCE"
     m.Name        = "Miss Me (Hello Neighbor Mix)"
     m.Description = "Music Goes hard asf"
-    m.Assets = {"MissMeFix.anim", "TungBung.mp3"}
+    m.Assets = {"MissMeFix.anim@https://github.com/STEVE-916-create/Uhhhhhh/raw/refs/heads/main/community/Memeili/MissMeFix.anim", "TungBung.mp3"}
     m.Config = function(parent)
         Util_CreateText(parent, "No settings.", 14, Enum.TextXAlignment.Center)
     end
