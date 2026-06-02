@@ -35,7 +35,7 @@ table.insert(modules, function()
     m.ModuleType  = "DANCE"
     m.Name        = "Real one knows this isn't avgn😂✌"
     m.Description = "SON NO COPYING 😂😂😂"
-    m.Assets = {"KwikFlip.animhttps://github.com/STEVE-916-create/Uhhhhhh/raw/refs/heads/main/community/Memeili/KwikFlip.anim", "Kwik Flip.mp3@https://github.com/STEVE-916-create/Uhhhhhh/raw/refs/heads/main/community/Memeili/Kwik Flip.mp3"}
+    m.Assets = {"KwikFlip.animhttps://github.com/STEVE-916-create/Uhhhhhh/raw/refs/heads/main/community/Memeili/KwikFlip.anim", "Kwik Flip.mp3https://github.com/STEVE-916-create/Uhhhhhh/raw/refs/heads/main/community/Memeili/Kwik%20Flip.mp3"}
     m.Config = function(parent)
         Util_CreateText(parent, "No settings.", 14, Enum.TextXAlignment.Center)
     end
