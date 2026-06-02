@@ -47,6 +47,6 @@ file = noobersdances/noobersdance.lua
 
 name = Memeili's dance
 user = Memeili
-desc = Hello Neighbor mix
+desc = Hello Neighbor mix and Kwik Flip
 cost = 2 MB
 file = Memeili/dance.lua
