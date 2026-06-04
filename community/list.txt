@@ -23,7 +23,7 @@ file = valttaportslop/allinone.lua
 
 name = Awes' Two Dances
 user = Awes, Botsl's Tech Support
-desc = I took one of the peoples moveset And modified it to a template like And made this
+desc = Boiiii
 cost = $100
 file = awesthealter1/dances.lua
 
@@ -50,3 +50,9 @@ user = Memeili
 desc = Hello Neighbor mix and Kwik Flip
 cost = 2 MB
 file = Memeili/dance.lua
+
+name = GeometryRunC's simple moveset
+user = GeometryRunC
+desc = a basic moveset
+cost = 2 KB
+file = GeometryRunC/moveset.lua
