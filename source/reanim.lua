@@ -36,6 +36,7 @@ local TextService = cloneref(game:GetService("TextService"))
 local TweenService = cloneref(game:GetService("TweenService"))
 local TextChatService = cloneref(game:GetService("TextChatService"))
 local UserInputService = cloneref(game:GetService("UserInputService"))
+local AvatarEditorService = cloneref(game:GetService("AvatarEditorService"))
 local ContextActionService = cloneref(game:GetService("ContextActionService"))
 
 local Util = {}
@@ -6585,6 +6586,7 @@ function HatReanimator.Start()
 			end
 			return
 		end
+		AvatarEditorService:BustAvatarFetchCache()
 		pcall(replicatesignal, Humanoid.ServerBreakJoints)
 		Humanoid.EvaluateStateMachine = true
 		Humanoid.BreakJointsOnDeath = true
