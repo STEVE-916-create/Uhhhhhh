@@ -9636,7 +9636,7 @@ local d = function()
 	
 	if math.random(2) == 1 then
 		task.wait(8 - (os.clock() - since))
-		if math.random() > 0.9 then
+		if not megadetected and math.random() > 0.9 then
 			Util.UINotify(rng({
 				"uhh...",
 				"so... thats not good",
