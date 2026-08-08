@@ -8794,9 +8794,6 @@ UI.CreateText(CreditsPage, "also ur like a fast bug hunter", 12, Enum.TextXAlign
 UI.CreateText(CreditsPage, "<b>Awesome Awes955</b>", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "u run out of ideas", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "but i dont, cuz u give me ideas", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "<b>" .. (math.random() < 0.67 and "Tatsuki" or "Kaylie") .. "</b>", 14, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "u needed help, u paid it back well", 12, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "somehow u got me in touch with MyWorld", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "<b>MyWorld</b>", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "so thats how netless really works", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "math.max is THE solution here!!", 12, Enum.TextXAlignment.Center)
@@ -8891,7 +8888,6 @@ do
 		"while i was in mwtp, someone said \"leak the hatdrop script\"",
 		"i was in fencing, then someone said \"its the genesis killer\"",
 		"STEVE, THE DANCING IMMORTALITY LORD!",
-		"\"kid im filipino\" - " .. (math.random() < 0.67 and "Tatsuki" or "Kaylie"),
 		"imagine getting ur script mogged by a script written and tested mostly on a mobile phone LOL",
 		"shownskid",
 		"this script mogs genesis", -- true-untrue though
