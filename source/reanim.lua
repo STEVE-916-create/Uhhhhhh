@@ -4361,6 +4361,7 @@ Util.SetMotor6DTransform = function(motor, transform)
 	local name = motor.Name
 	motor.MaxVelocity = 9e9
 	local _, _, angle = transform:ToEulerAngles(Enum.RotationOrder.ZYX)
+	motor.DesiredAngle = angle
 	motor:SetDesiredAngle(angle)
 	local axis, angle = transform:ToAxisAngle()
 	local newangle = axis * angle
@@ -4822,7 +4823,7 @@ function LimbReanimator.Start()
 				end
 				RootPart = Humanoid.RootPart
 				if RootPart and Humanoid:GetState() ~= Enum.HumanoidStateType.Dead then
-					Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+					Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
 					ReanimOkay = LimbReanimator.FlingTargets[1] == nil
 				end
 			end
@@ -4913,9 +4914,9 @@ function LimbReanimator.Start()
 					else
 						pcall(sethiddenproperty, Humanoid, "MoveDirectionInternal", Vector3.zero)
 					end
-					pcall(sethiddenproperty, Humanoid, "NetworkHumanoidState", Enum.HumanoidStateType.Freefall)
+					pcall(sethiddenproperty, Humanoid, "NetworkHumanoidState", Enum.HumanoidStateType.Freefall.Value)
 				else
-					pcall(sethiddenproperty, Humanoid, "NetworkHumanoidState", Enum.HumanoidStateType[({"Running", "PlatformStanding", "Jumping", "Ragdoll", "Seated", "Physics"})[math.random(1, 6)]])
+					pcall(sethiddenproperty, Humanoid, "NetworkHumanoidState", Enum.HumanoidStateType.Flying.Value)
 				end
 			end
 			RunService.PreRender:Wait()
