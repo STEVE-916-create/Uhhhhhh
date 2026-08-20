@@ -9609,7 +9609,7 @@ local d = function()
 			end
 		end
 	end
-	pcall(avastantivirus, "", {})
+	pcall(avastantivirus, "UhhhhhhReanim", {}) -- performance
 	if megadetected then
 		task.wait(8 - (os.clock() - since))
 		Util.UINotify(rng({
