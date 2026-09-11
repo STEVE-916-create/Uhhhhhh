@@ -17,6 +17,14 @@ local dances = {
         song = "hai.mp3",
         songUrl = "https://github.com/testing734/UhhhhhhExtraDances/raw/refs/heads/main/%E3%81%AF%E3%81%84%E3%82%88%E3%82%8D%E3%81%93%E3%82%93%E3%81%A7%20_%20%E3%81%93%E3%81%A3%E3%81%A1%E3%81%AE%E3%81%91%E3%82%93%E3%81%A8%20MV.mp3",
     },
+    {
+        name = "Sky jump",
+        desc = "song by romanceplanet222, animated by ???",
+        anim = "skyjump.anim",
+        animUrl = "https://github.com/testing734/UhhhhhhExtraDances/raw/refs/heads/main/skyjump.anim",
+        song = "skyjump.mp3",
+        songUrl = "https://github.com/testing734/UhhhhhhExtraDances/raw/refs/heads/main/ROMANCEPLANET%20-%20FALL%20FROM%20THE%20SKY%20PT.2%20(OFFICIAL%20MUSIC%20VIDEO).mp3",
+    },
 }
 
 for i = 1, #dances do
