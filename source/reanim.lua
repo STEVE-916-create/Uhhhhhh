@@ -7878,7 +7878,7 @@ local function AssetDownload(filename)
 		source = table.concat(split, "@")
 	end
 	if source:sub(1, 7) == "MARKET/" then
-		source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/community/" .. source:sub(8)
+		source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh-Store/main/" .. source:sub(8)
 	end
 	local path = AssetGetPathFromFilename(filename)
 	return AssetDownloadAgent(source, filename, path)
@@ -9300,7 +9300,7 @@ local GetMarketList_cache = {}
 local function GetMarketList()
 	local aitemus, file2name, file2aitemu = GetMarketList_cache.aitemus, GetMarketList_cache.file2name, GetMarketList_cache.file2aitemu
 	if not aitemus or not file2name or not file2aitemu then
-		local marketteresult = game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/community/list.txt")
+		local marketteresult = game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh-Store/main/list.txt")
 		marketteresult = string.split(marketteresult, "\n")
 		aitemus = {}
 		local aitemu = {}
@@ -9325,7 +9325,7 @@ local function GetMarketList()
 					continue
 				end
 				if k == "file" then
-					aitemu.Source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/community/" .. v
+					aitemu.Source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh-Store/main/" .. v
 					aitemu.File = string.gsub(v, "/", ".")
 					continue
 				end
