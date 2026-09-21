@@ -7841,7 +7841,7 @@ local function _UpdateDownloadStatus()
 	end
 end
 local function EnsureUrlEncode(source)
-	return source:gsub("[^%w%-%._~]", function(c)
+	return source:gsub("[^%w%-%._~/]", function(c)
 		return string.format("%%%02X", string.byte(c))
 	end)
 end
