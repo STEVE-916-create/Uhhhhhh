@@ -7840,6 +7840,11 @@ local function _UpdateDownloadStatus()
 		end
 	end
 end
+local function EnsureUrlEncode(source)
+	return source:gsub("[^%w%-%._~]", function(c)
+		return string.format("%%%02X", string.byte(c))
+	end)
+end
 local function AssetDownloadAgent(source, filename, path)
 	if isfile(path) then return true end
 	if _Assetdownloading[filename] then return false end
@@ -7850,7 +7855,7 @@ local function AssetDownloadAgent(source, filename, path)
 		--Util.Notify("Downloading " .. filename .. "...")
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = source,
+			Url = EnsureUrlEncode(source),
 		})
 		if s and resp and resp.StatusCode == 200 then
 			_Assetdownloadingcount -= 1
