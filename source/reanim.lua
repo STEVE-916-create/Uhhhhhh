@@ -7855,7 +7855,7 @@ local function AssetDownloadAgent(source, filename, path)
 		--Util.Notify("Downloading " .. filename .. "...")
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = EnsureUrlEncode(source),
+			Url = source,
 		})
 		if s and resp and resp.StatusCode == 200 then
 			_Assetdownloadingcount -= 1
@@ -7876,14 +7876,14 @@ local function AssetDownloadAgent(source, filename, path)
 	return false
 end
 local function AssetDownload(filename)
-	local source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/content/" .. filename
+	local source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/content/" .. EnsureUrlEncode(filename)
 	local split = string.split(filename, "@")
 	if #split > 1 then
 		filename = table.remove(split, 1)
 		source = table.concat(split, "@")
 	end
 	if source:sub(1, 7) == "MARKET/" then
-		source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh-Store/main/" .. source:sub(8)
+		source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh-Store/main/" .. EnsureUrlEncode(source:sub(8))
 	end
 	local path = AssetGetPathFromFilename(filename)
 	return AssetDownloadAgent(source, filename, path)
