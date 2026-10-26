@@ -3318,7 +3318,7 @@ SaveData.CharacterScale = SaveData.CharacterScale or 1
 SaveData.P2PCollision = not not SaveData.P2PCollision
 SaveData.ShiftlockDisabled = not not SaveData.ShiftlockDisabled
 SaveData.NoLoadAnimationHook = not not SaveData.NoLoadAnimationHook
-SaveData.NoPhysicsRepRootPart = not not SaveData.NoPhysicsRepRootPart
+SaveData.NoPhysicsRepRootPart = true
 SaveData.NetlessVelocity = SaveData.NetlessVelocity or 25.01
 SaveData.UsePatchmaLikeNetless = not not SaveData.UsePatchmaLikeNetless
 SaveData.UseAngularVelocity = not not SaveData.UseAngularVelocity
@@ -4141,7 +4141,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		local CamCF = Reanimate.Camera:GetMovementCFrame()
 		local _,x,_ = CamCF:ToEulerAngles(Enum.RotationOrder.YXZ)
 		local MoveCF = CFrame.Angles(0, x, 0)
-		pcall(sethiddenproperty, RCRootPart, "PhysicsRepRootPart", nil)
+		pcall(sethiddenproperty, RCRootPart, "PhysicsRepRootRef", InstanceHandle.new(nil))
 		local scale = Reanimate.CharacterScale
 		if scale ~= RC:GetScale() then
 			RC:ScaleTo(scale)
@@ -4753,11 +4753,11 @@ function LimbReanimator.Start()
 					RootPart.CFrame = flingcf + Vector3.new(0, 0, math.random(0, 1) * 0.005)
 					RootPart.Velocity, RootPart.RotVelocity = Vector3.new(0, -16384, 0), Vector3.one * 16384
 				end
-				pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and Util.PredictionFlingPart(flingtarget.Target) or nil)
+				pcall(sethiddenproperty, RootPart, "PhysicsRepRootRef", InstanceHandle.new(Reanimate.UsePhysicsRepRootPart and Util.PredictionFlingPart(flingtarget.Target) or nil))
 			else
 				RootPart.CFrame = rootcf + Vector3.new(0, 0, math.random(0, 1) * 0.005)
 				RootPart.Velocity, RootPart.RotVelocity = rootvel, Vector3.zero
-				pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", nil)
+				pcall(sethiddenproperty, RootPart, "PhysicsRepRootRef", InstanceHandle.new(nil))
 			end
 		end
 		local dorep = true
@@ -6492,7 +6492,7 @@ function HatReanimator.Start()
 						RootPart.CFrame = flingcf + Vector3.new(0, 0, math.random(0, 1) * 0.005)
 						RootPart.Velocity, RootPart.RotVelocity = Vector3.new(0, -16384, 0), Vector3.one * 16384
 					end
-					pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and Util.PredictionFlingPart(flingtarget.Target) or nil)
+					pcall(sethiddenproperty, RootPart, "PhysicsRepRootRef", InstanceHandle.new(Reanimate.UsePhysicsRepRootPart and Util.PredictionFlingPart(flingtarget.Target) or nil))
 				end
 				Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
 				if LimbReanimator.UseNaNFling then
@@ -6510,7 +6510,7 @@ function HatReanimator.Start()
 		if not character:IsDescendantOf(workspace) then
 			return
 		end
-		pcall(sethiddenproperty, RootPart, "PhysicsRepRootPart", nil)
+		pcall(sethiddenproperty, RootPart, "PhysicsRepRootRef", InstanceHandle.new(nil))
 		HatReanimator.Status.RespawnFling = "Done."
 		local lgloop = nil
 		local bringconns = {}
@@ -6954,7 +6954,7 @@ function HatReanimator.Start()
 						if biggesthat then
 							blacklist[biggesthat] = true
 							SetUACFrameNetless(biggest, dt, flingcf, Vector3.zero, false, true)
-							pcall(sethiddenproperty, biggest, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and flingpart or nil)
+							pcall(sethiddenproperty, biggest, "PhysicsRepRootRef", InstanceHandle.new(Reanimate.UsePhysicsRepRootPart and flingpart or nil))
 						end
 					end
 					if HatReanimator.FlingMethod == 2 then
@@ -6973,7 +6973,7 @@ function HatReanimator.Start()
 								if handle and handle:IsA("BasePart") then
 									blacklist[hat] = true
 									SetUACFrameNetless(handle, dt, flingcf, Vector3.zero, false, true)
-									pcall(sethiddenproperty, handle, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and flingpart or nil)
+									pcall(sethiddenproperty, handle, "PhysicsRepRootRef", InstanceHandle.new(Reanimate.UsePhysicsRepRootPart and flingpart or nil))
 								end
 							end
 						end
@@ -6982,7 +6982,7 @@ function HatReanimator.Start()
 						for handle, cf in handlethese do
 							blacklist[handle] = true
 							SetUACFrameNetless(handle, dt, flingcf, Vector3.zero, false, true)
-							pcall(sethiddenproperty, handle, "PhysicsRepRootPart", Reanimate.UsePhysicsRepRootPart and flingpart or nil)
+							pcall(sethiddenproperty, handle, "PhysicsRepRootRef", InstanceHandle.new(Reanimate.UsePhysicsRepRootPart and flingpart or nil))
 						end
 					end
 				end
@@ -7005,7 +7005,7 @@ function HatReanimator.Start()
 						else
 							if claimoverride then
 								SetUACFrameNetless(handle, dt, claimoverride, Vector3.zero, false, false)
-								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", nil)
+								pcall(sethiddenproperty, handle, "PhysicsRepRootRef", InstanceHandle.new(nil))
 								if ref then ref.Aligned = false end
 							else
 								local mapped = nil
@@ -7022,7 +7022,7 @@ function HatReanimator.Start()
 									table.insert(slocked, handle)
 								end
 								if ref then ref.Aligned = aligned end
-								pcall(sethiddenproperty, handle, "PhysicsRepRootPart", mapped and mapped.RepRootPart)
+								pcall(sethiddenproperty, handle, "PhysicsRepRootRef", InstanceHandle.new(mapped and mapped.RepRootPart))
 							end
 						end
 					end
