@@ -6083,7 +6083,7 @@ function HatReanimator.Start()
 			if torso then
 				torso.AncestryChanged:Wait()
 			end
-			task.wait(0.5)
+			--task.wait(0.5)
 			return _counthats(hats)
 		end,
 	}
@@ -6151,7 +6151,7 @@ function HatReanimator.Start()
 			if torso then
 				torso.AncestryChanged:Wait()
 			end
-			task.wait(0.5)
+			--task.wait(0.5)
 			return _counthats(hats)
 		end,
 	}
@@ -6256,7 +6256,7 @@ function HatReanimator.Start()
 			if head and head.Parent then
 				head.AncestryChanged:Wait()
 			end
-			task.wait(1.5)
+			--task.wait(1.5)
 			return _counthats(hats)
 		end,
 	}
@@ -6330,7 +6330,7 @@ function HatReanimator.Start()
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.Equipped)
 			end
-			task.wait(1.5)
+			--task.wait(1.5)
 			return _counthats(hats)
 		end,
 	}
